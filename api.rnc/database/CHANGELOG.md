@@ -3,6 +3,17 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+
+## 1.13.0 — 2026-11-07
+
+### Added
+
+- rnc-2 F7: `create_client_events_table` (Portfolio's client timeline — firm, client, user without a foreign key, type, data json, `at` UTC).
+
+### Changed
+
+- `RoleSeeder`: the team (`equipe`) — and so Reinaldo — gets `fiscal.read` (NF-e readiness and supplier credit, D14); `SeededRolesTest` states it.
+
 ## 1.12.0 — 2026-11-07
 
 ### Added

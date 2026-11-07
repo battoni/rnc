@@ -91,4 +91,10 @@ return [
     'GET clients/import/template' => 'staff',
     'POST fiscal/imports' => 'staff',
     'GET fiscal/imports' => 'staff',
+    'GET fiscal/readiness' => 'staff',
+    'GET fiscal/readiness/{id}' => 'staff',
+    'POST fiscal/readiness/{id}/notice' => 'staff',
+    'GET fiscal/supplier-credit' => 'staff',
+    'POST fiscal/supplier-credit/{id}/review' => 'staff',
+    'GET clients/{id}/events' => 'staff',
 ];

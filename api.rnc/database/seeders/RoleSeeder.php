@@ -23,7 +23,8 @@ use Illuminate\Database\Seeder;
  *
  * Phase 2's other keys are declared from rnc-2 F1 on (the operator holds them at once) and granted
  * to Reinaldo in their own phase: `ledger.read` with F4, `fiscal.import` with F6a (the NF-e upload),
- * `fiscal.read` and `radar.manage` with F7–F9.
+ * `fiscal.read` with F7 — to the team too, so Reinaldo inherits it (D14: NF-e readiness and supplier
+ * credit) — and `radar.manage` with F9.
  *
  * Re-running the seeder rewrites the four matrices to exactly this table. A key added to a role
  * is a line here, and `SeededRolesTest` states the result.
@@ -36,6 +37,7 @@ class RoleSeeder extends Seeder
         'leads.update',
         'agenda.read',
         'notifications.read',
+        'fiscal.read',
     ];
 
     public const CEO_EXTRA_KEYS = [

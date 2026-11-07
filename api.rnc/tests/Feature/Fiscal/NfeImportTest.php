@@ -545,7 +545,12 @@ describe('private storage and the firm wall (A15)', function () {
         expect(Storage::disk('local')->exists($path))->toBeTrue()
             ->and(config('filesystems.disks.local.root'))->toBe(storage_path('app/private'))
             ->and($response->getContent())->not->toContain('nfe/')
-            ->and($routes)->toEqualCanonicalizing(['POST api/fiscal/imports', 'GET api/fiscal/imports'])
+            // F7's routes answer counts and ranges, never a file (ReadinessTest, SupplierCreditTest).
+            ->and($routes)->toEqualCanonicalizing([
+                'POST api/fiscal/imports', 'GET api/fiscal/imports',
+                'GET api/fiscal/readiness', 'GET api/fiscal/readiness/{id}', 'POST api/fiscal/readiness/{id}/notice',
+                'GET api/fiscal/supplier-credit', 'POST api/fiscal/supplier-credit/{id}/review',
+            ])
             ->and(test()->get('/storage/'.$path)->status())->not->toBe(200)
             ->and(test()->actingAs(nfeImportPerson('ceo'))->get('/storage/'.$path)->status())->not->toBe(200)
             ->and(test()->get('/storage/app/private/'.$path)->status())->not->toBe(200);

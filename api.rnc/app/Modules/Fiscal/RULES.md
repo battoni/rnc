@@ -1,12 +1,13 @@
 ---
-version: 1.1.0
+version: 1.2.0
 origin: rnc
-based-on: 1.1.0
+based-on: 1.2.0
 ---
 # RULES — Fiscal Module
 
-> For AI agents. rnc-2 F6a–F6b, 07/11/2026 (the NF-e parser, the access key, the importer, the upload
-> of an XML or a ZIP, the folder command, the batch list and the seed).
+> For AI agents. rnc-2 F6a–F7, 07/11/2026 (the NF-e parser, the access key, the importer, the upload
+> of an XML or a ZIP, the folder command, the batch list and the seed; F7 the readiness and
+> supplier-credit API and the split-payment calculator).
 
 ## Domain
 
@@ -14,8 +15,9 @@ The clients' NF-e (rnc-2 R15–R23): the XMLs Franco already receives from its c
 matched to the portfolio, read for the Reforma's readiness (the `IBSCBS` group of NT 2025.002), the
 credit lost on Simples suppliers and the cash split payment holds back. It owns `nfe_imports` and
 `nfe_documents`, and the raw files under `nfe/` on the private `local` disk. F6a built the import of
-one XML; F6b the ZIP, the folder command (`nfe:import`), the batch list and the seed; the screens'
-maths are F7–F9.
+one XML; F6b the ZIP, the folder command (`nfe:import`), the batch list and the seed; F7 the readiness
+and supplier-credit lists, their two timeline lines and the split-payment calculator the Radar (F9)
+reads.
 
 ## The routes (`routes/api.local.php`)
 
@@ -23,6 +25,11 @@ maths are F7–F9.
 | --- | --- | --- |
 | `POST fiscal/imports` | `fiscal.import` | multipart `file` (one `.xml` or `.zip`, ≤ 20 MB) → 201 `{id, source, user_id, by_name, files, stored, refused: [{file, code}], at}`; throttle 10/min, prefix `nfe-import` |
 | `GET fiscal/imports` | `fiscal.import` | the firm's batches, newest first (`at`, then id), paginated (`page`, `per_page` ≤ 100, default 20), the same shape; `by_name` is the importer's `users.name`, null for the command and the seed |
+| `GET fiscal/readiness?status=&system=` | `fiscal.read` | `{summary: {clients, invoices, complete, complete_pct, at_risk, by_status: {critico, atencao, ok, sem_notas}}, systems: [string], clients: [row]}` — summary and systems over every listed client, `clients` filtered; a row `{id, name, cnpj, sector, regime, system, invoices, complete, complete_pct, at_risk, status}`; `status` ∈ `critico · atencao · ok · sem_notas` (422 otherwise) |
+| `GET fiscal/readiness/{id}` | `fiscal.read` | the row + `issues: [{code, invoices, risk, samples: [{number, series, item}]}]` (≤ 5 samples, newest first) + `window_days` (30); 404 for a Simples, unknown or other firm's client |
+| `POST fiscal/readiness/{id}/notice` | `fiscal.read` (AM13) | 201 the `nfe.aviso` line (Portfolio's `ClientEventResource`), `data: {invoices, complete_pct, at_risk, status}`; 404 as above |
+| `GET fiscal/supplier-credit?sector=` | `fiscal.read` | `{summary: {clients, buying_from_simples, mean_simples_share, lost_per_year_cents: [lo, hi], proposed}, clients: [row]}`, biggest range first, the summary over the filtered rows; a row `{id, name, cnpj, sector, regime, documents, monthly_purchases_cents, simples_share, normal_share, lost_per_year_cents: [lo, hi], proposed}` |
+| `POST fiscal/supplier-credit/{id}/review` | `fiscal.read` (AM13) | 201 the `fornecedores.revisao` line, `data: {simples_share, lost_per_year_cents}`; 422 `code: no_simples_purchases` when nothing in the 90 days came from Simples; 404 for a Simples, unknown or other firm's client |
 
 And the command `php artisan nfe:import <folder> --firm=<slug>` (`app/Console/Commands/ImportNfeFolder`,
 auto-discovered like `appointments:remind`): one batch of source `folder`, no user; prints the counts
@@ -100,10 +107,43 @@ and a table of the refusals; exit 1 for an unknown or absent firm, or a folder i
   batch per client, `folder`, no user), documents built by `NfeXmlBuilder`; it first deletes
   `nfe/<firm id>/`. It refuses production AND the `testing` environment — the Pest suite builds its own
   documents and never runs it (`tests/Feature/Fiscal/NfeSeederTest`).
+- **Readiness (R18–R20, A16; `ReadinessService`)**: Presumido and Real clients only — Simples is out
+  until 2027 (facts.md §2) — and their ISSUED invoices (`saida`, W5) with `issued_at` in the last 30
+  days. An invoice is complete when no item fails any of the three checks, at risk (1115) when an
+  item has no `IBSCBS` group. Status by `ReadinessStatus::fromCounts` (95/80, compared in integers;
+  any at risk is crítico); no invoice → `sem_notas`. `complete_pct` one decimal, null with none; the
+  summary's % is Σ complete ÷ Σ invoices (weighted by what was received). The system is the most
+  frequent `verProc`, a tie to the first name alphabetically; a blank one never wins. Order: status
+  (crítico → atenção → ok → sem notas), most at risk, least complete, id.
+- **Issue lines (R19)**: each incomplete invoice counts ONCE, under its worst issue (`ReadinessIssue`
+  order: no group → blank CST/cClassTrib → test rates not shown), so the lines add up to the
+  incomplete invoices like the demo's `nfeIssues`; a sample is `{number, series, item}` with the
+  first `nItem` that failed that check (W55's `sample`).
+- **Supplier credit (R21–R22, A18; `SupplierCreditService`, `SupplierCreditCalculator`)**: Presumido
+  and Real clients WITH a purchase (`entrada`) in the last 90 days — a client without one is not
+  listed. Simples share by VALUE, CRT 1/2/4 (an unread CRT counts as not Simples, so the estimate
+  never grows on a guess). Lost per year = Simples purchases ÷ 3 × 12 × (26,5 % − DAS 5 %) to
+  (26,5 % − DAS 3 %), integer cents half-up; both rates are estimates (facts.md §2, §5) and live as
+  cited constants on the calculator. `proposed` = the client holds a `fornecedores.revisao` line.
+- **Split payment (R23, A19's unit half; `SplitPaymentCalculator`)**: held per month = B2B sales a
+  month × 26,5 % × 40–60 %. From the 90 days' issued invoices to a CNPJ ÷ 3 (`das_notas`) when the
+  caller has them; else (`null`) the band's `RevenueBand::revenue()` × the declared B2B share ÷ 12
+  (`cadastro`). Pure, no endpoint — the Radar (F9) aggregates the sales and calls it.
+- **No N+1 (plan AM6)**: each list is a fixed number of queries whatever the portfolio's size — the
+  clients, ONE aggregate over `nfe_documents` grouped by client (readiness also by system), and for
+  supplier credit the clients with a review; sums, percentages, statuses and ranges are pure PHP.
+  `ReadinessTest` and `SupplierCreditTest` count the queries for few and many clients. Measured on
+  the seed (500 clients, 2629 documents): see `state.md` → F7.
+- **Window bounds are UTC strings**: `issued_at` is UTC and the app runs in São Paulo time, so
+  `NfeDocumentRepository` formats both Carbon bounds in UTC before `whereBetween`.
+- **The timeline is Portfolio's**: the notice and the review go through `ClientService::recordEvent`
+  (the only writer of `client_events`); Fiscal never inserts there.
 
 ## Tables read from other modules
 
-`clients` (Portfolio — the CNPJ → id of the firm's clients, through `ClientRepository`). `firms`
+`clients` (Portfolio — the CNPJ → id of the firm's clients, and the Presumido/Real clients of the
+F7 lists, through `ClientRepository`). `client_events` (Portfolio — which clients hold a review, and
+every write, through `ClientService`). `firms`
 (through `CurrentFirm`: the import runs inside one; a run without one is a `LogicException`).
 
 ## Known Gaps
@@ -125,3 +165,10 @@ and a table of the refusals; exit 1 for an unknown or absent firm, or a folder i
 - **A ZIP's skipped entries are not reported**: a PDF or a nested ZIP inside the archive is silently
   left out (AM3's "skip"), so the batch does not say it was there. `files` counts only `.xml` entries.
 - **The folder command does not recurse**: a client's XMLs in subfolders need one run per folder.
+- **The rates are estimates, not law**: 26,5 % (facts.md §2 "about 26,5 %"), the DAS share 3–5 % and
+  the split-settled share 40–60 % are unverified (facts.md §2, §5); a specialist confirms them before a
+  client sees a figure. The screens say "estimativa" and show ranges.
+- **Readiness reads the client's own issued invoices only** (W5): what its suppliers' invoices carry
+  is not measured.
+- **A tiny Simples share rounds to 0,0 %** and the client is not counted in "N de M", while the
+  review still accepts it (it refuses only when nothing at all came from Simples).

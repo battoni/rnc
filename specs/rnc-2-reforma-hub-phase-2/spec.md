@@ -307,3 +307,9 @@ billing commissions.
 - C3 (F6b, A14/AM3): A14's "one non-XML" in the ZIP is an entry named `.xml` whose content is not XML
   (refused `not_xml`). An entry with another name — a PDF, a `.txt`, a nested `.zip` — is skipped and
   not counted (AM3), so it is not one of the two refusals; the batch does not list it (Fiscal Known Gap).
+- C4 (F7, R18/A16): an invoice counts as "complete" when every item passes all THREE checks — the
+  `IBSCBS` group, its CST/cClassTrib, and the 2026 test rates shown — not only the first two R18
+  names. The demo's `nfeIssues` counts the test-rates miss among the unfilled invoices, and F6a's
+  parser already calls an item complete only when it passes all three (state W55), so the % and the
+  issue lines add up. A16's fixtures hold: the "96 % 0 risk → ok" client's one incomplete invoice is
+  a test-rates miss.

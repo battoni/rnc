@@ -19,6 +19,22 @@ class ClientRepository
             ->get();
     }
 
+    /**
+     * The firm's clients of some regimes, by id — Fiscal's readiness and supplier-credit lists
+     * (rnc-2 R18, R21: Presumido and Real), read only. One query whatever the portfolio's size.
+     *
+     * @param  list<string>  $regimes
+     * @return Collection<int, Client>
+     */
+    public function findClientsByRegimes(array $regimes, ?string $sector = null): Collection
+    {
+        return Client::query()
+            ->whereIn('regime', $regimes)
+            ->when($sector, fn ($query) => $query->where('sector', $sector))
+            ->orderBy('id')
+            ->get();
+    }
+
     public function findClientById(int $id): ?Client
     {
         return Client::query()->find($id);

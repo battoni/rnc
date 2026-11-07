@@ -14,6 +14,8 @@ use App\Modules\Content\Controllers\PublicSectorPageController;
 use App\Modules\Diagnostic\Controllers\PublicDiagnosticController;
 use App\Modules\Firm\Controllers\PublicFirmController;
 use App\Modules\Fiscal\Controllers\NfeImportController;
+use App\Modules\Fiscal\Controllers\ReadinessController;
+use App\Modules\Fiscal\Controllers\SupplierCreditController;
 use App\Modules\Metrics\Controllers\FunnelController;
 use App\Modules\Notification\Controllers\NotificationController;
 use App\Modules\Partner\Controllers\LedgerController;
@@ -23,6 +25,7 @@ use App\Modules\Partner\Controllers\PortalController;
 use App\Modules\Partner\Controllers\ReferralController;
 use App\Modules\Pipeline\Controllers\AgendaController;
 use App\Modules\Pipeline\Controllers\PipelineLeadController;
+use App\Modules\Portfolio\Controllers\ClientEventController;
 use App\Modules\Portfolio\Controllers\ClientImportController;
 use App\Modules\Portfolio\Controllers\RepricingController;
 use App\Modules\Tracking\Controllers\PublicEventController;
@@ -121,3 +124,13 @@ Route::get('clients/import/template', [ClientImportController::class, 'template'
 // the private disk; no route serves them (A15).
 Route::post('fiscal/imports', [NfeImportController::class, 'store'])->middleware(['auth', 'permission:fiscal.import', 'throttle:10,1,nfe-import']);
 Route::get('fiscal/imports', [NfeImportController::class, 'index'])->middleware(['auth', 'permission:fiscal.import']);
+// NF-e readiness and supplier credit (rnc-2 F7, R18–R22, D12, D14): the lists, a client's detail and
+// the two timeline lines behind `fiscal.read` (equipe, ceo, operador). "Registrar aviso" and "Propor
+// revisão" are writes under a read key ON PURPOSE (plan AM13): they only add a line to the client's
+// timeline, no fiscal data changes (Fiscal RULES.md). The timeline itself is Portfolio's.
+Route::get('fiscal/readiness', [ReadinessController::class, 'index'])->middleware(['auth', 'permission:fiscal.read']);
+Route::get('fiscal/readiness/{id}', [ReadinessController::class, 'show'])->middleware(['auth', 'permission:fiscal.read']);
+Route::post('fiscal/readiness/{id}/notice', [ReadinessController::class, 'notice'])->middleware(['auth', 'permission:fiscal.read']);
+Route::get('fiscal/supplier-credit', [SupplierCreditController::class, 'index'])->middleware(['auth', 'permission:fiscal.read']);
+Route::post('fiscal/supplier-credit/{id}/review', [SupplierCreditController::class, 'review'])->middleware(['auth', 'permission:fiscal.read']);
+Route::get('clients/{id}/events', [ClientEventController::class, 'index'])->middleware(['auth', 'permission:fiscal.read']);

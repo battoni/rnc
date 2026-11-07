@@ -2,6 +2,13 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+
+## 1.2.0 — 2026-11-07
+
+### Added
+
+- A client's timeline (rnc-2 F7, R20, R22, D12, A17's Pest half): `client_events` table, `ClientEvent` model, `ClientEventType` (`nfe.aviso`, `fornecedores.revisao`), `ClientEventRepository`, `ClientService::recordEvent` (the only writer — Fiscal's notice and review call it), `GET clients/{id}/events` behind `fiscal.read` (`ClientEventController`, `ClientEventResource`). `ClientRepository::findClientsByRegimes`, read by Fiscal's F7 lists. Tested in `tests/Feature/Portfolio/ClientEventsTest` and through `tests/Feature/Fiscal/ReadinessTest` / `SupplierCreditTest`.
+
 ## 1.1.0 — 2026-11-07
 
 ### Added

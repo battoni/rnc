@@ -2,6 +2,17 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+
+## 1.2.0 — 2026-11-07
+
+### Added
+
+- NF-e readiness and supplier-credit API (rnc-2 F7, R18–R23, A16, A18, A17's and A19's Pest halves; plan AM6, AM13): `GET fiscal/readiness` (`ReadinessIndexRequest`, `ReadinessFilterDTO`), `GET fiscal/readiness/{id}`, `POST fiscal/readiness/{id}/notice`, `GET fiscal/supplier-credit` (`SupplierCreditIndexRequest`, `SupplierCreditFilterDTO`) and `POST fiscal/supplier-credit/{id}/review`, behind `fiscal.read` (`ReadinessController`, `SupplierCreditController`, `ReadinessClientResource`, `SupplierCreditClientResource`); `ReadinessService`, `ReadinessStatus` (95/80, `sem_notas`) and `ReadinessIssue`; `SupplierCreditService` and the pure `SupplierCreditCalculator` (range on DAS 3–5 %); the pure `SplitPaymentCalculator` (`das_notas` · `cadastro`, 40–60 % settled) for the Radar; `FiscalException` (422 `no_simples_purchases`); `NfeDocumentRepository::sumNfeDocumentReadinessByClient`, `findIncompleteNfeDocumentsByClient` and `sumNfeDocumentPurchasesByClient` (one aggregate per list, grouped by client). Tested in `tests/Feature/Fiscal/ReadinessTest`, `SupplierCreditTest`, `tests/Unit/Modules/Fiscal/SupplierCreditCalculatorTest` and `SplitPaymentCalculatorTest` (rows from `tests/Support/FiscalRows`).
+
+### Changed
+
+- `NfeImportTest`'s A15 route list names the five F7 routes (none serves a file).
+
 ## 1.1.0 — 2026-11-07
 
 ### Added

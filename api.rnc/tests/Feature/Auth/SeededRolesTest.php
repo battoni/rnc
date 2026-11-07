@@ -21,7 +21,8 @@ uses(RefreshDatabase::class);
  * The table is the plan review's AM8 (rnc-1, 07/11/2026): the team works the pipeline, Reinaldo
  * also runs the network, the numbers and the repricing, and the operator holds everything.
  * rnc-2 F1 adds `parceiro` (R1): the portal key and nothing else, and Reinaldo's `ledger.read`;
- * F6a gives Reinaldo `fiscal.import` (the NF-e upload, D14).
+ * F6a gives Reinaldo `fiscal.import` (the NF-e upload, D14); F7 gives the team — and so Reinaldo —
+ * `fiscal.read` (NF-e readiness and supplier credit, D14).
  */
 
 beforeEach(fn () => $this->seed([FirmSeeder::class, RoleSeeder::class, SuperAdminSeeder::class]));
@@ -47,9 +48,10 @@ describe('the seeded roles', function () {
         expect(seededRoleKeys('parceiro'))->toBe(['portal.access']);
     });
 
-    it('give the team only the pipeline', function () {
+    it('give the team the pipeline and the fiscal screens', function () {
         expect(seededRoleKeys('equipe'))->toBe([
             'agenda.read',
+            'fiscal.read',
             'home.read',
             'leads.read',
             'leads.update',
@@ -62,6 +64,7 @@ describe('the seeded roles', function () {
             'agenda.read',
             'clients.import',
             'fiscal.import',
+            'fiscal.read',
             'home.read',
             'leads.read',
             'leads.update',
