@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.12.0 — 2026-11-07
+
+### Added
+
+- rnc-2 F6b: `NfeSeeder` (local only — refuses production and `testing`, plan AM7): it clears `storage/app/private/nfe/<firm id>/`, then imports 90 days of invented NF-e for the first 40 Presumido/Real clients (15–60 sales, 10–40 purchases each; the demo's readiness tiers and `SIMPLES_SHARE_BY_BAND`) through `NfeImporter`, one `folder` batch per client, and prints the counts and its time; called from `seeders.local.php` after `ClientSeeder`. `seeders/Support/NfeXmlBuilder` (the invented NF-e XML, shared with the Fiscal tests — F6a's hand-written fixtures moved onto it) and `GeneratedNfeSource`.
+
 ## 1.11.0 — 2026-11-07
 
 ### Added

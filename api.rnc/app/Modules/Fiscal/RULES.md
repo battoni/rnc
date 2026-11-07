@@ -1,24 +1,32 @@
 ---
-version: 1.0.0
+version: 1.1.0
 origin: rnc
+based-on: 1.1.0
 ---
 # RULES — Fiscal Module
 
-> For AI agents. rnc-2 F6a, 07/11/2026 (the NF-e parser, the access key, the importer and the upload).
+> For AI agents. rnc-2 F6a–F6b, 07/11/2026 (the NF-e parser, the access key, the importer, the upload
+> of an XML or a ZIP, the folder command, the batch list and the seed).
 
 ## Domain
 
 The clients' NF-e (rnc-2 R15–R23): the XMLs Franco already receives from its clients, imported and
 matched to the portfolio, read for the Reforma's readiness (the `IBSCBS` group of NT 2025.002), the
 credit lost on Simples suppliers and the cash split payment holds back. It owns `nfe_imports` and
-`nfe_documents`, and the raw files under `nfe/` on the private `local` disk. F6a builds the import of
-one XML; the ZIP, the folder command, the batch list and the seed are F6b; the screens' maths F7–F9.
+`nfe_documents`, and the raw files under `nfe/` on the private `local` disk. F6a built the import of
+one XML; F6b the ZIP, the folder command (`nfe:import`), the batch list and the seed; the screens'
+maths are F7–F9.
 
 ## The routes (`routes/api.local.php`)
 
 | Route | Permission | What |
 | --- | --- | --- |
-| `POST fiscal/imports` | `fiscal.import` | multipart `file` (one `.xml`, ≤ 20 MB) → 201 `{id, source, user_id, files, stored, refused: [{file, code}], at}`; throttle 10/min, prefix `nfe-import` |
+| `POST fiscal/imports` | `fiscal.import` | multipart `file` (one `.xml` or `.zip`, ≤ 20 MB) → 201 `{id, source, user_id, by_name, files, stored, refused: [{file, code}], at}`; throttle 10/min, prefix `nfe-import` |
+| `GET fiscal/imports` | `fiscal.import` | the firm's batches, newest first (`at`, then id), paginated (`page`, `per_page` ≤ 100, default 20), the same shape; `by_name` is the importer's `users.name`, null for the command and the seed |
+
+And the command `php artisan nfe:import <folder> --firm=<slug>` (`app/Console/Commands/ImportNfeFolder`,
+auto-discovered like `appointments:remind`): one batch of source `folder`, no user; prints the counts
+and a table of the refusals; exit 1 for an unknown or absent firm, or a folder it refuses.
 
 ## Intentional Decisions
 
@@ -28,7 +36,11 @@ one XML; the ZIP, the folder command, the batch list and the seed are F6b; the s
   them. `fiscal.import` is for what writes documents. Reviewers: do not reopen this.
 - **One code path (R15)**: `NfeImporter::import(NfeDocumentSource, NfeImportSource, ?userId)` is what
   the upload, the folder command and the seeder call. Sources are chosen by the caller — no container
-  binding on `NfeDocumentSource` (D5). Only local drivers exist: no SEFAZ, LLM or bank client.
+  binding on `NfeDocumentSource` (D5): `UploadedNfeSource` (the screen), `FolderNfeSource` (the
+  command) and the seed's `Database\Seeders\Support\GeneratedNfeSource`. Only local drivers exist: no
+  SEFAZ, LLM or bank client, and `tests/Feature/NoOutwardClientsTest` (A24) keeps it so. The importer
+  stamps `firm_id` on every row itself — never left to `BelongsToFirm`'s `creating` event — because
+  `DatabaseSeeder` runs under `WithoutModelEvents` and the seed imports through this same path.
 - **XML safety (plan AM3, A14)**, in `NfeXmlParser`, in this order: over 1 MB → `too_large`, never
   read; any `<!DOCTYPE` (any case) → `not_nfe` by a STRING check before `loadXML`, so no entity —
   external (`file:///etc/hostname`) or nested (billion laughs) — can be declared; empty, not UTF-8 or
@@ -70,8 +82,24 @@ one XML; the ZIP, the folder command, the batch list and the seed are F6b; the s
   (`upload` · `folder`), `files` read, documents `stored`, `refused: [{file, code}]` in file order,
   `at` UTC. One bad file never stops the others. Codes: `not_xml`, `not_nfe`, `invalid_key`,
   `client_unknown`, `duplicate`, `too_large` (`NfeRefusal`).
-- **Upload ceilings (plan Defaults)**: the request takes one `.xml` of up to 20 MB (422 past it, before
-  any read); the source refuses an XML over 1 MB `too_large` from its size alone.
+- **Upload ceilings (plan Defaults)**: the request takes one `.xml` or `.zip` of up to 20 MB (422 past
+  it, before any read); the source refuses an XML over 1 MB `too_large` from its size alone.
+- **ZIP safety (plan AM3, A14)**, in `UploadedNfeSource`: read in memory entry by entry through
+  `getStreamIndex`, nothing extracted to disk. The sizes the archive declares (`statIndex`) are never
+  read: each entry is read at most 1 MB + 1 byte (more → `too_large`; a bomb or a forged size never
+  costs more than that), and the archive at most 20 MB in all (every entry after it is `too_large`,
+  unread). Skipped and not counted in `files`: directories, any name not ending `.xml` (case-insensitive
+  — so a nested `.zip` too) and macOS's `__MACOSX/` / `._*` shadows. More than 2000 entries → the
+  archive is one `too_large` line under its own name; a `.zip` that does not open is one `not_xml`. An
+  entry is labelled by its base name only (`../../x.xml` → `x.xml`); its name never becomes a path.
+- **Folder safety (plan AM3, A14)**, in `FolderNfeSource::open`: the argument must not itself be a
+  symbolic link; it is resolved with `realpath` and must be a directory. Only the `.xml` files directly
+  inside it are read, in name order — no subfolder, no symbolic link (to a file or a folder), no other
+  name — each through its stream at most 1 MB + 1 byte, whatever the file system says its size is.
+- **The seed (`NfeSeeder`, plan AM7)**: 40 Presumido/Real clients, 90 days, through `NfeImporter` (one
+  batch per client, `folder`, no user), documents built by `NfeXmlBuilder`; it first deletes
+  `nfe/<firm id>/`. It refuses production AND the `testing` environment — the Pest suite builds its own
+  documents and never runs it (`tests/Feature/Fiscal/NfeSeederTest`).
 
 ## Tables read from other modules
 
@@ -94,3 +122,6 @@ one XML; the ZIP, the folder command, the batch list and the seed are F6b; the s
   refused (A15's test). Setting `serve` to false belongs to `.config-rules`.
 - **PHP's own upload ceiling**: `upload_max_filesize` / `post_max_size` must be ≥ 20 MB on the server,
   or a large file fails as a 422 `file` before Laravel sees it (F6b's ZIPs).
+- **A ZIP's skipped entries are not reported**: a PDF or a nested ZIP inside the archive is silently
+  left out (AM3's "skip"), so the batch does not say it was there. `files` counts only `.xml` entries.
+- **The folder command does not recurse**: a client's XMLs in subfolders need one run per folder.

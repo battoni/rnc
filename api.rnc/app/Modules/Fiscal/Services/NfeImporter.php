@@ -24,6 +24,8 @@ use LogicException;
  * clients (Portfolio's repository, read only — D6) and stored once per client it belongs to:
  * the emitter's `saida`, the recipient's `entrada`, one `saida` when both are the same client. A
  * refusal is written into the batch with the file's name; one bad file never stops the others.
+ * Every row is stamped with the firm here, not left to `BelongsToFirm`'s `creating` event: the
+ * seeders run under `WithoutModelEvents`, and `NfeSeeder` imports through this same path (F6b).
  */
 class NfeImporter
 {
@@ -45,7 +47,7 @@ class NfeImporter
             throw new LogicException('An NF-e import runs inside a firm (CurrentFirm::runAs).');
         }
 
-        $import = $this->nfeImportRepository->createNfeImport($kind, $userId, CarbonImmutable::now(self::ZONE));
+        $import = $this->nfeImportRepository->createNfeImport($firmId, $kind, $userId, CarbonImmutable::now(self::ZONE));
         $files = 0;
         $stored = 0;
         $refused = [];
@@ -129,7 +131,7 @@ class NfeImporter
 
         try {
             $this->nfeDocumentRepository->createNfeDocument(
-                $this->attributes($document, $clientId, $direction, $import),
+                $this->attributes($document, $clientId, $direction, $import, $firmId),
                 NfeDocumentRepository::nfeDocumentPath($firmId, $clientId, $document->accessKey),
                 $content,
             );
@@ -141,9 +143,10 @@ class NfeImporter
     }
 
     /** @return array<string, mixed> */
-    private function attributes(ParsedNfe $document, int $clientId, NfeDirection $direction, NfeImport $import): array
+    private function attributes(ParsedNfe $document, int $clientId, NfeDirection $direction, NfeImport $import, int $firmId): array
     {
         return [
+            'firm_id' => $firmId,
             'client_id' => $clientId,
             'import_id' => $import->id,
             'direction' => $direction->value,

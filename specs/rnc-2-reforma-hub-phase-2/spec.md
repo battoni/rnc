@@ -304,3 +304,6 @@ billing commissions.
   `auth.accountInactive`: revoke deletes its `sessions` rows, so the cookie names no session and the
   request is a guest's. `auth.accountInactive` is what its next login with the right password
   answers. Either way the SPA's 401 clears the session; `PartnerAccessTest` asserts both.
+- C3 (F6b, A14/AM3): A14's "one non-XML" in the ZIP is an entry named `.xml` whose content is not XML
+  (refused `not_xml`). An entry with another name — a PDF, a `.txt`, a nested `.zip` — is skipped and
+  not counted (AM3), so it is not one of the two refusals; the batch does not list it (Fiscal Known Gap).

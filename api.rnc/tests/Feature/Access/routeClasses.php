@@ -90,4 +90,5 @@ return [
     'POST clients/import' => 'staff',
     'GET clients/import/template' => 'staff',
     'POST fiscal/imports' => 'staff',
+    'GET fiscal/imports' => 'staff',
 ];

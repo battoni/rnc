@@ -2,6 +2,15 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.1.0 — 2026-11-07
+
+### Added
+- NF-e ZIP, folder command, batch list and seed (rnc-2 F6b, R15, R17, A14's ZIP and command half, A24; plan AM3, AM7): `UploadedNfeSource` reads a `.zip` entry by entry through its stream (≤ 1 MB + 1 byte each, ≤ 20 MB in all, ≤ 2000 entries; directories, non-`.xml` names, nested ZIPs and macOS shadows skipped; `statIndex` never trusted); `FolderNfeSource` (`realpath`, a directory only, no symbolic link followed) and `php artisan nfe:import <folder> --firm=` (`app/Console/Commands/ImportNfeFolder`); `GET fiscal/imports` (`ListNfeImportsRequest`, `NfeImportService`, `NfeImportRepository::paginateNfeImports` with `by_name` from one `users` join). Tested in `tests/Feature/Fiscal/NfeImportTest`, `NfeImportFolderTest`, `NfeSeederTest` and `tests/Feature/NoOutwardClientsTest`.
+
+### Changed
+- `POST fiscal/imports` takes `.xml` or `.zip`, and its answer gains `by_name`.
+- `NfeImporter` stamps `firm_id` on the batch and every document itself (`NfeImportRepository::createNfeImport` takes the firm id): under `DatabaseSeeder`'s `WithoutModelEvents` the `BelongsToFirm` event never fires, and the seed imports through the importer.
+
 ## 1.0.0 — 2026-11-07
 
 ### Added

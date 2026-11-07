@@ -116,7 +116,8 @@ Route::get('repricing/{id}/letter', [RepricingController::class, 'letter'])->mid
 Route::post('repricing/mark', [RepricingController::class, 'mark'])->middleware(['auth', 'permission:repricing.manage']);
 Route::post('clients/import', [ClientImportController::class, 'store'])->middleware(['auth', 'permission:clients.import']);
 Route::get('clients/import/template', [ClientImportController::class, 'template'])->middleware(['auth', 'permission:clients.import']);
-// NF-e import (rnc-2 F6a, R15–R17, D14): one XML (a ZIP from F6b) behind `fiscal.import` (ceo,
-// operador), 10 a minute on its own limiter. The raw files stay on the private disk; no route
-// serves them (A15).
+// NF-e import (rnc-2 F6a–F6b, R15–R17, D14): one XML or a ZIP, and the firm's batches, behind
+// `fiscal.import` (ceo, operador); the upload 10 a minute on its own limiter. The raw files stay on
+// the private disk; no route serves them (A15).
 Route::post('fiscal/imports', [NfeImportController::class, 'store'])->middleware(['auth', 'permission:fiscal.import', 'throttle:10,1,nfe-import']);
+Route::get('fiscal/imports', [NfeImportController::class, 'index'])->middleware(['auth', 'permission:fiscal.import']);

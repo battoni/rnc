@@ -5,9 +5,9 @@ namespace App\Modules\Fiscal\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * The NF-e upload (`POST /api/fiscal/imports`, R15): one `.xml` of up to 20 MB, the import's whole
- * ceiling (plan Defaults). Past that, the 1 MB per XML is the source's to enforce (`too_large`). F6b
- * adds `.zip`.
+ * The NF-e upload (`POST /api/fiscal/imports`, R15): one `.xml` or `.zip` of up to 20 MB, the
+ * import's whole ceiling (plan Defaults). Past that, the 1 MB per XML, the 20 MB read out of a ZIP and
+ * its 2000 entries are the source's to enforce (`too_large` in the batch, `UploadedNfeSource`).
  */
 class StoreNfeImportRequest extends FormRequest
 {
@@ -21,7 +21,7 @@ class StoreNfeImportRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'file' => ['required', 'file', 'extensions:xml', 'max:'.self::MAX_KILOBYTES],
+            'file' => ['required', 'file', 'extensions:xml,zip', 'max:'.self::MAX_KILOBYTES],
         ];
     }
 }

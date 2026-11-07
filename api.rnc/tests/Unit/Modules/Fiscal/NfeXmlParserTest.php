@@ -4,6 +4,7 @@ use App\Modules\Fiscal\Enums\NfeRecipientKind;
 use App\Modules\Fiscal\Enums\NfeRefusal;
 use App\Modules\Fiscal\Exceptions\NfeRefusedException;
 use App\Modules\Fiscal\Services\NfeXmlParser;
+use Database\Seeders\Support\NfeXmlBuilder;
 use Tests\Support\NfeFixture;
 
 /*
@@ -29,9 +30,9 @@ function nfeRefusalOf(string $content): ?NfeRefusal
 
 describe('a sale (A13)', function () {
     it('reads the key, the header, the emitter, the recipient and the total', function () {
-        $document = nfeParse(NfeFixture::nfe(['number' => 4521, 'series' => 2, 'crt' => 1, 'total' => '15890.07', 'system' => 'Bling 3.1']));
+        $document = nfeParse(NfeXmlBuilder::nfe(['number' => 4521, 'series' => 2, 'crt' => 1, 'total' => '15890.07', 'system' => 'Bling 3.1']));
 
-        expect($document->accessKey)->toBe(NfeFixture::key('11222333000181', 4521, 2))
+        expect($document->accessKey)->toBe(NfeXmlBuilder::key('11222333000181', 4521, 2))
             ->and($document->number)->toBe(4521)
             ->and($document->series)->toBe(2)
             ->and($document->issuedAt->toIso8601String())->toBe('2026-10-15T13:30:00+00:00')
@@ -44,12 +45,12 @@ describe('a sale (A13)', function () {
     });
 
     it('reads a bare NFe as well as an nfeProc', function () {
-        expect(nfeParse(NfeFixture::nfe(['wrapped' => false]))->accessKey)->toBe(NfeFixture::key('11222333000181', 123));
+        expect(nfeParse(NfeXmlBuilder::nfe(['wrapped' => false]))->accessKey)->toBe(NfeXmlBuilder::key('11222333000181', 123));
     });
 
     it('reads a CPF recipient or none as consumidor', function () {
-        $toPerson = nfeParse(NfeFixture::nfe(['recipient_cpf' => '99900000191']));
-        $toNobody = nfeParse(NfeFixture::nfe(['recipient' => null]));
+        $toPerson = nfeParse(NfeXmlBuilder::nfe(['recipient_cpf' => '99900000191']));
+        $toNobody = nfeParse(NfeXmlBuilder::nfe(['recipient' => null]));
 
         expect($toPerson->recipientKind)->toBe(NfeRecipientKind::Consumidor)
             ->and($toPerson->recipientCnpj)->toBeNull()
@@ -58,7 +59,7 @@ describe('a sale (A13)', function () {
     });
 
     it('keeps a missing CRT or system as null instead of failing', function () {
-        $document = nfeParse(NfeFixture::nfe(['crt' => null, 'system' => null]));
+        $document = nfeParse(NfeXmlBuilder::nfe(['crt' => null, 'system' => null]));
 
         expect($document->emitterCrt)->toBeNull()
             ->and($document->system)->toBeNull();
@@ -78,7 +79,7 @@ describe('the item checks (R16)', function () {
             ['group' => false],
         ];
 
-        $document = nfeParse(NfeFixture::nfe(['items' => $items]));
+        $document = nfeParse(NfeXmlBuilder::nfe(['items' => $items]));
 
         expect($document->items)->toBe(8)
             ->and($document->itemsMissingGroup)->toBe(2)
@@ -92,11 +93,11 @@ describe('the item checks (R16)', function () {
     });
 
     it('reads the CST inside the IBS/CBS group only, not the ICMS one', function () {
-        expect(nfeParse(NfeFixture::nfe(['items' => [['cst' => '']]]))->itemsMissingCodes)->toBe(1);
+        expect(nfeParse(NfeXmlBuilder::nfe(['items' => [['cst' => '']]]))->itemsMissingCodes)->toBe(1);
     });
 
     it('caps each sample at five item numbers', function () {
-        $document = nfeParse(NfeFixture::nfe(['items' => array_fill(0, 7, ['group' => false])]));
+        $document = nfeParse(NfeXmlBuilder::nfe(['items' => array_fill(0, 7, ['group' => false])]));
 
         expect($document->itemsMissingGroup)->toBe(7)
             ->and($document->sample['missing_group'])->toBe([1, 2, 3, 4, 5]);
@@ -118,24 +119,24 @@ describe('what is refused', function () {
         expect(nfeRefusalOf($content))->toBe(NfeRefusal::NotNfe);
     })->with([
         'another document' => ['<?xml version="1.0"?><cteProc><CTe/></cteProc>'],
-        'an NFC-e (model 65)' => [fn () => NfeFixture::nfe(['model' => '65'])],
-        'no items' => [fn () => NfeFixture::nfe(['items' => []])],
-        'no total' => [fn () => str_replace('<vNF>1234.56</vNF>', '', NfeFixture::nfe())],
-        'a CPF emitter' => [fn () => NfeFixture::nfe(['emitter_cpf' => '99900000191'])],
+        'an NFC-e (model 65)' => [fn () => NfeXmlBuilder::nfe(['model' => '65'])],
+        'no items' => [fn () => NfeXmlBuilder::nfe(['items' => []])],
+        'no total' => [fn () => str_replace('<vNF>1234.56</vNF>', '', NfeXmlBuilder::nfe())],
+        'a CPF emitter' => [fn () => NfeXmlBuilder::nfe(['emitter_cpf' => '99900000191'])],
     ]);
 
     it('refuses a bad check digit as invalid_key (A13)', function () {
-        $key = NfeFixture::key('11222333000181', 123);
+        $key = NfeXmlBuilder::key('11222333000181', 123);
 
-        expect(nfeRefusalOf(NfeFixture::nfe(['key' => NfeFixture::brokenKey($key)])))->toBe(NfeRefusal::InvalidKey);
+        expect(nfeRefusalOf(NfeXmlBuilder::nfe(['key' => NfeFixture::brokenKey($key)])))->toBe(NfeRefusal::InvalidKey);
     });
 
     it('refuses a key whose emitter is not the document\'s as invalid_key', function () {
-        expect(nfeRefusalOf(NfeFixture::nfe(['key' => NfeFixture::key('22333444000181', 123)])))->toBe(NfeRefusal::InvalidKey);
+        expect(nfeRefusalOf(NfeXmlBuilder::nfe(['key' => NfeXmlBuilder::key('22333444000181', 123)])))->toBe(NfeRefusal::InvalidKey);
     });
 
     it('refuses a file over 1 MB as too_large without reading it', function () {
-        $padded = str_replace('</nfeProc>', str_repeat(' ', 1_048_576).'</nfeProc>', NfeFixture::nfe());
+        $padded = str_replace('</nfeProc>', str_repeat(' ', 1_048_576).'</nfeProc>', NfeXmlBuilder::nfe());
 
         expect(nfeRefusalOf($padded))->toBe(NfeRefusal::TooLarge);
     });

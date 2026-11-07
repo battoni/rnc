@@ -3,6 +3,7 @@
 use Database\Seeders\ClientSeeder;
 use Database\Seeders\LocalUsersSeeder;
 use Database\Seeders\MetricsSeeder;
+use Database\Seeders\NfeSeeder;
 use Database\Seeders\PartnerSeeder;
 use Database\Seeders\PartnerUserSeeder;
 use Database\Seeders\PipelineSeeder;
@@ -48,3 +49,8 @@ $this->call(MetricsSeeder::class);
 // Reinaldo's portfolio to reprice (rnc-1 F8): 500 invented clients with plainly invented CNPJs —
 // local only (refuses production).
 $this->call(ClientSeeder::class);
+
+// The clients' NF-e (rnc-2 F6b): 90 days of invented XMLs for 40 Presumido/Real clients, imported
+// through `NfeImporter` — local only (refuses production and the Pest suite, AM7), after the
+// portfolio it reads. It first clears `storage/app/private/nfe/<firm id>/`.
+$this->call(NfeSeeder::class);

@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $stored
  * @property list<array{file: string, code: string}> $refused
  * @property CarbonImmutable $at UTC
+ * @property string|null $by_name who imported, only on a row read by `NfeImportRepository`'s list query
  */
 #[Fillable(['firm_id', 'user_id', 'source', 'files', 'stored', 'refused', 'at'])]
 class NfeImport extends Model
