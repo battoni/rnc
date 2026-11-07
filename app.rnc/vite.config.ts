@@ -164,6 +164,8 @@ export default defineConfig(({ mode }) => {
         '@MetricsModule/*': getPath('./src/modules/Metrics/*'),
         '@PartnerModule': getPath('./src/modules/Partner'),
         '@PartnerModule/*': getPath('./src/modules/Partner/*'),
+        '@RepricingModule': getPath('./src/modules/Repricing'),
+        '@RepricingModule/*': getPath('./src/modules/Repricing/*'),
         '@PersonalizationModule': getPath('./src/modules/Personalization'),
         '@PersonalizationModule/*': getPath('./src/modules/Personalization/*'),
         '@PipelineModule': getPath('./src/modules/Pipeline'),

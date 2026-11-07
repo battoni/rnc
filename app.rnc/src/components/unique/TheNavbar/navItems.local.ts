@@ -5,6 +5,7 @@ import { WORKSPACES } from '@HomeModule';
 import { METRICS_PERMISSIONS, METRICS_ROUTE_NAMES } from '@MetricsModule';
 import { PARTNER_PERMISSIONS, PARTNER_ROUTE_NAMES } from '@PartnerModule';
 import { PIPELINE_PERMISSIONS, PIPELINE_ROUTE_NAMES } from '@PipelineModule';
+import { REPRICING_PERMISSIONS, REPRICING_ROUTE_NAMES } from '@RepricingModule';
 
 /**
  * Project-owned navigation items — the cortex sync NEVER touches this file (classified LOCAL).
@@ -49,7 +50,7 @@ import { PIPELINE_PERMISSIONS, PIPELINE_ROUTE_NAMES } from '@PipelineModule';
  */
 /**
  * What each group already holds. The team's has its pipeline and agenda (F5); the operator's carries
- * the bootstrap's own administration screens; Reinaldo's has the metrics (F7) and the network (F6), and fills up as F8 adds its screens. Route
+ * the bootstrap's own administration screens; Reinaldo's has the metrics (F7), the network (F6) and the fee repricing (F8). Route
  * names are the owners' (celer-05), never an import of their screens.
  */
 const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
@@ -85,6 +86,12 @@ const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
       label: 'navigation.trail',
       permission: PARTNER_PERMISSIONS.trail,
       routeName: PARTNER_ROUTE_NAMES.trail,
+    },
+    {
+      icon: 'pi pi-percentage',
+      label: 'navigation.repricing',
+      permission: REPRICING_PERMISSIONS.manage,
+      routeName: REPRICING_ROUTE_NAMES.list,
     },
   ],
   operator: [

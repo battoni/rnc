@@ -39,7 +39,8 @@
     "agenda": "Agenda",
     "partners": "Parceiros",
     "trail": "Trilha",
-    "metrics": "Métricas"
+    "metrics": "Métricas",
+    "repricing": "Reajuste"
   },
   "rolesAndPermissions": {
     "groups": {
@@ -49,7 +50,8 @@
       "partners": "Parceiros",
       "referrals": "Trilha de encaminhamentos",
       "metrics": "Métricas",
-      "repricing": "Reajuste de honorários"
+      "repricing": "Reajuste de honorários",
+      "clients": "Carteira de clientes"
     },
     "permissions": {
       "import": "Importar"
@@ -736,6 +738,152 @@
       "conversion": "Visita → cliente"
     },
     "loadFailed": "Não foi possível carregar o funil agora.",
+    "retry": "Tentar de novo"
+  },
+  "repricing": {
+    "title": "Reajuste de honorários",
+    "heading": "A Reforma aumenta o trabalho da Franco em cada cliente",
+    "lede": "O mesmo motor do diagnóstico mede o trabalho novo de cada cliente: cada oportunidade pesa 1,5 ponto e cada risco 2,5 no reajuste sugerido, de 4 a 25%, com o honorário arredondado a R$ 50.",
+    "hero": {
+      "label": "Receita a mais por ano",
+      "base": "sobre {base}/ano de honorários hoje: +{share} na carteira listada."
+    },
+    "kpis": {
+      "clients": "Clientes listados",
+      "average": "Reajuste médio",
+      "marked": "Marcados para 2027"
+    },
+    "spread": {
+      "title": "Clientes por faixa de reajuste",
+      "band": "+{from}–{to}%"
+    },
+    "filters": {
+      "sector": "Setor",
+      "regime": "Regime",
+      "allSectors": "Todos os setores",
+      "allRegimes": "Todos os regimes"
+    },
+    "batch": {
+      "none": "Selecione clientes para marcar em lote",
+      "selected": "{count} selecionado | {count} selecionados",
+      "mark": "Marcar em lote",
+      "marked": "{count} cliente marcado para o reajuste de 2027. | {count} clientes marcados para o reajuste de 2027.",
+      "failed": "Não foi possível marcar agora. Tente de novo."
+    },
+    "table": {
+      "caption": "Clientes e reajuste sugerido",
+      "selectAll": "Selecionar todos os clientes listados",
+      "selectOne": "Selecionar {name}",
+      "client": "Cliente",
+      "current": "Hoje",
+      "suggested": "Sugerido",
+      "pct": "Reajuste",
+      "uplift": "A mais/ano",
+      "marked": "Marcado",
+      "open": "Abrir {name}",
+      "emptyTitle": "Nenhum cliente neste filtro",
+      "emptyText": "Troque o setor ou o regime, ou importe a carteira em CSV."
+    },
+    "detail": {
+      "title": "Detalhe do cliente",
+      "emptyText": "Abra um cliente da lista para ver os itens da Reforma que justificam o reajuste e gerar a carta.",
+      "today": "Hoje",
+      "suggested": "Sugerido · +{pct}%",
+      "perYear": "{value} a mais por ano.",
+      "items": "Itens de impacto",
+      "noItems": "Nenhum item da Reforma para este perfil: o reajuste fica no piso de 4%.",
+      "letter": "Gerar carta de reajuste",
+      "markedBy": "Marcado em {at} por {name}: {suggested} (+{pct}%)",
+      "markedAt": "Marcado em {at}: {suggested} (+{pct}%)",
+      "loadFailed": "Não foi possível abrir este cliente.",
+      "b2b": "B2B {value}%"
+    },
+    "kinds": {
+      "oportunidade": "Oportunidade",
+      "risco": "Risco"
+    },
+    "sectors": {
+      "comercio": "Comércio",
+      "industria": "Indústria",
+      "servicos": "Serviços",
+      "saude": "Saúde",
+      "educacao": "Educação",
+      "agro": "Agro"
+    },
+    "regimes": {
+      "simples": "Simples Nacional",
+      "presumido": "Lucro Presumido",
+      "real": "Lucro Real"
+    },
+    "bands": {
+      "b1": "até R$ 360 mil/ano",
+      "b2": "R$ 360 mil a 4,8 mi/ano",
+      "b3": "R$ 4,8 a 30 mi/ano",
+      "b4": "R$ 30 a 300 mi/ano",
+      "b5": "acima de R$ 300 mi/ano"
+    },
+    "import": {
+      "action": "Importar CSV",
+      "title": "Importar carteira de clientes",
+      "lede": "Uma linha por cliente, em UTF-8, separada por ponto e vírgula ou vírgula. Um CNPJ que já está na carteira é atualizado. Se alguma linha tiver erro, nada é importado.",
+      "columns": "Colunas do arquivo",
+      "accepted": "setor: comercio, industria, servicos, saude, educacao ou agro · regime: simples, presumido ou real · faixa_faturamento: b1 a b5 · percentual_b2b: 0 a 100 · mensalidade em reais, como 1.850,00 (mínimo R$ 250)",
+      "template": "Baixar modelo",
+      "file": "Arquivo CSV",
+      "fileRequired": "Escolha um arquivo CSV.",
+      "submit": "Importar",
+      "cancel": "Cancelar",
+      "success": "{total} clientes importados: {created} novos e {updated} atualizados.",
+      "line": "Linha {line}",
+      "more": "E mais {count} problemas no arquivo.",
+      "templateFailed": "Não foi possível baixar o modelo agora.",
+      "codes": {
+        "import_encoding": "O arquivo não está em UTF-8. No Excel, salve como “CSV UTF-8”.",
+        "import_header": "O cabeçalho não é o do modelo. Faltam as colunas: {missing}.",
+        "import_empty": "O arquivo não tem nenhuma linha de cliente.",
+        "import_too_many": "O arquivo passa de {limit} linhas: divida em partes.",
+        "import_invalid": "Nada foi importado. Corrija as linhas abaixo e envie de novo.",
+        "unexpected": "Não foi possível importar agora. Tente de novo."
+      },
+      "lineCodes": {
+        "required": "{field} em branco",
+        "name_too_long": "nome com mais de 160 caracteres",
+        "cnpj_invalid": "CNPJ com dígitos verificadores inválidos",
+        "cnpj_duplicate": "CNPJ repetido no arquivo",
+        "sector_invalid": "setor desconhecido",
+        "regime_invalid": "regime desconhecido (simples, presumido ou real)",
+        "band_invalid": "faixa de faturamento desconhecida (b1 a b5)",
+        "b2b_invalid": "percentual B2B fora de 0 a 100",
+        "fee_invalid": "mensalidade inválida (mínimo R$ 250)",
+        "columns": "faltam colunas nesta linha"
+      },
+      "fields": {
+        "nome": "Nome",
+        "cnpj": "CNPJ",
+        "setor": "Setor",
+        "regime": "Regime",
+        "faixa_faturamento": "Faixa de faturamento",
+        "percentual_b2b": "Percentual B2B",
+        "mensalidade": "Mensalidade"
+      }
+    },
+    "letter": {
+      "back": "Voltar ao reajuste",
+      "print": "Imprimir",
+      "subject": "Reajuste de honorários a partir de {date}",
+      "greeting": "À {name}",
+      "cnpj": "CNPJ {cnpj}",
+      "intro": "A Reforma Tributária muda a rotina fiscal da sua empresa a partir de 2027. Para a {name}, o diagnóstico da {firm} aponta {count} frente de trabalho nova: | A Reforma Tributária muda a rotina fiscal da sua empresa a partir de 2027. Para a {name}, o diagnóstico da {firm} aponta {count} frentes de trabalho novas:",
+      "noItems": "A Reforma Tributária muda a rotina fiscal da sua empresa a partir de 2027, e o acompanhamento da transição passa a fazer parte do nosso trabalho.",
+      "fee": "Por isso, o honorário mensal passa de {current} para {suggested} (+{pct}%) a partir de {date}, com o acompanhamento da transição incluído.",
+      "feeToday": "Honorário hoje",
+      "feeFrom": "A partir de {date}",
+      "closing": "Ficamos à disposição para conversar sobre cada item.",
+      "regards": "Atenciosamente,",
+      "loadFailed": "Não foi possível montar a carta agora.",
+      "notFound": "Este cliente não está na carteira."
+    },
+    "loadFailed": "Não foi possível carregar a carteira agora.",
     "retry": "Tentar de novo"
   }
 }

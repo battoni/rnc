@@ -19,6 +19,8 @@ use App\Modules\Partner\Controllers\PartnerController;
 use App\Modules\Partner\Controllers\ReferralController;
 use App\Modules\Pipeline\Controllers\AgendaController;
 use App\Modules\Pipeline\Controllers\PipelineLeadController;
+use App\Modules\Portfolio\Controllers\ClientImportController;
+use App\Modules\Portfolio\Controllers\RepricingController;
 use App\Modules\Tracking\Controllers\PublicEventController;
 use Illuminate\Support\Facades\Route;
 
@@ -76,3 +78,13 @@ Route::get('referrals', [ReferralController::class, 'index'])->middleware(['auth
 
 // Reinaldo's funnel (rnc-1 F7, R24, AM8): the last 7 or 30 days behind `metrics.read` (ceo, operador).
 Route::get('metrics/funnel', [FunnelController::class, 'show'])->middleware(['auth', 'permission:metrics.read']);
+
+// Reinaldo's fee repricing (rnc-1 F8, R25–R26, AM8): the portfolio quoted, one client, its letter and
+// the batch mark behind `repricing.manage`; the CSV import and its template behind `clients.import`
+// (ceo, operador — the team holds neither).
+Route::get('repricing', [RepricingController::class, 'index'])->middleware(['auth', 'permission:repricing.manage']);
+Route::get('repricing/{id}', [RepricingController::class, 'show'])->middleware(['auth', 'permission:repricing.manage']);
+Route::get('repricing/{id}/letter', [RepricingController::class, 'letter'])->middleware(['auth', 'permission:repricing.manage']);
+Route::post('repricing/mark', [RepricingController::class, 'mark'])->middleware(['auth', 'permission:repricing.manage']);
+Route::post('clients/import', [ClientImportController::class, 'store'])->middleware(['auth', 'permission:clients.import']);
+Route::get('clients/import/template', [ClientImportController::class, 'template'])->middleware(['auth', 'permission:clients.import']);

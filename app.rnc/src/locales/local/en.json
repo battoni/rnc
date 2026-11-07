@@ -39,7 +39,8 @@
     "agenda": "Agenda",
     "partners": "Partners",
     "trail": "Trail",
-    "metrics": "Metrics"
+    "metrics": "Metrics",
+    "repricing": "Repricing"
   },
   "rolesAndPermissions": {
     "groups": {
@@ -49,7 +50,8 @@
       "partners": "Partners",
       "referrals": "Referral trail",
       "metrics": "Metrics",
-      "repricing": "Fee repricing"
+      "repricing": "Fee repricing",
+      "clients": "Client portfolio"
     },
     "permissions": {
       "import": "Import"
@@ -736,6 +738,152 @@
       "conversion": "Visit → client"
     },
     "loadFailed": "The funnel could not be loaded right now.",
+    "retry": "Try again"
+  },
+  "repricing": {
+    "title": "Fee repricing",
+    "heading": "The Reforma adds work on every client",
+    "lede": "The diagnostic's engine measures each client's new work: each opportunity weighs 1.5 points and each risk 2.5 in the suggested uplift, from 4 to 25%, with the fee rounded to R$ 50.",
+    "hero": {
+      "label": "Extra revenue per year",
+      "base": "on {base}/year of fees today: +{share} on the listed portfolio."
+    },
+    "kpis": {
+      "clients": "Clients listed",
+      "average": "Average uplift",
+      "marked": "Marked for 2027"
+    },
+    "spread": {
+      "title": "Clients by uplift band",
+      "band": "+{from}–{to}%"
+    },
+    "filters": {
+      "sector": "Sector",
+      "regime": "Regime",
+      "allSectors": "Every sector",
+      "allRegimes": "Every regime"
+    },
+    "batch": {
+      "none": "Select clients to mark in batch",
+      "selected": "{count} selected | {count} selected",
+      "mark": "Mark in batch",
+      "marked": "{count} client marked for the 2027 repricing. | {count} clients marked for the 2027 repricing.",
+      "failed": "Could not mark them now. Try again."
+    },
+    "table": {
+      "caption": "Clients and suggested uplift",
+      "selectAll": "Select every listed client",
+      "selectOne": "Select {name}",
+      "client": "Client",
+      "current": "Today",
+      "suggested": "Suggested",
+      "pct": "Uplift",
+      "uplift": "Extra/year",
+      "marked": "Marked",
+      "open": "Open {name}",
+      "emptyTitle": "No client in this filter",
+      "emptyText": "Change the sector or the regime, or import the portfolio as CSV."
+    },
+    "detail": {
+      "title": "Client detail",
+      "emptyText": "Open a client of the list to see the Reforma items behind its uplift and write the letter.",
+      "today": "Today",
+      "suggested": "Suggested · +{pct}%",
+      "perYear": "{value} more per year.",
+      "items": "Impact items",
+      "noItems": "No Reforma item for this profile: the uplift stays at the 4% floor.",
+      "letter": "Write the repricing letter",
+      "markedBy": "Marked on {at} by {name}: {suggested} (+{pct}%)",
+      "markedAt": "Marked on {at}: {suggested} (+{pct}%)",
+      "loadFailed": "Could not open this client.",
+      "b2b": "B2B {value}%"
+    },
+    "kinds": {
+      "oportunidade": "Opportunity",
+      "risco": "Risk"
+    },
+    "sectors": {
+      "comercio": "Retail",
+      "industria": "Industry",
+      "servicos": "Services",
+      "saude": "Health",
+      "educacao": "Education",
+      "agro": "Agribusiness"
+    },
+    "regimes": {
+      "simples": "Simples Nacional",
+      "presumido": "Lucro Presumido",
+      "real": "Lucro Real"
+    },
+    "bands": {
+      "b1": "up to R$ 360k/year",
+      "b2": "R$ 360k to 4.8M/year",
+      "b3": "R$ 4.8 to 30M/year",
+      "b4": "R$ 30 to 300M/year",
+      "b5": "over R$ 300M/year"
+    },
+    "import": {
+      "action": "Import CSV",
+      "title": "Import the client portfolio",
+      "lede": "One line per client, in UTF-8, separated by semicolons or commas. A CNPJ already in the portfolio is updated. If any line has an error, nothing is imported.",
+      "columns": "File columns",
+      "accepted": "setor: comercio, industria, servicos, saude, educacao or agro · regime: simples, presumido or real · faixa_faturamento: b1 to b5 · percentual_b2b: 0 to 100 · mensalidade in reais, like 1.850,00 (minimum R$ 250)",
+      "template": "Download template",
+      "file": "CSV file",
+      "fileRequired": "Choose a CSV file.",
+      "submit": "Import",
+      "cancel": "Cancel",
+      "success": "{total} clients imported: {created} new and {updated} updated.",
+      "line": "Line {line}",
+      "more": "And {count} more problems in the file.",
+      "templateFailed": "Could not download the template now.",
+      "codes": {
+        "import_encoding": "The file is not UTF-8. In Excel, save it as “CSV UTF-8”.",
+        "import_header": "The header is not the template's. Missing columns: {missing}.",
+        "import_empty": "The file has no client line.",
+        "import_too_many": "The file has more than {limit} lines: split it.",
+        "import_invalid": "Nothing was imported. Fix the lines below and send it again.",
+        "unexpected": "Could not import now. Try again."
+      },
+      "lineCodes": {
+        "required": "{field} is blank",
+        "name_too_long": "name over 160 characters",
+        "cnpj_invalid": "CNPJ check digits do not match",
+        "cnpj_duplicate": "CNPJ repeated in the file",
+        "sector_invalid": "unknown sector",
+        "regime_invalid": "unknown regime (simples, presumido or real)",
+        "band_invalid": "unknown revenue band (b1 to b5)",
+        "b2b_invalid": "B2B share outside 0 to 100",
+        "fee_invalid": "invalid monthly fee (minimum R$ 250)",
+        "columns": "columns missing on this line"
+      },
+      "fields": {
+        "nome": "Name",
+        "cnpj": "CNPJ",
+        "setor": "Sector",
+        "regime": "Regime",
+        "faixa_faturamento": "Revenue band",
+        "percentual_b2b": "B2B share",
+        "mensalidade": "Monthly fee"
+      }
+    },
+    "letter": {
+      "back": "Back to repricing",
+      "print": "Print",
+      "subject": "Fee repricing from {date}",
+      "greeting": "To {name}",
+      "cnpj": "CNPJ {cnpj}",
+      "intro": "The tax reform changes your company's fiscal routine from 2027. For {name}, the {firm} diagnostic points to {count} new line of work: | The tax reform changes your company's fiscal routine from 2027. For {name}, the {firm} diagnostic points to {count} new lines of work:",
+      "noItems": "The tax reform changes your company's fiscal routine from 2027, and following the transition becomes part of our work.",
+      "fee": "So the monthly fee goes from {current} to {suggested} (+{pct}%) from {date}, with the transition's follow-up included.",
+      "feeToday": "Fee today",
+      "feeFrom": "From {date}",
+      "closing": "We are at your disposal to go through each item.",
+      "regards": "Kind regards,",
+      "loadFailed": "Could not build the letter now.",
+      "notFound": "This client is not in the portfolio."
+    },
+    "loadFailed": "Could not load the portfolio now.",
     "retry": "Try again"
   }
 }

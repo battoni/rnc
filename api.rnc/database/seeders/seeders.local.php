@@ -1,5 +1,6 @@
 <?php
 
+use Database\Seeders\ClientSeeder;
 use Database\Seeders\LocalUsersSeeder;
 use Database\Seeders\MetricsSeeder;
 use Database\Seeders\PartnerSeeder;
@@ -38,3 +39,7 @@ $this->call(PartnerSeeder::class);
 // Reinaldo's funnel (rnc-1 F7): 30 days of invented traffic and the beacons of every seeded lead's
 // own walk — local only (refuses production), after the pipeline whose leads it walks.
 $this->call(MetricsSeeder::class);
+
+// Reinaldo's portfolio to reprice (rnc-1 F8): 500 invented clients with plainly invented CNPJs —
+// local only (refuses production).
+$this->call(ClientSeeder::class);
