@@ -1,5 +1,5 @@
 # State: Franco Reforma Hub — the real pilot
-Stage: build F8/8
+Stage: verify
 Updated: 07/11/2026
 ## Done
 Intent approved 07/11 · spec closed 07/11 (26 R · 15 A · 9 D) · plan approved 07/11 (F1–F8) + plan-review amendments AM1–AM15. Bootstrap configured as rnc (9069414).
