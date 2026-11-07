@@ -1,5 +1,5 @@
 ---
-version: 1.1.0
+version: 1.1.1
 origin: rnc
 ---
 # RULES — Assistant Module
@@ -51,7 +51,7 @@ never generates text (W9): there is no model, no embedding, no outward client in
 
 - `POST assistant/ask` → `{question, note, specialists}`. A served note comes as `AnswerNoteResource`
   (text, rule, source, `as_of`, reviewer, `reviewed_at`). With no note, `note: null` and the firm's
-  active specialists by name — the hand-off's picker, default first — and **no sentence of the API's
+  active specialists by name but the asker (W113) — the hand-off's picker, default first — and **no sentence of the API's
   own**: the fixed "Não há nota revisada…" is the SPA's (F5).
 - Every ask is logged (R15), answered or not.
 
@@ -81,8 +81,10 @@ never generates text (W9): there is no model, no embedding, no outward client in
 
 - `POST assistant/questions` `{question, specialist_id?}` (`assistant.ask`) → 201: one aberta
   question and one bell (`AssistantQuestionNotification`) on that specialist alone. No
-  `specialist_id` → the first active specialist by name. Anyone who is not an active specialist of
-  the firm — or no specialist at all — is 422 `assistant.notSpecialist`, `code: not_specialist`.
+  `specialist_id` → the first active specialist by name (R13 names this default; there is no owner
+  or `knowledge.manage` default). **A specialist never gets their own question** (W113): the asker is
+  left out of the picker and of the default, and picking themselves is refused like anyone who is not
+  an active specialist of the firm — or no specialist at all — 422 `assistant.notSpecialist`, `code: not_specialist`.
 
 ## Inbox and answer (R14, F5)
 

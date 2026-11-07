@@ -64,6 +64,18 @@ describe('the hand-off (A13)', function () {
         expect(DatabaseNotification::sole()->notifiable_id)->toBe($this->carlos->id);
     });
 
+    it('never hands a specialist their own question: the default skips them, and picking themselves is refused (review A2)', function () {
+        $this->actingAs($this->carlos)->postJson('/api/assistant/questions', ['question' => 'Qual o melhor ERP?'])
+            ->assertCreated()
+            ->assertJsonPath('data.specialist.name', 'Juliana Reis');
+
+        $this->actingAs($this->carlos)->postJson('/api/assistant/questions', ['question' => 'Qual o melhor ERP?', 'specialist_id' => $this->carlos->id])
+            ->assertUnprocessable()
+            ->assertJsonPath('code', 'not_specialist');
+
+        expect(AssistantQuestion::withoutGlobalScopes()->pluck('specialist_id')->all())->not->toContain($this->carlos->id);
+    });
+
     it('refuses with 422 assistant.notSpecialist a target who is not an active specialist of the firm', function (Closure $target) {
         $this->actingAs($this->patricia)->postJson('/api/assistant/questions', ['question' => 'Qual o melhor ERP?', 'specialist_id' => $target()->id])
             ->assertUnprocessable()

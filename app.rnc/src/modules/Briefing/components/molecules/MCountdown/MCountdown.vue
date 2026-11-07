@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed } from 'vue';
 import { useCountdown } from '@Composables';
 import { CBS_START } from '../../../constants';
 
@@ -8,7 +8,8 @@ import { CBS_START } from '../../../constants';
  * seconds to 01/01/2027 00:00 in São Paulo, ticking every second by the wall clock (`useCountdown`
  * — a suspended tab comes back right, not behind), with the dated caption of facts.md §2 and its
  * note that entities asked to postpone the CBS to 2028. From that instant it reads "CBS em vigor
- * desde 01/01/2027" and stops.
+ * desde 01/01/2027" and stops. Started in setup, not on mount, so the first frame already counts
+ * instead of reading "em vigor desde" for one render (rnc-3 review S2).
  */
 const SECONDS_PER_DAY = 86400;
 const SECONDS_PER_HOUR = 3600;
@@ -18,6 +19,8 @@ const MILLISECONDS_PER_SECOND = 1000;
 
 const { isRunning, remainingSeconds, start } = useCountdown();
 
+start(Math.max(0, (CBS_START.getTime() - Date.now()) / MILLISECONDS_PER_SECOND));
+
 const parts = computed(() => [
   { key: 'days', value: Math.floor(remainingSeconds.value / SECONDS_PER_DAY) },
   { key: 'hours', value: Math.floor(remainingSeconds.value / SECONDS_PER_HOUR) % HOURS_PER_DAY },
@@ -25,16 +28,9 @@ const parts = computed(() => [
   { key: 'seconds', value: remainingSeconds.value % SECONDS_PER_MINUTE },
 ]);
 
-onMounted(onComponentMount);
-
 // HELPERS
 function padded(value: number): string {
   return String(value).padStart(2, '0');
-}
-
-// EVENTS
-function onComponentMount() {
-  start(Math.max(0, (CBS_START.getTime() - Date.now()) / MILLISECONDS_PER_SECOND));
 }
 </script>
 

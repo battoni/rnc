@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
  * The clause: "sim"/"não" sets it; an empty cell is "não" on a new row and keeps what is stored on
  * an update. A contract marked through "Cláusula incluída" (`clause_marked_at`) keeps its clause
  * whatever the file says — a re-import never downgrades it (AM16, W77).
+ * A "sim" from a file is the file's: it stamps no mark, so a later file may correct it (review A3, W114).
  */
 class ContractImportService
 {

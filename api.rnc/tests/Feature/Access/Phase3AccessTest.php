@@ -401,13 +401,21 @@ const PHASE3_CONTROLLERS = [
 it("names every route of Phase 3's controllers in a dataset of this file (A25 complete)", function () {
     $source = (string) file_get_contents(__FILE__);
 
+    // Every verb of every route (review A4): `GET` and `POST assistant/questions` share a uri, not a line.
     $phase3 = collect(app('router')->getRoutes()->getRoutes())
         ->filter(fn ($route) => array_filter(PHASE3_CONTROLLERS, fn (string $prefix) => str_starts_with($route->getActionName(), $prefix)) !== [])
-        ->map(fn ($route) => array_values(array_diff($route->methods(), ['HEAD']))[0].' '.substr($route->uri(), strlen('api/')))
+        ->flatMap(fn ($route) => array_map(fn (string $method) => $method.' '.substr($route->uri(), strlen('api/')), array_values(array_diff($route->methods(), ['HEAD']))))
         ->values();
 
-    $unnamed = $phase3->reject(fn (string $key) => str_contains($source, "'{$key}' => ['"))->values()->all();
+    // A row is read by what it requests — its method and its uri — not by its name: a row named
+    // "GET x" that sends POST would leave GET x untested.
+    preg_match_all("~^\\s*'([A-Z]+ [^']+)' => \\['([A-Z]+)', '/api/([^']+)'~m", $source, $rows, PREG_SET_ORDER);
+    $requested = collect($rows)->map(fn (array $row) => "{$row[2]} {$row[3]}");
+    $misnamed = collect($rows)->filter(fn (array $row) => $row[1] !== "{$row[2]} {$row[3]}")->map(fn (array $row) => $row[1])->values()->all();
+
+    $unnamed = $phase3->diff($requested)->values()->all();
 
     expect($phase3)->toHaveCount(26)
+        ->and($misnamed)->toBe([])
         ->and($unnamed)->toBe([]);
 });

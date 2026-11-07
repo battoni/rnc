@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { Briefing, BriefingAction, BriefingRange } from '../../interfaces';
 import { vCountUp } from '@Directives';
@@ -24,7 +24,12 @@ const userStore = useUserStore();
 const { formatShortRange } = useFiscalFormat();
 const { stageLabel } = useLeadFormat();
 
+/** The greeting and the date are read again every minute, so an open screen follows the clock (review S3). */
+const CLOCK_TICK_MS = 60_000;
+
 const briefing = ref<Briefing | null>(null);
+const now = ref(new Date());
+let clock: ReturnType<typeof setInterval> | null = null;
 const loadFailed = ref(false);
 const loading = ref(false);
 
@@ -32,7 +37,7 @@ const greeting = computed(() => {
   const name = userStore.user?.name ?? '';
   const hour = Number(
     new Intl.DateTimeFormat('en-GB', { hour: '2-digit', hourCycle: 'h23', timeZone: BRIEFING_TIME_ZONE }).format(
-      new Date()
+      now.value
     )
   );
 
@@ -51,10 +56,28 @@ const today = computed(() =>
     month: 'long',
     timeZone: BRIEFING_TIME_ZONE,
     weekday: 'long',
-  }).format(new Date())
+  }).format(now.value)
 );
 
-onMounted(load);
+onMounted(onComponentMount);
+onBeforeUnmount(onComponentUnmount);
+
+// EVENTS
+function onComponentMount() {
+  clock = setInterval(onClockTick, CLOCK_TICK_MS);
+
+  load();
+}
+
+function onComponentUnmount() {
+  if (clock) clearInterval(clock);
+
+  clock = null;
+}
+
+function onClockTick() {
+  now.value = new Date();
+}
 
 // HELPERS
 function load() {

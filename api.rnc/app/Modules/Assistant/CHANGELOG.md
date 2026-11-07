@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.1.1 — 2026-11-07
+
+### Fixed
+
+- A specialist asking a question no note answers could hand it to themselves — they were the default when first by name (rnc-3 review A2, W113). `findActiveSpecialistsOfFirm` takes the asker to leave out; `QuestionService::specialists(User $asker)` feeds both the ask's picker and the hand-off, so picking oneself is 422 `assistant.notSpecialist`. Tested by `QuestionHandoffTest` and `AskTest`.
+
 ## 1.1.0 — 2026-11-07
 
 ### Added

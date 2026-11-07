@@ -1,7 +1,7 @@
 ---
-version: 1.0.0
+version: 1.0.1
 origin: rnc
-based-on: 1.0.0
+based-on: 1.0.1
 ---
 
 # RULES — Briefing Module
@@ -34,10 +34,13 @@ router, the rail and Home's landing spec.
   it to the `en` twin with the query kept; the trail and the board honour the query (W83).
 - **São Paulo time everywhere** (`BRIEFING_TIME_ZONE`): the greeting's hour, the date line, the
   meeting times. "Bom dia" from 05:00, "Boa tarde" from 12:00, "Boa noite" from 18:00 to 04:59
-  (`GREETING_HOURS`, W105); a browser in another zone greets by Reinaldo's clock, not its own.
+  (`GREETING_HOURS`, W105); a browser in another zone greets by Reinaldo's clock, not its own. The
+  view reads the clock again every minute (`CLOCK_TICK_MS`, cleared on unmount), so a briefing left
+  open turns "Bom dia" into "Boa tarde" at 12:00 (review S3, W115 — W105's "greets by the hour it was
+  opened" no longer holds).
 - **The countdown aims at 01/01/2027 00:00 −03:00** (`CBS_START`, written with its offset — Brazil
   has no daylight saving since 2019), not the browser's midnight as the site's `MCbsCountdown`
-  does; it ticks by the wall clock (`useCountdown`) and from that instant reads "CBS em vigor desde
+  does; it starts in setup, so the first frame already counts (review S2), ticks by the wall clock (`useCountdown`) and from that instant reads "CBS em vigor desde
   01/01/2027". The caption cites facts.md §2 (LC 214/2025, gov.br/fazenda read 05/11/2026) and the
   2028 postponement request as news "em discussão".
 - **Money as a short range** (`useFiscalFormat().formatShortRange`, "R$ 120 mil – R$ 216 mil"): a

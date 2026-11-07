@@ -69,10 +69,11 @@ class AssistantQuestionRepository
      *
      * @return Collection<int, User>
      */
-    public function findActiveSpecialistsOfFirm(int $firmId): Collection
+    public function findActiveSpecialistsOfFirm(int $firmId, ?int $exceptUserId = null): Collection
     {
         return User::query()
             ->where('firm_id', $firmId)
+            ->when($exceptUserId !== null, fn ($query) => $query->whereKeyNot($exceptUserId))
             ->where('is_specialist', true)
             ->where('status', UserStatus::ACTIVE->value)
             ->orderBy('name')

@@ -134,6 +134,33 @@ describe('LandingView under a sub-brand', () => {
     expect(document.title).toBe('Tax reform 2026–2033: what changes for your company · Franco Prime Contabilidade');
   });
 
+  // W38, review S1: until the brand answers, Franco's kicker and proof wait unseen, then the brand's show.
+  it("hides the kicker and the proof strip while the brand's answer is on its way", async () => {
+    let answer: () => void = () => undefined;
+    const answered = new Promise<void>((resolve) => (answer = resolve));
+
+    server.use(
+      http.get('http://localhost/public/firm', async () => {
+        await answered;
+
+        return HttpResponse.json({ data: PRIME_FIRM_FIXTURE });
+      })
+    );
+    // A slug this file never loaded: the firm is kept for the tab, as a later page of a visit keeps it.
+    window.history.replaceState({}, '', '/?marca=nova');
+
+    renderLanding();
+
+    await waitFor(() => expect(screen.getByTestId('hero-kicker').classList).toContain('invisible'));
+    expect(screen.getByTestId('proof').classList).toContain('invisible');
+
+    answer();
+
+    await waitFor(() => expect(screen.getByTestId('hero-kicker').classList).not.toContain('invisible'));
+    expect(screen.getByTestId('proof').classList).not.toContain('invisible');
+    expect(screen.getByTestId('hero-kicker').textContent).toContain('A Franco dedicada às empresas de maior porte');
+  });
+
   it("keeps Franco's own kicker and proof points on the main brand", async () => {
     renderLanding();
 

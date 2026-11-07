@@ -10,6 +10,14 @@ import { currentBrand } from './publicBrand';
  */
 const firm = ref<PublicFirm | null>(null);
 
+/*
+ * True while the tab's sub-brand is asked for and not answered yet. Every point of the shell that
+ * writes the brand — the marks, the footer's tagline, the copyright, the landing's kicker and proof —
+ * waits unseen on this one flag, so Franco's words never flash on an Express tab (rnc-3 W38, review
+ * S1). A failure clears it: the main brand's words are better than an empty shell.
+ */
+const isBrandPending = ref(false);
+
 let loadedFor: string | null = null;
 let pendingRequest: Promise<void> | null = null;
 let pendingFor: string | null = null;
@@ -24,6 +32,7 @@ function usePublicFirm() {
 
     if (!pendingRequest || pendingFor !== brand) {
       pendingFor = brand;
+      isBrandPending.value = brand !== null;
       pendingRequest = GetPublicFirmService().then(onLoaded).catch(onFailed);
     }
 
@@ -32,6 +41,7 @@ function usePublicFirm() {
 
   function onFailed() {
     pendingRequest = null;
+    isBrandPending.value = false;
   }
 
   function onLoaded({ data }: { data: PublicFirm }) {
@@ -39,9 +49,10 @@ function usePublicFirm() {
     // A refused brand was dropped on the way (AM21): the answer is the main brand's.
     loadedFor = data.brand ?? null;
     pendingRequest = null;
+    isBrandPending.value = false;
   }
 
-  return { firm: readonly(firm), load };
+  return { firm: readonly(firm), isBrandPending: readonly(isBrandPending), load };
 }
 
 export { usePublicFirm };

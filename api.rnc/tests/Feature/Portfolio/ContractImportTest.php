@@ -104,6 +104,18 @@ describe('a good file (A16)', function () {
     });
 });
 
+describe('a clause the file set (review A3, W114)', function () {
+    it('is the file\'s to correct: "sim" stamps no mark, and a later "não" takes it back', function () {
+        importContracts(contractsCsv(['11222333000181;fornecimento;100000;2024;2030;sim']))->assertOk();
+
+        expect(ClientContract::withoutGlobalScopes()->sole()->clause_marked_at)->toBeNull();
+
+        importContracts(contractsCsv(['11222333000181;fornecimento;100000;2024;2030;não']))->assertOk();
+
+        expect(ClientContract::withoutGlobalScopes()->sole()->has_reforma_clause)->toBeFalse();
+    });
+});
+
 describe('a contract marked through "Cláusula incluída" (AM16)', function () {
     beforeEach(function () {
         importContracts(contractsCsv(['11222333000181;fornecimento;100000;2024;2030;']))->assertOk();

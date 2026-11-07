@@ -137,6 +137,46 @@ describe('ThePublicLayout under a sub-brand', () => {
     );
   });
 
+  // W38, review S1: every point that writes the brand waits on one flag — both marks, the
+  // footer's mark and tagline, the copyright — never Franco's words for the one request.
+  it("hides every brand point while the brand's answer is on its way, then shows the brand's", async () => {
+    let answer: () => void = () => undefined;
+    const answered = new Promise<void>((resolve) => (answer = resolve));
+
+    server.use(
+      http.get('http://localhost/public/firm', async () => {
+        await answered;
+
+        return HttpResponse.json({ data: EXPRESS_FIRM_FIXTURE });
+      })
+    );
+    // A slug this file never loaded: the firm is kept for the tab, as a later page of a visit keeps it.
+    window.history.replaceState({}, '', '/?marca=nova');
+
+    const wrapper = mountWithPlugins(ThePublicLayout, {
+      slots: { default: '<p>Conteúdo</p>' },
+      global: { components: { ALogo }, stubs: { RouterLink: RouterLinkStub } },
+    });
+
+    await flushPromises();
+
+    const hidden = () =>
+      [
+        wrapper.find('header a'),
+        wrapper.find('[data-testid="footer-brand"]'),
+        wrapper.find('[data-testid="footer-copyright"]'),
+      ].map((point) => point.classes().includes('opacity-0'));
+
+    expect(hidden()).toEqual([true, true, true]);
+
+    answer();
+    await vi.waitFor(() => expect(hidden()).toEqual([false, false, false]));
+
+    expect(wrapper.find('[data-testid="footer-brand"]').text()).toContain(
+      'A contabilidade da Franco no ritmo da pequena empresa'
+    );
+  });
+
   it('shows the preview banner only on the operator\'s "Ver como" tab (A6)', async () => {
     window.history.replaceState({}, '', '/?marca=express&previa=1');
 

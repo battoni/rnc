@@ -6,7 +6,6 @@ import { useRouter } from 'vue-router';
 import type { PublicFirmHours } from '@SiteModule';
 import {
   brandOfTab,
-  currentBrand,
   isBrandPreview,
   SECTOR_GRID_ANCHOR,
   SITE_ROUTE_NAMES,
@@ -23,11 +22,12 @@ import {
  *
  * Under a sub-brand (rnc-3 R2, R3) the same shell is the brand's: its colours over the whole document
  * (`useBrandTheme`), its name in the mark and the copyright, its tagline in the footer — over Franco's
- * own address, phone, mailbox and hours. While the brand's answer is on its way the mark waits
- * unseen, so Franco's name never flashes on an Express page. The operator's "Ver como" tab (`?previa=1`,
+ * own address, phone, mailbox and hours. While the brand's answer is on its way every point that
+ * writes the brand — both marks, the footer's tagline and the copyright — waits unseen on
+ * `usePublicFirm`'s one `isBrandPending` (review S1), so Franco's name never flashes on an Express page. The operator's "Ver como" tab (`?previa=1`,
  * R5) wears a banner saying so.
  */
-const { firm, load } = usePublicFirm();
+const { firm, isBrandPending: isShellPending, load } = usePublicFirm();
 const { push } = useRouter();
 const { t } = useI18n();
 const { track } = useTracking();
@@ -40,7 +40,6 @@ const NAV_LINKS = [
   { key: 'sectors', to: { hash: `#${SECTOR_GRID_ANCHOR}`, name: SITE_ROUTE_NAMES.home } },
 ] as const;
 
-const isBrandPending = ref(false);
 const isPreview = ref(false);
 
 const brandName = computed(() => (firm.value?.brand ? firm.value.name : null));
@@ -85,7 +84,6 @@ function onBrandChange() {
 }
 
 function onComponentMount() {
-  isBrandPending.value = !firm.value && currentBrand() !== null;
   onFirmChange();
   load();
 }
@@ -93,7 +91,6 @@ function onComponentMount() {
 function onFirmChange() {
   if (!firm.value) return;
 
-  isBrandPending.value = false;
   isPreview.value = Boolean(firm.value.brand) && isBrandPreview();
 }
 
@@ -131,7 +128,7 @@ function onDiagnosticClick() {
           exact-active-class=""
           :class="[
             'touch-target motion-quick shrink-0 text-lg transition-opacity sm:text-xl',
-            { 'opacity-0': isBrandPending },
+            { 'opacity-0': isShellPending },
           ]"
           :to="{ name: SITE_ROUTE_NAMES.home }"
         >
@@ -207,7 +204,10 @@ function onDiagnosticClick() {
       data-testid="site-footer"
     >
       <div class="mx-auto grid w-full max-w-6xl gap-8 px-5 py-12 text-sm sm:grid-cols-2 lg:grid-cols-4">
-        <div class="flex flex-col gap-3">
+        <div
+          data-testid="footer-brand"
+          :class="['motion-quick flex flex-col gap-3 transition-opacity', { 'opacity-0': isShellPending }]"
+        >
           <ALogo
             class="text-lg"
             :name="brandName"
@@ -274,7 +274,12 @@ function onDiagnosticClick() {
         >
           <span>{{ $t('site.footer.disclaimer') }}</span>
 
-          <span>{{ $t('site.footer.copyright', { year: CURRENT_YEAR, name: firm?.name ?? '' }) }}</span>
+          <span
+            data-testid="footer-copyright"
+            :class="['motion-quick transition-opacity', { 'opacity-0': isShellPending }]"
+          >
+            {{ $t('site.footer.copyright', { year: CURRENT_YEAR, name: firm?.name ?? '' }) }}
+          </span>
         </div>
       </div>
     </footer>

@@ -9,7 +9,7 @@ import { PROOF_POINTS, SECTOR_GRID_ANCHOR, SITE_ROUTE_NAMES, WHAT_CHANGES } from
 import { TRACKING_EVENT_TYPE } from '../../enums';
 import { GetSectorPagesService } from '../../services';
 
-const { firm, load } = usePublicFirm();
+const { firm, isBrandPending, load } = usePublicFirm();
 const route = useRoute();
 const { push } = useRouter();
 const { t } = useI18n();
@@ -23,7 +23,8 @@ const sectors = ref<SectorPageSummary[]>([]);
 // word (`AWordRise`), then the lede, the buttons, the countdown and the picture of the product.
 /*
  * Under a sub-brand (rnc-3 R3) the kicker is the brand's tagline and the proof strip its four points;
- * the main brand keeps Franco's own copy (`PROOF_POINTS`, i18n).
+ * the main brand keeps Franco's own copy (`PROOF_POINTS`, i18n). Both wait unseen (`invisible`, not
+ * `opacity-0`: the entrance animation drives the opacity) while a brand is pending (W38, review S1).
  */
 const kicker = computed(() => firm.value?.tagline ?? t('site.landing.kicker'));
 const titleWordCount = computed(() => t('site.landing.title').split(' ').length);
@@ -130,8 +131,11 @@ function onSectorsSettled() {
         >
           <div class="flex min-w-0 flex-col gap-6">
             <p
-              class="motion-enter text-primary-200 inline-flex items-center gap-2 text-xs font-semibold tracking-widest uppercase"
               data-testid="hero-kicker"
+              :class="[
+                'motion-enter text-primary-200 inline-flex items-center gap-2 text-xs font-semibold tracking-widest uppercase',
+                { invisible: isBrandPending },
+              ]"
             >
               <span
                 aria-hidden="true"
@@ -203,9 +207,12 @@ function onSectorsSettled() {
       <section class="relative z-10 mx-auto -mt-10 w-full max-w-6xl px-5">
         <ul
           v-reveal.stagger
-          class="bg-line shadow-lift-lg ring-line relative grid grid-cols-2 gap-px overflow-hidden rounded-xl ring-1 lg:grid-cols-4"
           data-testid="proof"
           :aria-label="$t('site.landing.proofLabel')"
+          :class="[
+            'bg-line shadow-lift-lg ring-line relative grid grid-cols-2 gap-px overflow-hidden rounded-xl ring-1 lg:grid-cols-4',
+            { invisible: isBrandPending },
+          ]"
         >
           <li
             v-for="point in proofPoints"

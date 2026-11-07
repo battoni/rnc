@@ -46,4 +46,12 @@ describe('ALogo', () => {
     expect(tile.attributes('aria-label')).toBe('Franco Express Contabilidade');
     expect(tile.text()).toBe('F');
   });
+
+  // rnc-3 review S5: a one-word brand has no lighter half, so no empty span trails the word.
+  it('writes a one-word name without an empty second half', () => {
+    const wrapper = mountWithPlugins(ALogo, { props: { name: 'Alfa' } });
+
+    expect(wrapper.text()).toBe('Alfa');
+    expect(wrapper.find('.font-normal').exists()).toBe(false);
+  });
 });

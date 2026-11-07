@@ -150,6 +150,12 @@ describe('nothing else ever answers (A12)', function () {
             ->and(array_column($answer['specialists'], 'name'))->toBe(['Carlos Prado', 'Juliana Reis', 'Mariana Toledo', 'Rafael Antunes']);
     });
 
+    it('leaves the asking specialist out of the specialists to hand it to (review A2)', function () {
+        $carlos = User::where('username', 'carlos.prado')->firstOrFail();
+
+        expect(array_column(askAssistant($carlos, 'qual o melhor ERP')['specialists'], 'name'))->toBe(['Juliana Reis', 'Mariana Toledo', 'Rafael Antunes']);
+    });
+
     it('offers only active specialists of the firm to hand an unmatched question to', function () {
         User::where('username', 'rafael.antunes')->update(['status' => 'inactive']);
         assistantPerson('equipe', specialist: true, firm: Firm::factory()->create(['slug' => 'firma-b']), attributes: ['name' => 'Bruno', 'last_name' => 'Firma B']);

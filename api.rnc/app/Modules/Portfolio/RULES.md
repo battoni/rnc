@@ -1,5 +1,5 @@
 ---
-version: 1.5.0
+version: 1.5.1
 origin: rnc
 based-on: 1.5.0
 ---
@@ -100,6 +100,9 @@ that cross the 2027–2033 transition without a Reforma price clause, by exposur
   end)`; the same key updates the value. Empty clause = "não" on a new row, keep what is stored on
   an update. A contract marked through "Cláusula incluída" (`clause_marked_at`) keeps its clause
   whatever a re-import says, "não" included — the mark is the record that the clause was signed.
+  **Only the button protects** (review A3, W114): a "sim" from a file stamps no `clause_marked_at`,
+  so the next file may correct it to "não" — there is no unmark, and stamping on import would make a
+  file's typo permanent.
 - **Contracts: "Cláusula incluída" (R22, W79)** sets the clause, `clause_marked_at` (UTC) and
   `clause_marked_by`, and writes one `contrato.clausula` line (`{contract_id, kind, end_year}`) through
   `recordEvent`, in one transaction on the locked row. Marking a marked contract answers it as it is

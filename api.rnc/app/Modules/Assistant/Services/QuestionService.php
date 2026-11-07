@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\DB;
 /**
  * The hand-off (rnc-3 R13, W11, W56): a question no served note answers goes to an active
  * specialist of the firm — the one picked, or the first by name — as an open question and a bell
- * on that specialist alone. Anyone else is 422 `assistant.notSpecialist`.
+ * on that specialist alone. Anyone else, the asker included, is 422 `assistant.notSpecialist`.
  *
  * The inbox (R14, F5): a specialist reads the questions handed to them, `assistant.manage` every one
  * of the firm, anyone else is 403 `assistant.notWriter` — the knowledge base's own writers, since
@@ -89,17 +89,20 @@ class QuestionService
         });
     }
 
-    /** @return Collection<int, User> the firm's active specialists, by name — the picker, default first */
-    public function specialists(): Collection
+    /**
+     * @return Collection<int, User> the firm's active specialists but the asker, by name — the
+     *                               picker, default first. A specialist never gets their own question (review A2).
+     */
+    public function specialists(User $asker): Collection
     {
         $firmId = $this->currentFirm->id();
 
-        return $firmId === null ? new Collection : $this->questionRepository->findActiveSpecialistsOfFirm($firmId);
+        return $firmId === null ? new Collection : $this->questionRepository->findActiveSpecialistsOfFirm($firmId, $asker->id);
     }
 
     public function handOff(User $asker, QuestionDTO $question): AssistantQuestion
     {
-        $specialists = $this->specialists();
+        $specialists = $this->specialists($asker);
         $specialist = $question->specialist_id === null ? $specialists->first() : $specialists->firstWhere('id', $question->specialist_id);
 
         if (! $specialist) {

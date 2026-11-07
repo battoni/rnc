@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.3.2 — 2026-11-07
+
+### Changed
+
+- `BrandRepository::findActiveBrandBySlug` (the public `X-Brand` lookup) filters by `CurrentFirm` itself, not by the `BelongsToFirm` scope alone, and finds nothing without a current firm (rnc-3 review A1). Tested by `tests/Feature/Firm/BrandRepositoryFirmTest`, which lifts the scope off `FirmBrand`.
+
 ## 1.3.1 — 2026-11-07
 
 ### Added

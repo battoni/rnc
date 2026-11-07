@@ -2,6 +2,13 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.0.1 — 2026-11-07
+
+### Fixed
+
+- `MCountdown`'s first frame read "CBS em vigor desde 01/01/2027" until `onMounted` started the count; it starts in setup now (rnc-3 review S2). Tested by `MCountdown.spec.ts` ("on its first frame").
+- The greeting and the date line were read once: a briefing open across 12:00 still said "Bom dia". `BriefingView` re-reads the clock every minute and clears it on unmount (review S3, W115). Tested by `BriefingView.view.integration.spec.ts` under fake timers.
+
 ## 1.0.0 — 2026-11-07
 
 ### Added

@@ -45,7 +45,12 @@ const restOfName = computed(() => fullName.value.slice(firstWord.value.length).t
       v-else
       class="font-semibold tracking-tight whitespace-nowrap"
     >
-      {{ firstWord }} <span class="font-normal">{{ restOfName }}</span>
+      {{ firstWord }}
+      <span
+        v-if="restOfName"
+        class="font-normal"
+        >{{ restOfName }}</span
+      >
     </span>
   </span>
 </template>

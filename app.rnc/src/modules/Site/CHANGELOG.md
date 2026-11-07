@@ -1,5 +1,11 @@
 # Changelog — Site Module
 
+## 1.4.1 — 2026-11-07
+
+### Fixed
+
+- Under a sub-brand, the footer's mark, tagline and copyright and the landing's kicker and proof strip showed Franco's words until `GET public/firm` answered; only the header's mark waited (rnc-3 review S1, W116). `usePublicFirm` exposes one `isBrandPending` that `ThePublicLayout` and `LandingView` read; the layout's own flag is gone. Tested by `ThePublicLayout.spec.ts` and `LandingView.view.integration.spec.ts` (the answer held back).
+
 ## 1.4.0 — 2026-11-07
 
 ### Added

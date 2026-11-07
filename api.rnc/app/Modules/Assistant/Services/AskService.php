@@ -51,7 +51,7 @@ class AskService
         return [
             'question' => $ask->question,
             'note' => $note,
-            'specialists' => $note ? new Collection : $this->questionService->specialists(),
+            'specialists' => $note ? new Collection : $this->questionService->specialists($user),
         ];
     }
 

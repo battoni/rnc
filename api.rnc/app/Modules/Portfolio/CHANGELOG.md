@@ -2,6 +2,11 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.5.1 — 2026-11-07
+
+### Changed
+
+- RULES.md and `ContractImportService` state that only "Cláusula incluída" protects a clause: a file's "sim" stamps no `clause_marked_at` and a later file may correct it (rnc-3 review A3, W114). No behaviour change; pinned by `ContractImportTest` ("a clause the file set").
 
 ## 1.5.0 — 2026-11-07
 

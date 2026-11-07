@@ -125,6 +125,24 @@ describe('BriefingView', () => {
     }
   );
 
+  // rnc-3 review S3: a briefing left open greets by the hour it is now, not the hour it was opened.
+  it('turns "Good morning" into "Good afternoon" at 12:00 on an open screen, and stops its clock on unmount', async () => {
+    vi.useFakeTimers({ toFake: ['Date', 'setInterval', 'clearInterval'] });
+    vi.setSystemTime(new Date('2026-11-09T11:59:30-03:00'));
+
+    const { unmount } = renderBriefing();
+
+    expect(plain(screen.getByTestId('briefing-greeting').textContent)).toBe('Good morning, Reinaldo');
+
+    await vi.advanceTimersByTimeAsync(60_000);
+
+    expect(plain(screen.getByTestId('briefing-greeting').textContent)).toBe('Good afternoon, Reinaldo');
+
+    unmount();
+
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
   it('shows the four KPIs as the API counted them (A23)', async () => {
     atSaoPaulo('2026-11-09T09:15:00');
     renderBriefing();

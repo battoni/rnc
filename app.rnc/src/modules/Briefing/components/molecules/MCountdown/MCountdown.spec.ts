@@ -30,6 +30,16 @@ describe('MCountdown', () => {
     expect(wrapper.text()).toContain('Reform: CBS in force in');
   });
 
+  // rnc-3 review S2: the very first render, before any tick or re-render, already counts down.
+  it('shows the countdown, not "in force since", on its first frame', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-11-07T13:30:15Z'));
+    const wrapper = mountWithPlugins(MCountdown);
+
+    expect(wrapper.find('h2').text()).toBe('Reform: CBS in force in');
+    expect(partValues(wrapper)).toEqual({ days: '54', hours: '13', minutes: '29', seconds: '45' });
+  });
+
   it('aims at the same instant from a browser in another zone', async () => {
     const zone = process.env.TZ;
 

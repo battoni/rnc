@@ -1,5 +1,5 @@
 ---
-version: 1.3.1
+version: 1.3.2
 origin: rnc
 ---
 # RULES — Firm Module
@@ -28,6 +28,9 @@ firms records of the Channel module, with no tenant.
 - **No firm set → no rows.** `FirmScope` closes to an empty `whereIn` (portable, AM11).
 - **Commands** walk `CurrentFirm::forEachFirm()`; a queued job that received the model reads it
   with `withoutGlobalScope(FirmScope::class)` and nothing else does.
+- **A lookup keyed by a visitor's input names the firm itself** (rnc-3 review A1):
+  `BrandRepository::findActiveBrandBySlug` (`X-Brand`) filters `firm_id` by `CurrentFirm` beside the
+  scope, so the guarantee holds even if the scope is lifted; no current firm finds nothing.
 
 ## Public endpoint
 

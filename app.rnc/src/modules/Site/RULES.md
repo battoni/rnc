@@ -1,5 +1,5 @@
 ---
-version: 1.4.0
+version: 1.4.1
 origin: rnc
 ---
 
@@ -85,6 +85,13 @@ No login. The CTA's destination `/diagnostico` is the Diagnostic module's (F3); 
 - **No server-side rendering** (D4): crawlers that run no JavaScript see an empty shell.
 - **`index.html` and the API still say `noindex`** (the bootstrap's back-office default). The public
   routes must lift it before the site is launched — a deploy decision, out of Phase 1's scope.
-- **The first page of a brand's tab flashes Franco's kicker and proof** until `GET public/firm`
-  answers (the mark waits unseen, the colours come from the tab's cache on every later page). A
-  server render (D4) or a brand in the bundle would remove it; neither is in scope (rnc-3 F2).
+- ~~The first page of a brand's tab flashes Franco's kicker and proof~~ — retired by rnc-3 review
+  S1 (W116): `usePublicFirm().isBrandPending` is the one flag every brand point waits on unseen —
+  both header marks, the footer's mark, tagline and copyright (`opacity-0`), the landing's kicker and
+  proof strip (`invisible`, since their entrance animation drives the opacity). A failed answer
+  clears it, so the main brand's words show rather than an empty shell.
+- **An operator's palette edit shows the old colours for one request** (review S4, W117): the tab's
+  `sessionStorage` palette is painted on mount and repainted when `GET public/firm` answers. A stored
+  `updated_at` or hash could not skip it — the new one is only known from that same answer, which
+  repaints anyway. Only an open tab mid-visit keeps the old firm (and colours) until its next page
+  load, as it keeps the old name.
