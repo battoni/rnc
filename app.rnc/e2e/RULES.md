@@ -1,5 +1,5 @@
 ---
-version: 1.8.2
+version: 1.9.0
 origin: pendulum
 based-on: 1.8.2
 ---
@@ -24,7 +24,15 @@ A request can.
 
 - Playwright (Chromium) — `playwright.config.ts` at app.rnc root
 - Run: `cd app.rnc && npm run test:e2e` or `make e2e`
-- Dev server: auto-started via `webServer` (`npx vite --mode test --port 5173`) — no SSL
+- Dev server: auto-started via `webServer` (`npx vite --mode test --port $E2E_PORT --strictPort`,
+  `E2E_PORT` defaulting to 5173; `baseURL` and the readiness `url` follow it) — no SSL
+- **A second checkout (a git worktree) must run with its own `E2E_PORT`**, e.g.
+  `E2E_PORT=5175 make pre-commit` from its root. Locally `reuseExistingServer` is on, so with the
+  default port the suite silently runs against whatever already answers on 5173 — the OTHER
+  checkout's code. And if that server is a plain `npm run dev` (not `--mode test`), the five
+  English-route specs fail: the default language `en` comes from `.env.test`, and a dev server
+  started from `.env` serves `pt-BR`. The
+  Makefile does not set the port on purpose: the main checkout keeps 5173.
 - Retries: 1 locally, 2 on CI
 - **The browsers are not installed by `npm install`.** A first run on a new machine needs
   `npx playwright install chromium`, or every test fails at browser launch.

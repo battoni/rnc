@@ -1,5 +1,10 @@
 import { defineConfig, devices } from '@playwright/test';
 
+// The port of the e2e dev server. A second checkout (a git worktree) runs with its own
+// `E2E_PORT`: with the default, `reuseExistingServer` would hand the tests the OTHER checkout's
+// server on 5173 (e2e/RULES.md).
+const port = Number(process.env.E2E_PORT ?? 5173);
+
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: false,
@@ -9,7 +14,7 @@ export default defineConfig({
   reporter: 'html',
 
   use: {
-    baseURL: process.env.E2E_BASE_URL ?? 'http://localhost:5173',
+    baseURL: process.env.E2E_BASE_URL ?? `http://localhost:${port}`,
     trace: 'on-first-retry',
     // Route-intercept all API calls — tests never need a real backend.
     extraHTTPHeaders: { Accept: 'application/json' },
@@ -27,8 +32,8 @@ export default defineConfig({
   webServer: process.env.E2E_NO_WEBSERVER
     ? undefined
     : {
-        command: 'npx vite --mode test --port 5173',
-        url: 'http://localhost:5173',
+        command: `npx vite --mode test --port ${port} --strictPort`,
+        url: `http://localhost:${port}`,
         reuseExistingServer: !process.env.CI,
         timeout: 120_000,
       },

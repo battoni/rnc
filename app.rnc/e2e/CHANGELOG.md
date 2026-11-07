@@ -3,6 +3,15 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.9.0 — 2026-11-07
+
+### Added
+
+- `E2E_PORT` (default 5173) sets the port of the managed dev server, its readiness `url` and
+  `baseURL`, and the server starts with `--strictPort`. A second checkout of the repo on the same
+  machine ran its suite against the first checkout's server on 5173, because `reuseExistingServer`
+  takes whatever answers there.
+
 ## 1.8.2 — 2026-09-22
 
 ### Fixed
