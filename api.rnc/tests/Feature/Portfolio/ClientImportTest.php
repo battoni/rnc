@@ -167,7 +167,8 @@ describe('the template (R25)', function () {
 
         expect($response->headers->get('content-type'))->toContain('text/csv')
             ->and($response->headers->get('content-disposition'))->toContain('modelo-clientes.csv')
-            ->and(trim($response->streamedContent()))->toBe("\xEF\xBB\xBF".CLIENTS_CSV_HEADER);
+            // rnc-2 F9 (R28): the optional consent column closes the template.
+            ->and(trim($response->streamedContent()))->toBe("\xEF\xBB\xBF".CLIENTS_CSV_HEADER.';autoriza_parceiros');
     });
 });
 

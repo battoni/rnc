@@ -3,6 +3,7 @@
 namespace App\Modules\Lead\Services;
 
 use App\Models\User;
+use App\Modules\Diagnostic\DTOs\DiagnosticProfileDTO;
 use App\Modules\Firm\Services\CurrentFirm;
 use App\Modules\Lead\DTOs\LeadContactDTO;
 use App\Modules\Lead\Enums\LeadChannel;
@@ -16,6 +17,8 @@ use App\Modules\Lead\Models\LeadEvent;
 use App\Modules\Lead\Repositories\LeadRepository;
 use App\Modules\Notification\Notifications\NewLeadNotification;
 use App\Modules\Notification\Services\TeamNotifier;
+use App\Modules\Portfolio\Models\Client;
+use App\Modules\Tracking\Enums\TrafficSource;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -313,6 +316,57 @@ class LeadService
         $lead->touch();
 
         return $this->leadRepository->createLeadEvent($lead, LeadEventType::ReferralStatusChanged->value, $move, Carbon::now(), $by->id);
+    }
+
+    /**
+     * The one `carteira` lead of a portfolio client (rnc-2 R27, D13; plan AM10): Franco's own client,
+     * so it sits at stage `cliente`, has no contact (the partner's way in is the firm's, R6) and a
+     * token born expired — no public route ever opens it. It carries the client's name, CNPJ and the
+     * profile the Radar read (the measured B2B share when D9 applies), refreshed on every batch, and
+     * the client's consent copied once `via contrato` with the contract's words and moment. The caller
+     * (Partner) holds the transaction and has checked the client's consent.
+     */
+    public function findOrStartPortfolioLead(Client $client, DiagnosticProfileDTO $profile): Lead
+    {
+        $attributes = ['company' => $client->name, 'cnpj' => $client->cnpj, 'profile' => [...self::EMPTY_PROFILE, ...$profile->toArray()]];
+        $lead = $this->leadRepository->findPortfolioLeadOfClient($client->id);
+
+        $now = Carbon::now();
+
+        if ($lead) {
+            $this->leadRepository->updateLead($lead, $attributes);
+
+            return $lead->latestConsent ? $lead : $this->copyContractConsent($lead, $client, $now);
+        }
+
+        $lead = $this->leadRepository->createLead([
+            ...$attributes,
+            'token' => Str::random(self::TOKEN_LENGTH),
+            'token_expires_at' => $now,
+            'stage' => LeadStage::Cliente->value,
+            'path' => LeadChannel::Carteira->value,
+            'channel' => LeadChannel::Carteira->value,
+            'source' => TrafficSource::Direct->value,
+            'client_id' => $client->id,
+        ]);
+
+        return $this->copyContractConsent($lead, $client, $now);
+    }
+
+    /** The client's contract consent as the lead's answer — the row every referral of it copies. */
+    private function copyContractConsent(Lead $lead, Client $client, Carbon $now): Lead
+    {
+        $this->leadRepository->createLeadConsent($lead, [
+            'text' => ConsentTerms::CONTRACT_TEXT,
+            'version' => ConsentTerms::VERSION,
+            'given' => true,
+            'via' => ConsentTerms::VIA_CONTRACT,
+            // `given_at` is a plain `datetime` cast: it stores the wall clock it is handed, so the
+            // client's UTC moment goes in the app's zone, as `Carbon::now()` does (Pitfalls).
+            'given_at' => $client->partner_consent_at?->setTimezone((string) config('app.timezone')) ?? $now,
+        ]);
+
+        return $lead->load('latestConsent');
     }
 
     private function assertOpen(Lead $lead): void

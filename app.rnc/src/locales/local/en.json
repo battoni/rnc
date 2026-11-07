@@ -47,7 +47,11 @@
     "assistant": "Reforma assistant",
     "knowledge": "Knowledge base",
     "ledger": "Network ledger",
-    "statement": "Statement"
+    "statement": "Statement",
+    "readiness": "Invoice readiness",
+    "suppliers": "Supplier credit",
+    "invoices": "Invoices",
+    "radar": "Portfolio radar"
   },
   "rolesAndPermissions": {
     "groups": {
@@ -1011,7 +1015,7 @@
       "title": "Import the client portfolio",
       "lede": "One line per client, in UTF-8, separated by semicolons or commas. A CNPJ already in the portfolio is updated. If any line has an error, nothing is imported.",
       "columns": "File columns",
-      "accepted": "setor: comercio, industria, servicos, saude, educacao or agro · regime: simples, presumido or real · faixa_faturamento: b1 to b5 · percentual_b2b: 0 to 100 · mensalidade in reais, like 1.850,00 (minimum R$ 250)",
+      "accepted": "setor: comercio, industria, servicos, saude, educacao or agro · regime: simples, presumido or real · faixa_faturamento: b1 to b5 · percentual_b2b: 0 to 100 · mensalidade in reais, like 1.850,00 (minimum R$ 250) · autoriza_parceiros (optional): sim, não or empty",
       "template": "Download template",
       "file": "CSV file",
       "fileRequired": "Choose a CSV file.",
@@ -1039,7 +1043,8 @@
         "band_invalid": "unknown revenue band (b1 to b5)",
         "b2b_invalid": "B2B share outside 0 to 100",
         "fee_invalid": "invalid monthly fee (minimum R$ 250)",
-        "columns": "columns missing on this line"
+        "columns": "columns missing on this line",
+        "consent_invalid": "partner consent other than sim or não"
       },
       "fields": {
         "nome": "Name",
@@ -1048,7 +1053,8 @@
         "regime": "Regime",
         "faixa_faturamento": "Revenue band",
         "percentual_b2b": "B2B share",
-        "mensalidade": "Monthly fee"
+        "mensalidade": "Monthly fee",
+        "autoriza_parceiros": "Partner consent"
       }
     },
     "letter": {
@@ -1411,5 +1417,268 @@
     "questionNotFound": "This question is not in your inbox.",
     "answered": "This question was already answered.",
     "alreadyNoted": "This question is already a note."
+  },
+  "fiscal": {
+    "retry": "Try again",
+    "estimate": "estimate",
+    "sectors": {
+      "comercio": "Retail",
+      "industria": "Industry",
+      "servicos": "Services",
+      "saude": "Health",
+      "educacao": "Education",
+      "agro": "Agribusiness"
+    },
+    "regimes": {
+      "simples": "Simples",
+      "presumido": "Presumido",
+      "real": "Real"
+    },
+    "statuses": {
+      "critico": "Critical",
+      "atencao": "Attention",
+      "ok": "OK",
+      "sem_notas": "No invoices imported"
+    },
+    "readiness": {
+      "title": "Invoice readiness",
+      "heading": "Do the clients' invoices already carry IBS/CBS?",
+      "lede": "The Presumido and Real clients, by the invoices they issued in the last 30 days: who Franco has to warn before the rejection.",
+      "note": "Read from the XMLs imported under Reinaldo › Invoices. An invoice is complete when every item carries the IBS/CBS group, its CST and cClassTrib, and the 2026 test rates. OK at 95% or more with nothing at risk; Attention from 80% to 94%; Critical under 80% or with any invoice at risk of rejection 1115. Simples clients stay out until 2027.",
+      "loadFailed": "The readiness could not be loaded right now.",
+      "hero": {
+        "label": "Invoices at risk of rejection 1115",
+        "base": "out of {invoices} invoices issued in the last 30 days by {clients} Presumido and Real clients.",
+        "bar": "Clients by status",
+        "barLabel": "{critico} critical, {atencao} need attention, {ok} ready",
+        "noNotes": "{count} with no invoices imported"
+      },
+      "kpis": {
+        "complete": "Complete invoices",
+        "critical": "Critical clients",
+        "ready": "Ready"
+      },
+      "filters": {
+        "status": "Status",
+        "all": "All · {count}",
+        "option": "{label} · {count}",
+        "system": "Issuing system",
+        "allSystems": "Every system"
+      },
+      "table": {
+        "caption": "Presumido and Real clients by the readiness of their issued invoices",
+        "client": "Client",
+        "invoices": "Invoices 30d",
+        "complete": "Complete",
+        "atRisk": "At risk",
+        "status": "Status",
+        "open": "Open {name}",
+        "noSystem": "system not identified",
+        "emptyTitle": "No client with this filter",
+        "emptyText": "Change the status or the system to see the others."
+      },
+      "detail": {
+        "title": "Client detail",
+        "emptyText": "Open a client from the list to see what its invoices miss and warn the client.",
+        "loadFailed": "This client could not be opened right now.",
+        "window": "Issued invoices · {days} days",
+        "invoices": "Invoices",
+        "complete": "Complete",
+        "atRisk": "At risk",
+        "issues": "What is missing",
+        "noIssues": "Nothing missing in the last {days} days' invoices.",
+        "noNotes": "No issued invoice imported in the last {days} days.",
+        "samples": "e.g.:",
+        "sample": "NF-e no. {number} (series {series}), item {item}",
+        "sampleNoItem": "NF-e no. {number} (series {series})",
+        "notify": "Warn the client",
+        "timeline": "Client history"
+      },
+      "issues": {
+        "missing_group": "Item without the IBS/CBS group: rejection 1115 once validation applies",
+        "missing_codes": "IBS/CBS CST or cClassTrib left blank",
+        "without_test_values": "2026 test rates (CBS 0.9% · IBS 0.1%) not shown"
+      },
+      "issueCount": "{count} invoice | {count} invoices"
+    },
+    "notice": {
+      "title": "Warning to the client",
+      "flag": "E-mail preview · nothing is sent: the client has no e-mail on file, and the warning is recorded in its history.",
+      "greeting": "Hello, {name} team,",
+      "counts": "Of the {invoices} invoices you issued in the last {days} days, {pct} already carry the complete IBS/CBS group.",
+      "risk": "{count} invoice would be rejected (rejection 1115) once the Federal Revenue's validation applies. | {count} invoices would be rejected (rejection 1115) once the Federal Revenue's validation applies.",
+      "fix": "The fix is in the product register and in how {system} issues them. Franco has already sorted the items and can help your team or the system's vendor correct them.",
+      "fixNoSystem": "The fix is in the product register and in the issuing system. Franco has already sorted the items and can help your team or the system's vendor correct them.",
+      "noNotes": "We have not received the invoices you issued in the last {days} days yet. Could you send us the XMLs, so we can check the IBS/CBS group before the Federal Revenue's validation?",
+      "ask": "Can we book 30 minutes this week?",
+      "signature": "Franco tax team",
+      "copy": "Copy text",
+      "copied": "Text copied",
+      "copyFailed": "Could not copy: select the text and copy it by hand.",
+      "register": "Record warning",
+      "registered": "Warning recorded by {name} on {at}.",
+      "registeredSystem": "Warning recorded on {at}.",
+      "registerFailed": "The warning could not be recorded right now. Try again.",
+      "close": "Close"
+    },
+    "timeline": {
+      "empty": "Nothing recorded yet.",
+      "loadFailed": "The history could not be loaded.",
+      "by": "{at} · {name}",
+      "bySystem": "{at} · recorded automatically",
+      "notice": "Invoice warning recorded: {invoices} invoices, {pct} complete, {risk} at risk",
+      "review": "Supplier review proposed: {share} from Simples, {range} a year (estimate)",
+      "other": "Record {type}"
+    },
+    "suppliers": {
+      "title": "Supplier credit",
+      "heading": "How much credit does each client leave on the table?",
+      "lede": "From 2027, buying from Simples suppliers yields little IBS/CBS credit: which clients should review their suppliers.",
+      "note": "Read from the last 90 days' purchase invoices: each supplier's regime comes from the XML's CRT (1, 2 or 4 = Simples/MEI; 3 = standard regime). Credit lost a year = Simples purchases × 12 × (26.5% reference rate − the 3% to 5% a Simples supplier pays inside the DAS). An estimate, as a range: the reference rate and the DAS share are not final yet.",
+      "loadFailed": "Supplier credit could not be loaded right now.",
+      "noSimples": "Nothing bought from Simples in the last 90 days: there is nothing to review.",
+      "proposedToast": "Supplier review proposed for {name}.",
+      "kpis": {
+        "label": "Supplier credit summary",
+        "total": "Credit lost a year",
+        "buying": "Clients buying from Simples",
+        "buyingValue": "{count} of {total}",
+        "mean": "Average Simples share",
+        "proposed": "Reviews proposed"
+      },
+      "filters": {
+        "sector": "Sector",
+        "allSectors": "Every sector"
+      },
+      "legend": {
+        "simples": "Simples/MEI supplier",
+        "normal": "Standard-regime supplier"
+      },
+      "list": {
+        "title": "Purchases by supplier regime",
+        "lede": "From the largest credit lost to the smallest. Who buys nothing from Simples loses nothing.",
+        "empty": "No Presumido or Real client with purchase invoices in this sector."
+      },
+      "row": {
+        "purchases": "purchases of {value}/month",
+        "lost": "Credit lost a year · {share} from Simples",
+        "bar": "Simples {simples}, standard regime {normal}",
+        "propose": "Propose a review",
+        "noSimples": "No Simples supplier",
+        "noSimplesHint": "Nothing bought from a Simples supplier in the last 90 days.",
+        "proposed": "Review proposed",
+        "history": "Show history",
+        "hideHistory": "Hide history",
+        "failed": "The review could not be proposed right now."
+      }
+    },
+    "imports": {
+      "title": "Invoices",
+      "heading": "The XMLs of the clients' invoices",
+      "lede": "Send the XMLs Franco receives from its clients, one file or a .zip with many. Each invoice is tied to its client by CNPJ: those it issued feed Invoice readiness; those it received, Supplier credit.",
+      "result": "Latest upload",
+      "success": "{stored} invoices stored out of {files} files.",
+      "form": {
+        "file": ".xml or .zip file",
+        "accepted": "One .xml or one .zip of up to 20 MB; up to 1 MB per XML and 2000 files per .zip. The files are kept with no public address.",
+        "submit": "Import",
+        "errors": {
+          "required": "Choose an .xml or .zip file.",
+          "kind": "Only .xml or .zip files.",
+          "size": "The file is over 20 MB: split it into more than one .zip.",
+          "invalid": "The file was refused: it must be an .xml or .zip of up to 20 MB.",
+          "throttled": "Too many uploads in a row: wait a minute and try again.",
+          "failed": "The import could not run right now. Try again."
+        }
+      },
+      "batches": {
+        "title": "Imports",
+        "empty": "No import yet.",
+        "loadFailed": "The imports could not be loaded."
+      },
+      "batch": {
+        "upload": "Uploaded on screen",
+        "folder": "Folder (nfe:import command)",
+        "by": "by {name}",
+        "files": "Files read",
+        "stored": "Invoices stored",
+        "refused": "Refused",
+        "showRefusals": "Show refusals ({count})",
+        "hideRefusals": "Hide refusals",
+        "all": "Show all {count} refusals",
+        "noRefusals": "Nothing refused."
+      },
+      "refusals": {
+        "not_xml": "Not a readable XML",
+        "not_nfe": "Not an authorised NF-e (nfeProc)",
+        "invalid_key": "Invalid access key",
+        "client_unknown": "No portfolio client with this CNPJ",
+        "duplicate": "Already imported",
+        "too_large": "Too large (over 1 MB, or the .zip went past 20 MB)"
+      }
+    }
+  },
+  "radar": {
+    "title": "Portfolio radar",
+    "heading": "The Reform's engine over the clients Franco already has",
+    "lede": "Each row is a conversation Franco can start tomorrow, or a batch for the Franco Specialist Network. Figures are estimates by revenue band.",
+    "note": "Where invoices were imported, the proof comes from them; the rest comes from the client record. Only a client that consented in its contract goes into a batch, and Franco keeps every one.",
+    "loadFailed": "The radar could not be loaded.",
+    "retry": "Try again",
+    "notFound": "This radar item does not exist.",
+    "partnerNotCovering": "This partner's specialty does not cover this item.",
+    "perYear": "a year",
+    "perMonth": "a month",
+    "kinds": {
+      "oportunidade": "Opportunity",
+      "risco": "Risk"
+    },
+    "kpis": {
+      "label": "Radar summary",
+      "clients": "Clients analysed",
+      "clientsValue": "{count} client | {count} clients",
+      "withOpportunity": "With at least one opportunity",
+      "total": "Opportunities in the portfolio",
+      "riskTypes": "Risk types found"
+    },
+    "opportunities": {
+      "title": "Clients by opportunity type",
+      "lede": "Sending a batch gives the chosen partner the 10 largest clients by estimate, with consent in their contract, not yet referred to it.",
+      "empty": "No opportunity in the portfolio."
+    },
+    "risks": {
+      "title": "Risks in the portfolio",
+      "lede": "Left out of the R$ total: they are costs to avoid, not revenue."
+    },
+    "row": {
+      "clients": "{count} client | {count} clients",
+      "held": "held back when B2B sales settle (estimate)",
+      "heldValue": "≈ {range} a month",
+      "partnerLabel": "Partner for {title}",
+      "refer": "Send the largest | Send the {count} largest",
+      "allSent": "All already sent",
+      "sent": "{count} sent | {count} sent",
+      "withoutConsent": "{count} without consent stays out of the batch | {count} without consent stay out of the batch",
+      "noPartner": "No specialty in the network for this item.",
+      "showClients": "Show clients",
+      "hideClients": "Hide clients",
+      "failed": "The batch could not be sent. Try again.",
+      "notCovering": "This partner's specialty does not cover this item.",
+      "alreadyReferred": "One of these clients was just sent to this partner. Open the radar again."
+    },
+    "detail": {
+      "loadFailed": "The clients could not be loaded.",
+      "empty": "No client in this item.",
+      "noConsent": "No consent",
+      "keys": "Access keys",
+      "proof": {
+        "cadastro": "from the client record",
+        "readiness": "Invoices of the last {days} days: {complete} of {invoices} complete, {atRisk} at risk",
+        "share": "B2B measured in the invoices: {share} ({documents} invoices in {days} days; the record says {declared})",
+        "split": "B2B sales from the invoices: {monthly} a month, {held} a month held back"
+      }
+    },
+    "sentToast": "{count} portfolio client sent to {partner}. Franco keeps every one. | {count} portfolio clients sent to {partner}. Franco keeps every one.",
+    "nothingToast": "Every client of “{title}” was already sent to {partner}."
   }
 }

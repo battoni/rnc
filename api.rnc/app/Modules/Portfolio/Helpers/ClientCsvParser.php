@@ -14,7 +14,11 @@ use Illuminate\Support\Str;
  *
  * - UTF-8 only; a leading BOM (what a spreadsheet writes) is dropped.
  * - The delimiter is the header's: `;` (a pt-BR spreadsheet's default) or `,`. Quoted fields work.
- * - The header names the columns of `COLUMNS`, in any order; extra columns are ignored.
+ * - The header names the columns of `COLUMNS`, in any order; extra columns are ignored. The
+ *   optional `autoriza_parceiros` (rnc-2 R28, the 8th column of the template) is read only when the
+ *   header has it: `sim` / `não` in any case, with or without the accent (plan AM11), or empty —
+ *   `partner_consent` true / false / null. Without the column the row carries no consent key, so a
+ *   re-import of a 7-column file leaves the consent a client already had.
  * - A value is read the way a person writes it: a sector or a regime by its slug or its label
  *   ("Indústria", "Lucro Real"), a share as `80` or `80%`, a fee as `1850`, `1.850,00` or `1850.00`.
  * - Every problem of every line is collected and reported by its line number in the file (the
@@ -23,6 +27,12 @@ use Illuminate\Support\Str;
 class ClientCsvParser
 {
     public const COLUMNS = ['nome', 'cnpj', 'setor', 'regime', 'faixa_faturamento', 'percentual_b2b', 'mensalidade'];
+
+    /** The client's partner consent (rnc-2 R28): optional, so a 7-column file still imports. */
+    public const CONSENT_COLUMN = 'autoriza_parceiros';
+
+    /** What the consent column accepts once lower-cased and stripped of accents. */
+    private const CONSENT_VALUES = ['sim' => true, 'nao' => false];
 
     public const MAX_ROWS = 5000;
 
@@ -48,7 +58,7 @@ class ClientCsvParser
     private const MAX_SHARE = 100;
 
     /**
-     * @return list<array{line: int, attributes: array{name: string, cnpj: string, sector: string, regime: string, band: string, b2b_share: int, monthly_fee: float}}>
+     * @return list<array{line: int, attributes: array{name: string, cnpj: string, sector: string, regime: string, band: string, b2b_share: int, monthly_fee: float, partner_consent?: bool|null}}>
      */
     public function parse(string $content): array
     {
@@ -110,10 +120,10 @@ class ClientCsvParser
         return $rows;
     }
 
-    /** The header row the template downloads. */
+    /** The header row the template downloads: the seven columns and the consent, last. */
     public static function templateHeader(): string
     {
-        return implode(self::DELIMITERS[0], self::COLUMNS);
+        return implode(self::DELIMITERS[0], [...self::COLUMNS, self::CONSENT_COLUMN]);
     }
 
     private function delimiterOf(string $header): string
@@ -141,6 +151,12 @@ class ClientCsvParser
             throw ClientImportException::header($missing);
         }
 
+        $consentPosition = array_search(self::CONSENT_COLUMN, $names, true);
+
+        if ($consentPosition !== false) {
+            $positions[self::CONSENT_COLUMN] = (int) $consentPosition;
+        }
+
         return $positions;
     }
 
@@ -148,7 +164,7 @@ class ClientCsvParser
      * @param  list<string|null>  $fields
      * @param  array<string, int>  $positions
      * @param  array<string, int>  $seen  the CNPJs of the lines before, with their line
-     * @return array{0: array{name: string, cnpj: string, sector: string, regime: string, band: string, b2b_share: int, monthly_fee: float}, 1: list<array{0: string, 1: string}>}
+     * @return array{0: array{name: string, cnpj: string, sector: string, regime: string, band: string, b2b_share: int, monthly_fee: float, partner_consent?: bool|null}, 1: list<array{0: string, 1: string}>}
      */
     private function readRow(array $fields, array $positions, array $seen): array
     {
@@ -208,6 +224,17 @@ class ClientCsvParser
             'b2b_share' => $share ?? 0,
             'monthly_fee' => $fee ?? 0.0,
         ];
+
+        if (isset($positions[self::CONSENT_COLUMN])) {
+            $consent = $value(self::CONSENT_COLUMN);
+            $isKnown = $consent === '' || array_key_exists($this->slug($consent), self::CONSENT_VALUES);
+
+            if (! $isKnown) {
+                $errors[] = [self::CONSENT_COLUMN, 'consent_invalid'];
+            }
+
+            $attributes['partner_consent'] = $consent === '' ? null : (self::CONSENT_VALUES[$this->slug($consent)] ?? null);
+        }
 
         return [$attributes, $errors];
     }

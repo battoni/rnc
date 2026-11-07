@@ -19,12 +19,23 @@ use Random\Randomizer;
  * Every CNPJ passes the check digits but is plainly invented: the root is `999` + the client's
  * number (`999.00NNN`) and the branch is `9999` — a pattern a reader spots at once and that is never
  * looked up (BrasilAPI is not called for clients). Names are invented words, never a real company.
+ *
+ * rnc-2 F9 (R28): every client answered the contract's partner clause — about 85 % yes, the rest
+ * no (the demo's `CLIENT_CONSENT_YES`), `via = contrato`, on 15 January of a year between 2019 and
+ * 2025. Drawn from a SECOND seeded generator, so the profiles and fees above stay what they were.
  */
 class ClientSeeder extends Seeder
 {
     public const COUNT = 500;
 
     private const RANDOM_SEED = 2027;
+
+    private const CONSENT_RANDOM_SEED = 2028;
+
+    /** Percent of the clients that said yes to the contract's partner clause (plan Defaults). */
+    private const CONSENT_YES_PERCENT = 85;
+
+    private const CONSENT_YEARS = [2019, 2025];
 
     private const CNPJ_ROOT_PREFIX = '999';
 
@@ -97,6 +108,7 @@ class ClientSeeder extends Seeder
     private function clientsOf(Firm $firm): array
     {
         $random = new Randomizer(new Mt19937(self::RANDOM_SEED));
+        $consentRandom = new Randomizer(new Mt19937(self::CONSENT_RANDOM_SEED));
         $sectors = array_keys(self::B2B_RANGE);
         $now = CarbonImmutable::now();
         $names = [];
@@ -119,6 +131,9 @@ class ClientSeeder extends Seeder
                 'b2b_share' => $random->getInt(intdiv($lowShare, self::B2B_STEP), intdiv($highShare, self::B2B_STEP)) * self::B2B_STEP,
                 'monthly_fee' => min(self::FEE_RANGE[1], max(self::FEE_RANGE[0], round($fee / self::FEE_ROUNDING) * self::FEE_ROUNDING)),
                 'repricing' => null,
+                'partner_consent' => $consentRandom->getInt(1, 100) <= self::CONSENT_YES_PERCENT,
+                'partner_consent_at' => CarbonImmutable::create($consentRandom->getInt(...self::CONSENT_YEARS), 1, 15, 12, 0, 0, 'UTC')->format('Y-m-d H:i:s'),
+                'partner_consent_via' => Client::CONSENT_VIA_CONTRACT,
                 'created_at' => $now,
                 'updated_at' => $now,
             ];

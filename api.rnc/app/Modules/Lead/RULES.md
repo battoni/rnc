@@ -1,10 +1,11 @@
 ---
-version: 1.6.0
+version: 1.7.0
 origin: rnc
+based-on: 1.7.0
 ---
 # RULES — Lead Module
 
-> For AI agents. rnc-1 F3–F5, 07/11/2026; rnc-2 F2 (the partner's moves on the timeline).
+> For AI agents. rnc-1 F3–F5, 07/11/2026; rnc-2 F2 (the partner's moves on the timeline), F10 (the portfolio lead).
 
 ## Domain
 
@@ -58,6 +59,15 @@ them and writes the team's notes — through this module's service.
   visitor reopens the `visitante` with its channel kept. `carteira` is Franco's own portfolio
   (F10) and never a visitor's (`StartDiagnosticRequest` takes `formulario|chat` only). The consent's
   `via` is the lead's channel, so a chat walk's consent reads `chat`.
+- **A portfolio client has ONE `carteira` lead (rnc-2 F10, R27, D13; plan AM10)**:
+  `findOrStartPortfolioLead(client, profile)` — called by Partner's Radar batch inside its
+  transaction — finds it by `client_id` (unique per firm, Portfolio's id with no foreign key) or
+  creates it at stage `cliente`, `channel`/`path` `carteira`, source `direto`, NO contact (the
+  partner's way in is the firm's, R6) and a token born expired, so no public route ever opens it.
+  It copies the client's name (`company`), CNPJ and the profile the Radar read (sector, regime, band,
+  the measured B2B share when D9 applies) — refreshed on every later batch — and, once, the client's
+  consent as a `lead_consents` row `via contrato`, `ConsentTerms::CONTRACT_TEXT`, `given_at` the
+  client's `partner_consent_at`. The caller checks the client's consent first; this method trusts it.
 - **The visitor is kept by UUID** (`visitor_uuid`), not a foreign key to Tracking's `visitors`: the
   diagnostic may start before the visit's beacon lands, and the two meet on (firm, uuid).
 - **Children carry no firm column** (`lead_consents`, `lead_events`): they belong to their lead.

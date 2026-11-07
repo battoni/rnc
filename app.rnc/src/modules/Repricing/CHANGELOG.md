@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.1.0 — 2026-11-07
+
+### Changed
+
+- The import's column list (`IMPORT_COLUMNS`) gains the optional `autoriza_parceiros` (rnc-2 F9, R28, A22): the dialog prints it and its accepted values (`sim`, `não` or empty), and a `consent_invalid` line error is named under `repricing.import.lineCodes` with the field `Autoriza parceiros`.
+
 ## 1.0.0 — 2026-11-07
 
 ### Added

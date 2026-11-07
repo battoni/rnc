@@ -42,9 +42,13 @@ return new class extends Migration
             // The sub-brand the diagnostic was started under (rnc-3 R4): null is the main brand. Fixed at
             // creation like `channel`. The `firm_brands` row is the Firm module's, so no foreign key.
             $table->unsignedBigInteger('brand_id')->nullable()->index();
+            // The portfolio client a `carteira` lead stands for (rnc-2 F10, R27, D13): one lead per
+            // client and firm, Portfolio's id with no foreign key across modules (rnc-1 W25).
+            $table->unsignedBigInteger('client_id')->nullable();
             $table->timestamps();
 
             $table->index(['firm_id', 'stage']);
+            $table->unique(['firm_id', 'client_id']);
         });
     }
 

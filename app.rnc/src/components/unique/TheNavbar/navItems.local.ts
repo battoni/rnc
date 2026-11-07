@@ -4,11 +4,13 @@ import type { NavItem } from './interfaces';
 import { ASSISTANT_PERMISSIONS, ASSISTANT_ROUTE_NAMES } from '@AssistantModule';
 import { BRANDS_PERMISSIONS, BRANDS_ROUTE_NAMES } from '@BrandsModule';
 import { CHANNEL_PERMISSIONS, CHANNEL_ROUTE_NAMES } from '@ChannelModule';
+import { FISCAL_PERMISSIONS, FISCAL_ROUTE_NAMES } from '@FiscalModule';
 import { WORKSPACES } from '@HomeModule';
 import { METRICS_PERMISSIONS, METRICS_ROUTE_NAMES } from '@MetricsModule';
 import { PARTNER_PERMISSIONS, PARTNER_ROUTE_NAMES } from '@PartnerModule';
 import { PIPELINE_PERMISSIONS, PIPELINE_ROUTE_NAMES } from '@PipelineModule';
 import { PORTAL_PERMISSIONS, PORTAL_ROLE_SLUG, PORTAL_ROUTE_NAMES } from '@PortalModule';
+import { RADAR_PERMISSIONS, RADAR_ROUTE_NAMES } from '@RadarModule';
 import { REPRICING_PERMISSIONS, REPRICING_ROUTE_NAMES } from '@RepricingModule';
 import { useUserStore } from '@UserModule';
 
@@ -54,9 +56,12 @@ import { useUserStore } from '@UserModule';
  * on arrival. Do not await: the group renders with what it has and grows when the answer lands.
  */
 /**
- * What each group already holds. The team's has its pipeline and agenda (F5); the operator's carries
- * the bootstrap's own administration screens; Reinaldo's has the metrics (F7), the network (F6), its ledger (rnc-2 F4) and the fee repricing (F8); rnc-3 F3b puts the RNC channel in his and the operator's. Route
- * names are the owners' (celer-05), never an import of their screens.
+ * What each group already holds. The team's has its pipeline and agenda (F5) and the two fiscal
+ * screens (rnc-2 F8); the operator's carries the bootstrap's own administration screens; Reinaldo's
+ * has the metrics (F7), the network (F6), its ledger (rnc-2 F4), the fee repricing (F8), the XML
+ * import (rnc-2 F8) and the portfolio Radar (rnc-2 F10); rnc-3 puts the Reforma assistant in the
+ * team's (F5), the RNC channel in his and the operator's (F3b) and the brands console in the
+ * operator's (F2). Route names are the owners' (celer-05), never an import of their screens.
  */
 const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
   team: [
@@ -78,6 +83,19 @@ const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
       label: 'navigation.assistant',
       permission: ASSISTANT_PERMISSIONS.ask,
       routeName: ASSISTANT_ROUTE_NAMES.ask,
+    },
+    // rnc-2 F8: the two fiscal screens (R18, R21).
+    {
+      icon: 'pi pi-file-check',
+      label: 'navigation.readiness',
+      permission: FISCAL_PERMISSIONS.read,
+      routeName: FISCAL_ROUTE_NAMES.readiness,
+    },
+    {
+      icon: 'pi pi-truck',
+      label: 'navigation.suppliers',
+      permission: FISCAL_PERMISSIONS.read,
+      routeName: FISCAL_ROUTE_NAMES.suppliers,
     },
   ],
   ceo: [
@@ -117,6 +135,19 @@ const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
       label: 'navigation.channel',
       permission: CHANNEL_PERMISSIONS.read,
       routeName: CHANNEL_ROUTE_NAMES.ceo,
+    },
+    // rnc-2 F8 and F10: the XML import (R15, R17) and the portfolio Radar (R24–R27).
+    {
+      icon: 'pi pi-file-import',
+      label: 'navigation.invoices',
+      permission: FISCAL_PERMISSIONS.import,
+      routeName: FISCAL_ROUTE_NAMES.imports,
+    },
+    {
+      icon: 'pi pi-compass',
+      label: 'navigation.radar',
+      permission: RADAR_PERMISSIONS.manage,
+      routeName: RADAR_ROUTE_NAMES.radar,
     },
   ],
   operator: [

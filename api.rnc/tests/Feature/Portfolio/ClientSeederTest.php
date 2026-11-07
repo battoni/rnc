@@ -27,6 +27,18 @@ it('seeds 500 invented clients with valid, plainly invented CNPJs', function () 
         ->and($clients->pluck('firm_id')->unique()->all())->toBe([1]);
 });
 
+it('gives about 85 % of the clients consent through the contract, the rest a no (rnc-2 R28)', function () {
+    $this->seed();
+
+    $clients = Client::withoutGlobalScopes()->get();
+    $consenting = $clients->where('partner_consent', true)->count();
+
+    expect($consenting)->toBeGreaterThanOrEqual(400)->toBeLessThanOrEqual(450)
+        ->and($clients->where('partner_consent', false)->count())->toBe(500 - $consenting)
+        ->and($clients->pluck('partner_consent_via')->unique()->all())->toBe(['contrato'])
+        ->and($clients->every(fn (Client $client) => $client->partner_consent_at !== null && $client->partner_consent_at->lessThan(now())))->toBeTrue();
+});
+
 it('seeds no client on a production database', function () {
     app()->detectEnvironment(fn () => 'production');
 

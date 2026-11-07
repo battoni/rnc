@@ -3,11 +3,13 @@ import { AssistantModuleRoutes } from '@AssistantModule';
 import { BrandsModuleRoutes } from '@BrandsModule';
 import { ChannelModuleRoutes } from '@ChannelModule';
 import { DiagnosticModuleRoutes } from '@DiagnosticModule';
+import { FiscalModuleRoutes } from '@FiscalModule';
 import { WorkspaceRoutes } from '@HomeModule';
 import { MetricsModuleRoutes } from '@MetricsModule';
 import { PartnerModuleRoutes } from '@PartnerModule';
 import { PipelineModuleRoutes } from '@PipelineModule';
 import { PortalModuleRoutes } from '@PortalModule';
+import { RadarModuleRoutes } from '@RadarModule';
 import { RepricingModuleRoutes } from '@RepricingModule';
 import { SiteRoutes } from '@SiteModule';
 
@@ -26,8 +28,8 @@ import { SiteRoutes } from '@SiteModule';
  */
 // rnc-1: the public site (F1 landing, F2 sector pages, F3 diagnostic), the back office's three workspaces and the
 // team's pipeline (F5), Reinaldo's network (F6), metrics (F7) and fee repricing (F8). rnc-2: the
-// partner's portal (F1). rnc-3: the operator's brands console (F2), the RNC channel (F3b) and the
-// Reforma assistant (F5).
+// partner's portal (F1), the fiscal screens (F8) and the portfolio Radar (F10). rnc-3: the
+// operator's brands console (F2), the RNC channel (F3b) and the Reforma assistant (F5).
 const localRoutes: RouteRecordRaw[] = [
   ...SiteRoutes,
   ...DiagnosticModuleRoutes,
@@ -40,6 +42,8 @@ const localRoutes: RouteRecordRaw[] = [
   ...BrandsModuleRoutes,
   ...ChannelModuleRoutes,
   ...AssistantModuleRoutes,
+  ...FiscalModuleRoutes,
+  ...RadarModuleRoutes,
 ];
 
 export default localRoutes;

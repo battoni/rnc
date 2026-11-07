@@ -3,29 +3,41 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
-## 1.17.0 — 2026-11-07
+## 1.19.0 — 2026-11-07
 
 ### Added
 
 - rnc-3 F8: `RoleSeeder` grants Reinaldo `briefing.read` (his briefing and the 07:00 e-mail); the team has none.
 
-## 1.16.0 — 2026-11-07
+## 1.18.0 — 2026-11-07
 
 ### Added
 
 - rnc-3 F6a: the `client_contracts` table (sequence `300007`; unique per firm, client, kind, start and end; `clause_marked_by` an id without a foreign key — W25); `ContractSeeder` (local only, after `ClientSeeder`) seeds the demo's 40 contracts on `ClientSeeder`'s invented clients only (AM10), deterministic (Mt19937 seeded 2033), about 30 % with the clause, none marked; `RoleSeeder` grants Reinaldo `contracts.manage`.
 
-## 1.15.0 — 2026-11-07
+## 1.17.0 — 2026-11-07
 
 ### Added
 
 - rnc-3 F4: the `assistant_notes`, `assistant_questions` and `assistant_asks` tables (sequence `300004`–`300006`; people and notes are ids without a foreign key — W25); `AssistantNoteFactory` (a served note); `AssistantNoteSeeder` (local only) seeds the demo's ten notes word for word, each citing its `facts.md` §2 lines, read 05/11/2026, reviewed 1–5 days back by the four seeded specialists and written by Reinaldo — `credito-simples` a rascunho (§2 unverified) — plus two open questions from Patrícia to Mariana and Carlos; a person missing from the seeded staff stops the seed (AM10); `RoleSeeder` grants the team and Reinaldo `assistant.ask` and Reinaldo `assistant.manage`.
 
-## 1.14.0 — 2026-11-07
+## 1.16.0 — 2026-11-07
 
 ### Added
 
 - rnc-3 F3a: the `channel_firms` and `channel_firm_events` tables (sequence `300002`–`300003`; the event's `user_id` has no foreign key — W25); `ChannelFirmFactory`; `ChannelSeeder` (local only) seeds the demo's six "(exemplo)" RNC firms, three ativo, on the default fee and share, 5–90 days into their stage; `RoleSeeder` grants Reinaldo `channel.read` (`channel.manage` stays the operator's).
+
+## 1.15.0 — 2026-11-07
+
+### Changed
+
+- rnc-2 F10 (R27, D13): `create_leads_table` gains `client_id` (nullable, no foreign key — Portfolio's id) and a unique `(firm_id, client_id)` (folded, D15; schema diffed before and after on SQLite: only the column and the index).
+
+## 1.14.0 — 2026-11-07
+
+### Changed
+
+- rnc-2 F9 (R28): `create_clients_table` gains `partner_consent` (nullable bool), `partner_consent_at` (UTC) and `partner_consent_via` (folded, D15; schema diffed before and after: only the three columns). `ClientSeeder` gives ~85 % of the 500 clients consent `via contrato` (a second seeded generator, profiles and fees unchanged). `RoleSeeder` gives `ceo` `radar.manage`.
 
 ## 1.13.0 — 2026-11-07
 

@@ -49,6 +49,22 @@ class LeadRepository
         return Lead::query()->with(['latestConsent', 'brand'])->find($id);
     }
 
+    /** The `carteira` lead of a portfolio client (rnc-2 R27), with its consent, in the current firm. */
+    public function findPortfolioLeadOfClient(int $clientId): ?Lead
+    {
+        return Lead::query()->with('latestConsent')->where('client_id', $clientId)->first();
+    }
+
+    /**
+     * The `carteira` leads of the firm, as client id → lead id (rnc-2 R27). One query.
+     *
+     * @return array<int, int>
+     */
+    public function findPortfolioLeadIdsByClient(): array
+    {
+        return Lead::query()->whereNotNull('client_id')->pluck('id', 'client_id')->map(fn ($id) => (int) $id)->all();
+    }
+
     /**
      * One column of the board: the most recently touched leads of a stage, up to a ceiling, with
      * their brand loaded once for the whole column (rnc-3 R4).
