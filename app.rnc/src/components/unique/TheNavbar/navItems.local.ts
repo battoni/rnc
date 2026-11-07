@@ -1,6 +1,7 @@
 import { computed } from 'vue';
 import type { ComputedRef } from 'vue';
 import type { NavItem } from './interfaces';
+import { FISCAL_PERMISSIONS, FISCAL_ROUTE_NAMES } from '@FiscalModule';
 import { WORKSPACES } from '@HomeModule';
 import { METRICS_PERMISSIONS, METRICS_ROUTE_NAMES } from '@MetricsModule';
 import { PARTNER_PERMISSIONS, PARTNER_ROUTE_NAMES } from '@PartnerModule';
@@ -50,8 +51,10 @@ import { REPRICING_PERMISSIONS, REPRICING_ROUTE_NAMES } from '@RepricingModule';
  * on arrival. Do not await: the group renders with what it has and grows when the answer lands.
  */
 /**
- * What each group already holds. The team's has its pipeline and agenda (F5); the operator's carries
- * the bootstrap's own administration screens; Reinaldo's has the metrics (F7), the network (F6), its ledger (rnc-2 F4) and the fee repricing (F8). Route
+ * What each group already holds. The team's has its pipeline and agenda (F5) and the two fiscal
+ * screens (rnc-2 F8); the operator's carries the bootstrap's own administration screens; Reinaldo's
+ * has the metrics (F7), the network (F6), its ledger (rnc-2 F4), the fee repricing (F8) and the XML
+ * import (rnc-2 F8). Route
  * names are the owners' (celer-05), never an import of their screens.
  */
 const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
@@ -67,6 +70,18 @@ const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
       label: 'navigation.agenda',
       permission: PIPELINE_PERMISSIONS.agenda,
       routeName: PIPELINE_ROUTE_NAMES.agenda,
+    },
+    {
+      icon: 'pi pi-file-check',
+      label: 'navigation.readiness',
+      permission: FISCAL_PERMISSIONS.read,
+      routeName: FISCAL_ROUTE_NAMES.readiness,
+    },
+    {
+      icon: 'pi pi-truck',
+      label: 'navigation.suppliers',
+      permission: FISCAL_PERMISSIONS.read,
+      routeName: FISCAL_ROUTE_NAMES.suppliers,
     },
   ],
   ceo: [
@@ -99,6 +114,12 @@ const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
       label: 'navigation.repricing',
       permission: REPRICING_PERMISSIONS.manage,
       routeName: REPRICING_ROUTE_NAMES.list,
+    },
+    {
+      icon: 'pi pi-file-import',
+      label: 'navigation.invoices',
+      permission: FISCAL_PERMISSIONS.import,
+      routeName: FISCAL_ROUTE_NAMES.imports,
     },
   ],
   operator: [

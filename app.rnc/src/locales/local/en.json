@@ -43,7 +43,10 @@
     "repricing": "Repricing",
     "portal": "Partner portal",
     "ledger": "Network ledger",
-    "statement": "Statement"
+    "statement": "Statement",
+    "readiness": "Invoice readiness",
+    "suppliers": "Supplier credit",
+    "invoices": "Invoices"
   },
   "rolesAndPermissions": {
     "groups": {
@@ -1149,6 +1152,206 @@
       "deals": "No contract closed this month. | 1 contract closed ({total} in the first year). | {n} contracts closed ({total} in the first year).",
       "loadFailed": "The statement could not be loaded.",
       "open": "See this month's statement"
+    }
+  },
+  "fiscal": {
+    "retry": "Try again",
+    "estimate": "estimate",
+    "sectors": {
+      "comercio": "Retail",
+      "industria": "Industry",
+      "servicos": "Services",
+      "saude": "Health",
+      "educacao": "Education",
+      "agro": "Agribusiness"
+    },
+    "regimes": {
+      "simples": "Simples",
+      "presumido": "Presumido",
+      "real": "Real"
+    },
+    "statuses": {
+      "critico": "Critical",
+      "atencao": "Attention",
+      "ok": "OK",
+      "sem_notas": "No invoices imported"
+    },
+    "readiness": {
+      "title": "Invoice readiness",
+      "heading": "Do the clients' invoices already carry IBS/CBS?",
+      "lede": "The Presumido and Real clients, by the invoices they issued in the last 30 days: who Franco has to warn before the rejection.",
+      "note": "Read from the XMLs imported under Reinaldo › Invoices. An invoice is complete when every item carries the IBS/CBS group, its CST and cClassTrib, and the 2026 test rates. OK at 95% or more with nothing at risk; Attention from 80% to 94%; Critical under 80% or with any invoice at risk of rejection 1115. Simples clients stay out until 2027.",
+      "loadFailed": "The readiness could not be loaded right now.",
+      "hero": {
+        "label": "Invoices at risk of rejection 1115",
+        "base": "out of {invoices} invoices issued in the last 30 days by {clients} Presumido and Real clients.",
+        "bar": "Clients by status",
+        "barLabel": "{critico} critical, {atencao} need attention, {ok} ready",
+        "noNotes": "{count} with no invoices imported"
+      },
+      "kpis": {
+        "complete": "Complete invoices",
+        "critical": "Critical clients",
+        "ready": "Ready"
+      },
+      "filters": {
+        "status": "Status",
+        "all": "All · {count}",
+        "option": "{label} · {count}",
+        "system": "Issuing system",
+        "allSystems": "Every system"
+      },
+      "table": {
+        "caption": "Presumido and Real clients by the readiness of their issued invoices",
+        "client": "Client",
+        "invoices": "Invoices 30d",
+        "complete": "Complete",
+        "atRisk": "At risk",
+        "status": "Status",
+        "open": "Open {name}",
+        "noSystem": "system not identified",
+        "emptyTitle": "No client with this filter",
+        "emptyText": "Change the status or the system to see the others."
+      },
+      "detail": {
+        "title": "Client detail",
+        "emptyText": "Open a client from the list to see what its invoices miss and warn the client.",
+        "loadFailed": "This client could not be opened right now.",
+        "window": "Issued invoices · {days} days",
+        "invoices": "Invoices",
+        "complete": "Complete",
+        "atRisk": "At risk",
+        "issues": "What is missing",
+        "noIssues": "Nothing missing in the last {days} days' invoices.",
+        "noNotes": "No issued invoice imported in the last {days} days.",
+        "samples": "e.g.:",
+        "sample": "NF-e no. {number} (series {series}), item {item}",
+        "sampleNoItem": "NF-e no. {number} (series {series})",
+        "notify": "Warn the client",
+        "timeline": "Client history"
+      },
+      "issues": {
+        "missing_group": "Item without the IBS/CBS group: rejection 1115 once validation applies",
+        "missing_codes": "IBS/CBS CST or cClassTrib left blank",
+        "without_test_values": "2026 test rates (CBS 0.9% · IBS 0.1%) not shown"
+      },
+      "issueCount": "{count} invoice | {count} invoices"
+    },
+    "notice": {
+      "title": "Warning to the client",
+      "flag": "E-mail preview · nothing is sent: the client has no e-mail on file, and the warning is recorded in its history.",
+      "greeting": "Hello, {name} team,",
+      "counts": "Of the {invoices} invoices you issued in the last {days} days, {pct} already carry the complete IBS/CBS group.",
+      "risk": "{count} invoice would be rejected (rejection 1115) once the Federal Revenue's validation applies. | {count} invoices would be rejected (rejection 1115) once the Federal Revenue's validation applies.",
+      "fix": "The fix is in the product register and in how {system} issues them. Franco has already sorted the items and can help your team or the system's vendor correct them.",
+      "fixNoSystem": "The fix is in the product register and in the issuing system. Franco has already sorted the items and can help your team or the system's vendor correct them.",
+      "noNotes": "We have not received the invoices you issued in the last {days} days yet. Could you send us the XMLs, so we can check the IBS/CBS group before the Federal Revenue's validation?",
+      "ask": "Can we book 30 minutes this week?",
+      "signature": "Franco tax team",
+      "copy": "Copy text",
+      "copied": "Text copied",
+      "copyFailed": "Could not copy: select the text and copy it by hand.",
+      "register": "Record warning",
+      "registered": "Warning recorded by {name} on {at}.",
+      "registeredSystem": "Warning recorded on {at}.",
+      "registerFailed": "The warning could not be recorded right now. Try again.",
+      "close": "Close"
+    },
+    "timeline": {
+      "empty": "Nothing recorded yet.",
+      "loadFailed": "The history could not be loaded.",
+      "by": "{at} · {name}",
+      "bySystem": "{at} · recorded automatically",
+      "notice": "Invoice warning recorded: {invoices} invoices, {pct} complete, {risk} at risk",
+      "review": "Supplier review proposed: {share} from Simples, {range} a year (estimate)",
+      "other": "Record {type}"
+    },
+    "suppliers": {
+      "title": "Supplier credit",
+      "heading": "How much credit does each client leave on the table?",
+      "lede": "From 2027, buying from Simples suppliers yields little IBS/CBS credit: which clients should review their suppliers.",
+      "note": "Read from the last 90 days' purchase invoices: each supplier's regime comes from the XML's CRT (1, 2 or 4 = Simples/MEI; 3 = standard regime). Credit lost a year = Simples purchases × 12 × (26.5% reference rate − the 3% to 5% a Simples supplier pays inside the DAS). An estimate, as a range: the reference rate and the DAS share are not final yet.",
+      "loadFailed": "Supplier credit could not be loaded right now.",
+      "noSimples": "Nothing bought from Simples in the last 90 days: there is nothing to review.",
+      "proposedToast": "Supplier review proposed for {name}.",
+      "kpis": {
+        "label": "Supplier credit summary",
+        "total": "Credit lost a year",
+        "buying": "Clients buying from Simples",
+        "buyingValue": "{count} of {total}",
+        "mean": "Average Simples share",
+        "proposed": "Reviews proposed"
+      },
+      "filters": {
+        "sector": "Sector",
+        "allSectors": "Every sector"
+      },
+      "legend": {
+        "simples": "Simples/MEI supplier",
+        "normal": "Standard-regime supplier"
+      },
+      "list": {
+        "title": "Purchases by supplier regime",
+        "lede": "From the largest credit lost to the smallest. Who buys nothing from Simples loses nothing.",
+        "empty": "No Presumido or Real client with purchase invoices in this sector."
+      },
+      "row": {
+        "purchases": "purchases of {value}/month",
+        "lost": "Credit lost a year · {share} from Simples",
+        "bar": "Simples {simples}, standard regime {normal}",
+        "propose": "Propose a review",
+        "noSimples": "No Simples supplier",
+        "noSimplesHint": "Nothing bought from a Simples supplier in the last 90 days.",
+        "proposed": "Review proposed",
+        "history": "Show history",
+        "hideHistory": "Hide history",
+        "failed": "The review could not be proposed right now."
+      }
+    },
+    "imports": {
+      "title": "Invoices",
+      "heading": "The XMLs of the clients' invoices",
+      "lede": "Send the XMLs Franco receives from its clients, one file or a .zip with many. Each invoice is tied to its client by CNPJ: those it issued feed Invoice readiness; those it received, Supplier credit.",
+      "result": "Latest upload",
+      "success": "{stored} invoices stored out of {files} files.",
+      "form": {
+        "file": ".xml or .zip file",
+        "accepted": "One .xml or one .zip of up to 20 MB; up to 1 MB per XML and 2000 files per .zip. The files are kept with no public address.",
+        "submit": "Import",
+        "errors": {
+          "required": "Choose an .xml or .zip file.",
+          "kind": "Only .xml or .zip files.",
+          "size": "The file is over 20 MB: split it into more than one .zip.",
+          "invalid": "The file was refused: it must be an .xml or .zip of up to 20 MB.",
+          "throttled": "Too many uploads in a row: wait a minute and try again.",
+          "failed": "The import could not run right now. Try again."
+        }
+      },
+      "batches": {
+        "title": "Imports",
+        "empty": "No import yet.",
+        "loadFailed": "The imports could not be loaded."
+      },
+      "batch": {
+        "upload": "Uploaded on screen",
+        "folder": "Folder (nfe:import command)",
+        "by": "by {name}",
+        "files": "Files read",
+        "stored": "Invoices stored",
+        "refused": "Refused",
+        "showRefusals": "Show refusals ({count})",
+        "hideRefusals": "Hide refusals",
+        "all": "Show all {count} refusals",
+        "noRefusals": "Nothing refused."
+      },
+      "refusals": {
+        "not_xml": "Not a readable XML",
+        "not_nfe": "Not an authorised NF-e (nfeProc)",
+        "invalid_key": "Invalid access key",
+        "client_unknown": "No portfolio client with this CNPJ",
+        "duplicate": "Already imported",
+        "too_large": "Too large (over 1 MB, or the .zip went past 20 MB)"
+      }
     }
   }
 }

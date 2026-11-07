@@ -26,16 +26,19 @@ describe('useLocalNavItems', () => {
     expect(operator?.children?.map((child) => child.routeName)).toEqual(['users', 'roles-and-permissions']);
   });
 
-  it("puts the team's pipeline and agenda in its group", () => {
+  it("puts the team's pipeline, agenda and the two fiscal screens in its group", () => {
     const team = useLocalNavItems().value[0];
 
-    expect(team?.children?.map((child) => [child.routeName, child.permission])).toEqual([
-      ['pipeline', 'leads.read'],
-      ['agenda', 'agenda.read'],
+    expect(team?.children?.map((child) => [child.label, child.routeName, child.permission])).toEqual([
+      ['navigation.pipeline', 'pipeline', 'leads.read'],
+      ['navigation.agenda', 'agenda', 'agenda.read'],
+      // rnc-2 F8 (R18, R21): "Prontidão da NF-e" and "Crédito de fornecedores", behind `fiscal.read` (D14).
+      ['navigation.readiness', 'nfe-readiness', 'fiscal.read'],
+      ['navigation.suppliers', 'supplier-credit', 'fiscal.read'],
     ]);
   });
 
-  it("puts the metrics, the partner registry, the trail, the network ledger and the repricing in Reinaldo's group, each behind its own key (AM8)", () => {
+  it("puts the metrics, the partner registry, the trail, the network ledger, the repricing and the XML import in Reinaldo's group, each behind its own key (AM8)", () => {
     const ceo = useLocalNavItems().value[1];
 
     expect(ceo?.children?.map((child) => [child.routeName, child.permission])).toEqual([
@@ -45,6 +48,8 @@ describe('useLocalNavItems', () => {
       // rnc-2 F4 (R11): "Extrato da rede", behind `ledger.read` (D14).
       ['network-ledger', 'ledger.read'],
       ['repricing', 'repricing.manage'],
+      // rnc-2 F8 (R15, R17): "Notas fiscais", the XML import — `fiscal.import` (ceo, D14).
+      ['nfe-imports', 'fiscal.import'],
     ]);
   });
 

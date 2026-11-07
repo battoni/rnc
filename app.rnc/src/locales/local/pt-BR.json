@@ -43,7 +43,10 @@
     "repricing": "Reajuste",
     "portal": "Portal do parceiro",
     "ledger": "Extrato da rede",
-    "statement": "Extrato"
+    "statement": "Extrato",
+    "readiness": "Prontidão da NF-e",
+    "suppliers": "Crédito de fornecedores",
+    "invoices": "Notas fiscais"
   },
   "rolesAndPermissions": {
     "groups": {
@@ -1149,6 +1152,206 @@
       "deals": "Nenhum contrato fechado no mês. | 1 contrato fechado ({total} no 1º ano). | {n} contratos fechados ({total} no 1º ano).",
       "loadFailed": "Não foi possível carregar o extrato.",
       "open": "Ver o extrato do mês"
+    }
+  },
+  "fiscal": {
+    "retry": "Tentar de novo",
+    "estimate": "estimativa",
+    "sectors": {
+      "comercio": "Comércio",
+      "industria": "Indústria",
+      "servicos": "Serviços",
+      "saude": "Saúde",
+      "educacao": "Educação",
+      "agro": "Agro"
+    },
+    "regimes": {
+      "simples": "Simples",
+      "presumido": "Presumido",
+      "real": "Real"
+    },
+    "statuses": {
+      "critico": "Crítico",
+      "atencao": "Atenção",
+      "ok": "OK",
+      "sem_notas": "Sem notas importadas"
+    },
+    "readiness": {
+      "title": "Prontidão da NF-e",
+      "heading": "As notas dos clientes já saem com o IBS/CBS?",
+      "lede": "Os clientes do Presumido e do Real, pelas notas que emitiram nos últimos 30 dias: quem a Franco precisa avisar antes da rejeição.",
+      "note": "Lido dos XMLs importados em Reinaldo › Notas fiscais. Uma nota está completa quando todos os itens trazem o grupo do IBS/CBS, o CST e o cClassTrib e as alíquotas de teste de 2026. OK com 95% ou mais e nada em risco; Atenção de 80% a 94%; Crítico abaixo de 80% ou com qualquer nota em risco da rejeição 1115. Clientes do Simples ficam fora até 2027.",
+      "loadFailed": "Não foi possível carregar a prontidão agora.",
+      "hero": {
+        "label": "Notas em risco de rejeição 1115",
+        "base": "em {invoices} notas emitidas nos últimos 30 dias por {clients} clientes do Presumido e do Real.",
+        "bar": "Clientes por status",
+        "barLabel": "{critico} críticos, {atencao} em atenção, {ok} prontos",
+        "noNotes": "{count} sem notas importadas"
+      },
+      "kpis": {
+        "complete": "Notas completas",
+        "critical": "Clientes críticos",
+        "ready": "Prontos"
+      },
+      "filters": {
+        "status": "Status",
+        "all": "Todos · {count}",
+        "option": "{label} · {count}",
+        "system": "Sistema emissor",
+        "allSystems": "Todos os sistemas"
+      },
+      "table": {
+        "caption": "Clientes do Presumido e do Real pela prontidão das notas emitidas",
+        "client": "Cliente",
+        "invoices": "Notas 30d",
+        "complete": "Completas",
+        "atRisk": "Em risco",
+        "status": "Status",
+        "open": "Abrir {name}",
+        "noSystem": "sistema não identificado",
+        "emptyTitle": "Nenhum cliente com esse filtro",
+        "emptyText": "Troque o status ou o sistema para ver os outros."
+      },
+      "detail": {
+        "title": "Detalhe do cliente",
+        "emptyText": "Abra um cliente da lista para ver as pendências das notas e avisar o cliente.",
+        "loadFailed": "Não foi possível abrir este cliente agora.",
+        "window": "Notas emitidas · {days} dias",
+        "invoices": "Notas",
+        "complete": "Completas",
+        "atRisk": "Em risco",
+        "issues": "Pendências",
+        "noIssues": "Nenhuma pendência nas notas dos últimos {days} dias.",
+        "noNotes": "Nenhuma nota emitida importada nos últimos {days} dias.",
+        "samples": "ex.:",
+        "sample": "NF-e nº {number} (série {series}), item {item}",
+        "sampleNoItem": "NF-e nº {number} (série {series})",
+        "notify": "Avisar cliente",
+        "timeline": "Histórico do cliente"
+      },
+      "issues": {
+        "missing_group": "Item sem o grupo IBS/CBS: rejeição 1115 quando a validação valer",
+        "missing_codes": "CST ou cClassTrib do IBS/CBS em branco",
+        "without_test_values": "Alíquotas de teste de 2026 (CBS 0,9% · IBS 0,1%) não destacadas"
+      },
+      "issueCount": "{count} nota | {count} notas"
+    },
+    "notice": {
+      "title": "Aviso ao cliente",
+      "flag": "Prévia do e-mail · nada é enviado: o cliente não tem e-mail cadastrado, e o aviso fica registrado no histórico.",
+      "greeting": "Olá, equipe da {name},",
+      "counts": "Nas {invoices} notas fiscais que vocês emitiram nos últimos {days} dias, {pct} já saem com o grupo do IBS/CBS completo.",
+      "risk": "{count} nota seria rejeitada (rejeição 1115) quando a validação da Receita valer. | {count} notas seriam rejeitadas (rejeição 1115) quando a validação da Receita valer.",
+      "fix": "O ajuste é no cadastro de produtos e na emissão do {system}. A Franco já separou os itens e pode ajudar o seu time ou o fornecedor do sistema a corrigir.",
+      "fixNoSystem": "O ajuste é no cadastro de produtos e no sistema emissor. A Franco já separou os itens e pode ajudar o seu time ou o fornecedor do sistema a corrigir.",
+      "noNotes": "Ainda não recebemos as notas fiscais que vocês emitiram nos últimos {days} dias. Podem nos enviar os XMLs, para conferirmos o grupo do IBS/CBS antes da validação da Receita?",
+      "ask": "Podemos marcar 30 minutos esta semana?",
+      "signature": "Equipe fiscal Franco",
+      "copy": "Copiar texto",
+      "copied": "Texto copiado",
+      "copyFailed": "Não foi possível copiar: selecione o texto e copie à mão.",
+      "register": "Registrar aviso",
+      "registered": "Aviso registrado por {name} em {at}.",
+      "registeredSystem": "Aviso registrado em {at}.",
+      "registerFailed": "Não foi possível registrar o aviso agora. Tente de novo.",
+      "close": "Fechar"
+    },
+    "timeline": {
+      "empty": "Nenhum registro ainda.",
+      "loadFailed": "Não foi possível carregar o histórico.",
+      "by": "{at} · {name}",
+      "bySystem": "{at} · registro automático",
+      "notice": "Aviso de NF-e registrado: {invoices} notas, {pct} completas, {risk} em risco",
+      "review": "Revisão de fornecedores proposta: {share} do Simples, {range} por ano (estimativa)",
+      "other": "Registro {type}"
+    },
+    "suppliers": {
+      "title": "Crédito de fornecedores",
+      "heading": "Quanto crédito cada cliente deixa na mesa?",
+      "lede": "A partir de 2027, comprar do Simples gera pouco crédito de IBS/CBS: com quem da carteira vale rever os fornecedores.",
+      "note": "Lido das notas de compra dos últimos 90 dias: o regime de cada fornecedor vem do CRT do XML (1, 2 ou 4 = Simples/MEI; 3 = regime normal). Crédito perdido por ano = compras do Simples × 12 × (26,5% de alíquota de referência − 3% a 5% que o fornecedor do Simples recolhe no DAS). Uma estimativa, em faixa: a alíquota de referência e a parcela do DAS ainda não são definitivas.",
+      "loadFailed": "Não foi possível carregar o crédito de fornecedores agora.",
+      "noSimples": "Nenhuma compra do Simples nos últimos 90 dias: não há o que rever.",
+      "proposedToast": "Revisão de fornecedores proposta para a {name}.",
+      "kpis": {
+        "label": "Resumo do crédito de fornecedores",
+        "total": "Crédito perdido por ano",
+        "buying": "Clientes que compram do Simples",
+        "buyingValue": "{count} de {total}",
+        "mean": "Parcela média do Simples",
+        "proposed": "Revisões propostas"
+      },
+      "filters": {
+        "sector": "Setor",
+        "allSectors": "Todos os setores"
+      },
+      "legend": {
+        "simples": "Fornecedor do Simples/MEI",
+        "normal": "Fornecedor do regime normal"
+      },
+      "list": {
+        "title": "Compras por regime do fornecedor",
+        "lede": "Do maior crédito perdido ao menor. Quem não compra do Simples não perde nada.",
+        "empty": "Nenhum cliente do Presumido ou do Real com notas de compra nesse setor."
+      },
+      "row": {
+        "purchases": "compras de {value}/mês",
+        "lost": "Crédito perdido por ano · {share} do Simples",
+        "bar": "Simples {simples}, regime normal {normal}",
+        "propose": "Propor revisão",
+        "noSimples": "Sem fornecedor do Simples",
+        "noSimplesHint": "Nenhuma compra de fornecedor do Simples nos últimos 90 dias.",
+        "proposed": "Revisão proposta",
+        "history": "Ver histórico",
+        "hideHistory": "Ocultar histórico",
+        "failed": "Não foi possível propor a revisão agora."
+      }
+    },
+    "imports": {
+      "title": "Notas fiscais",
+      "heading": "Os XMLs das notas dos clientes",
+      "lede": "Envie os XMLs que a Franco recebe dos clientes, um arquivo ou um .zip com vários. Cada nota é ligada ao cliente pelo CNPJ: as que ele emitiu alimentam a Prontidão da NF-e; as que ele recebeu, o Crédito de fornecedores.",
+      "result": "Último envio",
+      "success": "{stored} notas guardadas de {files} arquivos.",
+      "form": {
+        "file": "Arquivo .xml ou .zip",
+        "accepted": "Um .xml ou um .zip de até 20 MB; até 1 MB por XML e 2000 arquivos por .zip. Os arquivos ficam guardados sem endereço público.",
+        "submit": "Importar",
+        "errors": {
+          "required": "Escolha um arquivo .xml ou .zip.",
+          "kind": "Só arquivos .xml ou .zip.",
+          "size": "O arquivo passa de 20 MB: divida em mais de um .zip.",
+          "invalid": "O arquivo foi recusado: precisa ser .xml ou .zip de até 20 MB.",
+          "throttled": "Muitos envios seguidos: espere um minuto e tente de novo.",
+          "failed": "Não foi possível importar agora. Tente de novo."
+        }
+      },
+      "batches": {
+        "title": "Importações",
+        "empty": "Nenhuma importação ainda.",
+        "loadFailed": "Não foi possível carregar as importações."
+      },
+      "batch": {
+        "upload": "Envio pela tela",
+        "folder": "Pasta (comando nfe:import)",
+        "by": "por {name}",
+        "files": "Arquivos lidos",
+        "stored": "Notas guardadas",
+        "refused": "Recusas",
+        "showRefusals": "Ver recusas ({count})",
+        "hideRefusals": "Ocultar recusas",
+        "all": "Ver todas as {count} recusas",
+        "noRefusals": "Nenhuma recusa."
+      },
+      "refusals": {
+        "not_xml": "Não é um XML legível",
+        "not_nfe": "Não é uma NF-e autorizada (nfeProc)",
+        "invalid_key": "Chave de acesso inválida",
+        "client_unknown": "Nenhum cliente da carteira com esse CNPJ",
+        "duplicate": "Já importada",
+        "too_large": "Grande demais (mais de 1 MB, ou o .zip passou de 20 MB)"
+      }
     }
   }
 }
