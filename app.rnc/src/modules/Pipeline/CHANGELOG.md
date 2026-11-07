@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.1.0 — 2026-11-07
+
+### Added
+
+- The lead detail mounts the Partner module's routing panel under the diagnostic; the timeline reads `encaminhamento.enviado` ("Encaminhado a … (92%)") as a team line (rnc-1 F6, R22).
+
 ## 1.0.0 — 2026-11-07
 
 ### Added

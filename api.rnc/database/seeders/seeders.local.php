@@ -1,6 +1,7 @@
 <?php
 
 use Database\Seeders\LocalUsersSeeder;
+use Database\Seeders\PartnerSeeder;
 use Database\Seeders\PipelineSeeder;
 use Database\Seeders\SectorPageSeeder;
 use Database\Seeders\SpecialistSeeder;
@@ -28,3 +29,7 @@ $this->call(SpecialistSeeder::class);
 // The team's board and agenda (rnc-1 F5): 40 invented leads over 30 days, a few booked meetings —
 // local only (refuses production), after the specialists it books.
 $this->call(PipelineSeeder::class);
+
+// The network (rnc-1 F6): the demo's eight "(exemplo)" partners and a few referrals of consenting
+// leads in the trail — local only (refuses production), after the pipeline it refers from.
+$this->call(PartnerSeeder::class);

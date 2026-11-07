@@ -36,7 +36,9 @@
     "ceo": "Reinaldo",
     "operator": "Operator",
     "pipeline": "Pipeline",
-    "agenda": "Agenda"
+    "agenda": "Agenda",
+    "partners": "Partners",
+    "trail": "Trail"
   },
   "rolesAndPermissions": {
     "groups": {
@@ -564,7 +566,8 @@
           "stageChanged": "{from} → {to}",
           "stageLost": "{from} → {to}: {reason}",
           "noteAdded": "Note: {text}",
-          "unknown": "Event {type}"
+          "unknown": "Event {type}",
+          "referralSent": "Referred to {partner} ({score}%)"
         },
         "vias": {
           "botao": "button",
@@ -585,5 +588,98 @@
       "loadFailed": "The agenda could not be loaded."
     },
     "noDiagnosis": "No diagnostic yet"
+  },
+  "partners": {
+    "title": "Partners",
+    "lede": "Franco's network of specialists: {active} of {total} active ones receive referrals. A deactivated partner leaves routing and stays in the trail.",
+    "add": "New partner",
+    "edit": "Edit",
+    "deactivate": "Deactivate",
+    "reactivate": "Reactivate",
+    "active": "Active",
+    "inactive": "Inactive",
+    "saved": "{name} saved.",
+    "deactivated": "{name} deactivated: no longer offered in routing.",
+    "reactivated": "{name} reactivated.",
+    "loadFailed": "The partners could not be loaded.",
+    "retry": "Try again",
+    "emptyTitle": "No partners yet",
+    "emptyText": "Add the network's first specialist to refer leads to it.",
+    "notFound": "Partner not found.",
+    "specialties": {
+      "advocacia_tributaria": "Tax law",
+      "recuperacao_creditos": "Credit recovery",
+      "erp_nfe": "ERP/e-invoicing",
+      "credito_capital_giro": "Credit and working capital",
+      "seguros_beneficios": "Insurance and benefits",
+      "societario_sucessao": "Corporate and succession",
+      "precificacao_controladoria": "Pricing and controllership",
+      "certificado_digital": "Digital certificate"
+    },
+    "statuses": {
+      "enviado": "Sent",
+      "aceito": "Accepted",
+      "contato": "In contact",
+      "reuniao": "Meeting",
+      "proposta": "Proposal",
+      "fechado": "Closed",
+      "recusado": "Declined"
+    },
+    "form": {
+      "newTitle": "New partner",
+      "editTitle": "Edit partner",
+      "name": "Name",
+      "namePlaceholder": "E.g. Andrade Tax Law",
+      "specialty": "Specialty",
+      "specialtyPlaceholder": "Choose the specialty",
+      "email": "E-mail",
+      "emailHint": "Referrals are sent to this address.",
+      "phone": "Phone",
+      "city": "City",
+      "required": "Required.",
+      "emailInvalid": "Type a valid e-mail.",
+      "cancel": "Cancel",
+      "saveNew": "Add partner",
+      "saveEdit": "Save changes"
+    },
+    "routing": {
+      "title": "Refer to the network",
+      "lede": "Each partner with how well it fits this lead's diagnostic. Franco stays the lead's owner: the partner talks to the company through Franco.",
+      "score": "{score}% · {specialty}",
+      "refer": "Refer",
+      "referredOn": "Referred on {date}",
+      "coversLabel": "Diagnostic items the partner solves",
+      "coversNothing": "No item of this diagnostic in its specialty.",
+      "empty": "No active partner in the network. Reinaldo adds partners under Partners.",
+      "loadFailed": "The partners for this lead could not be loaded.",
+      "messageLabel": "Message to {partner}",
+      "defaultMessage": "Franco recommends {company}. Could you make the first contact within 24 business hours?",
+      "privacyNote": "The partner receives the company's name, the diagnostic and Franco's contact — never the lead's phone or e-mail.",
+      "messageRequired": "Write the message to the partner.",
+      "cancel": "Cancel",
+      "send": "Send referral",
+      "sent": "Referred to {partner}. The partner received the e-mail.",
+      "consentRequired": "This lead did not consent to being introduced to partners: the referral was not sent.",
+      "alreadyReferred": "This lead was already referred to this partner.",
+      "partnerUnavailable": "This partner is no longer active in the network.",
+      "blocked": {
+        "consent_missing": "No consent: the lead has not answered the request to be introduced to partners yet. No referral goes out without it.",
+        "consent_refused": "No consent: the lead did not agree to be introduced to partners. No referral goes out without it."
+      }
+    },
+    "trail": {
+      "title": "Referral trail",
+      "heading": "No referrals | 1 referral in the trail | {n} referrals in the trail",
+      "lede": "Every referral of the network: who was recommended, to whom, with which consent, by whom and when. No referral goes out without a recorded consent.",
+      "filterLabel": "Partner",
+      "filterAll": "All partners",
+      "inactiveOption": "{name} (inactive)",
+      "score": "{score}% fit",
+      "consentGiven": "Consented on {date} · version {version}",
+      "by": "by {name}",
+      "loadFailed": "The trail could not be loaded.",
+      "emptyTitle": "No referrals yet",
+      "emptyText": "When the team refers a lead to a partner, it shows here with the recorded consent."
+    }
   }
 }

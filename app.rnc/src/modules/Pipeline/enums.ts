@@ -23,6 +23,7 @@ enum LEAD_EVENT_TYPE {
   DIAGNOSTIC_STARTED = 'diagnostico.inicio',
   MEETING_BOOKED = 'reuniao.marcada',
   NOTE_ADDED = 'nota.adicionada',
+  REFERRAL_SENT = 'encaminhamento.enviado',
   RESULT_SEEN = 'resultado.visto',
   STAGE_CHANGED = 'etapa.alterada',
   STEP_REACHED = 'diagnostico.passo',

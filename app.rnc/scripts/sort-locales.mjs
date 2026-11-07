@@ -17,6 +17,7 @@ const TOP_LEVEL_GROUPS = {
   home: 'module', // modules/Home (rnc-1)
   finance: 'module',
   notFound: 'module', // views/NotFound
+  partners: 'module', // modules/Partner (rnc-1)
   personalization: 'module',
   pipeline: 'module', // modules/Pipeline (rnc-1)
   rolesAndPermissions: 'module',

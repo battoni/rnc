@@ -14,6 +14,10 @@ The team's screens (R18–R20): the board (`/equipe/pipeline`, route `pipeline`)
 
 ## Intentional Decisions
 
+- **The routing panel is the Partner module's** (`MLeadRouting`, F6): `LeadView` mounts it under the
+  diagnostic with `canRefer` = `leads.update` and prepends the `encaminhamento.enviado` line it
+  emits. The stage does not change on a referral.
+
 - **Permissions (AM8)**: `leads.read` opens the board and the detail, `leads.update` shows the
   ◀ ▶ ✕, the drag, the stage select and the note form, `agenda.read` the agenda. A missing key hides
   the control; the API refuses it too.

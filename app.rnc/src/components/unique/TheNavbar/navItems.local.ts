@@ -2,6 +2,7 @@ import { computed } from 'vue';
 import type { ComputedRef } from 'vue';
 import type { NavItem } from './interfaces';
 import { WORKSPACES } from '@HomeModule';
+import { PARTNER_PERMISSIONS, PARTNER_ROUTE_NAMES } from '@PartnerModule';
 import { PIPELINE_PERMISSIONS, PIPELINE_ROUTE_NAMES } from '@PipelineModule';
 
 /**
@@ -47,7 +48,7 @@ import { PIPELINE_PERMISSIONS, PIPELINE_ROUTE_NAMES } from '@PipelineModule';
  */
 /**
  * What each group already holds. The team's has its pipeline and agenda (F5); the operator's carries
- * the bootstrap's own administration screens; Reinaldo's fills up as F6–F8 add their screens. Route
+ * the bootstrap's own administration screens; Reinaldo's has the network (F6) and fills up as F7–F8 add theirs. Route
  * names are the owners' (celer-05), never an import of their screens.
  */
 const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
@@ -63,6 +64,20 @@ const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
       label: 'navigation.agenda',
       permission: PIPELINE_PERMISSIONS.agenda,
       routeName: PIPELINE_ROUTE_NAMES.agenda,
+    },
+  ],
+  ceo: [
+    {
+      icon: 'pi pi-sitemap',
+      label: 'navigation.partners',
+      permission: PARTNER_PERMISSIONS.manage,
+      routeName: PARTNER_ROUTE_NAMES.partners,
+    },
+    {
+      icon: 'pi pi-shield',
+      label: 'navigation.trail',
+      permission: PARTNER_PERMISSIONS.trail,
+      routeName: PARTNER_ROUTE_NAMES.trail,
     },
   ],
   operator: [

@@ -49,4 +49,27 @@ return [
         'bring' => 'Leve, se puder, o último faturamento mensal e a lista dos principais clientes e fornecedores.',
         'report_action' => 'Rever o Relatório de Impacto',
     ],
+
+    'referral' => [
+        'subject' => 'Indicação da :firm: :company',
+        'preheader' => 'A :firm indica a :company para a sua equipe.',
+        'heading' => 'Uma indicação da :firm',
+        'hello' => 'Olá, equipe :partner.',
+        'body' => 'A :firm indica uma empresa que fez o diagnóstico da Reforma Tributária e pode precisar de vocês em :specialty.',
+        'company_label' => 'Empresa',
+        'covers_label' => 'Onde vocês podem ajudar',
+        'message_label' => 'Mensagem de :name',
+        'through_firm' => 'O primeiro contato com a empresa é feito pela :firm, que apresenta vocês. Responda este e-mail ou fale com:',
+        'phone_label' => 'Telefone',
+        'email_label' => 'E-mail',
+        'footer_reason' => 'Você recebeu este e-mail porque faz parte da rede de parceiros da :firm.',
+        'sectors' => [
+            'comercio' => 'Comércio',
+            'industria' => 'Indústria',
+            'servicos' => 'Serviços',
+            'saude' => 'Saúde',
+            'educacao' => 'Educação',
+            'agro' => 'Agronegócio',
+        ],
+    ],
 ];

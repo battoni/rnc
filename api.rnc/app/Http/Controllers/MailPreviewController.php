@@ -6,6 +6,8 @@ use App\Mail\EmailVerificationCodeMail;
 use App\Modules\Booking\DTOs\MeetingMailDTO;
 use App\Modules\Booking\Mail\BookingConfirmed;
 use App\Modules\Booking\Mail\MeetingReminder;
+use App\Modules\Partner\DTOs\ReferralMailDTO;
+use App\Modules\Partner\Mail\ReferralSent;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\Response;
 use Illuminate\Mail\Mailable;
@@ -46,6 +48,10 @@ class MailPreviewController extends Controller
                 'label' => 'Booking — the 24-hour reminder',
                 'make' => fn (): Mailable => (new MeetingReminder($this->sampleMeeting()))->locale('pt_BR'),
             ],
+            'referral-sent' => [
+                'label' => 'Network — a referral to a partner (company and Franco\'s contact, never the lead\'s)',
+                'make' => fn (): Mailable => (new ReferralSent($this->sampleReferral()))->locale('pt_BR'),
+            ],
         ];
     }
 
@@ -65,6 +71,24 @@ class MailPreviewController extends Controller
             firmName: (string) config('rnc.brand.name'),
             firmAddress: 'Av. Corifeu de Azevedo Marques, 2333, Butantã, São Paulo-SP',
             firmPhone: '11 3732-5500',
+        );
+    }
+
+    /** A referral as the team would send it from the lead detail (invented names, rnc-1 F6). */
+    private function sampleReferral(): ReferralMailDTO
+    {
+        return new ReferralMailDTO(
+            partnerName: 'Margem Certa (exemplo)',
+            specialty: 'Precificação e controladoria',
+            company: 'Consultoria Prisma',
+            sector: 'servicos',
+            covers: ['Crédito do Simples limitado', 'Regime de 30% para serviços', 'Contratos de longo prazo'],
+            message: 'A Franco indica a Consultoria Prisma. Podem fazer o primeiro contato em até 24 horas úteis?',
+            referredBy: 'Patrícia Gomes',
+            firmName: (string) config('rnc.brand.name'),
+            firmPhone: '11 3732-5500',
+            firmMailbox: 'contato@exemplo.com.br',
+            firmAddress: 'Av. Corifeu de Azevedo Marques, 2333, Butantã, São Paulo-SP',
         );
     }
 

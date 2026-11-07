@@ -268,6 +268,22 @@ class LeadService
         });
     }
 
+    /**
+     * A referral to a partner (R22): one timeline line with who sent it and to whom. The stage does
+     * not move — Franco stays the lead's owner. The caller (Partner) holds the transaction that also
+     * writes the referral; the lead is touched, so its card rises on the board.
+     *
+     * @param  array{referral_id: int, partner_id: int, partner: string, specialty: string, score: int}  $referral
+     */
+    public function recordReferral(Lead $lead, array $referral, User $by): LeadEvent
+    {
+        $lead->touch();
+
+        return $this->leadRepository
+            ->createLeadEvent($lead, LeadEventType::ReferralSent->value, $referral, Carbon::now(), $by->id)
+            ->setRelation('user', $by);
+    }
+
     private function assertOpen(Lead $lead): void
     {
         if (LeadStage::from($lead->stage)->locksProfile()) {

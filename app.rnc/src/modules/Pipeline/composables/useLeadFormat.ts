@@ -75,6 +75,9 @@ function useLeadFormat() {
       return t(key, { path: t(`pipeline.lead.profile.paths.${textOf(data.path) || 'quiz'}`) });
     }
 
+    if (event.type === LEAD_EVENT_TYPE.REFERRAL_SENT)
+      return t(key, { partner: textOf(data.partner), score: Number(data.score ?? 0) });
+
     if (event.type === LEAD_EVENT_TYPE.STEP_REACHED) return t(key, { step: t(`pipeline.steps.${textOf(data.step)}`) });
 
     if (event.type === LEAD_EVENT_TYPE.MEETING_BOOKED) {

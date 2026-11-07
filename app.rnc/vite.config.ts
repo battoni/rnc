@@ -160,6 +160,8 @@ export default defineConfig(({ mode }) => {
         '@HomeModule/*': getPath('./src/modules/Home/*'),
         '@NotificationModule': getPath('./src/modules/Notification'),
         '@NotificationModule/*': getPath('./src/modules/Notification/*'),
+        '@PartnerModule': getPath('./src/modules/Partner'),
+        '@PartnerModule/*': getPath('./src/modules/Partner/*'),
         '@PersonalizationModule': getPath('./src/modules/Personalization'),
         '@PersonalizationModule/*': getPath('./src/modules/Personalization/*'),
         '@PipelineModule': getPath('./src/modules/Pipeline'),

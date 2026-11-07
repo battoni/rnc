@@ -15,7 +15,7 @@ them and writes the team's notes — through this module's service.
 ## Intentional Decisions
 
 - **`LeadService` is the only writer** of the three tables. The Diagnostic, Booking and Pipeline
-  modules call it; Tracking only reads (`findLeadByToken`).
+  modules call it (Partner too, for the referral line, F6); Tracking only reads (`findLeadByToken`).
 - **The booking (F4) is `recordBooking`**: `reuniao_marcada`, the e-mail the confirmation goes to,
   and the report's own token (`report_token`, 48 characters, 30 days, AM4) — a second key, so the
   e-mailed link never opens the diagnostic's routes.
@@ -34,6 +34,10 @@ them and writes the team's notes — through this module's service.
   backwards too; perdido needs the reason (`lost_reason`, cleared when it leaves). Each move is an
   `etapa.alterada` line `{from, to, via[, reason]}` with the `user_id` — the line F7's funnel counts
   for "cliente". A team note is a `nota.adicionada` line with its author.
+- **A referral is a timeline line, not a stage (F6, R22)**: `recordReferral` writes one
+  `encaminhamento.enviado` line `{referral_id, partner_id, partner, specialty, score}` with the user
+  and touches the lead; the stage stays — Franco remains the owner. The `referrals` row is the
+  Partner module's, written in the same transaction.
 - **Every contact submission writes a consent row (AM12)**, given true or false — the box starts
   unticked — with `ConsentTerms::TEXT`, `VERSION` 1, `via = formulario` and `given_at`. No IP, no
   user agent. A new wording is a new version; the stored text is the text read.

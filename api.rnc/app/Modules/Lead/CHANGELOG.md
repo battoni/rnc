@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.3.0 — 2026-11-07
+
+### Added
+
+- `LeadService::recordReferral` and `LeadEventType::ReferralSent` (`encaminhamento.enviado`) — the referral's timeline line, written by the Partner module (rnc-1 F6, R22).
+
 ## 1.2.0 — 2026-11-07
 
 ### Added

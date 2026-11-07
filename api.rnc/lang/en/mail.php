@@ -51,4 +51,27 @@ return [
         'bring' => 'If you can, bring the latest monthly revenue and the list of your main customers and suppliers.',
         'report_action' => 'Review the Impact Report',
     ],
+
+    'referral' => [
+        'subject' => 'A referral from :firm: :company',
+        'preheader' => ':firm recommends :company to your team.',
+        'heading' => 'A referral from :firm',
+        'hello' => 'Hello, :partner team.',
+        'body' => ':firm recommends a company that took the Tax Reform diagnostic and may need you in :specialty.',
+        'company_label' => 'Company',
+        'covers_label' => 'Where you can help',
+        'message_label' => 'Message from :name',
+        'through_firm' => 'The first contact with the company goes through :firm, who introduces you. Reply to this e-mail or reach:',
+        'phone_label' => 'Phone',
+        'email_label' => 'E-mail',
+        'footer_reason' => 'You received this e-mail because you are part of the :firm partner network.',
+        'sectors' => [
+            'comercio' => 'Retail',
+            'industria' => 'Industry',
+            'servicos' => 'Services',
+            'saude' => 'Healthcare',
+            'educacao' => 'Education',
+            'agro' => 'Agribusiness',
+        ],
+    ],
 ];

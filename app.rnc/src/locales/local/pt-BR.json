@@ -36,7 +36,9 @@
     "ceo": "Reinaldo",
     "operator": "Operador",
     "pipeline": "Pipeline",
-    "agenda": "Agenda"
+    "agenda": "Agenda",
+    "partners": "Parceiros",
+    "trail": "Trilha"
   },
   "rolesAndPermissions": {
     "groups": {
@@ -564,7 +566,8 @@
           "stageChanged": "{from} → {to}",
           "stageLost": "{from} → {to}: {reason}",
           "noteAdded": "Nota: {text}",
-          "unknown": "Evento {type}"
+          "unknown": "Evento {type}",
+          "referralSent": "Encaminhado a {partner} ({score}%)"
         },
         "vias": {
           "botao": "botão",
@@ -585,5 +588,98 @@
       "loadFailed": "Não foi possível carregar a agenda."
     },
     "noDiagnosis": "Sem diagnóstico ainda"
+  },
+  "partners": {
+    "title": "Parceiros",
+    "lede": "A rede de especialistas da Franco: {active} de {total} ativos recebem encaminhamentos. Um parceiro desativado sai do roteamento e fica na trilha.",
+    "add": "Novo parceiro",
+    "edit": "Editar",
+    "deactivate": "Desativar",
+    "reactivate": "Reativar",
+    "active": "Ativo",
+    "inactive": "Inativo",
+    "saved": "{name} salvo.",
+    "deactivated": "{name} desativado: não aparece mais no roteamento.",
+    "reactivated": "{name} reativado.",
+    "loadFailed": "Não foi possível carregar os parceiros.",
+    "retry": "Tentar de novo",
+    "emptyTitle": "Nenhum parceiro ainda",
+    "emptyText": "Cadastre o primeiro especialista da rede para encaminhar leads a ele.",
+    "notFound": "Parceiro não encontrado.",
+    "specialties": {
+      "advocacia_tributaria": "Advocacia tributária",
+      "recuperacao_creditos": "Recuperação de créditos",
+      "erp_nfe": "ERP/NF-e",
+      "credito_capital_giro": "Crédito e capital de giro",
+      "seguros_beneficios": "Seguros e benefícios",
+      "societario_sucessao": "Societário e sucessão",
+      "precificacao_controladoria": "Precificação e controladoria",
+      "certificado_digital": "Certificado digital"
+    },
+    "statuses": {
+      "enviado": "Enviado",
+      "aceito": "Aceito",
+      "contato": "Em contato",
+      "reuniao": "Reunião",
+      "proposta": "Proposta",
+      "fechado": "Fechado",
+      "recusado": "Recusado"
+    },
+    "form": {
+      "newTitle": "Novo parceiro",
+      "editTitle": "Editar parceiro",
+      "name": "Nome",
+      "namePlaceholder": "Ex.: Andrade Tributário",
+      "specialty": "Especialidade",
+      "specialtyPlaceholder": "Escolha a especialidade",
+      "email": "E-mail",
+      "emailHint": "É para este endereço que vão os encaminhamentos.",
+      "phone": "Telefone",
+      "city": "Cidade",
+      "required": "Obrigatório.",
+      "emailInvalid": "Digite um e-mail válido.",
+      "cancel": "Cancelar",
+      "saveNew": "Cadastrar parceiro",
+      "saveEdit": "Salvar alterações"
+    },
+    "routing": {
+      "title": "Encaminhar à rede",
+      "lede": "Cada parceiro com a aderência ao diagnóstico deste lead. A Franco continua dona do lead: o parceiro fala com a empresa pela Franco.",
+      "score": "{score}% · {specialty}",
+      "refer": "Encaminhar",
+      "referredOn": "Encaminhado em {date}",
+      "coversLabel": "Itens do diagnóstico que o parceiro resolve",
+      "coversNothing": "Nenhum item deste diagnóstico na especialidade dele.",
+      "empty": "Nenhum parceiro ativo na rede. Reinaldo cadastra os parceiros em Parceiros.",
+      "loadFailed": "Não foi possível carregar os parceiros para este lead.",
+      "messageLabel": "Mensagem para {partner}",
+      "defaultMessage": "A Franco indica a {company}. Podem fazer o primeiro contato em até 24 horas úteis?",
+      "privacyNote": "O parceiro recebe o nome da empresa, o diagnóstico e o contato da Franco — nunca o telefone ou o e-mail do lead.",
+      "messageRequired": "Escreva a mensagem para o parceiro.",
+      "cancel": "Cancelar",
+      "send": "Enviar encaminhamento",
+      "sent": "Encaminhado a {partner}. O parceiro recebeu o e-mail.",
+      "consentRequired": "Este lead não autorizou ser apresentado a parceiros: o encaminhamento não foi enviado.",
+      "alreadyReferred": "Este lead já foi encaminhado a este parceiro.",
+      "partnerUnavailable": "Este parceiro não está mais ativo na rede.",
+      "blocked": {
+        "consent_missing": "Sem autorização: o lead ainda não respondeu ao pedido para ser apresentado a parceiros. Nenhum encaminhamento sai sem ela.",
+        "consent_refused": "Sem autorização: o lead não autorizou ser apresentado a parceiros. Nenhum encaminhamento sai sem ela."
+      }
+    },
+    "trail": {
+      "title": "Trilha de encaminhamentos",
+      "heading": "Nenhum encaminhamento | 1 encaminhamento na trilha | {n} encaminhamentos na trilha",
+      "lede": "Cada indicação da rede: quem foi indicado, a quem, com que autorização, por quem e quando. Nenhum encaminhamento sai sem a autorização registrada.",
+      "filterLabel": "Parceiro",
+      "filterAll": "Todos os parceiros",
+      "inactiveOption": "{name} (inativo)",
+      "score": "{score}% de aderência",
+      "consentGiven": "Autorizou em {date} · versão {version}",
+      "by": "por {name}",
+      "loadFailed": "Não foi possível carregar a trilha.",
+      "emptyTitle": "Nenhum encaminhamento ainda",
+      "emptyText": "Quando a equipe encaminhar um lead a um parceiro, ele aparece aqui com a autorização registrada."
+    }
   }
 }

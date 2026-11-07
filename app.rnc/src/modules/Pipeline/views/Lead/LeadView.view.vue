@@ -15,7 +15,8 @@ import { GetLeadService, MoveLeadStageService } from '../../services';
  * The lead detail (rnc-1 R19): who the lead is and how to reach them (real `tel:`, `mailto:` and
  * `wa.me` links), the profile, the full diagnostic the visitor only gets in the meeting, the consent
  * answer as given, the meeting, the team's notes and the timeline. The stage moves from here too
- * (`via: ficha`); perdido asks for the reason.
+ * (`via: ficha`); perdido asks for the reason. Under the diagnostic, the routing panel (F6, R22,
+ * the Partner module's `MLeadRouting`): a referral lands on the timeline, the stage stays.
  */
 interface LoadError {
   response?: { status?: number };
@@ -161,6 +162,12 @@ function onLostSaved(move: LeadMove) {
   applyMove(move);
 }
 
+function onReferred(event: LeadTimelineEvent) {
+  if (!lead.value) return;
+
+  lead.value.timeline = [event, ...lead.value.timeline];
+}
+
 function onNoteSaved(note: LeadTimelineEvent) {
   if (!lead.value) return;
 
@@ -300,6 +307,13 @@ function onNoteSaved(note: LeadTimelineEvent) {
 
             <MLeadDiagnosis :diagnosis="lead.diagnosis" />
           </section>
+
+          <MLeadRouting
+            :canRefer="canUpdate"
+            :company="lead.company"
+            :leadId="lead.id"
+            @onReferred="onReferred"
+          />
 
           <section class="bg-panel shadow-lift flex flex-col gap-4 rounded-lg p-5">
             <h3 class="text-heading text-lg font-semibold">{{ $t('pipeline.lead.profile.title') }}</h3>

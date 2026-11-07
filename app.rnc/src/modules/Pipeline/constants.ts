@@ -18,6 +18,7 @@ const TIMELINE_EVENT_KEYS: Record<LEAD_EVENT_TYPE, string> = {
   [LEAD_EVENT_TYPE.DIAGNOSTIC_STARTED]: 'diagnosticStarted',
   [LEAD_EVENT_TYPE.MEETING_BOOKED]: 'meetingBooked',
   [LEAD_EVENT_TYPE.NOTE_ADDED]: 'noteAdded',
+  [LEAD_EVENT_TYPE.REFERRAL_SENT]: 'referralSent',
   [LEAD_EVENT_TYPE.RESULT_SEEN]: 'resultSeen',
   [LEAD_EVENT_TYPE.STAGE_CHANGED]: 'stageChanged',
   [LEAD_EVENT_TYPE.STEP_REACHED]: 'stepReached',

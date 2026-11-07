@@ -10,7 +10,7 @@ const props = defineProps<{
 
 const { formatMoment, sentenceOf } = useLeadFormat();
 
-const TEAM_TYPES: string[] = [LEAD_EVENT_TYPE.NOTE_ADDED, LEAD_EVENT_TYPE.STAGE_CHANGED];
+const TEAM_TYPES: string[] = [LEAD_EVENT_TYPE.NOTE_ADDED, LEAD_EVENT_TYPE.REFERRAL_SENT, LEAD_EVENT_TYPE.STAGE_CHANGED];
 </script>
 
 <template>

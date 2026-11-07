@@ -14,6 +14,8 @@ use App\Modules\Content\Controllers\PublicSectorPageController;
 use App\Modules\Diagnostic\Controllers\PublicDiagnosticController;
 use App\Modules\Firm\Controllers\PublicFirmController;
 use App\Modules\Notification\Controllers\NotificationController;
+use App\Modules\Partner\Controllers\PartnerController;
+use App\Modules\Partner\Controllers\ReferralController;
 use App\Modules\Pipeline\Controllers\AgendaController;
 use App\Modules\Pipeline\Controllers\PipelineLeadController;
 use App\Modules\Tracking\Controllers\PublicEventController;
@@ -59,3 +61,14 @@ Route::get('leads/{id}', [PipelineLeadController::class, 'show'])->middleware(['
 Route::patch('leads/{id}/stage', [PipelineLeadController::class, 'updateStage'])->middleware(['auth', 'permission:leads.update']);
 Route::post('leads/{id}/notes', [PipelineLeadController::class, 'storeNote'])->middleware(['auth', 'permission:leads.update']);
 Route::get('agenda', [AgendaController::class, 'index'])->middleware(['auth', 'permission:agenda.read']);
+
+// The network (rnc-1 F6, R21–R23, AM8): the registry behind `partners.manage` (ceo, operador);
+// routing on the lead detail with the team's own keys — the scores behind `leads.read`, the
+// referral behind `leads.update`; the trail and its filter options behind `referrals.read`.
+Route::get('partners', [PartnerController::class, 'index'])->middleware(['auth', 'permission:partners.manage']);
+Route::post('partners', [PartnerController::class, 'store'])->middleware(['auth', 'permission:partners.manage']);
+Route::patch('partners/{id}', [PartnerController::class, 'update'])->middleware(['auth', 'permission:partners.manage']);
+Route::get('partners/options', [PartnerController::class, 'options'])->middleware(['auth', 'permission:referrals.read']);
+Route::get('leads/{id}/partner-matches', [ReferralController::class, 'matches'])->middleware(['auth', 'permission:leads.read']);
+Route::post('leads/{id}/referrals', [ReferralController::class, 'store'])->middleware(['auth', 'permission:leads.update']);
+Route::get('referrals', [ReferralController::class, 'index'])->middleware(['auth', 'permission:referrals.read']);

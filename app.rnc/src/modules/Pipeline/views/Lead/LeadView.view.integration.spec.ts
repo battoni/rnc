@@ -32,6 +32,10 @@ vi.mock('vue-router', async (importOriginal) => ({
 const STUBS = {
   AEmptyState: { props: ['title'], template: '<div data-testid="empty-state">{{ title }}</div>' },
   AFormError: { props: ['error'], template: '<p v-if="error">{{ error }}</p>' },
+  MLeadRouting: {
+    props: ['canRefer', 'leadId'],
+    template: '<section data-testid="lead-routing" :data-lead="leadId" :data-can-refer="String(canRefer)" />',
+  },
   MMainDialog: { props: ['visible'], template: '<div v-if="visible" data-testid="dialog"><slot /></div>' },
   RouterLink: { props: ['to'], template: '<a><slot :navigate="() => {}" /></a>' },
 };
@@ -124,6 +128,42 @@ describe('LeadView', () => {
     expect(items[0]!.textContent).toContain('Partial lead → Lead (dragged)');
     expect(within(items[0]!).getByTestId('timeline-who').textContent).toContain('by Patrícia Gomes');
     expect(within(items[1]!).getByTestId('timeline-who').textContent).toContain('visitor');
+  });
+
+  it('puts the routing panel under the diagnostic, with the referral allowed by leads.update (F6)', async () => {
+    renderLead();
+
+    const panel = await screen.findByTestId('lead-routing');
+
+    expect(panel.getAttribute('data-lead')).toBe('7');
+    expect(panel.getAttribute('data-can-refer')).toBe('true');
+  });
+
+  it('writes a referral line on the timeline with the partner and the score (F6)', async () => {
+    server.use(
+      http.get('http://localhost/leads/7', () => {
+        const detail = structuredClone(LEAD_DETAIL_FIXTURE);
+
+        detail.timeline = [
+          {
+            at: '2026-11-19T11:00:00-03:00',
+            data: { partner: 'Margem Certa (exemplo)', score: 92 },
+            id: 99,
+            type: 'encaminhamento.enviado',
+            user: { id: 3, name: 'Patrícia Gomes' },
+          },
+          ...detail.timeline,
+        ];
+
+        return HttpResponse.json({ data: detail });
+      })
+    );
+    renderLead();
+
+    const items = await screen.findAllByTestId('timeline-item');
+
+    expect(items[0]!.textContent).toContain('Referred to Margem Certa (exemplo) (92%)');
+    expect(items[0]!.textContent).toContain('Patrícia Gomes');
   });
 
   it('adds a note to the notes and the timeline', async () => {
