@@ -2,10 +2,12 @@
 
 use App\Models\User;
 use App\Modules\Auth\Models\Role;
+use App\Modules\Channel\Models\ChannelFirm;
 use App\Modules\Firm\Models\Firm;
 use App\Modules\Firm\Models\FirmBrand;
 use App\Modules\Partner\Models\Partner;
 use Database\Seeders\BrandSeeder;
+use Database\Seeders\ChannelSeeder;
 use Database\Seeders\FirmSeeder;
 use Database\Seeders\RoleSeeder;
 
@@ -19,9 +21,10 @@ use Database\Seeders\RoleSeeder;
  * F8 the briefing. F9 checks the file covers every route F1–F8 added.
  */
 beforeEach(function () {
-    $this->seed([FirmSeeder::class, RoleSeeder::class, BrandSeeder::class]);
+    $this->seed([FirmSeeder::class, RoleSeeder::class, BrandSeeder::class, ChannelSeeder::class]);
     $this->franco = Firm::where('slug', 'franco')->firstOrFail();
     $this->express = FirmBrand::withoutGlobalScopes()->where('slug', 'express')->firstOrFail();
+    $this->channelFirm = ChannelFirm::withoutGlobalScopes()->where('stage', 'implantacao')->firstOrFail();
 });
 
 function phase3Person(string $role, ?int $partnerId = null): User
@@ -83,5 +86,48 @@ describe('F1 brands (A25)', function () {
 
         expect($slugs)->toBe(['express', 'prime'])
             ->and(FirmBrand::withoutGlobalScopes()->findOrFail($theirs->id)->active)->toBeTrue();
+    });
+});
+
+/** F3a — the RNC channel (`channel.read` ceo + operador, `channel.manage` operador only: R28, R9). */
+dataset('phase 3 channel routes', [
+    'GET channel' => ['GET', '/api/channel', true],
+    'POST channel/firms' => ['POST', '/api/channel/firms', false],
+    'PATCH channel/firms/{id}' => ['PATCH', '/api/channel/firms/{id}', false],
+    'POST channel/firms/{id}/advance' => ['POST', '/api/channel/firms/{id}/advance', false],
+]);
+
+describe('F3a channel (A25)', function () {
+    it('refuses a partner with 403', function (string $method, string $uri) {
+        $this->actingAs(phase3Partner())->json($method, str_replace('{id}', (string) $this->channelFirm->id, $uri))->assertForbidden();
+    })->with('phase 3 channel routes');
+
+    it('refuses the team with 403', function (string $method, string $uri) {
+        $this->actingAs(phase3Person('equipe'))->json($method, str_replace('{id}', (string) $this->channelFirm->id, $uri))->assertForbidden();
+    })->with('phase 3 channel routes');
+
+    it('lets Reinaldo read and refuses him every write with 403 (R9)', function (string $method, string $uri, bool $read) {
+        $response = $this->actingAs(phase3Person('ceo'))->json($method, str_replace('{id}', (string) $this->channelFirm->id, $uri), ['to' => 'ativo']);
+
+        $read ? $response->assertOk() : $response->assertForbidden();
+    })->with('phase 3 channel routes');
+
+    it('asks a guest to sign in', function (string $method, string $uri) {
+        $this->json($method, str_replace('{id}', (string) $this->channelFirm->id, $uri))->assertUnauthorized();
+    })->with('phase 3 channel routes');
+
+    it("answers 404 on firm B's channel firm, and lists none of firm B's", function () {
+        $firmB = Firm::factory()->create(['slug' => 'firma-b']);
+        $theirs = ChannelFirm::factory()->create(['firm_id' => $firmB->id, 'name' => 'Firma B Parceira (exemplo)', 'stage' => 'contato']);
+        $operator = phase3Person('operador');
+
+        $this->actingAs($operator)->patchJson("/api/channel/firms/{$theirs->id}", ['notes' => 'roubada'])->assertNotFound();
+        $this->actingAs($operator)->postJson("/api/channel/firms/{$theirs->id}/advance", ['to' => 'demo'])->assertNotFound();
+
+        $names = collect($this->actingAs($operator)->getJson('/api/channel')->assertOk()->json('data.firms'))->pluck('name');
+
+        expect($names)->toHaveCount(6)
+            ->and($names)->not->toContain('Firma B Parceira (exemplo)')
+            ->and(ChannelFirm::withoutGlobalScopes()->findOrFail($theirs->id)->stage)->toBe('contato');
     });
 });

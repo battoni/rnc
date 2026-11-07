@@ -1,6 +1,7 @@
 <?php
 
 use Database\Seeders\BrandSeeder;
+use Database\Seeders\ChannelSeeder;
 use Database\Seeders\ClientSeeder;
 use Database\Seeders\LocalUsersSeeder;
 use Database\Seeders\MetricsSeeder;
@@ -53,3 +54,7 @@ $this->call(MetricsSeeder::class);
 // Reinaldo's portfolio to reprice (rnc-1 F8): 500 invented clients with plainly invented CNPJs —
 // local only (refuses production).
 $this->call(ClientSeeder::class);
+
+// Franco's RNC channel (rnc-3 F3a): the demo's six "(exemplo)" member firms, three active, on the
+// default fee and share — local only (refuses production).
+$this->call(ChannelSeeder::class);

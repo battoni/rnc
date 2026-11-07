@@ -92,4 +92,10 @@ return [
     'PATCH brands/{id}' => 'staff',
     'POST brands/{id}/activate' => 'staff',
     'POST brands/{id}/deactivate' => 'staff',
+
+    // STAFF — Phase 3 (rnc-3): F3a the RNC channel, `channel.read` / `channel.manage`
+    'GET channel' => 'staff',
+    'POST channel/firms' => 'staff',
+    'PATCH channel/firms/{id}' => 'staff',
+    'POST channel/firms/{id}/advance' => 'staff',
 ];

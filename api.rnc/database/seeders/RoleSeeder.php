@@ -26,7 +26,9 @@ use Illuminate\Database\Seeder;
  *
  * Phase 3's seven keys (rnc-3 F1, R28) are declared from rnc-3 F1 on — the operator holds them, and
  * `brands.manage` stays the operator's alone (D3); the channel, assistant, contracts and briefing
- * keys are granted to Reinaldo and the team in their own phases (F3a, F4, F6, F8).
+ * keys are granted to Reinaldo and the team in their own phases (F3a, F4, F6, F8). F3a gives
+ * Reinaldo `channel.read` — the RNC board read-only, without the platform's price (R9, AM15);
+ * `channel.manage` stays the operator's.
  *
  * Re-running the seeder rewrites the four matrices to exactly this table. A key added to a role
  * is a line here, and `SeededRolesTest` states the result.
@@ -48,6 +50,7 @@ class RoleSeeder extends Seeder
         'repricing.manage',
         'clients.import',
         'ledger.read',
+        'channel.read',
     ];
 
     public const PARCEIRO_KEYS = [

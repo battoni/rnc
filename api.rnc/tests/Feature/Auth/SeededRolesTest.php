@@ -57,9 +57,10 @@ describe('the seeded roles', function () {
         ]);
     });
 
-    it('give Reinaldo the team keys plus the network, the numbers and the repricing', function () {
+    it('give Reinaldo the team keys plus the network, the numbers, the repricing and the channel', function () {
         expect(seededRoleKeys('ceo'))->toBe([
             'agenda.read',
+            'channel.read',
             'clients.import',
             'home.read',
             'leads.read',
@@ -85,12 +86,18 @@ describe('the seeded roles', function () {
 
     it("keep Phase 3's keys with the operator until their own phase grants them (rnc-3 R28)", function () {
         $phase3 = ['brands.manage', 'channel.read', 'channel.manage', 'assistant.ask', 'assistant.manage', 'contracts.manage', 'briefing.read'];
+        $granted = ['ceo' => ['channel.read'], 'equipe' => [], 'parceiro' => []];
 
         expect(seededRoleKeys('operador'))->toContain(...$phase3);
 
-        foreach (['ceo', 'equipe', 'parceiro'] as $slug) {
-            expect(array_intersect(seededRoleKeys($slug), $phase3))->toBe([]);
+        foreach ($granted as $slug => $keys) {
+            expect(array_values(array_intersect(seededRoleKeys($slug), $phase3)))->toBe($keys);
         }
+    });
+
+    it('keep the channel\'s writes and its price with the operator: Reinaldo reads it (rnc-3 F3a, R9)', function () {
+        expect(seededRoleKeys('ceo'))->toContain('channel.read')->not->toContain('channel.manage')
+            ->and(seededRoleKeys('equipe'))->not->toContain('channel.read');
     });
 
     it('keep the staff directory and the permission matrix with the operator', function () {

@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.2.0 — 2026-11-07
+
+### Added
+
+- `config/channel.php` (rnc-3 F3a): the RNC channel's defaults for a new channel firm — `monthly_fee_cents` 350000, `share_bp` 1500. No `env()`: they are product defaults, not deployment settings; each firm stores its own copy.
+
 ## 1.1.0 — 2026-09-16
 
 ### Added

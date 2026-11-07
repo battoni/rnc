@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.9.0 — 2026-11-07
+
+### Added
+
+- rnc-3 F3a: the `channel_firms` and `channel_firm_events` tables (sequence `300002`–`300003`; the event's `user_id` has no foreign key — W25); `ChannelFirmFactory`; `ChannelSeeder` (local only) seeds the demo's six "(exemplo)" RNC firms, three ativo, on the default fee and share, 5–90 days into their stage; `RoleSeeder` grants Reinaldo `channel.read` (`channel.manage` stays the operator's).
+
 ## 1.8.0 — 2026-11-07
 
 ### Added

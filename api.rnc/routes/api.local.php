@@ -11,6 +11,7 @@
 use App\Http\Middleware\ResolveCurrentBrand;
 use App\Modules\Booking\Controllers\PublicBookingController;
 use App\Modules\Booking\Controllers\PublicReportController;
+use App\Modules\Channel\Controllers\ChannelController;
 use App\Modules\Content\Controllers\PublicSectorPageController;
 use App\Modules\Diagnostic\Controllers\PublicDiagnosticController;
 use App\Modules\Firm\Controllers\BrandController;
@@ -125,3 +126,13 @@ Route::get('brands', [BrandController::class, 'index'])->middleware($brands);
 Route::patch('brands/{id}', [BrandController::class, 'update'])->middleware($brands);
 Route::post('brands/{id}/activate', [BrandController::class, 'activate'])->middleware($brands);
 Route::post('brands/{id}/deactivate', [BrandController::class, 'deactivate'])->middleware($brands);
+
+// The RNC channel (rnc-3 F3a, R6–R9, D5, D6): the RNC firms Franco brings to the platform and
+// Franco's 15 % of the active ones' fees. Reinaldo reads the board (`channel.read`) without the
+// platform's price (AM15); the operator adds, edits and advances one stage (`channel.manage`).
+// Another firm's channel firm is a 404.
+$channelManage = ['auth', 'permission:channel.manage'];
+Route::get('channel', [ChannelController::class, 'index'])->middleware(['auth', 'permission:channel.read']);
+Route::post('channel/firms', [ChannelController::class, 'store'])->middleware($channelManage);
+Route::patch('channel/firms/{id}', [ChannelController::class, 'update'])->middleware($channelManage);
+Route::post('channel/firms/{id}/advance', [ChannelController::class, 'advance'])->middleware($channelManage);
