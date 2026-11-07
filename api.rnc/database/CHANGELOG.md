@@ -4,6 +4,12 @@ All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
 
+## 1.15.0 — 2026-11-07
+
+### Changed
+
+- rnc-2 F10 (R27, D13): `create_leads_table` gains `client_id` (nullable, no foreign key — Portfolio's id) and a unique `(firm_id, client_id)` (folded, D15; schema diffed before and after on SQLite: only the column and the index).
+
 ## 1.14.0 — 2026-11-07
 
 ### Changed

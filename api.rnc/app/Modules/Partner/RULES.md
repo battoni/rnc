@@ -1,6 +1,7 @@
 ---
-version: 1.4.1
+version: 1.5.0
 origin: rnc
+based-on: 1.5.0
 ---
 # RULES — Partner Module
 
@@ -129,6 +130,35 @@ partner's portal login — `partners.access_*_at` and `partner_access_events` �
   every referral, and a typed field reads simpler than a missing one.
 - **Every API route is classified** in `tests/Feature/Access/routeClasses.php` (public · portal ·
   staff · shared, A2): a route added without a class fails `RouteMatrixTest`.
+
+### The Radar's batch referral (rnc-2 F10, R27–R28, D13)
+
+- **Partner writes the batch, the Radar only ranks it**: Radar's `RadarService::referBatch` hands
+  `ReferralService::referBatch(rule, partnerId, ranked, user)` the rule's clients in the screen's
+  order (the range's top, ties by client id) with the profile the Radar read; this module decides
+  who goes, so the consent gate and the partner checks live where the `referrals` rows are written.
+- **Who may receive a batch**: an ACTIVE partner of the current firm (the request's `exists`, then
+  `findActivePartnerById` under `FirmScope` — another firm's partner is 422 on `partner_id` either
+  way) whose specialty covers the rule (`PartnerSpecialty::covers`), else 422 `partner_not_covering`.
+- **Who goes**: the first `BATCH_SIZE` (10) clients whose `partner_consent` is TRUE — null, never
+  answered, counts as no, like `false` (W98) — and whose `carteira` lead was never sent to this
+  partner. The answer `{sent, skipped_no_consent, skipped_already}` counts the row's clients left
+  out for each reason (clients past the 10th are neither: they wait for the next batch). A second
+  identical batch sends what is left, then 0.
+- **Each client goes through its one portfolio lead** (Lead's `findOrStartPortfolioLead`, D13), so
+  the referral is the routing panel's own shape: score and covered items from `PartnerMatcher` on the
+  lead's (the Radar's) profile, the lead's `via contrato` consent copied onto the row, one
+  `encaminhamento.enviado` line by the sender, the trail and the portal inbox unchanged (the inbox
+  shows the company and, from the accept on, the firm's contact — `PortalReferralResource`). The
+  message is the demo's Radar text in pt-BR: "A <firma> indica a <cliente>, cliente da carteira desde
+  <ano>: o Radar da Reforma apontou “<título>”. …", the year that of the client's consent (its
+  contract), else of its row. All writes in ONE transaction; a pair raced in by another batch is the
+  unique index's 409 `already_referred` and nothing of the batch is kept. One `ReferralSent` per
+  referral is queued after the commit.
+- **The row's picker (`portfolioBatchOptions`)**: per rule, the active covering partners by name,
+  each `{id, name, specialty, batch, sent}` — `batch` the size its next batch would have, `sent` how
+  many of the row's clients it already got. Three queries whatever the rows (partners, the firm's
+  portfolio leads, their referrals).
 
 ### The ledger (rnc-2 F4, R11, D10; plan AM9)
 

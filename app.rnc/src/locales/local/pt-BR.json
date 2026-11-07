@@ -46,7 +46,8 @@
     "statement": "Extrato",
     "readiness": "Prontidão da NF-e",
     "suppliers": "Crédito de fornecedores",
-    "invoices": "Notas fiscais"
+    "invoices": "Notas fiscais",
+    "radar": "Radar da carteira"
   },
   "rolesAndPermissions": {
     "groups": {
@@ -1355,5 +1356,68 @@
         "too_large": "Grande demais (mais de 1 MB, ou o .zip passou de 20 MB)"
       }
     }
+  },
+  "radar": {
+    "title": "Radar da carteira",
+    "heading": "O motor da Reforma sobre os clientes que a Franco já tem",
+    "lede": "Cada linha é uma conversa que a Franco pode puxar amanhã, ou um lote para a Rede de Especialistas Franco. Valores são estimativas por faixa de faturamento.",
+    "note": "Onde há notas fiscais importadas, a prova vem delas; o resto vem do cadastro. Só entra num lote o cliente que autorizou no contrato, e a Franco segue dona de todos.",
+    "loadFailed": "Não deu para carregar o Radar.",
+    "retry": "Tentar de novo",
+    "notFound": "Este item do Radar não existe.",
+    "partnerNotCovering": "A especialidade deste parceiro não cobre este item.",
+    "perYear": "por ano",
+    "perMonth": "por mês",
+    "kinds": {
+      "oportunidade": "Oportunidade",
+      "risco": "Risco"
+    },
+    "kpis": {
+      "label": "Resumo do Radar",
+      "clients": "Clientes analisados",
+      "clientsValue": "{count} cliente | {count} clientes",
+      "withOpportunity": "Com ao menos uma oportunidade",
+      "total": "Oportunidades na carteira",
+      "riskTypes": "Tipos de risco encontrados"
+    },
+    "opportunities": {
+      "title": "Clientes por tipo de oportunidade",
+      "lede": "Encaminhar em lote manda ao parceiro escolhido os 10 clientes de maior estimativa, com autorização no contrato, que ainda não foram indicados a ele.",
+      "empty": "Nenhuma oportunidade na carteira."
+    },
+    "risks": {
+      "title": "Riscos na carteira",
+      "lede": "Fora do total em R$: são custos a evitar, não receita."
+    },
+    "row": {
+      "clients": "{count} cliente | {count} clientes",
+      "held": "retidos na liquidação das vendas B2B (estimativa)",
+      "heldValue": "≈ {range} por mês",
+      "partnerLabel": "Parceiro para {title}",
+      "refer": "Encaminhar o maior | Encaminhar os {count} maiores",
+      "allSent": "Todos já encaminhados",
+      "sent": "{count} encaminhado | {count} encaminhados",
+      "withoutConsent": "{count} sem autorização fica fora do lote | {count} sem autorização ficam fora do lote",
+      "noPartner": "Sem especialidade na rede para este item.",
+      "showClients": "Ver clientes",
+      "hideClients": "Ocultar clientes",
+      "failed": "Não deu para encaminhar. Tente de novo.",
+      "notCovering": "A especialidade deste parceiro não cobre este item.",
+      "alreadyReferred": "Um destes clientes acabou de ser encaminhado a este parceiro. Abra o Radar de novo."
+    },
+    "detail": {
+      "loadFailed": "Não deu para carregar os clientes.",
+      "empty": "Nenhum cliente neste item.",
+      "noConsent": "Sem autorização",
+      "keys": "Chaves de acesso",
+      "proof": {
+        "cadastro": "do cadastro",
+        "readiness": "Notas dos últimos {days} dias: {complete} de {invoices} completas, {atRisk} em risco",
+        "share": "B2B medido nas notas: {share} ({documents} notas em {days} dias; o cadastro diz {declared})",
+        "split": "Vendas B2B das notas: {monthly} por mês, retidos {held} por mês"
+      }
+    },
+    "sentToast": "{count} cliente da carteira encaminhado para {partner}. A Franco segue dona de todos. | {count} clientes da carteira encaminhados para {partner}. A Franco segue dona de todos.",
+    "nothingToast": "Todos os clientes de “{title}” já foram encaminhados para {partner}."
   }
 }

@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.1.0 — 2026-11-07
+
+### Added
+
+- The batch referral (rnc-2 F10, R27, A21): `POST radar/referrals` (`radar.manage`; `ReferRadarBatchRequest`, `ReferRadarBatchDTO`, `RadarController::refer`, `RadarService::referBatch` handing Partner's `referBatch` the row's clients in the Radar's order with the profile read); every row of `GET radar` and `GET radar/types/{rule}` gains `partners` (`{id, name, specialty, batch, sent}`, Partner's `portfolioBatchOptions`). Tested by `tests/Feature/Radar/RadarBatchReferralTest`; `RadarSummaryTest`'s query ceilings rise by the pickers' three (8 and 9).
+
 ## 1.0.0 — 2026-11-07
 
 ### Added

@@ -2,10 +2,12 @@
 
 namespace App\Modules\Radar\Services;
 
+use App\Models\User;
 use App\Modules\Diagnostic\Enums\DiagnosticKind;
 use App\Modules\Diagnostic\Enums\DiagnosticRule;
 use App\Modules\Diagnostic\Services\RulesEngine;
 use App\Modules\Fiscal\DTOs\SalesTotals;
+use App\Modules\Partner\Services\ReferralService;
 use App\Modules\Portfolio\Models\Client;
 use App\Modules\Portfolio\Repositories\ClientRepository;
 
@@ -17,11 +19,17 @@ use App\Modules\Portfolio\Repositories\ClientRepository;
  * integer cents — except `split-payment`, whose range is R23's cash held per month
  * (`SplitPaymentCalculator`), so its row is Σ of the held ranges (R26, A19).
  *
- * Fixed cost (plan AM6): the clients (one query), the sales aggregate (one), and for a type the
- * keys of its clients (one); everything else is pure PHP.
+ * Each row also carries its partner picker (R27, F10): the active partners whose specialty covers
+ * the rule, with the next batch's size and how many were already sent (Partner's
+ * `portfolioBatchOptions`), and the batch itself is Partner's `referBatch` over the row's clients
+ * in this order.
+ *
+ * Fixed cost (plan AM6): the clients (one query), the sales aggregate (one), the pickers (three),
+ * and for a type the keys of its clients (one); everything else is pure PHP.
  *
  * @phpstan-type Item array{client: Client, rule: DiagnosticRule, range_cents: array{0: int, 1: int}, totals: SalesTotals|null}
- * @phpstan-type TypeRow array{rule: string, kind: string, title: string, citation: string, clients: int, without_consent: int, range_cents: array{0: int, 1: int}, period: string}
+ * @phpstan-type PartnerOption array{id: int, name: string, specialty: string, batch: int, sent: int}
+ * @phpstan-type TypeRow array{rule: string, kind: string, title: string, citation: string, clients: int, without_consent: int, range_cents: array{0: int, 1: int}, period: string, partners: list<PartnerOption>}
  */
 class RadarService
 {
@@ -35,6 +43,7 @@ class RadarService
         private ClientRepository $clientRepository,
         private EvidenceBuilder $evidenceBuilder,
         private RulesEngine $rulesEngine,
+        private ReferralService $referralService,
     ) {}
 
     /**
@@ -45,10 +54,12 @@ class RadarService
         $clients = $this->clientRepository->findAllClients();
         $items = $this->items($clients->all(), $this->evidenceBuilder->salesByClient());
 
+        $groups = array_map(self::ranked(...), self::groupByRule($items));
+        $options = $this->referralService->portfolioBatchOptions(array_map(self::clientsOf(...), $groups));
         $types = [];
 
-        foreach (self::groupByRule($items) as $value => $ruleItems) {
-            $types[] = self::typeRow(DiagnosticRule::from($value), $ruleItems);
+        foreach ($groups as $value => $ruleItems) {
+            $types[] = self::typeRow(DiagnosticRule::from($value), $ruleItems, $options[$value]);
         }
 
         usort($types, self::compareTypes(...));
@@ -82,12 +93,8 @@ class RadarService
      */
     public function type(DiagnosticRule $rule): array
     {
-        $totals = $this->evidenceBuilder->salesByClient();
-        $items = array_values(array_filter(
-            $this->items($this->clientRepository->findAllClients()->all(), $totals),
-            fn (array $item) => $item['rule'] === $rule,
-        ));
-        usort($items, fn (array $a, array $b) => $b['range_cents'][1] <=> $a['range_cents'][1] ?: $a['client']->id <=> $b['client']->id);
+        $items = $this->itemsOf($rule, $this->evidenceBuilder->salesByClient());
+        $options = $this->referralService->portfolioBatchOptions([$rule->value => self::clientsOf($items)]);
 
         $rows = [];
         $fromNotes = [];
@@ -104,9 +111,59 @@ class RadarService
         $keys = $this->evidenceBuilder->keysByClient($rule, $fromNotes);
 
         return [
-            'type' => [...self::typeRow($rule, $items), 'detail' => $rule->detail()],
+            'type' => [...self::typeRow($rule, $items, $options[$rule->value]), 'detail' => $rule->detail()],
             'clients' => array_map(fn (array $row) => [...$row, 'keys' => $keys[$row['client']->id] ?? []], $rows),
         ];
+    }
+
+    /**
+     * "Encaminhar os N maiores" (R27): the rule's clients in this screen's order, each with the
+     * profile the Radar read, handed to Partner, which picks the batch and writes it.
+     *
+     * @return array{sent: int, skipped_no_consent: int, skipped_already: int}
+     */
+    public function referBatch(DiagnosticRule $rule, int $partnerId, User $by): array
+    {
+        $ranked = array_map(
+            fn (array $item) => ['client' => $item['client'], 'profile' => EvidenceBuilder::profile($item['client'], $item['totals'])],
+            $this->itemsOf($rule, $this->evidenceBuilder->salesByClient()),
+        );
+
+        return $this->referralService->referBatch($rule, $partnerId, $ranked, $by);
+    }
+
+    /**
+     * One rule's items over every client, biggest range first (ties by id).
+     *
+     * @param  array<int, SalesTotals>  $totals
+     * @return list<Item>
+     */
+    private function itemsOf(DiagnosticRule $rule, array $totals): array
+    {
+        return self::ranked(array_values(array_filter(
+            $this->items($this->clientRepository->findAllClients()->all(), $totals),
+            fn (array $item) => $item['rule'] === $rule,
+        )));
+    }
+
+    /**
+     * @param  list<Item>  $items
+     * @return list<Item> the range's top first, ties by client id
+     */
+    private static function ranked(array $items): array
+    {
+        usort($items, fn (array $a, array $b) => $b['range_cents'][1] <=> $a['range_cents'][1] ?: $a['client']->id <=> $b['client']->id);
+
+        return $items;
+    }
+
+    /**
+     * @param  list<Item>  $items
+     * @return list<Client>
+     */
+    private static function clientsOf(array $items): array
+    {
+        return array_map(fn (array $item) => $item['client'], $items);
     }
 
     /**
@@ -154,9 +211,10 @@ class RadarService
 
     /**
      * @param  list<Item>  $items  one rule's
+     * @param  list<PartnerOption>  $partners
      * @return TypeRow
      */
-    private static function typeRow(DiagnosticRule $rule, array $items): array
+    private static function typeRow(DiagnosticRule $rule, array $items, array $partners): array
     {
         return [
             'rule' => $rule->value,
@@ -170,6 +228,7 @@ class RadarService
                 array_sum(array_map(fn (array $item) => $item['range_cents'][1], $items)),
             ],
             'period' => $rule === DiagnosticRule::SplitPayment ? self::PERIOD_MONTH : self::PERIOD_YEAR,
+            'partners' => $partners,
         ];
     }
 

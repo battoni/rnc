@@ -38,7 +38,7 @@ describe('useLocalNavItems', () => {
     ]);
   });
 
-  it("puts the metrics, the partner registry, the trail, the network ledger, the repricing and the XML import in Reinaldo's group, each behind its own key (AM8)", () => {
+  it("puts the metrics, the partner registry, the trail, the network ledger, the repricing, the XML import and the Radar in Reinaldo's group, each behind its own key (AM8)", () => {
     const ceo = useLocalNavItems().value[1];
 
     expect(ceo?.children?.map((child) => [child.routeName, child.permission])).toEqual([
@@ -50,6 +50,8 @@ describe('useLocalNavItems', () => {
       ['repricing', 'repricing.manage'],
       // rnc-2 F8 (R15, R17): "Notas fiscais", the XML import — `fiscal.import` (ceo, D14).
       ['nfe-imports', 'fiscal.import'],
+      // rnc-2 F10 (R24–R27): "Radar da carteira" — `radar.manage` (ceo, D14).
+      ['portfolio-radar', 'radar.manage'],
     ]);
   });
 

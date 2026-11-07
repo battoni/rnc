@@ -29,6 +29,27 @@ class ReferralRepository
         return Referral::query()->where('lead_id', $lead->id)->get()->keyBy('partner_id');
     }
 
+    /**
+     * The partners each of these leads was already sent to (rnc-2 R27), as lead id → partner ids. One query.
+     *
+     * @param  list<int>  $leadIds
+     * @return array<int, list<int>>
+     */
+    public function findPartnerIdsByLeads(array $leadIds): array
+    {
+        if ($leadIds === []) {
+            return [];
+        }
+
+        $pairs = [];
+
+        foreach (Referral::query()->whereIn('lead_id', $leadIds)->get(['lead_id', 'partner_id']) as $row) {
+            $pairs[(int) $row->lead_id][] = (int) $row->partner_id;
+        }
+
+        return $pairs;
+    }
+
     /** @return LengthAwarePaginator<int, Referral> newest first */
     public function paginateReferrals(?int $partnerId, int $perPage): LengthAwarePaginator
     {

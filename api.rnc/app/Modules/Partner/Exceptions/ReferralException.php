@@ -18,6 +18,8 @@ class ReferralException extends RuntimeException
 
     public const CODE_INVALID_TRANSITION = 'invalid_transition';
 
+    public const CODE_PARTNER_NOT_COVERING = 'partner_not_covering';
+
     private const STATUS_CONFLICT = 409;
 
     private const STATUS_UNPROCESSABLE = 422;
@@ -46,6 +48,12 @@ class ReferralException extends RuntimeException
     public static function invalidTransition(): self
     {
         return new self('referral.invalidTransition', self::CODE_INVALID_TRANSITION, self::STATUS_UNPROCESSABLE);
+    }
+
+    /** A Radar batch to a partner whose specialty does not solve the rule (rnc-2 R27). */
+    public static function partnerNotCovering(): self
+    {
+        return new self('radar.partnerNotCovering', self::CODE_PARTNER_NOT_COVERING, self::STATUS_UNPROCESSABLE);
     }
 
     public function render(): JsonResponse

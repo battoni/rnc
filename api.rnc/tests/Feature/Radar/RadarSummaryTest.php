@@ -307,7 +307,9 @@ describe('the cost (plan AM6)', function () {
         expect(radarSummary()['clients'])->toBe(24)
             ->and($count('/api/radar'))->toBe($summary)
             ->and($count('/api/radar/types/split-payment'))->toBe($type)
-            ->and($summary)->toBeLessThanOrEqual(5)
-            ->and($type)->toBeLessThanOrEqual(6);
+            // F10 (R27) adds the partner pickers: the partners, the portfolio leads and — once any
+            // exists — their referrals, three queries at most whatever the clients.
+            ->and($summary)->toBeLessThanOrEqual(8)
+            ->and($type)->toBeLessThanOrEqual(9);
     });
 });

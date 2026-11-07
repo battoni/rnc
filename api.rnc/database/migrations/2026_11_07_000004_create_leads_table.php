@@ -39,9 +39,13 @@ return new class extends Migration
             $table->string('channel', 20);
             $table->string('source', 20);
             $table->string('medium', 60)->nullable();
+            // The portfolio client a `carteira` lead stands for (rnc-2 F10, R27, D13): one lead per
+            // client and firm, Portfolio's id with no foreign key across modules (rnc-1 W25).
+            $table->unsignedBigInteger('client_id')->nullable();
             $table->timestamps();
 
             $table->index(['firm_id', 'stage']);
+            $table->unique(['firm_id', 'client_id']);
         });
     }
 

@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.7.0 — 2026-11-07
+
+### Added
+
+- The portfolio lead (rnc-2 F10, R27, D13; plan AM10): `leads.client_id` (nullable, unique per firm, no foreign key; folded into `create_leads_table`), `LeadService::findOrStartPortfolioLead` (stage `cliente`, `channel` `carteira`, no contact, an expired token, the client's name, CNPJ and Radar profile, its consent copied once `via contrato`), `LeadRepository::findPortfolioLeadOfClient` / `findPortfolioLeadIdsByClient`, `ConsentTerms::VIA_CONTRACT` and `CONTRACT_TEXT`. Tested by `tests/Feature/Radar/RadarBatchReferralTest`.
+
 ## 1.6.0 — 2026-11-07
 
 ### Added

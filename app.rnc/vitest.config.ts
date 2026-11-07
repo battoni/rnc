@@ -57,6 +57,7 @@ const moduleSubAliases = [
   { alias: 'AuthModule', path: './src/modules/Auth' },
   { alias: 'DiagnosticModule', path: './src/modules/Diagnostic' },
   { alias: 'FiscalModule', path: './src/modules/Fiscal' },
+  { alias: 'RadarModule', path: './src/modules/Radar' },
   { alias: 'NotificationModule', path: './src/modules/Notification' },
   { alias: 'HomeModule', path: './src/modules/Home' },
   { alias: 'MetricsModule', path: './src/modules/Metrics' },

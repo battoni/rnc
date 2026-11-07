@@ -1,11 +1,11 @@
 ---
-version: 1.0.0
+version: 1.1.0
 origin: rnc
-based-on: 1.0.0
+based-on: 1.1.0
 ---
 # RULES — Radar Module
 
-> For AI agents. rnc-2 F9, 07/11/2026 (the Radar API; the screen and the batch referral are F10).
+> For AI agents. rnc-2 F9, 07/11/2026 (the Radar API); F10 (the row's partner picker and the batch referral).
 
 ## Domain
 
@@ -17,8 +17,9 @@ reads Portfolio's `clients` and Fiscal's `nfe_documents`, and uses Fiscal's `Spl
 
 | Route | Permission | What |
 | --- | --- | --- |
-| `GET radar` | `radar.manage` | `{clients, with_opportunity, total_cents: [lo, hi], risk_types, types: [row]}`; a row `{rule, kind, title, citation, clients, without_consent, range_cents: [lo, hi], period}`, `kind` ∈ `oportunidade · risco`, `period` `ano` (or `mes` for `split-payment`) |
+| `GET radar` | `radar.manage` | `{clients, with_opportunity, total_cents: [lo, hi], risk_types, types: [row]}`; a row `{rule, kind, title, citation, clients, without_consent, range_cents: [lo, hi], period, partners: [{id, name, specialty, batch, sent}]}`, `kind` ∈ `oportunidade · risco`, `period` `ano` (or `mes` for `split-payment`) |
 | `GET radar/types/{rule}` | `radar.manage` | `{type: row + detail, clients: [{id, name, cnpj, sector, regime, band, b2b_share, partner_consent, range_cents, evidence, keys}]}`; `{rule}` a `DiagnosticRule` value, else 404 `radar.notFound`; a known rule no client has → `clients: []` |
+| `POST radar/referrals` | `radar.manage` | `{rule, partner_id}` → 200 `{sent, skipped_no_consent, skipped_already}`; an unknown rule or a partner not active in the firm 422 on the field; a partner whose specialty does not cover the rule 422 `partner_not_covering`; a raced pair 409 `already_referred` |
 
 ## Intentional Decisions
 
@@ -44,17 +45,24 @@ reads Portfolio's `clients` and Fiscal's `nfe_documents`, and uses Fiscal's `Spl
   rule sales to a company first; newest first within each. Never the file or its path.
 - **Consent (R28)**: `without_consent` counts the row's clients whose `partner_consent` is not
   true (null = never answered = no); every client row carries `partner_consent`. Nothing here is
-  partner-facing — F10's batch must skip those clients.
+  partner-facing; the batch (F10) skips those clients in Partner's `referBatch`.
+- **The batch is Partner's (F10, R27)**: `RadarService::referBatch` only hands Partner the rule's
+  clients in this screen's order (the range's top, ties by id) with the profile it read (the
+  measured share when D9 applies, so the matcher covers the rule the batch is for); Partner picks
+  the 10, checks the partner and writes (Partner RULES → "The Radar's batch referral"). Each row's
+  `partners` is Partner's `portfolioBatchOptions` over the same order, so the screen's "Encaminhar
+  os N maiores" is the API's N.
 - **No N+1 (plan AM6)**: `GET radar` is the clients (one query) + ONE sales aggregate grouped by
-  client; `GET radar/types/{rule}` adds one keys query for the listed clients. `RadarSummaryTest`
-  counts the queries for 4 and 24 clients. Measured on the seed: `state.md` → F9.
+  client + the pickers' three (partners, portfolio leads, their referrals — F10); `GET
+  radar/types/{rule}` adds one keys query for the listed clients. `RadarSummaryTest` counts the
+  queries for 4 and 24 clients (≤ 8 and ≤ 9), `RadarBatchReferralTest` once leads and referrals exist. Measured on the seed: `state.md` → F9.
 
 ## Tables read from other modules
 
 `clients` (Portfolio, through `ClientRepository::findAllClients`); `nfe_documents` (Fiscal, through
 `NfeDocumentRepository::sumNfeDocumentSalesByClient` and `findNfeDocumentSalesKeysByClients`).
 Code reused: Diagnostic's `RulesEngine`, `DiagnosticRule`, `DiagnosticProfileDTO`; Fiscal's
-`SplitPaymentCalculator` and `ReadinessService::WINDOW_DAYS`.
+`SplitPaymentCalculator` and `ReadinessService::WINDOW_DAYS`. The batch request's `exists` reads Partner's `partners` (an active partner of the firm) and reuses Partner's `partners.routing.partnerUnavailable` message. Writes nothing itself: the batch's leads, consents, referrals and timeline lines are written by Partner's `ReferralService` (through Lead's `LeadService`).
 
 ## Known Gaps
 

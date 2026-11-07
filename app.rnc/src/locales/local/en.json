@@ -46,7 +46,8 @@
     "statement": "Statement",
     "readiness": "Invoice readiness",
     "suppliers": "Supplier credit",
-    "invoices": "Invoices"
+    "invoices": "Invoices",
+    "radar": "Portfolio radar"
   },
   "rolesAndPermissions": {
     "groups": {
@@ -1355,5 +1356,68 @@
         "too_large": "Too large (over 1 MB, or the .zip went past 20 MB)"
       }
     }
+  },
+  "radar": {
+    "title": "Portfolio radar",
+    "heading": "The Reform's engine over the clients Franco already has",
+    "lede": "Each row is a conversation Franco can start tomorrow, or a batch for the Franco Specialist Network. Figures are estimates by revenue band.",
+    "note": "Where invoices were imported, the proof comes from them; the rest comes from the client record. Only a client that consented in its contract goes into a batch, and Franco keeps every one.",
+    "loadFailed": "The radar could not be loaded.",
+    "retry": "Try again",
+    "notFound": "This radar item does not exist.",
+    "partnerNotCovering": "This partner's specialty does not cover this item.",
+    "perYear": "a year",
+    "perMonth": "a month",
+    "kinds": {
+      "oportunidade": "Opportunity",
+      "risco": "Risk"
+    },
+    "kpis": {
+      "label": "Radar summary",
+      "clients": "Clients analysed",
+      "clientsValue": "{count} client | {count} clients",
+      "withOpportunity": "With at least one opportunity",
+      "total": "Opportunities in the portfolio",
+      "riskTypes": "Risk types found"
+    },
+    "opportunities": {
+      "title": "Clients by opportunity type",
+      "lede": "Sending a batch gives the chosen partner the 10 largest clients by estimate, with consent in their contract, not yet referred to it.",
+      "empty": "No opportunity in the portfolio."
+    },
+    "risks": {
+      "title": "Risks in the portfolio",
+      "lede": "Left out of the R$ total: they are costs to avoid, not revenue."
+    },
+    "row": {
+      "clients": "{count} client | {count} clients",
+      "held": "held back when B2B sales settle (estimate)",
+      "heldValue": "≈ {range} a month",
+      "partnerLabel": "Partner for {title}",
+      "refer": "Send the largest | Send the {count} largest",
+      "allSent": "All already sent",
+      "sent": "{count} sent | {count} sent",
+      "withoutConsent": "{count} without consent stays out of the batch | {count} without consent stay out of the batch",
+      "noPartner": "No specialty in the network for this item.",
+      "showClients": "Show clients",
+      "hideClients": "Hide clients",
+      "failed": "The batch could not be sent. Try again.",
+      "notCovering": "This partner's specialty does not cover this item.",
+      "alreadyReferred": "One of these clients was just sent to this partner. Open the radar again."
+    },
+    "detail": {
+      "loadFailed": "The clients could not be loaded.",
+      "empty": "No client in this item.",
+      "noConsent": "No consent",
+      "keys": "Access keys",
+      "proof": {
+        "cadastro": "from the client record",
+        "readiness": "Invoices of the last {days} days: {complete} of {invoices} complete, {atRisk} at risk",
+        "share": "B2B measured in the invoices: {share} ({documents} invoices in {days} days; the record says {declared})",
+        "split": "B2B sales from the invoices: {monthly} a month, {held} a month held back"
+      }
+    },
+    "sentToast": "{count} portfolio client sent to {partner}. Franco keeps every one. | {count} portfolio clients sent to {partner}. Franco keeps every one.",
+    "nothingToast": "Every client of “{title}” was already sent to {partner}."
   }
 }

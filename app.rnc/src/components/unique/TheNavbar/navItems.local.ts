@@ -7,6 +7,7 @@ import { METRICS_PERMISSIONS, METRICS_ROUTE_NAMES } from '@MetricsModule';
 import { PARTNER_PERMISSIONS, PARTNER_ROUTE_NAMES } from '@PartnerModule';
 import { PIPELINE_PERMISSIONS, PIPELINE_ROUTE_NAMES } from '@PipelineModule';
 import { PORTAL_PERMISSIONS, PORTAL_ROLE_SLUG, PORTAL_ROUTE_NAMES } from '@PortalModule';
+import { RADAR_PERMISSIONS, RADAR_ROUTE_NAMES } from '@RadarModule';
 import { REPRICING_PERMISSIONS, REPRICING_ROUTE_NAMES } from '@RepricingModule';
 
 /**
@@ -53,8 +54,8 @@ import { REPRICING_PERMISSIONS, REPRICING_ROUTE_NAMES } from '@RepricingModule';
 /**
  * What each group already holds. The team's has its pipeline and agenda (F5) and the two fiscal
  * screens (rnc-2 F8); the operator's carries the bootstrap's own administration screens; Reinaldo's
- * has the metrics (F7), the network (F6), its ledger (rnc-2 F4), the fee repricing (F8) and the XML
- * import (rnc-2 F8). Route
+ * has the metrics (F7), the network (F6), its ledger (rnc-2 F4), the fee repricing (F8), the XML
+ * import (rnc-2 F8) and the portfolio Radar (rnc-2 F10). Route
  * names are the owners' (celer-05), never an import of their screens.
  */
 const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
@@ -120,6 +121,12 @@ const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
       label: 'navigation.invoices',
       permission: FISCAL_PERMISSIONS.import,
       routeName: FISCAL_ROUTE_NAMES.imports,
+    },
+    {
+      icon: 'pi pi-compass',
+      label: 'navigation.radar',
+      permission: RADAR_PERMISSIONS.manage,
+      routeName: RADAR_ROUTE_NAMES.radar,
     },
   ],
   operator: [

@@ -136,7 +136,10 @@ Route::get('fiscal/supplier-credit', [SupplierCreditController::class, 'index'])
 Route::post('fiscal/supplier-credit/{id}/review', [SupplierCreditController::class, 'review'])->middleware(['auth', 'permission:fiscal.read']);
 Route::get('clients/{id}/events', [ClientEventController::class, 'index'])->middleware(['auth', 'permission:fiscal.read']);
 
-// Radar da carteira (rnc-2 F9, R24–R26): the rules engine over every client with its XML evidence,
+// Radar da carteira (rnc-2 F9–F10, R24–R27): the rules engine over every client with its XML evidence,
 // read only, behind `radar.manage` (ceo, operador). `{rule}` is a `DiagnosticRule` value.
 Route::get('radar', [RadarController::class, 'index'])->middleware(['auth', 'permission:radar.manage']);
 Route::get('radar/types/{rule}', [RadarController::class, 'type'])->middleware(['auth', 'permission:radar.manage']);
+// The batch referral (rnc-2 F10, R27, D13): a row's 10 largest consented clients not yet sent to one
+// covering partner, each through its `carteira` lead.
+Route::post('radar/referrals', [RadarController::class, 'refer'])->middleware(['auth', 'permission:radar.manage']);

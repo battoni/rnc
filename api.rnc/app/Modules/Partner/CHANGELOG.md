@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.5.0 — 2026-11-07
+
+### Added
+
+- The Radar's batch referral (rnc-2 F10, R27, A21; D13): `ReferralService::referBatch` (an active partner whose specialty covers the rule, else 422 `partner_not_covering`; the first 10 clients in the Radar's order with consent TRUE and never sent to that partner; each through Lead's `findOrStartPortfolioLead`, the referral scored by `PartnerMatcher` on the client's profile with the demo's Radar message and the lead's `via contrato` consent copied, one `encaminhamento.enviado` line each, all in one transaction, then one `ReferralSent` each) and `portfolioBatchOptions` (per Radar row, the active covering partners with `batch` and `sent`, three queries); `ReferralException::partnerNotCovering`; `ReferralRepository::findPartnerIdsByLeads`. Tested by `tests/Feature/Radar/RadarBatchReferralTest`.
+
 ## 1.4.1 — 2026-11-07
 
 ### Changed

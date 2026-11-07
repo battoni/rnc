@@ -3,6 +3,8 @@
 namespace App\Modules\Partner\Services;
 
 use App\Models\User;
+use App\Modules\Diagnostic\DTOs\DiagnosticProfileDTO;
+use App\Modules\Diagnostic\Enums\DiagnosticRule;
 use App\Modules\Firm\Services\CurrentFirm;
 use App\Modules\Lead\Models\Lead;
 use App\Modules\Lead\Models\LeadEvent;
@@ -17,6 +19,7 @@ use App\Modules\Partner\Models\Partner;
 use App\Modules\Partner\Models\Referral;
 use App\Modules\Partner\Repositories\PartnerRepository;
 use App\Modules\Partner\Repositories\ReferralRepository;
+use App\Modules\Portfolio\Models\Client;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -38,6 +41,12 @@ class ReferralService
     public const BLOCKED_CONSENT_MISSING = 'consent_missing';
 
     public const BLOCKED_CONSENT_REFUSED = 'consent_refused';
+
+    /** plan Defaults: a Radar batch is the 10 largest clients still to send (rnc-2 R27). */
+    public const BATCH_SIZE = 10;
+
+    /** The client's "desde" year is read in the firm's city (P4). */
+    private const LOCAL_TIMEZONE = 'America/Sao_Paulo';
 
     public function __construct(
         private CurrentFirm $currentFirm,
@@ -138,10 +147,180 @@ class ReferralService
         return ['referral' => $this->referralRepository->loadReferralForTrail($written['referral']), 'event' => $written['event']];
     }
 
+    /**
+     * The Radar rows' partner pickers (rnc-2 R27): per rule, the ACTIVE partners whose specialty
+     * covers it, by name, each with the size of its next batch and how many of the row's clients it
+     * already got. Three queries whatever the rows (partners, portfolio leads, their referrals).
+     *
+     * @param  array<string, list<Client>>  $rankedByRule  a rule's clients in the Radar's order
+     * @return array<string, list<array{id: int, name: string, specialty: string, batch: int, sent: int}>>
+     */
+    public function portfolioBatchOptions(array $rankedByRule): array
+    {
+        $partners = $this->partnerRepository->findActivePartners();
+        $referred = $this->referredPartnersByClient();
+        $options = [];
+
+        foreach ($rankedByRule as $rule => $clients) {
+            $options[$rule] = $partners
+                ->filter(fn (Partner $partner) => self::covers($partner, DiagnosticRule::from($rule)))
+                ->map(fn (Partner $partner) => [
+                    'id' => (int) $partner->id,
+                    'name' => $partner->name,
+                    'specialty' => $partner->specialty,
+                    'batch' => count(self::pickBatch($clients, $partner->id, $referred)['batch']),
+                    'sent' => count(array_filter($clients, fn (Client $client) => isset($referred[$client->id][$partner->id]))),
+                ])
+                ->values()
+                ->all();
+        }
+
+        return $options;
+    }
+
+    /**
+     * "Encaminhar os N maiores" (rnc-2 R27, D13): the rule's next batch to one partner. The partner
+     * must be active and its specialty must cover the rule (422 `partner_not_covering`); the batch is
+     * the first `BATCH_SIZE` clients in the Radar's order whose consent is TRUE (null, never answered,
+     * counts as no — W98) and who were never sent to this partner. Each goes through the client's one
+     * `carteira` lead (Lead's `findOrStartPortfolioLead`), so the referral, its consent copy, the
+     * timeline line, the trail and the inbox are the routing panel's own shape; all in ONE transaction,
+     * then one `ReferralSent` each, with Franco's contact.
+     *
+     * @param  list<array{client: Client, profile: DiagnosticProfileDTO}>  $ranked  the rule's clients in the Radar's order
+     * @return array{sent: int, skipped_no_consent: int, skipped_already: int}
+     */
+    public function referBatch(DiagnosticRule $rule, int $partnerId, array $ranked, User $by): array
+    {
+        $partner = $this->partnerRepository->findActivePartnerById($partnerId);
+
+        if (! $partner) {
+            throw ValidationException::withMessages(['partner_id' => [self::PARTNER_UNAVAILABLE]]);
+        }
+
+        if (! self::covers($partner, $rule)) {
+            throw ReferralException::partnerNotCovering();
+        }
+
+        $profiles = [];
+
+        foreach ($ranked as $candidate) {
+            $profiles[$candidate['client']->id] = $candidate['profile'];
+        }
+
+        $pick = self::pickBatch(array_column($ranked, 'client'), $partner->id, $this->referredPartnersByClient());
+
+        try {
+            $referrals = DB::transaction(fn () => array_map(
+                fn (Client $client) => $this->referPortfolioClient($client, $profiles[$client->id], $partner, $rule, $by),
+                $pick['batch'],
+            ));
+        } catch (UniqueConstraintViolationException) {
+            throw ReferralException::alreadyReferred();
+        }
+
+        foreach ($referrals as $referral) {
+            Mail::to($partner->email)->queue((new ReferralSent($this->mail($referral->lead, $partner, $referral, $by)))->locale(self::MAIL_LOCALE));
+        }
+
+        return ['sent' => count($referrals), 'skipped_no_consent' => $pick['skipped_no_consent'], 'skipped_already' => $pick['skipped_already']];
+    }
+
     /** @return LengthAwarePaginator<int, Referral> the trail (R23), newest first */
     public function trail(?int $partnerId, int $perPage): LengthAwarePaginator
     {
         return $this->referralRepository->paginateReferrals($partnerId, $perPage);
+    }
+
+    /** One client of a batch: its lead, the referral with the lead's consent copied, the timeline line. */
+    private function referPortfolioClient(Client $client, DiagnosticProfileDTO $profile, Partner $partner, DiagnosticRule $rule, User $by): Referral
+    {
+        $lead = $this->leadService->findOrStartPortfolioLead($client, $profile);
+        $consent = $lead->latestConsent;
+        $match = $this->partnerMatcher->match($lead, collect([$partner]))[0];
+
+        $referral = $this->referralRepository->createReferral([
+            'lead_id' => $lead->id,
+            'partner_id' => $partner->id,
+            'referred_by' => $by->id,
+            'message' => $this->batchMessage($client, $rule),
+            'score' => $match['score'],
+            'covers' => $match['covers'],
+            'consent_text' => $consent->text,
+            'consent_version' => $consent->version,
+            'consent_given_at' => $consent->given_at,
+            'status' => ReferralStatus::Enviado->value,
+        ]);
+
+        $this->leadService->recordReferral($lead, [
+            'referral_id' => $referral->id,
+            'partner_id' => $partner->id,
+            'partner' => $partner->name,
+            'specialty' => $partner->specialty,
+            'score' => $match['score'],
+        ], $by);
+
+        return $referral->setRelation('lead', $lead);
+    }
+
+    /**
+     * The demo's Radar text (`referBatch`), in pt-BR as the partner reads it: the firm stays the
+     * client's owner. "Desde" is the year the client's consent was signed (its contract), else the
+     * year it entered the portfolio.
+     */
+    private function batchMessage(Client $client, DiagnosticRule $rule): string
+    {
+        $firm = (string) ($this->currentFirm->get()->name ?? config('rnc.brand.name'));
+        $since = ($client->partner_consent_at ?? $client->created_at)->setTimezone(self::LOCAL_TIMEZONE)->year;
+
+        return sprintf(
+            'A %1$s indica a %2$s, cliente da carteira desde %3$d: o Radar da Reforma apontou “%4$s”. Podem fazer o primeiro contato em até %5$d horas úteis? A %1$s segue responsável pelo cliente.',
+            $firm,
+            $client->name,
+            $since,
+            $rule->title(),
+            ReferralSla::HOURS,
+        );
+    }
+
+    /**
+     * Client id → the partners its `carteira` lead was already sent to (as keys).
+     *
+     * @return array<int, array<int, true>>
+     */
+    private function referredPartnersByClient(): array
+    {
+        $leadIds = $this->leadRepository->findPortfolioLeadIdsByClient();
+        $partnerIds = $this->referralRepository->findPartnerIdsByLeads(array_values($leadIds));
+        $referred = [];
+
+        foreach ($leadIds as $clientId => $leadId) {
+            $referred[$clientId] = array_fill_keys($partnerIds[$leadId] ?? [], true);
+        }
+
+        return $referred;
+    }
+
+    /**
+     * @param  list<Client>  $clients  in the Radar's order
+     * @param  array<int, array<int, true>>  $referred
+     * @return array{batch: list<Client>, skipped_no_consent: int, skipped_already: int}
+     */
+    private static function pickBatch(array $clients, int $partnerId, array $referred): array
+    {
+        $consented = array_values(array_filter($clients, fn (Client $client) => $client->partner_consent === true));
+        $fresh = array_values(array_filter($consented, fn (Client $client) => ! isset($referred[$client->id][$partnerId])));
+
+        return [
+            'batch' => array_slice($fresh, 0, self::BATCH_SIZE),
+            'skipped_no_consent' => count($clients) - count($consented),
+            'skipped_already' => count($consented) - count($fresh),
+        ];
+    }
+
+    private static function covers(Partner $partner, DiagnosticRule $rule): bool
+    {
+        return in_array($rule, $partner->specialtyCase()->covers(), true);
     }
 
     private function blockedReason(Lead $lead): ?string
