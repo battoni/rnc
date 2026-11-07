@@ -149,6 +149,10 @@ $assistantManage = ['auth', 'permission:assistant.manage'];
 Route::post('assistant/ask', [AssistantController::class, 'ask'])->middleware($assistantAsk);
 Route::get('assistant/suggestions', [AssistantController::class, 'suggestions'])->middleware($assistantAsk);
 Route::post('assistant/questions', [AssistantController::class, 'handOff'])->middleware($assistantAsk);
+// rnc-3 F5 (R14): the inbox (a specialist's own, every one with assistant.manage; anyone else 403)
+// and the answer (the assigned specialist only, else 404) — both decided in `QuestionService`.
+Route::get('assistant/questions', [AssistantController::class, 'questions'])->middleware($assistantAsk);
+Route::post('assistant/questions/{id}/answer', [AssistantController::class, 'answer'])->whereNumber('id')->middleware($assistantAsk);
 Route::get('assistant/gaps', [AssistantController::class, 'gaps'])->middleware($assistantManage);
 Route::get('assistant/notes', [NoteController::class, 'index'])->middleware($assistantAsk);
 Route::post('assistant/notes', [NoteController::class, 'store'])->middleware($assistantAsk);

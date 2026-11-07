@@ -54,6 +54,7 @@ moduleAliases.forEach((moduleName) => {
 });
 
 const moduleSubAliases = [
+  { alias: 'AssistantModule', path: './src/modules/Assistant' },
   { alias: 'AuthModule', path: './src/modules/Auth' },
   { alias: 'BrandsModule', path: './src/modules/Brands' },
   { alias: 'ChannelModule', path: './src/modules/Channel' },

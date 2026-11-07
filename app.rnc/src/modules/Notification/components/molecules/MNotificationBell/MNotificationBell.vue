@@ -8,8 +8,9 @@ import { useNotificationStore } from '../../../store';
 
 /*
  * The back office's bell (rnc-1 R17, D5): the unread count, asked again every 30 s, and a dropdown
- * with one sentence per notification — a lead that left its contact, a meeting booked — each with
- * "marcar como lida", and "marcar todas". Meeting times are São Paulo's (AM9).
+ * with one sentence per notification — a lead that left its contact, a meeting booked, and the
+ * Reforma assistant's question, answer and expiring review (rnc-3 F5) — each with "marcar como lida",
+ * and "marcar todas". Meeting times and the review's last day are São Paulo's (AM9).
  */
 const notificationStore = useNotificationStore();
 
@@ -18,6 +19,9 @@ const { locale, t } = useI18n();
 const MAX_SHOWN_COUNT = 9;
 const MEETING_TIME_ZONE = 'America/Sao_Paulo';
 const KIND_ICONS: Record<string, string> = {
+  [NOTIFICATION_KIND.ASSISTANT_ANSWER]: 'pi pi-comment',
+  [NOTIFICATION_KIND.ASSISTANT_NOTE_EXPIRING]: 'pi pi-clock',
+  [NOTIFICATION_KIND.ASSISTANT_QUESTION]: 'pi pi-question-circle',
   [NOTIFICATION_KIND.MEETING_BOOKED]: 'pi pi-calendar',
   [NOTIFICATION_KIND.NEW_LEAD]: 'pi pi-user-plus',
 };
@@ -52,7 +56,22 @@ function sentenceOf(notification: BellNotification): string {
       })
     : '';
 
-  return t(`notifications.kinds.${notification.kind}`, { company, specialist: notification.specialist ?? '', when });
+  return t(`notifications.kinds.${notification.kind}`, {
+    answeredBy: notification.answered_by ?? '',
+    askedBy: notification.asked_by ?? '',
+    company,
+    expiresOn: notification.expires_on ? formatDay(notification.expires_on) : '',
+    question: notification.question ?? '',
+    specialist: notification.specialist ?? '',
+    when,
+  });
+}
+
+/** A São Paulo day as the API sends it (`YYYY-MM-DD`), written dd/mm/yyyy without a time-zone shift. */
+function formatDay(day: string): string {
+  const [year, month, date] = day.split('-');
+
+  return `${date}/${month}/${year}`;
 }
 
 function arrivedAt(notification: BellNotification): string {

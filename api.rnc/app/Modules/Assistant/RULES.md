@@ -1,10 +1,10 @@
 ---
-version: 1.0.0
+version: 1.1.0
 origin: rnc
 ---
 # RULES — Assistant Module
 
-> For AI agents. rnc-3 F4, 07/11/2026.
+> For AI agents. rnc-3 F4, 07/11/2026. F5 (inbox, answer, "Virar nota", expiry bell) the same day.
 
 ## Domain
 
@@ -18,10 +18,11 @@ never generates text (W9): there is no model, no embedding, no outward client in
 - **`assistant_notes`** (`AssistantNote`, `BelongsToFirm`): slug (unique per firm, from the question,
   `-2`… when taken; not editable), question ≤ 200, answer ≤ 2000, rule ≤ 200, source label ≤ 160 and
   URL ≤ 300, `as_of` (the day the source was read), `keywords_strong` / `keywords_weak` (JSON lists),
-  `status` (`NoteStatus`), `reviewer_id`, `reviewed_at` (UTC), `last_edited_by`. People carry no
-  foreign key (rnc-1 W25).
+  `status` (`NoteStatus`), `reviewer_id`, `reviewed_at` (UTC), `last_edited_by`,
+  `expiry_notified_at` (UTC, the 7-day bell's claim — F5). People carry no foreign key (rnc-1 W25).
 - **`assistant_questions`** (`AssistantQuestion`): asked by, specialist, question ≤ 300, status
-  (`QuestionStatus`: aberta · respondida), answer and `answered_at` (F5).
+  (`QuestionStatus`: aberta · respondida), answer and `answered_at`, `note_id` once "Virar nota"
+  made a note of it (F5).
 - **`assistant_asks`** (`AssistantAsk`): every ask — user, question, `normalised`, `note_id` or
   null, `at` (UTC). Written once by `AskService`, never edited.
 
@@ -63,6 +64,8 @@ never generates text (W9): there is no model, no embedding, no outward client in
 | `PATCH assistant/notes/{id}` | `assistant.ask` | writer |
 | `POST assistant/notes/{id}/review` | `assistant.ask` | reviewer (policy) |
 | `POST assistant/notes/{id}/retire` | `assistant.manage` | — |
+| `GET assistant/questions` | `assistant.ask` | writer (service) |
+| `POST assistant/questions/{id}/answer` | `assistant.ask` | the assigned specialist (service) |
 
 - **Writer** = `assistant.manage` (Reinaldo, the operator) or `users.is_specialist`; anyone else is
   403 `assistant.notWriter`, `code: not_writer` (W54). **Reviewer** = a specialist who is not the
@@ -81,6 +84,33 @@ never generates text (W9): there is no model, no embedding, no outward client in
   `specialist_id` → the first active specialist by name. Anyone who is not an active specialist of
   the firm — or no specialist at all — is 422 `assistant.notSpecialist`, `code: not_specialist`.
 
+## Inbox and answer (R14, F5)
+
+- `GET assistant/questions`: a specialist's own questions; `assistant.manage` every one of the
+  firm; anyone else 403 `assistant.notWriter` — the knowledge base's writers, since "Virar nota"
+  turns a question into a note (W64). Open first, then newest; with `asked_by`, `specialist`,
+  `answer`, `answered_at`, `note_id`.
+- `POST assistant/questions/{id}/answer {answer}` (3–2000): the **assigned specialist only** —
+  anyone else, Reinaldo included, and another firm's question are 404
+  `assistant.questionNotFound`, `code: question_not_found`. Once: a second answer is 422
+  `assistant.answered`, `code: answered`. Rings the asker alone (`AssistantAnswerNotification`).
+- **"Virar nota"** = `POST assistant/notes` with `from_question`: the question must be in the
+  writer's inbox (else 404 `assistant.questionNotFound`); the note is a rascunho like any other, and
+  `assistant_questions.note_id` ties the question to it once — a second is 422
+  `assistant.alreadyNoted`, `code: already_noted` (a conditional update inside the note's
+  transaction, so that note is rolled back).
+
+## Expiry (R11, AM19, F5)
+
+- `GET assistant/notes` carries `expiring_count` next to `data` — served notes 83–90 days old
+  (`AssistantNote::WARNING_DAYS = 7`, `scopeExpiringSoon`) — and each note its `expires_in_days`
+  (0 on day 90, null when not served). São Paulo days, as the 90 (W52).
+- `assistant:notify-expiring` (`NoteExpiryService`, daily 07:00 São Paulo, every firm through
+  `forEachFirm`) rings the reviewer of each expiring note **once per review**: the claim on
+  `expiry_notified_at` is a conditional update, and a newer `reviewed_at` makes an old claim stale,
+  so a re-review rings again at its own day 83. A missed day 83 rings on the next run (W63). An
+  inactive reviewer, or none, rings nobody — the counter still shows the note.
+
 ## Gaps (R15)
 
 - `GET assistant/gaps` (`assistant.manage`): the last 30 days' asks without a note, one line per
@@ -97,6 +127,8 @@ never generates text (W9): there is no model, no embedding, no outward client in
 
 - **No answer "por significado"** (R16): a question worded away from a note's keys finds nothing and
   is handed off. A semantic driver would be a new entry in `ASSISTANT_DRIVERS`.
-- **Answering a question, the inbox, "Virar nota", the expiry counter and the day-83 bell are F5's**
-  (R14, AM19). Until then the bell's `assistant_question` entry has no sentence in the SPA.
 - **No un-retire.** An aposentada note stays retired; write a new one.
+- **The bells do not link.** The three assistant bells carry the question or note id, but the bell
+  links to no screen yet (Notification Known Gap).
+- **An answered question never reopens**, and a note made from it keeps only `note_id`: retiring
+  the note leaves the question marked as noted.

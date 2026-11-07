@@ -1,6 +1,7 @@
 import { computed } from 'vue';
 import type { ComputedRef } from 'vue';
 import type { NavItem } from './interfaces';
+import { ASSISTANT_PERMISSIONS, ASSISTANT_ROUTE_NAMES } from '@AssistantModule';
 import { BRANDS_PERMISSIONS, BRANDS_ROUTE_NAMES } from '@BrandsModule';
 import { CHANNEL_PERMISSIONS, CHANNEL_ROUTE_NAMES } from '@ChannelModule';
 import { WORKSPACES } from '@HomeModule';
@@ -9,6 +10,7 @@ import { PARTNER_PERMISSIONS, PARTNER_ROUTE_NAMES } from '@PartnerModule';
 import { PIPELINE_PERMISSIONS, PIPELINE_ROUTE_NAMES } from '@PipelineModule';
 import { PORTAL_PERMISSIONS, PORTAL_ROLE_SLUG, PORTAL_ROUTE_NAMES } from '@PortalModule';
 import { REPRICING_PERMISSIONS, REPRICING_ROUTE_NAMES } from '@RepricingModule';
+import { useUserStore } from '@UserModule';
 
 /**
  * Project-owned navigation items — the cortex sync NEVER touches this file (classified LOCAL).
@@ -70,6 +72,13 @@ const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
       permission: PIPELINE_PERMISSIONS.agenda,
       routeName: PIPELINE_ROUTE_NAMES.agenda,
     },
+    // rnc-3 F5: the Reforma assistant, for the team and Reinaldo (R12).
+    {
+      icon: 'pi pi-comments',
+      label: 'navigation.assistant',
+      permission: ASSISTANT_PERMISSIONS.ask,
+      routeName: ASSISTANT_ROUTE_NAMES.ask,
+    },
   ],
   ceo: [
     {
@@ -130,6 +139,18 @@ const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
 };
 
 /**
+ * "Base da Reforma" (rnc-3 R10, AM4): under Equipe, for the people who write it — a specialist or
+ * `assistant.manage`. "Specialist" is a flag on the person, not a key, so this entry is added from
+ * the signed-in user rather than gated by `permission` alone.
+ */
+const KNOWLEDGE_ENTRY: NavItem = {
+  icon: 'pi pi-book',
+  label: 'navigation.knowledge',
+  permission: ASSISTANT_PERMISSIONS.ask,
+  routeName: ASSISTANT_ROUTE_NAMES.knowledge,
+};
+
+/**
  * The partner's portal (rnc-2 R3, A4): a partner's whole rail. Gated on the key AND the role — the
  * operator holds every key, `portal.access` included, and must never see a portal link; a partner
  * holds none of the three groups' keys, so it sees only this (and the core Home, which sends it here).
@@ -148,9 +169,11 @@ const PORTAL_ENTRY: NavItem = {
  * the operator all three. Each is a link with a toggle (shape 3) once it has children.
  */
 function useLocalNavItems(): ComputedRef<NavItem[]> {
+  const userStore = useUserStore();
+
   return computed<NavItem[]>(() => [
     ...WORKSPACES.map((workspace) => ({
-      children: WORKSPACE_CHILDREN[workspace.key],
+      children: childrenOf(workspace.key, writesKnowledge(userStore)),
       icon: workspace.icon,
       label: `navigation.${workspace.key}`,
       permission: workspace.permission,
@@ -158,6 +181,16 @@ function useLocalNavItems(): ComputedRef<NavItem[]> {
     })),
     PORTAL_ENTRY,
   ]);
+}
+
+function writesKnowledge(userStore: ReturnType<typeof useUserStore>): boolean {
+  return Boolean(userStore.user?.is_specialist) || userStore.hasPermission(ASSISTANT_PERMISSIONS.manage);
+}
+
+function childrenOf(key: string, withKnowledge: boolean): NavItem[] | undefined {
+  const children = WORKSPACE_CHILDREN[key];
+
+  return key === 'team' && children && withKnowledge ? [...children, KNOWLEDGE_ENTRY] : children;
 }
 
 const localNavSettings: NavItem[] = [];

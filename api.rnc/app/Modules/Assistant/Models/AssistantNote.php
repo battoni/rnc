@@ -35,10 +35,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int|null $reviewer_id
  * @property CarbonImmutable|null $reviewed_at UTC
  * @property int|null $last_edited_by
+ * @property CarbonImmutable|null $expiry_notified_at UTC — the reviewer's 7-day bell (AM19)
  * @property-read User|null $reviewer
  * @property-read User|null $lastEditor
  */
-#[Fillable(['slug', 'question', 'answer', 'rule', 'source_label', 'source_url', 'as_of', 'keywords_strong', 'keywords_weak', 'status', 'reviewer_id', 'reviewed_at', 'last_edited_by'])]
+#[Fillable(['slug', 'question', 'answer', 'rule', 'source_label', 'source_url', 'as_of', 'keywords_strong', 'keywords_weak', 'status', 'reviewer_id', 'reviewed_at', 'last_edited_by', 'expiry_notified_at'])]
 class AssistantNote extends Model
 {
     use BelongsToFirm;
@@ -52,10 +53,22 @@ class AssistantNote extends Model
     /** Where the 90 days are counted (plan P4). */
     public const BUSINESS_TIMEZONE = 'America/Sao_Paulo';
 
+    /** How long before the review runs out the base counts it and the reviewer's bell rings: day 83 (AM19). */
+    public const WARNING_DAYS = 7;
+
     /** The earliest review still served at `$now`: the start of the São Paulo day `VALID_DAYS` back. */
     public static function servedSince(CarbonImmutable $now): CarbonImmutable
     {
         return $now->setTimezone(self::BUSINESS_TIMEZONE)->startOfDay()->subDays(self::VALID_DAYS)->utc();
+    }
+
+    /**
+     * The latest review that is already in its last `WARNING_DAYS` days at `$now`: a review before the
+     * start of the São Paulo day `VALID_DAYS − WARNING_DAYS − 1` back is at least 83 days old.
+     */
+    public static function warnedBefore(CarbonImmutable $now): CarbonImmutable
+    {
+        return $now->setTimezone(self::BUSINESS_TIMEZONE)->startOfDay()->subDays(self::VALID_DAYS - self::WARNING_DAYS - 1)->utc();
     }
 
     /**
@@ -68,6 +81,35 @@ class AssistantNote extends Model
         $query->where('status', NoteStatus::Revisada->value)
             ->whereNotNull('reviewed_at')
             ->where('reviewed_at', '>=', self::servedSince($now)->format('Y-m-d H:i:s'));
+    }
+
+    /**
+     * Served notes in their last `WARNING_DAYS` days (83–90 days old): "N notas vencem em 7 dias".
+     *
+     * @param  Builder<AssistantNote>  $query
+     */
+    public function scopeExpiringSoon(Builder $query, CarbonImmutable $now): void
+    {
+        $query->served($now)->where('reviewed_at', '<', self::warnedBefore($now)->format('Y-m-d H:i:s'));
+    }
+
+    /** São Paulo days the review has left at `$now` — 0 on day 90; null when the note is not served. */
+    public function expiresInDays(CarbonImmutable $now): ?int
+    {
+        if (! $this->isServedAt($now) || $this->reviewed_at === null) {
+            return null;
+        }
+
+        $reviewDay = $this->reviewed_at->setTimezone(self::BUSINESS_TIMEZONE)->startOfDay();
+        $today = $now->setTimezone(self::BUSINESS_TIMEZONE)->startOfDay();
+
+        return self::VALID_DAYS - (int) $reviewDay->diffInDays($today);
+    }
+
+    /** The last São Paulo day the review is served: the review's day plus `VALID_DAYS`. */
+    public function expiresOn(): ?CarbonImmutable
+    {
+        return $this->reviewed_at?->setTimezone(self::BUSINESS_TIMEZONE)->startOfDay()->addDays(self::VALID_DAYS);
     }
 
     public function isServedAt(CarbonImmutable $now): bool
@@ -98,6 +140,7 @@ class AssistantNote extends Model
             'reviewer_id' => 'integer',
             'reviewed_at' => UtcDateTime::class,
             'last_edited_by' => 'integer',
+            'expiry_notified_at' => UtcDateTime::class,
         ];
     }
 

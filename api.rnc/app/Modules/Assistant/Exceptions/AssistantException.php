@@ -20,6 +20,14 @@ class AssistantException extends RuntimeException
 
     public const CODE_RETIRED = 'retired';
 
+    public const CODE_ANSWERED = 'answered';
+
+    public const CODE_ALREADY_NOTED = 'already_noted';
+
+    public const CODE_QUESTION_NOT_FOUND = 'question_not_found';
+
+    private const STATUS_NOT_FOUND = 404;
+
     private const STATUS_FORBIDDEN = 403;
 
     private const STATUS_UNPROCESSABLE = 422;
@@ -54,6 +62,24 @@ class AssistantException extends RuntimeException
     public static function retired(): self
     {
         return new self('assistant.retired', self::CODE_RETIRED, self::STATUS_UNPROCESSABLE);
+    }
+
+    /** A question answers once (R14). */
+    public static function answered(): self
+    {
+        return new self('assistant.answered', self::CODE_ANSWERED, self::STATUS_UNPROCESSABLE);
+    }
+
+    /** "Virar nota" turns a question into one note (F5). */
+    public static function alreadyNoted(): self
+    {
+        return new self('assistant.alreadyNoted', self::CODE_ALREADY_NOTED, self::STATUS_UNPROCESSABLE);
+    }
+
+    /** Not in the person's inbox — another specialist's, another firm's, or none at all: 404, never 403. */
+    public static function questionNotFound(): self
+    {
+        return new self('assistant.questionNotFound', self::CODE_QUESTION_NOT_FOUND, self::STATUS_NOT_FOUND);
     }
 
     public function render(): JsonResponse

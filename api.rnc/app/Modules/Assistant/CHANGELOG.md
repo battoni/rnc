@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.1.0 — 2026-11-07
+
+### Added
+
+- rnc-3 F5 (R11, R14, AM19, A13, A28): `GET assistant/questions` (a specialist's own, every one with `assistant.manage`, else 403 `assistant.notWriter`) and `POST assistant/questions/{id}/answer` (assigned specialist only, else 404 `assistant.questionNotFound`; once, else 422 `assistant.answered`; rings the asker through `AssistantAnswerNotification`); "Virar nota" — `from_question` on `POST assistant/notes`, tied once through `assistant_questions.note_id` (422 `assistant.alreadyNoted`); the notes list's `expiring_count` and each note's `expires_in_days`; `NoteExpiryService` + `assistant:notify-expiring` (daily 07:00 São Paulo, every firm) ringing the reviewer at day 83 once per review (`assistant_notes.expiry_notified_at`, `AssistantNoteExpiringNotification`). `AssistantNotePolicy::manage`, `AnswerQuestionRequest`; `QuestionResource` gains `asked_by`, `answer`, `answered_at`, `note_id`. Tests: `QuestionAnswerTest.php` (A13 rest), `NoteExpiryTest.php` (A28), `Phase3AccessTest` (A25 F5 rows), route classes.
+
 ## 1.0.0 — 2026-11-07
 
 ### Added

@@ -53,6 +53,41 @@ class AssistantNoteRepository
         return AssistantNote::query()->served($now)->orderBy('id')->limit(self::SUGGESTION_LIMIT)->get(['id', 'question']);
     }
 
+    /** "N notas vencem em 7 dias": served notes 83–90 days old (AM19), one count query. */
+    public function countExpiringNotes(CarbonImmutable $now): int
+    {
+        return AssistantNote::query()->expiringSoon($now)->count();
+    }
+
+    /**
+     * The notes whose reviewer has not yet heard that this review runs out — expiring soon, and no
+     * bell since the review (a bell before a newer review is stale).
+     *
+     * @return Collection<int, AssistantNote> with the reviewer
+     */
+    public function findNotesToWarn(CarbonImmutable $now): Collection
+    {
+        return AssistantNote::query()
+            ->expiringSoon($now)
+            ->whereNotNull('reviewer_id')
+            ->where(fn ($query) => $query->whereNull('expiry_notified_at')->orWhereColumn('expiry_notified_at', '<', 'reviewed_at'))
+            ->with('reviewer')
+            ->orderBy('id')
+            ->get();
+    }
+
+    /**
+     * Mark the review's bell as rung, unless another run already did: true when this call claimed it
+     * (one conditional update, so two overlapping runs never ring twice).
+     */
+    public function claimExpiryNotice(AssistantNote $note, CarbonImmutable $now): bool
+    {
+        return AssistantNote::query()
+            ->whereKey($note->id)
+            ->where(fn ($query) => $query->whereNull('expiry_notified_at')->orWhereColumn('expiry_notified_at', '<', 'reviewed_at'))
+            ->update(['expiry_notified_at' => $now->utc()->format('Y-m-d H:i:s')]) === 1;
+    }
+
     public function slugExists(string $slug): bool
     {
         return AssistantNote::query()->where('slug', $slug)->exists();

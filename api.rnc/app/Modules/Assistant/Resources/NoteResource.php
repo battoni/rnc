@@ -14,7 +14,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * One row of "Base da Reforma" (rnc-3 R10, R11): the whole note, its stored `status`, the
  * `review_state` the screen shows — rascunho, revisada (served), vencida (revisada, older than 90
  * days: answers nobody) or aposentada — who reviewed and who wrote it, and whether the person
- * reading may review it (a specialist who is not the last editor).
+ * reading may review it (a specialist who is not the last editor); `expires_in_days` is how many São
+ * Paulo days a served review has left (0 on day 90, null when not served — AM19).
  *
  * @mixin AssistantNote
  */
@@ -42,6 +43,7 @@ class NoteResource extends JsonResource
             'review_state' => $this->reviewState(),
             'reviewer' => AssistantPersonResource::of($this->reviewer),
             'reviewed_at' => $this->reviewed_at?->utc()->toIso8601String(),
+            'expires_in_days' => $this->resource->expiresInDays(CarbonImmutable::now()),
             'last_edited_by' => AssistantPersonResource::of($this->lastEditor),
             'can_review' => $this->status !== NoteStatus::Aposentada->value && app(AssistantNotePolicy::class)->review($viewer, $this->resource),
         ];

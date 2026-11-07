@@ -1,5 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { createPinia, setActivePinia } from 'pinia';
+import { beforeEach, describe, expect, it } from 'vitest';
 import type { NavItem } from './interfaces';
+import { useUserStore } from '@UserModule';
 import { useLocalNavItems } from './navItems.local';
 
 /*
@@ -8,6 +10,8 @@ import { useLocalNavItems } from './navItems.local';
  * TheNavbar.spec proves that gate. What this proves is that every group declares one.
  */
 describe('useLocalNavItems', () => {
+  beforeEach(() => setActivePinia(createPinia()));
+
   it('declares the three groups and the portal, in order, each with its gate', () => {
     const items = useLocalNavItems().value;
 
@@ -38,13 +42,41 @@ describe('useLocalNavItems', () => {
     expect([brands?.label, brands?.permission]).toEqual(['navigation.brands', 'brands.manage']);
   });
 
-  it("puts the team's pipeline and agenda in its group", () => {
+  it("puts the team's pipeline, agenda and the Reforma assistant in its group (rnc-3 R12)", () => {
     const team = useLocalNavItems().value[0];
 
     expect(team?.children?.map((child) => [child.routeName, child.permission])).toEqual([
       ['pipeline', 'leads.read'],
       ['agenda', 'agenda.read'],
+      ['assistant', 'assistant.ask'],
     ]);
+  });
+
+  it('shows "Base da Reforma" under Equipe only to a specialist or to assistant.manage (rnc-3 R10, AM4)', () => {
+    const knowledgeFor = (isSpecialist: boolean, keys: string[]) => {
+      useUserStore().setUserAndPermissions(
+        {
+          id: 9,
+          is_specialist: isSpecialist,
+          last_name: 'P',
+          name: 'U',
+          role: 'R',
+          role_slug: 'equipe',
+          username: 'u',
+        },
+        keys
+      );
+
+      return useLocalNavItems()
+        .value[0]?.children?.filter((child) => child.label === 'navigation.knowledge')
+        .map((child) => [child.routeName, child.permission]);
+    };
+
+    expect(knowledgeFor(true, ['assistant.ask'])).toEqual([['assistant-knowledge', 'assistant.ask']]);
+    expect(knowledgeFor(false, ['assistant.ask', 'assistant.manage'])).toEqual([
+      ['assistant-knowledge', 'assistant.ask'],
+    ]);
+    expect(knowledgeFor(false, ['assistant.ask'])).toEqual([]);
   });
 
   it("puts the metrics, the partner registry, the trail and the repricing in Reinaldo's group, each behind its own key (AM8)", () => {

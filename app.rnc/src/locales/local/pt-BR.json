@@ -43,7 +43,9 @@
     "repricing": "Reajuste",
     "portal": "Portal do parceiro",
     "brands": "Marcas",
-    "channel": "Canal RNC"
+    "channel": "Canal RNC",
+    "assistant": "Assistente da Reforma",
+    "knowledge": "Base da Reforma"
   },
   "rolesAndPermissions": {
     "groups": {
@@ -435,11 +437,17 @@
     "markAllRead": "Marcar todas como lidas",
     "kinds": {
       "new_lead": "{company} deixou o contato no diagnóstico",
-      "meeting_booked": "{company} marcou reunião com {specialist} para {when}"
+      "meeting_booked": "{company} marcou reunião com {specialist} para {when}",
+      "assistant_question": "{askedBy} encaminhou a você: “{question}”",
+      "assistant_answer": "{answeredBy} respondeu: “{question}”",
+      "assistant_note_expiring": "Sua revisão de “{question}” vale até {expiresOn}."
     },
     "kindTitles": {
       "new_lead": "Novo lead",
-      "meeting_booked": "Reunião marcada"
+      "meeting_booked": "Reunião marcada",
+      "assistant_question": "Pergunta para especialista",
+      "assistant_answer": "Resposta do especialista",
+      "assistant_note_expiring": "Revisão vence em 7 dias"
     },
     "unknownCompany": "Uma empresa"
   },
@@ -1049,5 +1057,134 @@
       "save": "Salvar",
       "cancel": "Cancelar"
     }
+  },
+  "assistant": {
+    "title": "Assistente da Reforma",
+    "lede": "Respostas só do que a equipe da Franco já revisou, com a regra, a fonte e quem revisou. O que não estiver nas notas vai para um especialista.",
+    "greeting": "Olá! Respondo só com as notas revisadas pelos especialistas, citando a regra. Escreva a pergunta ou escolha uma das notas.",
+    "who": "Assistente Franco",
+    "you": "Você",
+    "inputLabel": "Pergunta ao assistente",
+    "inputPlaceholder": "Pergunte sobre a Reforma, como um cliente perguntaria",
+    "send": "Perguntar",
+    "thinking": "Procurando nas notas revisadas…",
+    "tooShort": "Escreva pelo menos 3 caracteres.",
+    "askFailed": "Não consegui perguntar agora. Tente de novo.",
+    "count": "Nenhuma resposta nesta conversa ainda. | {count} resposta nesta conversa, de nota revisada. | {count} respostas nesta conversa, todas de notas revisadas.",
+    "conversation": "Conversa com o assistente",
+    "suggestionsTitle": "Notas revisadas",
+    "suggestionsLede": "Toque numa pergunta para ver a resposta revisada.",
+    "suggestionsEmpty": "Nenhuma nota revisada no prazo ainda. Quando um especialista revisar uma, ela aparece aqui.",
+    "questionsLink": "Perguntas para especialista",
+    "answer": {
+      "rule": "Regra: {rule}",
+      "source": "Fonte: {label}, lida em {date}",
+      "reviewed": "revisado por {name} em {date}",
+      "unknownReviewer": "um especialista"
+    },
+    "handoff": {
+      "noNote": "Não há nota revisada pela equipe para essa pergunta, então não vou arriscar uma resposta.",
+      "picker": "Especialista",
+      "send": "Encaminhar ao especialista",
+      "done": "Encaminhada para {name}. A resposta chega pelo sino de notificações.",
+      "noSpecialist": "Nenhum especialista ativo para receber a pergunta agora.",
+      "failed": "Não consegui encaminhar agora. Tente de novo."
+    },
+    "questions": {
+      "title": "Perguntas para especialista",
+      "ledeManage": "Toda pergunta que o assistente encaminhou a um especialista, as abertas primeiro.",
+      "ledeSpecialist": "As perguntas encaminhadas a você. Sua resposta toca o sino de quem perguntou.",
+      "status": {
+        "aberta": "Aberta",
+        "respondida": "Respondida"
+      },
+      "meta": "de {asker} para {specialist} · {date}",
+      "someone": "alguém",
+      "answerLabel": "Sua resposta",
+      "answerSend": "Responder",
+      "answered": "Resposta enviada. {name} recebe no sino.",
+      "answeredOn": "Respondida em {date}",
+      "waiting": "Aguardando {name}",
+      "toNote": "Virar nota",
+      "noted": "Virou nota",
+      "noteCreated": "Nota criada como rascunho. Outro especialista revisa antes de o assistente usar.",
+      "empty": "Nenhuma pergunta ainda. Quando o assistente encaminhar uma, ela aparece aqui.",
+      "emptyTitle": "Caixa vazia",
+      "forbidden": "Só os especialistas e a diretoria veem as perguntas.",
+      "loadFailed": "Não consegui carregar as perguntas.",
+      "retry": "Tentar de novo"
+    },
+    "knowledge": {
+      "title": "Base da Reforma",
+      "lede": "As notas da própria Franco: a única coisa com que o assistente responde. Uma nota entra no ar depois da revisão de outro especialista e vale por 90 dias.",
+      "add": "Nova nota",
+      "live": "Nenhuma nota no ar | {count} nota no ar | {count} notas no ar",
+      "expiring": "Nenhuma nota vence em 7 dias | {count} nota vence em 7 dias | {count} notas vencem em 7 dias",
+      "drafts": "Nenhuma aguardando revisão | {count} aguardando revisão | {count} aguardando revisão",
+      "statsLabel": "Situação da base",
+      "listTitle": "Notas",
+      "states": {
+        "rascunho": "Rascunho",
+        "revisada": "Revisada",
+        "vencida": "Revisão vencida",
+        "aposentada": "Aposentada"
+      },
+      "reviewedBy": "revisado por {name} em {date}",
+      "awaiting": "aguardando revisão · última edição de {name}",
+      "expiresIn": "vence hoje | vence em {count} dia | vence em {count} dias",
+      "edit": "Editar",
+      "review": "Revisar",
+      "retire": "Aposentar",
+      "retireConfirm": "Aposentar esta nota? Ela deixa de responder de vez.",
+      "retireYes": "Sim, aposentar",
+      "cancel": "Cancelar",
+      "reviewedToast": "Nota revisada: o assistente já responde com ela.",
+      "retiredToast": "Nota aposentada.",
+      "savedToast": "Nota salva como rascunho. Falta a revisão de outro especialista.",
+      "empty": "Nenhuma nota ainda. Escreva a primeira: o assistente só responde com o que estiver aqui.",
+      "emptyTitle": "Base vazia",
+      "forbidden": "Só os especialistas e a diretoria escrevem a base.",
+      "loadFailed": "Não consegui carregar a base.",
+      "retry": "Tentar de novo",
+      "gaps": {
+        "title": "Perguntas sem nota",
+        "lede": "Perguntas dos últimos 30 dias que o assistente não soube responder, das mais feitas para as menos.",
+        "times": "{count}×",
+        "lastAsked": "última em {date}",
+        "empty": "Nenhuma pergunta sem nota nos últimos 30 dias."
+      }
+    },
+    "form": {
+      "addHeading": "Nova nota",
+      "editHeading": "Editar nota",
+      "fromQuestionHeading": "Virar nota",
+      "question": "Pergunta",
+      "answer": "Resposta",
+      "rule": "Regra (citação legal)",
+      "sourceLabel": "Fonte",
+      "sourceUrl": "Endereço da fonte",
+      "asOf": "Lida em",
+      "strong": "Palavras-chave fortes",
+      "weak": "Palavras-chave fracas",
+      "keywordsHint": "Separe por vírgulas. Uma chave de 4 letras ou mais casa com o começo da palavra (cobr → cobrança); uma forte vale 2 pontos, uma fraca 1, e a resposta precisa de 2.",
+      "required": "Obrigatório.",
+      "tooLong": "No máximo {max} caracteres.",
+      "url": "Um endereço que comece com http:// ou https://.",
+      "future": "Um dia que não esteja no futuro.",
+      "strongRequired": "Pelo menos uma palavra-chave forte.",
+      "keyword": "Cada chave tem de 2 a 40 caracteres, no máximo 12.",
+      "backToDraft": "Salvar uma mudança devolve a nota para rascunho: outro especialista revisa de novo.",
+      "draftNote": "A nota nasce como rascunho e só responde depois da revisão de outro especialista.",
+      "cancel": "Cancelar",
+      "save": "Salvar"
+    },
+    "notWriter": "Só os especialistas e a diretoria escrevem a base.",
+    "notReviewer": "Só um especialista que não fez a última edição revisa a nota.",
+    "notSpecialist": "Essa pessoa não é um especialista ativo da Franco.",
+    "retired": "Esta nota foi aposentada.",
+    "notFound": "Esta nota não existe mais.",
+    "questionNotFound": "Esta pergunta não está na sua caixa.",
+    "answered": "Esta pergunta já foi respondida.",
+    "alreadyNoted": "Esta pergunta já virou nota."
   }
 }

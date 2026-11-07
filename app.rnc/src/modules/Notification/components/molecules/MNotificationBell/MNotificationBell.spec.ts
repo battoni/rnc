@@ -5,17 +5,24 @@ import Popover from 'primevue/popover';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { server } from '@/test/msw/server';
 import { renderWithPlugins } from '@/test/render';
-import { INBOX_FIXTURE, LEAD_NOTIFICATION_FIXTURE, MEETING_NOTIFICATION_FIXTURE } from '../../../test/fixtures';
+import {
+  ASSISTANT_INBOX_FIXTURE,
+  INBOX_FIXTURE,
+  LEAD_NOTIFICATION_FIXTURE,
+  MEETING_NOTIFICATION_FIXTURE,
+} from '../../../test/fixtures';
 import MNotificationBell from './MNotificationBell.vue';
 
 /*
  * The back office's bell (rnc-1 F4, R17): the unread count, polled every 30 s, a dropdown with one
- * line per notification, and mark-as-read — one or all.
+ * line per notification, and mark-as-read — one or all. rnc-3 F5 adds the Reforma assistant's three:
+ * a question handed to a specialist, the specialist's answer, a review that runs out in 7 days.
  */
 const API = 'http://localhost/notifications';
 let inboxCalls = 0;
 const reads: string[] = [];
 let readAll = 0;
+let inbox = INBOX_FIXTURE;
 
 function renderBell() {
   return renderWithPlugins(MNotificationBell, { global: { components: { Button, Popover } } });
@@ -25,11 +32,12 @@ beforeEach(() => {
   inboxCalls = 0;
   reads.length = 0;
   readAll = 0;
+  inbox = INBOX_FIXTURE;
   server.use(
     http.get(API, () => {
       inboxCalls += 1;
 
-      return HttpResponse.json({ data: INBOX_FIXTURE });
+      return HttpResponse.json({ data: inbox });
     }),
     http.patch(`${API}/:id/read`, ({ params }) => {
       reads.push(String(params.id));
@@ -96,5 +104,22 @@ describe('MNotificationBell', () => {
 
     await waitFor(() => expect(readAll).toBe(1));
     expect(screen.queryByTestId('bell-count')).toBeNull();
+  });
+
+  it("writes the Reforma assistant's three bells as sentences, each with its title (rnc-3 R11, R13, R14)", async () => {
+    inbox = ASSISTANT_INBOX_FIXTURE;
+    renderBell();
+    await screen.findByTestId('bell-count');
+
+    await fireEvent.click(screen.getByTestId('bell'));
+
+    const lines = (await screen.findAllByTestId('bell-item')).map((item) => item.textContent?.replace(/\s+/g, ' '));
+
+    expect(lines[0]).toContain('Question for a specialist');
+    expect(lines[0]).toContain('Patrícia Gomes handed you: “Qual o melhor ERP?”');
+    expect(lines[1]).toContain('Specialist answer');
+    expect(lines[1]).toContain('Mariana Toledo answered: “Qual o melhor ERP?”');
+    expect(lines[2]).toContain('Review runs out in 7 days');
+    expect(lines[2]).toContain('Your review of “Quando começa a CBS?” is served until 26/11/2026.');
   });
 });

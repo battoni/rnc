@@ -18,7 +18,8 @@ use Illuminate\Http\Request;
  * "Base da Reforma" (rnc-3 R10, R11, AM4): list, write and review behind `assistant.ask` plus
  * `AssistantNotePolicy` (write: `assistant.manage` or a specialist — 403 `assistant.notWriter`;
  * review: a specialist who is not the last editor — 403 `assistant.notReviewer`); retire behind
- * `assistant.manage`. Another firm's note is 404 `assistant.notFound`, never 403.
+ * `assistant.manage`. Another firm's note is 404 `assistant.notFound`, never 403. The list carries
+ * `expiring_count`, the notes whose review runs out within 7 days (AM19).
  */
 class NoteController extends Controller
 {
@@ -28,7 +29,9 @@ class NoteController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        return ApiResponse::success(data: NoteResource::collection($this->noteService->list($this->user($request))));
+        $notes = $this->noteService->list($this->user($request));
+
+        return ApiResponse::success(data: NoteResource::collection($notes), extraData: ['expiring_count' => $this->noteService->expiringCount()]);
     }
 
     public function store(StoreNoteRequest $request): JsonResponse

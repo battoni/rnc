@@ -165,6 +165,8 @@ export default defineConfig(({ mode }) => {
         '@NotificationModule/*': getPath('./src/modules/Notification/*'),
         '@MetricsModule': getPath('./src/modules/Metrics'),
         '@MetricsModule/*': getPath('./src/modules/Metrics/*'),
+        '@AssistantModule': getPath('./src/modules/Assistant'),
+        '@AssistantModule/*': getPath('./src/modules/Assistant/*'),
         '@BrandsModule': getPath('./src/modules/Brands'),
         '@BrandsModule/*': getPath('./src/modules/Brands/*'),
         '@ChannelModule': getPath('./src/modules/Channel'),

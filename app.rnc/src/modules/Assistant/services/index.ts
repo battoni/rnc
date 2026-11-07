@@ -1,0 +1,11 @@
+export { default as AddNoteService } from './addNote.service';
+export { default as AnswerQuestionService } from './answerQuestion.service';
+export { default as AskAssistantService } from './askAssistant.service';
+export { default as GetGapsService } from './getGaps.service';
+export { default as GetKnowledgeBaseService } from './getKnowledgeBase.service';
+export { default as GetQuestionsService } from './getQuestions.service';
+export { default as GetSuggestionsService } from './getSuggestions.service';
+export { default as HandOffQuestionService } from './handOffQuestion.service';
+export { default as RetireNoteService } from './retireNote.service';
+export { default as ReviewNoteService } from './reviewNote.service';
+export { default as UpdateNoteService } from './updateNote.service';

@@ -109,4 +109,7 @@ return [
     'POST assistant/notes/{id}/review' => 'staff',
     'POST assistant/notes/{id}/retire' => 'staff',
     'GET assistant/gaps' => 'staff',
+    // STAFF — Phase 3 (rnc-3): F5 the questions' inbox and the answer, `assistant.ask` + the service
+    'GET assistant/questions' => 'staff',
+    'POST assistant/questions/{id}/answer' => 'staff',
 ];

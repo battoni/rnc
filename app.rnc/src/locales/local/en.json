@@ -43,7 +43,9 @@
     "repricing": "Repricing",
     "portal": "Partner portal",
     "brands": "Brands",
-    "channel": "RNC channel"
+    "channel": "RNC channel",
+    "assistant": "Reforma assistant",
+    "knowledge": "Knowledge base"
   },
   "rolesAndPermissions": {
     "groups": {
@@ -435,11 +437,17 @@
     "markAllRead": "Mark all as read",
     "kinds": {
       "new_lead": "{company} left a contact in the diagnostic",
-      "meeting_booked": "{company} booked a meeting with {specialist} for {when}"
+      "meeting_booked": "{company} booked a meeting with {specialist} for {when}",
+      "assistant_question": "{askedBy} handed you: “{question}”",
+      "assistant_answer": "{answeredBy} answered: “{question}”",
+      "assistant_note_expiring": "Your review of “{question}” is served until {expiresOn}."
     },
     "kindTitles": {
       "new_lead": "New lead",
-      "meeting_booked": "Meeting booked"
+      "meeting_booked": "Meeting booked",
+      "assistant_question": "Question for a specialist",
+      "assistant_answer": "Specialist answer",
+      "assistant_note_expiring": "Review runs out in 7 days"
     },
     "unknownCompany": "A company"
   },
@@ -1049,5 +1057,134 @@
       "save": "Save",
       "cancel": "Cancel"
     }
+  },
+  "assistant": {
+    "title": "Reforma assistant",
+    "lede": "Answers only from what Franco's team has reviewed, with the rule, the source and who reviewed it. What the notes do not cover goes to a specialist.",
+    "greeting": "Hello! I answer only from notes the specialists reviewed, citing the rule. Write the question or pick one of the notes.",
+    "who": "Franco assistant",
+    "you": "You",
+    "inputLabel": "Question for the assistant",
+    "inputPlaceholder": "Ask about the Reforma the way a client would",
+    "send": "Ask",
+    "thinking": "Looking through the reviewed notes…",
+    "tooShort": "Write at least 3 characters.",
+    "askFailed": "Could not ask right now. Try again.",
+    "count": "No answer in this conversation yet. | {count} answer in this conversation, all from reviewed notes. | {count} answers in this conversation, all from reviewed notes.",
+    "conversation": "Conversation with the assistant",
+    "suggestionsTitle": "Reviewed notes",
+    "suggestionsLede": "Tap a question to see its reviewed answer.",
+    "suggestionsEmpty": "No reviewed note in date yet. When a specialist reviews one, it shows up here.",
+    "questionsLink": "Questions for specialists",
+    "answer": {
+      "rule": "Rule: {rule}",
+      "source": "Source: {label}, read on {date}",
+      "reviewed": "reviewed by {name} on {date}",
+      "unknownReviewer": "a specialist"
+    },
+    "handoff": {
+      "noNote": "There is no note reviewed by the team for this question, so I will not risk an answer.",
+      "picker": "Specialist",
+      "send": "Hand to the specialist",
+      "done": "Handed to {name}. The answer arrives on the notifications bell.",
+      "noSpecialist": "No active specialist to take the question right now.",
+      "failed": "Could not hand it over right now. Try again."
+    },
+    "questions": {
+      "title": "Questions for specialists",
+      "ledeManage": "Every question the assistant handed to a specialist, open ones first.",
+      "ledeSpecialist": "The questions handed to you. Your answer rings the bell of whoever asked.",
+      "status": {
+        "aberta": "Open",
+        "respondida": "Answered"
+      },
+      "meta": "from {asker} to {specialist} · {date}",
+      "someone": "someone",
+      "answerLabel": "Your answer",
+      "answerSend": "Answer",
+      "answered": "Answer sent. {name} hears it on the bell.",
+      "answeredOn": "Answered on {date}",
+      "waiting": "Waiting for {name}",
+      "toNote": "Turn into a note",
+      "noted": "Turned into a note",
+      "noteCreated": "Draft note created. Another specialist reviews it before the assistant uses it.",
+      "empty": "No question yet. When the assistant hands one over, it shows up here.",
+      "emptyTitle": "Empty inbox",
+      "forbidden": "Only the specialists and the direction see the questions.",
+      "loadFailed": "Could not load the questions.",
+      "retry": "Try again"
+    },
+    "knowledge": {
+      "title": "Reforma knowledge base",
+      "lede": "Franco's own notes: the only thing the assistant answers with. A note goes live once another specialist reviews it, and for 90 days.",
+      "add": "New note",
+      "live": "No live note | {count} live note | {count} live notes",
+      "expiring": "No note expires within 7 days | {count} note expires within 7 days | {count} notes expire within 7 days",
+      "drafts": "None awaiting review | {count} awaiting review | {count} awaiting review",
+      "statsLabel": "State of the base",
+      "listTitle": "Notes",
+      "states": {
+        "rascunho": "Draft",
+        "revisada": "Reviewed",
+        "vencida": "Review expired",
+        "aposentada": "Retired"
+      },
+      "reviewedBy": "reviewed by {name} on {date}",
+      "awaiting": "awaiting review · last edit by {name}",
+      "expiresIn": "expires today | expires in {count} day | expires in {count} days",
+      "edit": "Edit",
+      "review": "Review",
+      "retire": "Retire",
+      "retireConfirm": "Retire this note? It stops answering for good.",
+      "retireYes": "Yes, retire",
+      "cancel": "Cancel",
+      "reviewedToast": "Note reviewed: the assistant answers with it now.",
+      "retiredToast": "Note retired.",
+      "savedToast": "Note saved as a draft. Another specialist still has to review it.",
+      "empty": "No note yet. Write the first: the assistant answers only with what is here.",
+      "emptyTitle": "Empty base",
+      "forbidden": "Only the specialists and the direction write the knowledge base.",
+      "loadFailed": "Could not load the knowledge base.",
+      "retry": "Try again",
+      "gaps": {
+        "title": "Questions without a note",
+        "lede": "The last 30 days' questions the assistant could not answer, most asked first.",
+        "times": "{count}×",
+        "lastAsked": "last on {date}",
+        "empty": "No question without a note in the last 30 days."
+      }
+    },
+    "form": {
+      "addHeading": "New note",
+      "editHeading": "Edit note",
+      "fromQuestionHeading": "Turn into a note",
+      "question": "Question",
+      "answer": "Answer",
+      "rule": "Rule (legal citation)",
+      "sourceLabel": "Source",
+      "sourceUrl": "Source address",
+      "asOf": "Read on",
+      "strong": "Strong keys",
+      "weak": "Weak keys",
+      "keywordsHint": "Separate with commas. A key of 4 letters or more matches the start of a word (cobr → cobrança); a strong key scores 2, a weak one 1, and an answer needs 2.",
+      "required": "Required.",
+      "tooLong": "At most {max} characters.",
+      "url": "An address starting with http:// or https://.",
+      "future": "A day that is not in the future.",
+      "strongRequired": "At least one strong key.",
+      "keyword": "Each key has 2 to 40 characters, at most 12 of them.",
+      "backToDraft": "Saving a change sends the note back to draft: another specialist reviews it again.",
+      "draftNote": "The note starts as a draft and answers only once another specialist reviews it.",
+      "cancel": "Cancel",
+      "save": "Save"
+    },
+    "notWriter": "Only the specialists and the direction write the knowledge base.",
+    "notReviewer": "Only a specialist who did not write the last change reviews the note.",
+    "notSpecialist": "That person is not an active specialist of Franco's.",
+    "retired": "This note was retired.",
+    "notFound": "This note no longer exists.",
+    "questionNotFound": "This question is not in your inbox.",
+    "answered": "This question was already answered.",
+    "alreadyNoted": "This question is already a note."
   }
 }

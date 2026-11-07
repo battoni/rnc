@@ -10,15 +10,20 @@ use App\Modules\Assistant\Exceptions\AssistantException;
 use App\Modules\Assistant\Models\AssistantNote;
 use App\Modules\Assistant\Policies\AssistantNotePolicy;
 use App\Modules\Assistant\Repositories\AssistantNoteRepository;
+use App\Modules\Assistant\Repositories\AssistantQuestionRepository;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 /**
  * "Base da Reforma" (rnc-3 R10, R11, D7, D8): the firm's notes, written by `assistant.manage` or a
  * specialist, reviewed by a specialist who did not write the last change, retired by
  * `assistant.manage` (the route's key). A content change sends a reviewed note back to rascunho and
- * clears its review (W53); an aposentada note is neither edited nor reviewed (W55).
+ * clears its review (W53); an aposentada note is neither edited nor reviewed (W55). "Virar nota"
+ * (R14, F5) creates the rascunho from a question of the writer's inbox and ties the question to it,
+ * once (422 `assistant.alreadyNoted`).
  */
 class NoteService
 {
@@ -29,6 +34,8 @@ class NoteService
     public function __construct(
         private AssistantNoteRepository $noteRepository,
         private AssistantNotePolicy $notePolicy,
+        private QuestionService $questionService,
+        private AssistantQuestionRepository $questionRepository,
     ) {}
 
     /** @return Collection<int, AssistantNote> */
@@ -39,20 +46,33 @@ class NoteService
         return $this->noteRepository->findAllNotes();
     }
 
+    /** "N notas vencem em 7 dias" (AM19): read with the list, so held to the same writers. */
+    public function expiringCount(): int
+    {
+        return $this->noteRepository->countExpiringNotes(CarbonImmutable::now());
+    }
+
     public function create(User $user, NoteDTO $note): AssistantNote
     {
         $this->ensureWriter($user);
+        $question = $note->from_question === null ? null : $this->questionService->findInInbox($user, $note->from_question);
 
-        $created = $this->noteRepository->createNote([
-            ...$this->clean($note->toArray()),
-            'slug' => $this->freeSlug($note->question),
-            'status' => NoteStatus::Rascunho->value,
-            'reviewer_id' => null,
-            'reviewed_at' => null,
-            'last_edited_by' => $user->id,
-        ]);
+        return DB::transaction(function () use ($user, $note, $question) {
+            $created = $this->noteRepository->createNote([
+                ...$this->clean(Arr::except($note->toArray(), 'from_question')),
+                'slug' => $this->freeSlug($note->question),
+                'status' => NoteStatus::Rascunho->value,
+                'reviewer_id' => null,
+                'reviewed_at' => null,
+                'last_edited_by' => $user->id,
+            ]);
 
-        return $created->load(['reviewer', 'lastEditor']);
+            if ($question && ! $this->questionRepository->claimQuestionNote($question, $created->id)) {
+                throw AssistantException::alreadyNoted();
+            }
+
+            return $created->load(['reviewer', 'lastEditor']);
+        });
     }
 
     /** @return AssistantNote|null null for an unknown or another firm's note */

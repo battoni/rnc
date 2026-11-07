@@ -46,6 +46,8 @@
       "@HomeModule/*": ["./src/modules/Home/*"],
       "@MetricsModule": ["./src/modules/Metrics"],
       "@MetricsModule/*": ["./src/modules/Metrics/*"],
+      "@AssistantModule": ["./src/modules/Assistant"],
+      "@AssistantModule/*": ["./src/modules/Assistant/*"],
       "@BrandsModule": ["./src/modules/Brands"],
       "@BrandsModule/*": ["./src/modules/Brands/*"],
       "@ChannelModule": ["./src/modules/Channel"],

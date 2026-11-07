@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.12.0 — 2026-11-07
+
+### Added
+
+- `assistant/assistant.spec.ts` (rnc-3 F5, R12, R13, A14): Patrícia asks the CBS question and reads the reviewed note with its rule, "lida em 05/11/2026" and "revisado por Mariana Toledo em 05/11/2026" at 390 in light and 1440 in dark with no sideways scroll; an unknown question shows the fixed sentence and goes to the specialist she picks; the assistant is in the team's rail.
+
 ## 1.11.0 — 2026-11-07
 
 ### Added

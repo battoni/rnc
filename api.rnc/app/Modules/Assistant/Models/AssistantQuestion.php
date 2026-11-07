@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * A question the assistant handed to a specialist (rnc-3 R13, R14): aberta until the specialist
- * answers it (F5).
+ * answers it, then respondida; `note_id` once "Virar nota" turned it into a note (F5).
  *
  * @property int $id
  * @property int $firm_id
@@ -22,12 +22,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $status `QuestionStatus`
  * @property string|null $answer
  * @property CarbonImmutable|null $answered_at UTC
+ * @property int|null $note_id
+ * @property-read User|null $asker
  * @property-read User|null $specialist
  */
-#[Fillable(['asked_by', 'specialist_id', 'question', 'status', 'answer', 'answered_at'])]
+#[Fillable(['asked_by', 'specialist_id', 'question', 'status', 'answer', 'answered_at', 'note_id'])]
 class AssistantQuestion extends Model
 {
     use BelongsToFirm;
+
+    /** @return BelongsTo<User, $this> */
+    public function asker(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'asked_by');
+    }
 
     /** @return BelongsTo<User, $this> */
     public function specialist(): BelongsTo
@@ -41,6 +49,7 @@ class AssistantQuestion extends Model
             'asked_by' => 'integer',
             'specialist_id' => 'integer',
             'answered_at' => UtcDateTime::class,
+            'note_id' => 'integer',
         ];
     }
 }

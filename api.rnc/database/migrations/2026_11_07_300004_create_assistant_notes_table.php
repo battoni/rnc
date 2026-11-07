@@ -10,7 +10,8 @@ use Illuminate\Support\Facades\Schema;
  * a string, no `enum`: plan P2); `reviewed_at` is UTC and a review is served for 90 days
  * (`AssistantNote::VALID_DAYS`). `as_of` is the date the source was read (`facts.md`). The
  * reviewer and the last editor are user ids without a foreign key (rnc-1 W25). Keywords are JSON
- * lists, matched by `NoteMatcher`.
+ * lists, matched by `NoteMatcher`. `expiry_notified_at` is when the reviewer's bell rang that the
+ * review runs out in 7 days (F5, AM19) — once per review: a newer `reviewed_at` makes it stale.
  */
 return new class extends Migration
 {
@@ -32,6 +33,7 @@ return new class extends Migration
             $table->unsignedBigInteger('reviewer_id')->nullable();
             $table->dateTime('reviewed_at')->nullable();
             $table->unsignedBigInteger('last_edited_by')->nullable();
+            $table->dateTime('expiry_notified_at')->nullable();
             $table->timestamps();
 
             $table->unique(['firm_id', 'slug']);

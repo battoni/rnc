@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use App\Modules\Assistant\Models\AssistantNote;
+use App\Modules\Assistant\Models\AssistantQuestion;
 use App\Modules\Auth\Models\Role;
 use App\Modules\Channel\Models\ChannelFirm;
 use App\Modules\Firm\Models\Firm;
@@ -18,7 +19,7 @@ use Database\Seeders\RoleSeeder;
  * matrix (`RouteMatrixTest`) sweeps every staff route for the partner; this file names Phase 3's
  * rows on purpose, so a key granted too widely in a later phase fails here by name.
  *
- * Each phase appends its rows: F1 the brands; F3a the channel; F4 the assistant; F6 the contracts;
+ * Each phase appends its rows: F1 the brands; F3a the channel; F4 the assistant; F5 the questions' inbox; F6 the contracts;
  * F8 the briefing. F9 checks the file covers every route F1–F8 added.
  */
 beforeEach(function () {
@@ -187,5 +188,55 @@ describe('F4 assistant (A25)', function () {
 
         expect($slugs)->not->toContain('deles')
             ->and(AssistantNote::withoutGlobalScopes()->findOrFail($theirs->id)->status)->toBe('revisada');
+    });
+});
+
+/** F5 — the questions' inbox and the answer (`assistant.ask`; who sees and answers is the service's: R14). */
+dataset('phase 3 question routes', [
+    'GET assistant/questions' => ['GET', '/api/assistant/questions'],
+    'POST assistant/questions/{id}/answer' => ['POST', '/api/assistant/questions/{id}/answer'],
+]);
+
+describe('F5 questions (A25)', function () {
+    beforeEach(function () {
+        $this->specialist = assistantPerson('equipe', specialist: true);
+        $this->question = AssistantQuestion::withoutGlobalScopes()->forceCreate([
+            'firm_id' => $this->franco->id,
+            'asked_by' => phase3Person('equipe')->id,
+            'specialist_id' => $this->specialist->id,
+            'question' => 'Qual o melhor ERP?',
+            'status' => 'aberta',
+        ]);
+    });
+
+    it('refuses a partner with 403', function (string $method, string $uri) {
+        $this->actingAs(phase3Partner())->json($method, str_replace('{id}', (string) $this->question->id, $uri))->assertForbidden();
+    })->with('phase 3 question routes');
+
+    it('asks a guest to sign in', function (string $method, string $uri) {
+        $this->json($method, str_replace('{id}', (string) $this->question->id, $uri))->assertUnauthorized();
+    })->with('phase 3 question routes');
+
+    it('lets the assigned specialist read the inbox and answer', function () {
+        $this->actingAs($this->specialist)->getJson('/api/assistant/questions')->assertOk()->assertJsonCount(1, 'data');
+        $this->actingAs($this->specialist)->postJson("/api/assistant/questions/{$this->question->id}/answer", ['answer' => 'Depende.'])->assertOk();
+    });
+
+    it("answers 404 on firm B's question, and lists none of firm B's", function () {
+        $firmB = Firm::factory()->create(['slug' => 'firma-b']);
+        $theirs = AssistantQuestion::withoutGlobalScopes()->forceCreate([
+            'firm_id' => $firmB->id,
+            'asked_by' => $this->specialist->id,
+            'specialist_id' => $this->specialist->id,
+            'question' => 'De outra firma?',
+            'status' => 'aberta',
+        ]);
+
+        $this->actingAs($this->specialist)->postJson("/api/assistant/questions/{$theirs->id}/answer", ['answer' => 'Roubada.'])->assertNotFound();
+
+        $ids = collect($this->actingAs(phase3Person('operador'))->getJson('/api/assistant/questions')->assertOk()->json('data'))->pluck('id');
+
+        expect($ids->all())->toBe([$this->question->id])
+            ->and(AssistantQuestion::withoutGlobalScopes()->findOrFail($theirs->id)->status)->toBe('aberta');
     });
 });

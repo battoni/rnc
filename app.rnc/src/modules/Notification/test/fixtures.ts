@@ -28,4 +28,38 @@ const INBOX_FIXTURE: NotificationInbox = {
   unread_count: 2,
 };
 
-export { INBOX_FIXTURE, LEAD_NOTIFICATION_FIXTURE, MEETING_NOTIFICATION_FIXTURE };
+/** The Reforma assistant's bells (rnc-3 F5): `AssistantQuestionNotification`, `…AnswerNotification`, `…NoteExpiringNotification`. */
+const ASSISTANT_INBOX_FIXTURE: NotificationInbox = {
+  items: [
+    {
+      asked_by: 'Patrícia Gomes',
+      created_at: '2026-11-19T10:20:00-03:00',
+      id: '7a1e2b3c-0000-4000-8000-000000000001',
+      kind: NOTIFICATION_KIND.ASSISTANT_QUESTION,
+      question: 'Qual o melhor ERP?',
+      question_id: 11,
+      read_at: null,
+    },
+    {
+      answered_by: 'Mariana Toledo',
+      created_at: '2026-11-19T10:15:00-03:00',
+      id: '7a1e2b3c-0000-4000-8000-000000000002',
+      kind: NOTIFICATION_KIND.ASSISTANT_ANSWER,
+      question: 'Qual o melhor ERP?',
+      question_id: 11,
+      read_at: null,
+    },
+    {
+      created_at: '2026-11-19T07:00:00-03:00',
+      expires_on: '2026-11-26',
+      id: '7a1e2b3c-0000-4000-8000-000000000003',
+      kind: NOTIFICATION_KIND.ASSISTANT_NOTE_EXPIRING,
+      note_id: 1,
+      question: 'Quando começa a CBS?',
+      read_at: null,
+    },
+  ],
+  unread_count: 3,
+};
+
+export { ASSISTANT_INBOX_FIXTURE, INBOX_FIXTURE, LEAD_NOTIFICATION_FIXTURE, MEETING_NOTIFICATION_FIXTURE };

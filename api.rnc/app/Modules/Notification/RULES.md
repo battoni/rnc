@@ -1,5 +1,5 @@
 ---
-version: 1.2.0
+version: 1.3.0
 origin: rnc
 ---
 # RULES — Notification Module
@@ -21,7 +21,9 @@ behind `notifications.read` (AM8).
   current firm. The operator is not paged by a firm's leads. No firm set → nobody.
 - **`notifyUser` rings one person the caller picked** (rnc-3 F4): the Assistant module's hand-off
   rings only the specialist the question went to (`AssistantQuestionNotification`); the caller has
-  already checked that person is an active specialist of the firm.
+  already checked that person is an active specialist of the firm. F5 adds two more, one person
+  each: the specialist's answer rings the asker (`AssistantAnswerNotification`), and a review in its
+  last 7 days rings its reviewer (`AssistantNoteExpiringNotification`, `assistant:notify-expiring`).
 - **A notification stores data, not sentences**: `kind` plus the fields; the SPA writes the pt-BR
   line from them, so wording changes never need a data migration.
 - **Database channel only, not queued**: it is one insert per person in the request.

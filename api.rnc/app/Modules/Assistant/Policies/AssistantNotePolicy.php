@@ -20,7 +20,13 @@ class AssistantNotePolicy
 
     public function write(User $user): bool
     {
-        return (bool) $user->is_specialist || in_array(self::MANAGE_KEY, $this->permissionService->forUser($user), true);
+        return (bool) $user->is_specialist || $this->manage($user);
+    }
+
+    /** `assistant.manage`: retires notes, reads the gaps and every handed-off question of the firm (R14). */
+    public function manage(User $user): bool
+    {
+        return in_array(self::MANAGE_KEY, $this->permissionService->forUser($user), true);
     }
 
     public function review(User $user, AssistantNote $note): bool

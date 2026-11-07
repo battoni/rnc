@@ -7,7 +7,8 @@ use Illuminate\Foundation\Http\FormRequest;
 /**
  * A new note (`POST /api/assistant/notes`, rnc-3 R10, AM7): question ≤ 200, answer ≤ 2000, rule
  * ≤ 200, source label ≤ 160 and an http(s) URL ≤ 300, `as_of` a day not in the future, at least one
- * strong key; each key 2–40 characters, at most 12 of each kind.
+ * strong key; each key 2–40 characters, at most 12 of each kind. `from_question` names the handed-off
+ * question "Virar nota" turns into this note (F5); whether it is the writer's to turn is the service's.
  */
 class StoreNoteRequest extends FormRequest
 {
@@ -34,7 +35,10 @@ class StoreNoteRequest extends FormRequest
 
     public function rules(): array
     {
-        return self::contentRules(required: true);
+        return [
+            ...self::contentRules(required: true),
+            'from_question' => ['sometimes', 'nullable', 'integer', 'min:1'],
+        ];
     }
 
     /** @return array<string, list<string>> */
