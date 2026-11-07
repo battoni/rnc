@@ -3,24 +3,15 @@ import type { RouteRecordRaw } from 'vue-router';
 /*
  * One landing per rail group (Equipe · Reinaldo · Operador). `meta.permission` closes each route
  * with the same key that hides its rail entry (`WORKSPACES`); `meta.workspace` tells the shared view
- * which one it is. The screens of later phases (pipeline, metrics, repricing…) arrive as their own
- * routes and rail children.
+ * which one it is. The screens of later phases arrive as their own routes and rail children; the
+ * team's landing redirects to its pipeline (F5).
  */
 const WORKSPACE_VIEW = () => import('./WorkspaceView.view.vue');
 
 const WorkspaceRoutes: RouteRecordRaw[] = [
-  {
-    path: '/team',
-    name: 'team-home-en',
-    meta: { permission: 'leads.read', workspace: 'team' },
-    component: WORKSPACE_VIEW,
-  },
-  {
-    path: '/equipe',
-    name: 'team-home-pt-BR',
-    meta: { permission: 'leads.read', workspace: 'team' },
-    component: WORKSPACE_VIEW,
-  },
+  // The team's landing IS its pipeline (F5): the rail's Equipe link and the home card arrive on the board.
+  { path: '/team', name: 'team-home-en', redirect: '/team/pipeline' },
+  { path: '/equipe', name: 'team-home-pt-BR', redirect: '/equipe/pipeline' },
   {
     path: '/ceo',
     name: 'ceo-home-en',

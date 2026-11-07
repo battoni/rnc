@@ -1,6 +1,7 @@
 <?php
 
 use Database\Seeders\LocalUsersSeeder;
+use Database\Seeders\PipelineSeeder;
 use Database\Seeders\SectorPageSeeder;
 use Database\Seeders\SpecialistSeeder;
 
@@ -23,3 +24,7 @@ $this->call(LocalUsersSeeder::class);
 // Every `is_specialist` member's weekly hours, from the firm's business hours (rnc-1 R15). After
 // the people, so the four specialists exist; on production it finds none until one is flagged.
 $this->call(SpecialistSeeder::class);
+
+// The team's board and agenda (rnc-1 F5): 40 invented leads over 30 days, a few booked meetings —
+// local only (refuses production), after the specialists it books.
+$this->call(PipelineSeeder::class);

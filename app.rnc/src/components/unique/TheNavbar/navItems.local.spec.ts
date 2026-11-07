@@ -22,4 +22,13 @@ describe('useLocalNavItems', () => {
 
     expect(operator?.children?.map((child) => child.routeName)).toEqual(['users', 'roles-and-permissions']);
   });
+
+  it("puts the team's pipeline and agenda in its group", () => {
+    const team = useLocalNavItems().value[0];
+
+    expect(team?.children?.map((child) => [child.routeName, child.permission])).toEqual([
+      ['pipeline', 'leads.read'],
+      ['agenda', 'agenda.read'],
+    ]);
+  });
 });

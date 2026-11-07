@@ -1,5 +1,5 @@
 ---
-version: 1.0.0
+version: 1.1.0
 origin: rnc
 ---
 # RULES — Booking Module
@@ -50,6 +50,9 @@ horário acabou de ser reservado"), `slot_unavailable` 422 (not a slot the agend
 - **Specialists come from `SpecialistSeeder`**: every `is_specialist` user gets a row and the firm's
   business hours; the area and focus of the four invented specialists are in the seeder.
 
+- **The team's reads (F5)**: `findAppointmentsOfLeads` (the board's booked cards) and
+  `findAppointmentsBetween` (the agenda week) serve the Pipeline module, which owns no table.
+
 ## Tables read from other modules
 
 `leads` (Lead), through `LeadService`; `users` (the specialist's name, through `Specialist::user`).
@@ -59,7 +62,7 @@ horário acabou de ser reservado"), `slot_unavailable` 422 (not a slot the agend
 - **No screen edits a specialist's hours or flags a new specialist** — the seeder is the source; a
   member flagged `is_specialist` later has no hours until it runs again.
 - **No rescheduling or cancelling by the visitor**: the e-mail says to reply or call; the team's
-  pipeline (F5) owns changes.
+  pipeline (F5) moves the lead, but the appointment itself has no edit yet.
 - **State and city holidays are not in the list** (São Paulo's 25/01, 09/07): a closed national list
   by AM9.
 - **The worker is not run locally** (`QUEUE_CONNECTION=sync`): a real queue needs a worker in deploy.

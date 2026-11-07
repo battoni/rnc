@@ -2,6 +2,7 @@ import { computed } from 'vue';
 import type { ComputedRef } from 'vue';
 import type { NavItem } from './interfaces';
 import { WORKSPACES } from '@HomeModule';
+import { PIPELINE_PERMISSIONS, PIPELINE_ROUTE_NAMES } from '@PipelineModule';
 
 /**
  * Project-owned navigation items — the cortex sync NEVER touches this file (classified LOCAL).
@@ -45,10 +46,25 @@ import { WORKSPACES } from '@HomeModule';
  * on arrival. Do not await: the group renders with what it has and grows when the answer lands.
  */
 /**
- * What each group already holds. The operator's group carries the bootstrap's own administration
- * screens; the team's and Reinaldo's fill up as F2–F8 add their screens.
+ * What each group already holds. The team's has its pipeline and agenda (F5); the operator's carries
+ * the bootstrap's own administration screens; Reinaldo's fills up as F6–F8 add their screens. Route
+ * names are the owners' (celer-05), never an import of their screens.
  */
-const OPERATOR_CHILDREN: Record<string, NavItem[] | undefined> = {
+const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
+  team: [
+    {
+      icon: 'pi pi-th-large',
+      label: 'navigation.pipeline',
+      permission: PIPELINE_PERMISSIONS.read,
+      routeName: PIPELINE_ROUTE_NAMES.board,
+    },
+    {
+      icon: 'pi pi-calendar',
+      label: 'navigation.agenda',
+      permission: PIPELINE_PERMISSIONS.agenda,
+      routeName: PIPELINE_ROUTE_NAMES.agenda,
+    },
+  ],
   operator: [
     { icon: 'pi pi-users', label: 'navigation.users', permission: 'users.read', routeName: 'users' },
     {
@@ -68,7 +84,7 @@ const OPERATOR_CHILDREN: Record<string, NavItem[] | undefined> = {
 function useLocalNavItems(): ComputedRef<NavItem[]> {
   return computed<NavItem[]>(() =>
     WORKSPACES.map((workspace) => ({
-      children: OPERATOR_CHILDREN[workspace.key],
+      children: WORKSPACE_CHILDREN[workspace.key],
       icon: workspace.icon,
       label: `navigation.${workspace.key}`,
       permission: workspace.permission,

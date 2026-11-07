@@ -1,5 +1,5 @@
 ---
-version: 3.0.0
+version: 3.1.0
 origin: pendulum
 based-on: 2.0.0
 ---
@@ -26,8 +26,9 @@ opens: Equipe (`team-home`), Reinaldo (`ceo-home`) and Operador (`operator-home`
 - **`home` left `/` to the public site** (AM15) and keeps its literal name — the guards and the login
   screens push `{ name: 'home' }`. It carries no `meta.permission` on purpose: a refused navigation
   is redirected to `home`, so a key on it would loop.
-- **One `WorkspaceView` for the three landings**, told apart by `meta.workspace`. Each is an empty
-  state in F1; later phases add their own screens as routes and rail children.
+- **One `WorkspaceView` for the landings**, told apart by `meta.workspace`. Each was an empty state
+  in F1; later phases add their own screens as routes and rail children. The team's landing
+  (`team-home`) now redirects to its pipeline (F5), by path — Home imports nothing from Pipeline.
 
 _Retired 07/11/2026:_ "Placeholder home view — do not add features until the product home screen is
 designed". The product (rnc-1) designed it: a greeting and the person's workspaces.

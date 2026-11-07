@@ -44,6 +44,8 @@
       "@HomeModule/*": ["./src/modules/Home/*"],
       "@PersonalizationModule": ["./src/modules/Personalization"],
       "@PersonalizationModule/*": ["./src/modules/Personalization/*"],
+      "@PipelineModule": ["./src/modules/Pipeline"],
+      "@PipelineModule/*": ["./src/modules/Pipeline/*"],
       "@SiteModule": ["./src/modules/Site"],
       "@SiteModule/*": ["./src/modules/Site/*"],
       "@UserModule": ["./src/modules/User"],

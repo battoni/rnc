@@ -2,6 +2,7 @@
 
 namespace App\Modules\Lead\Models;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,6 +17,7 @@ use Illuminate\Support\Carbon;
  * @property string $type
  * @property array<string, mixed>|null $data
  * @property Carbon $at
+ * @property-read User|null $user
  */
 #[Fillable(['lead_id', 'user_id', 'type', 'data', 'at'])]
 class LeadEvent extends Model
@@ -32,5 +34,11 @@ class LeadEvent extends Model
     public function lead(): BelongsTo
     {
         return $this->belongsTo(Lead::class);
+    }
+
+    /** @return BelongsTo<User, $this> who did it; null for the visitor */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }

@@ -34,7 +34,9 @@
   "navigation": {
     "team": "Team",
     "ceo": "Reinaldo",
-    "operator": "Operator"
+    "operator": "Operator",
+    "pipeline": "Pipeline",
+    "agenda": "Agenda"
   },
   "rolesAndPermissions": {
     "groups": {
@@ -418,5 +420,170 @@
       "meeting_booked": "Meeting booked"
     },
     "unknownCompany": "A company"
+  },
+  "pipeline": {
+    "title": "Lead pipeline",
+    "lede": "Every business owner who came through the site, from anonymous visitor to client. Drag a card or use ◀ ▶.",
+    "searchLabel": "Search leads",
+    "searchPlaceholder": "Company, contact, e-mail or CNPJ",
+    "boardLabel": "Pipeline board",
+    "emptyColumn": "No leads here.",
+    "emptySearch": "No lead found for “{search}”.",
+    "loadFailed": "The pipeline could not be loaded.",
+    "retry": "Try again",
+    "moreInColumn": "+{count} in search",
+    "moved": "{company}: {from} → {to}",
+    "notFound": "Lead not found.",
+    "sameStage": "The lead is already in that stage.",
+    "lostReasonRequired": "Say why the lead was lost.",
+    "anonymous": "Anonymous visitor",
+    "noContact": "No contact yet",
+    "stoppedAt": "Stopped at: {step}",
+    "findings": "{opportunities} · {risks}",
+    "meetingOn": "Meeting {when} · {specialist}",
+    "openAgenda": "Open agenda",
+    "stages": {
+      "visitante": "Visitor",
+      "lead_parcial": "Partial lead",
+      "lead": "Lead",
+      "reuniao_marcada": "Meeting booked",
+      "proposta": "Proposal",
+      "cliente": "Client",
+      "perdido": "Lost"
+    },
+    "steps": {
+      "empresa": "company",
+      "contato": "contact",
+      "perfil": "profile",
+      "faturamento": "revenue",
+      "resultado": "result"
+    },
+    "sources": {
+      "organico": "Organic",
+      "pago": "Paid",
+      "parceiro": "Partner",
+      "direto": "Direct"
+    },
+    "card": {
+      "moveBack": "Move back to {stage}",
+      "moveForward": "Move forward to {stage}",
+      "markLost": "Mark as lost",
+      "open": "Open {company}"
+    },
+    "lost": {
+      "title": "Mark as lost",
+      "lede": "Why was {company} lost? The reason stays on the lead and its timeline.",
+      "reasonLabel": "Reason",
+      "reasonPlaceholder": "E.g. renewed with their current accountant for a year.",
+      "cancel": "Cancel",
+      "confirm": "Mark as lost"
+    },
+    "lead": {
+      "title": "Lead detail",
+      "back": "Pipeline",
+      "since": "Arrived on {date} · source {source}",
+      "moveTo": "Move to",
+      "loadFailed": "The lead could not be loaded.",
+      "missingTitle": "Lead not found",
+      "missingText": "It may have been removed or belong to another firm.",
+      "lostBecause": "Lost: {reason}",
+      "contact": {
+        "title": "Contact",
+        "call": "Call",
+        "whatsapp": "WhatsApp",
+        "email": "E-mail",
+        "none": "The visitor has not left a contact yet."
+      },
+      "profile": {
+        "title": "Profile",
+        "company": "Company",
+        "cnpj": "CNPJ",
+        "contactName": "Contact",
+        "phone": "Phone",
+        "email": "E-mail",
+        "sector": "Sector",
+        "regime": "Regime",
+        "band": "Revenue",
+        "b2b": "B2B sales",
+        "incentivos": "ICMS incentives",
+        "exporta": "Exports",
+        "path": "Path",
+        "source": "Source",
+        "yes": "yes",
+        "no": "no",
+        "empty": "—",
+        "paths": {
+          "cnpj": "by CNPJ",
+          "quiz": "by questionnaire"
+        }
+      },
+      "diagnosis": {
+        "title": "Diagnostic",
+        "summary": "{opportunities} and {risks}",
+        "staffOnly": "The team sees the detail the visitor only gets in the meeting.",
+        "rule": "Rule: {rule}",
+        "estimate": "estimate",
+        "incomplete": "Incomplete diagnostic: the profile stopped before the result.",
+        "opportunity": "Opportunity",
+        "risk": "Risk"
+      },
+      "consent": {
+        "title": "Consent",
+        "given": "Agreed to be introduced to partners",
+        "refused": "Did not agree to be introduced to partners",
+        "none": "No answer yet: the visitor did not reach the contact step.",
+        "when": "On {date} · version {version} · {via}",
+        "vias": {
+          "formulario": "site form"
+        }
+      },
+      "meeting": {
+        "title": "Meeting",
+        "none": "No meeting booked.",
+        "with": "{when} with {specialist}"
+      },
+      "notes": {
+        "title": "Team notes",
+        "label": "New note",
+        "placeholder": "E.g. call on Monday, talk to the partner.",
+        "save": "Save note",
+        "empty": "No notes yet.",
+        "saved": "Note saved."
+      },
+      "timeline": {
+        "title": "Timeline",
+        "visitor": "visitor",
+        "by": "by {name}",
+        "events": {
+          "diagnosticStarted": "Started the diagnostic ({path})",
+          "cnpjLookedUp": "Looked up the CNPJ",
+          "contactCaptured": "Left company and contact",
+          "stepReached": "Moved on to the “{step}” step",
+          "resultSeen": "Saw the result: {opportunities} and {risks}",
+          "meetingBooked": "Booked a meeting with {specialist} for {when}",
+          "stageChanged": "{from} → {to}",
+          "stageLost": "{from} → {to}: {reason}",
+          "noteAdded": "Note: {text}",
+          "unknown": "Event {type}"
+        },
+        "vias": {
+          "botao": "button",
+          "arrastar": "dragged",
+          "ficha": "from the detail"
+        }
+      }
+    },
+    "agenda": {
+      "title": "Week agenda",
+      "lede": "Meetings booked through the site, by specialist. Each booking blocks the slot at once.",
+      "previous": "Previous week",
+      "next": "Next week",
+      "today": "This week",
+      "range": "{from} to {to}",
+      "count": "no meetings | 1 meeting | {count} meetings",
+      "empty": "No meetings.",
+      "loadFailed": "The agenda could not be loaded."
+    },
+    "noDiagnosis": "No diagnostic yet"
   }
 }

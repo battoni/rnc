@@ -27,6 +27,8 @@ return new class extends Migration
             $table->uuid('visitor_uuid')->nullable()->index();
             $table->string('stage', 20);
             $table->string('last_step', 20)->nullable();
+            // Why the team marked it perdido (F5, R18): required by that move, cleared when it leaves.
+            $table->string('lost_reason', 300)->nullable();
             $table->string('path', 10);
             $table->string('company')->nullable();
             $table->string('cnpj', 14)->nullable();

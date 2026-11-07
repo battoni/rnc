@@ -48,6 +48,34 @@ class AppointmentRepository
         return Appointment::query()->with('specialist.user')->where('lead_id', $lead->id)->first();
     }
 
+    /**
+     * The meetings of a set of leads, keyed by lead id — the board's booked cards (F5).
+     *
+     * @param  list<int>  $leadIds
+     * @return Collection<int, Appointment>
+     */
+    public function findAppointmentsOfLeads(array $leadIds): Collection
+    {
+        return Appointment::query()->with('specialist.user')->whereIn('lead_id', $leadIds)->get()->keyBy('lead_id');
+    }
+
+    /**
+     * Every meeting starting in [from, to), in time order, with its lead and specialist — the
+     * team's agenda (F5, R20).
+     *
+     * @return Collection<int, Appointment>
+     */
+    public function findAppointmentsBetween(CarbonImmutable $from, CarbonImmutable $to): Collection
+    {
+        return Appointment::query()
+            ->with(['lead', 'specialist.user'])
+            ->where('starts_at', '>=', $this->stored($from))
+            ->where('starts_at', '<', $this->stored($to))
+            ->orderBy('starts_at')
+            ->orderBy('id')
+            ->get();
+    }
+
     /** @param  array<string, mixed>  $attributes */
     public function createAppointment(array $attributes): Appointment
     {

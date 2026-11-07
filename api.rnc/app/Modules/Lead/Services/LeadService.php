@@ -2,6 +2,7 @@
 
 namespace App\Modules\Lead\Services;
 
+use App\Models\User;
 use App\Modules\Firm\Services\CurrentFirm;
 use App\Modules\Lead\DTOs\LeadContactDTO;
 use App\Modules\Lead\Enums\LeadEventType;
@@ -10,16 +11,19 @@ use App\Modules\Lead\Enums\LeadStep;
 use App\Modules\Lead\Exceptions\LeadException;
 use App\Modules\Lead\Helpers\ConsentTerms;
 use App\Modules\Lead\Models\Lead;
+use App\Modules\Lead\Models\LeadEvent;
 use App\Modules\Lead\Repositories\LeadRepository;
 use App\Modules\Notification\Notifications\NewLeadNotification;
 use App\Modules\Notification\Services\TeamNotifier;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 /**
- * The only writer of `leads`, `lead_consents` and `lead_events` (rnc-1 F3). The Diagnostic module
- * asks it for every change, so the stage rules (AM13) and the timeline live in one place.
+ * The only writer of `leads`, `lead_consents` and `lead_events` (rnc-1 F3). The Diagnostic, Booking
+ * and Pipeline modules ask it for every change, so the stage rules (AM13) and the timeline live in
+ * one place.
  */
 class LeadService
 {
@@ -218,6 +222,50 @@ class LeadService
         $this->leadRepository->createLeadEvent($lead, LeadEventType::MeetingBooked->value, $meeting, $now);
 
         return $lead;
+    }
+
+    /**
+     * The team moves a card (R18, AM13): to any other stage, backwards too; perdido only with the
+     * reason, which leaves with the lead when it comes back. The move is a timeline line with who
+     * did it and how (`botao`, `arrastar`, `ficha`) — the line F7's funnel counts for "cliente".
+     *
+     * @return array{lead: Lead, event: LeadEvent}
+     */
+    public function moveStage(Lead $lead, LeadStage $to, ?string $reason, string $via, User $by): array
+    {
+        $from = LeadStage::from($lead->stage);
+        $reason = trim((string) $reason) ?: null;
+
+        if (! $from->canBeMovedByTeamTo($to)) {
+            throw ValidationException::withMessages(['stage' => ['pipeline.sameStage']]);
+        }
+
+        if ($to->requiresReason() && $reason === null) {
+            throw ValidationException::withMessages(['reason' => ['pipeline.lostReasonRequired']]);
+        }
+
+        $keptReason = $to->requiresReason() ? $reason : null;
+        $data = ['from' => $from->value, 'to' => $to->value, 'via' => $via, ...($keptReason !== null ? ['reason' => $keptReason] : [])];
+
+        $event = DB::transaction(function () use ($lead, $to, $keptReason, $data, $by) {
+            $this->leadRepository->updateLead($lead, ['stage' => $to->value, 'lost_reason' => $keptReason]);
+
+            return $this->leadRepository->createLeadEvent($lead, LeadEventType::StageChanged->value, $data, Carbon::now(), $by->id);
+        });
+
+        return ['lead' => $lead, 'event' => $event->setRelation('user', $by)];
+    }
+
+    /** A team note (R19): a timeline line with its author. Touches the lead, so the card rises. */
+    public function addNote(Lead $lead, string $text, User $by): LeadEvent
+    {
+        return DB::transaction(function () use ($lead, $text, $by) {
+            $lead->touch();
+
+            return $this->leadRepository
+                ->createLeadEvent($lead, LeadEventType::NoteAdded->value, ['text' => $text], Carbon::now(), $by->id)
+                ->setRelation('user', $by);
+        });
     }
 
     private function assertOpen(Lead $lead): void

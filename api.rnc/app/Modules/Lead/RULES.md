@@ -1,20 +1,21 @@
 ---
-version: 1.0.0
+version: 1.1.0
 origin: rnc
 ---
 # RULES — Lead Module
 
-> For AI agents. rnc-1 F3, 07/11/2026.
+> For AI agents. rnc-1 F3–F5, 07/11/2026.
 
 ## Domain
 
 A prospect of the firm (R11, R18): `leads` (firm-scoped), its consent answers (`lead_consents`) and
-its timeline (`lead_events`). F3 creates them from the public diagnostic; F5 adds the team's pipeline.
+its timeline (`lead_events`). F3 creates them from the public diagnostic; F5's Pipeline module moves
+them and writes the team's notes — through this module's service.
 
 ## Intentional Decisions
 
-- **`LeadService` is the only writer** of the three tables. The Diagnostic and Booking modules call
-  it; Tracking only reads (`findLeadByToken`).
+- **`LeadService` is the only writer** of the three tables. The Diagnostic, Booking and Pipeline
+  modules call it; Tracking only reads (`findLeadByToken`).
 - **The booking (F4) is `recordBooking`**: `reuniao_marcada`, the e-mail the confirmation goes to,
   and the report's own token (`report_token`, 48 characters, 30 days, AM4) — a second key, so the
   e-mailed link never opens the diagnostic's routes.
@@ -29,6 +30,10 @@ its timeline (`lead_events`). F3 creates them from the public diagnostic; F5 add
   moves `visitante → lead_parcial` (the contact) and `lead_parcial → lead` (the result, once);
   the booking moves any of those three to `reuniao_marcada`;
   `locksProfile()` refuses any change from `reuniao_marcada` on (409 `lead_locked`).
+- **The team moves a lead anywhere (F5, AM13)**: `moveStage` to any stage but the current one,
+  backwards too; perdido needs the reason (`lost_reason`, cleared when it leaves). Each move is an
+  `etapa.alterada` line `{from, to, via[, reason]}` with the `user_id` — the line F7's funnel counts
+  for "cliente". A team note is a `nota.adicionada` line with its author.
 - **Every contact submission writes a consent row (AM12)**, given true or false — the box starts
   unticked — with `ConsentTerms::TEXT`, `VERSION` 1, `via = formulario` and `given_at`. No IP, no
   user agent. A new wording is a new version; the stored text is the text read.

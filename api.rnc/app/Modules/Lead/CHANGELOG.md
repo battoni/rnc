@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.2.0 — 2026-11-07
+
+### Added
+
+- `leads.lost_reason`, `LeadService::moveStage` (the team's move to any other stage, perdido with a reason, an `etapa.alterada` line with the user) and `addNote` (`nota.adicionada`), `LeadStage::boardOrder`/`canBeMovedByTeamTo`/`requiresReason`, `LeadEvent::user`, `LeadRepository` board reads and search (rnc-1 F5, R18–R19, AM13).
+
 ## 1.1.0 — 2026-11-07
 
 ### Added

@@ -23,6 +23,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $visitor_uuid
  * @property string $stage
  * @property string|null $last_step
+ * @property string|null $lost_reason
  * @property string $path
  * @property string|null $company
  * @property string|null $cnpj
@@ -34,8 +35,10 @@ use Illuminate\Support\Carbon;
  * @property string $source
  * @property string|null $medium
  * @property-read LeadConsent|null $latestConsent
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
  */
-#[Fillable(['token', 'token_expires_at', 'report_token', 'report_expires_at', 'visitor_uuid', 'stage', 'last_step', 'path', 'company', 'cnpj', 'contact_name', 'phone', 'email', 'profile', 'channel', 'source', 'medium'])]
+#[Fillable(['token', 'token_expires_at', 'report_token', 'report_expires_at', 'visitor_uuid', 'stage', 'last_step', 'lost_reason', 'path', 'company', 'cnpj', 'contact_name', 'phone', 'email', 'profile', 'channel', 'source', 'medium'])]
 class Lead extends Model
 {
     use BelongsToFirm;

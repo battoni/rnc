@@ -1,6 +1,7 @@
 import type { RouteRecordRaw } from 'vue-router';
 import { DiagnosticModuleRoutes } from '@DiagnosticModule';
 import { WorkspaceRoutes } from '@HomeModule';
+import { PipelineModuleRoutes } from '@PipelineModule';
 import { SiteRoutes } from '@SiteModule';
 
 /**
@@ -16,7 +17,13 @@ import { SiteRoutes } from '@SiteModule';
  *
  *   const localRoutes: RouteRecordRaw[] = [...CatalogRoutes, ...ClientsRoutes];
  */
-// rnc-1: the public site (F1 landing, F2 sector pages, F3 diagnostic) and the back office's three workspaces.
-const localRoutes: RouteRecordRaw[] = [...SiteRoutes, ...DiagnosticModuleRoutes, ...WorkspaceRoutes];
+// rnc-1: the public site (F1 landing, F2 sector pages, F3 diagnostic), the back office's three workspaces and the
+// team's pipeline (F5).
+const localRoutes: RouteRecordRaw[] = [
+  ...SiteRoutes,
+  ...DiagnosticModuleRoutes,
+  ...WorkspaceRoutes,
+  ...PipelineModuleRoutes,
+];
 
 export default localRoutes;

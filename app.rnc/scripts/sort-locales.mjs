@@ -18,6 +18,7 @@ const TOP_LEVEL_GROUPS = {
   finance: 'module',
   notFound: 'module', // views/NotFound
   personalization: 'module',
+  pipeline: 'module', // modules/Pipeline (rnc-1)
   rolesAndPermissions: 'module',
   site: 'module', // modules/Site (rnc-1)
   users: 'module',

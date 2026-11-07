@@ -14,6 +14,8 @@ use App\Modules\Content\Controllers\PublicSectorPageController;
 use App\Modules\Diagnostic\Controllers\PublicDiagnosticController;
 use App\Modules\Firm\Controllers\PublicFirmController;
 use App\Modules\Notification\Controllers\NotificationController;
+use App\Modules\Pipeline\Controllers\AgendaController;
+use App\Modules\Pipeline\Controllers\PipelineLeadController;
 use App\Modules\Tracking\Controllers\PublicEventController;
 use Illuminate\Support\Facades\Route;
 
@@ -48,3 +50,12 @@ $bell = ['auth', 'permission:notifications.read'];
 Route::get('notifications', [NotificationController::class, 'index'])->middleware($bell);
 Route::patch('notifications/{id}/read', [NotificationController::class, 'markRead'])->middleware($bell)->whereUuid('id');
 Route::post('notifications/read-all', [NotificationController::class, 'markAllRead'])->middleware($bell);
+
+// The team's pipeline (rnc-1 F5, R18–R20, AM8): the board and the lead detail behind `leads.read`,
+// the moves and the notes behind `leads.update`, the week's meetings behind `agenda.read`. `{id}` is
+// numeric (`NUMERIC_ROUTE_PARAMETERS`).
+Route::get('leads', [PipelineLeadController::class, 'index'])->middleware(['auth', 'permission:leads.read']);
+Route::get('leads/{id}', [PipelineLeadController::class, 'show'])->middleware(['auth', 'permission:leads.read']);
+Route::patch('leads/{id}/stage', [PipelineLeadController::class, 'updateStage'])->middleware(['auth', 'permission:leads.update']);
+Route::post('leads/{id}/notes', [PipelineLeadController::class, 'storeNote'])->middleware(['auth', 'permission:leads.update']);
+Route::get('agenda', [AgendaController::class, 'index'])->middleware(['auth', 'permission:agenda.read']);

@@ -34,7 +34,9 @@
   "navigation": {
     "team": "Equipe",
     "ceo": "Reinaldo",
-    "operator": "Operador"
+    "operator": "Operador",
+    "pipeline": "Pipeline",
+    "agenda": "Agenda"
   },
   "rolesAndPermissions": {
     "groups": {
@@ -418,5 +420,170 @@
       "meeting_booked": "Reunião marcada"
     },
     "unknownCompany": "Uma empresa"
+  },
+  "pipeline": {
+    "title": "Pipeline de leads",
+    "lede": "Todo empresário que entrou pelo site, do visitante anônimo ao cliente. Arraste o cartão ou use ◀ ▶.",
+    "searchLabel": "Buscar lead",
+    "searchPlaceholder": "Empresa, contato, e-mail ou CNPJ",
+    "boardLabel": "Quadro do pipeline",
+    "emptyColumn": "Nenhum lead aqui.",
+    "emptySearch": "Nenhum lead encontrado para “{search}”.",
+    "loadFailed": "Não foi possível carregar o pipeline.",
+    "retry": "Tentar de novo",
+    "moreInColumn": "+{count} na busca",
+    "moved": "{company}: {from} → {to}",
+    "notFound": "Lead não encontrado.",
+    "sameStage": "O lead já está nessa etapa.",
+    "lostReasonRequired": "Diga por que o lead foi perdido.",
+    "anonymous": "Visitante anônimo",
+    "noContact": "Ainda sem contato",
+    "stoppedAt": "Parou em: {step}",
+    "findings": "{opportunities} · {risks}",
+    "meetingOn": "Reunião {when} · {specialist}",
+    "openAgenda": "Ver agenda",
+    "stages": {
+      "visitante": "Visitante",
+      "lead_parcial": "Lead parcial",
+      "lead": "Lead",
+      "reuniao_marcada": "Reunião marcada",
+      "proposta": "Proposta",
+      "cliente": "Cliente",
+      "perdido": "Perdido"
+    },
+    "steps": {
+      "empresa": "empresa",
+      "contato": "contato",
+      "perfil": "perfil",
+      "faturamento": "faturamento",
+      "resultado": "resultado"
+    },
+    "sources": {
+      "organico": "Orgânico",
+      "pago": "Pago",
+      "parceiro": "Parceiro",
+      "direto": "Direto"
+    },
+    "card": {
+      "moveBack": "Voltar para {stage}",
+      "moveForward": "Avançar para {stage}",
+      "markLost": "Marcar como perdido",
+      "open": "Abrir a ficha de {company}"
+    },
+    "lost": {
+      "title": "Marcar como perdido",
+      "lede": "Por que {company} foi perdido? O motivo fica na ficha e na linha do tempo.",
+      "reasonLabel": "Motivo",
+      "reasonPlaceholder": "Ex.: fechou com o escritório atual por mais um ano.",
+      "cancel": "Cancelar",
+      "confirm": "Marcar como perdido"
+    },
+    "lead": {
+      "title": "Ficha do lead",
+      "back": "Pipeline",
+      "since": "Chegou em {date} · origem {source}",
+      "moveTo": "Mover para",
+      "loadFailed": "Não foi possível carregar a ficha.",
+      "missingTitle": "Lead não encontrado",
+      "missingText": "Ele pode ter sido removido ou não ser da sua empresa.",
+      "lostBecause": "Perdido: {reason}",
+      "contact": {
+        "title": "Contato",
+        "call": "Ligar",
+        "whatsapp": "WhatsApp",
+        "email": "E-mail",
+        "none": "O visitante ainda não deixou contato."
+      },
+      "profile": {
+        "title": "Perfil",
+        "company": "Empresa",
+        "cnpj": "CNPJ",
+        "contactName": "Contato",
+        "phone": "Telefone",
+        "email": "E-mail",
+        "sector": "Setor",
+        "regime": "Regime",
+        "band": "Faturamento",
+        "b2b": "Vendas B2B",
+        "incentivos": "Incentivos de ICMS",
+        "exporta": "Exporta",
+        "path": "Caminho",
+        "source": "Origem",
+        "yes": "sim",
+        "no": "não",
+        "empty": "—",
+        "paths": {
+          "cnpj": "pelo CNPJ",
+          "quiz": "pelo questionário"
+        }
+      },
+      "diagnosis": {
+        "title": "Diagnóstico",
+        "summary": "{opportunities} e {risks}",
+        "staffOnly": "A equipe vê o detalhe que o visitante só recebe na reunião.",
+        "rule": "Regra: {rule}",
+        "estimate": "estimativa",
+        "incomplete": "Diagnóstico incompleto: o perfil parou antes do resultado.",
+        "opportunity": "Oportunidade",
+        "risk": "Risco"
+      },
+      "consent": {
+        "title": "Consentimento",
+        "given": "Autorizou ser apresentado a parceiros",
+        "refused": "Não autorizou ser apresentado a parceiros",
+        "none": "Ainda sem resposta: o visitante não chegou ao contato.",
+        "when": "Em {date} · versão {version} · {via}",
+        "vias": {
+          "formulario": "formulário do site"
+        }
+      },
+      "meeting": {
+        "title": "Reunião",
+        "none": "Nenhuma reunião marcada.",
+        "with": "{when} com {specialist}"
+      },
+      "notes": {
+        "title": "Notas da equipe",
+        "label": "Nova nota",
+        "placeholder": "Ex.: ligar na segunda, falar com o sócio.",
+        "save": "Salvar nota",
+        "empty": "Nenhuma nota ainda.",
+        "saved": "Nota salva."
+      },
+      "timeline": {
+        "title": "Linha do tempo",
+        "visitor": "visitante",
+        "by": "por {name}",
+        "events": {
+          "diagnosticStarted": "Começou o diagnóstico ({path})",
+          "cnpjLookedUp": "Consultou o CNPJ na Receita",
+          "contactCaptured": "Deixou empresa e contato",
+          "stepReached": "Avançou para o passo “{step}”",
+          "resultSeen": "Viu o resultado: {opportunities} e {risks}",
+          "meetingBooked": "Marcou reunião com {specialist} para {when}",
+          "stageChanged": "{from} → {to}",
+          "stageLost": "{from} → {to}: {reason}",
+          "noteAdded": "Nota: {text}",
+          "unknown": "Evento {type}"
+        },
+        "vias": {
+          "botao": "botão",
+          "arrastar": "arrastado",
+          "ficha": "pela ficha"
+        }
+      }
+    },
+    "agenda": {
+      "title": "Agenda da semana",
+      "lede": "As reuniões marcadas pelo site, por especialista. Cada agendamento bloqueia o horário na hora.",
+      "previous": "Semana anterior",
+      "next": "Próxima semana",
+      "today": "Esta semana",
+      "range": "{from} a {to}",
+      "count": "nenhuma reunião | 1 reunião | {count} reuniões",
+      "empty": "Sem reuniões.",
+      "loadFailed": "Não foi possível carregar a agenda."
+    },
+    "noDiagnosis": "Sem diagnóstico ainda"
   }
 }
