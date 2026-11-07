@@ -94,4 +94,4 @@ Started: 2026-11-07
 - W33 F4: where the bell mounts without a synced file importing a feature module → a LOCAL `ThePageHeaderActions.local.vue` rendered at the end of `ThePageHeader`'s row (one line in the synced header, like `TheLayout`'s `TheLocalOverlays`), shown with `notifications.read` (to reverse: remove the line).
 - W34 F4: who hears the bell → every active `equipe` and `ceo` member of the lead's firm, not the operador; NewLead fires only when a lead first becomes lead parcial (to reverse: `NotificationRepository::TEAM_ROLES`). Spec C7.
 - W35 F4: `APP_LOCALE` is `en` → the booking e-mails are sent with `locale('pt_BR')`; the `en` mail keys exist for the preview and the tests (to reverse: set `APP_LOCALE=pt_BR`).
-02:47 F4 done, attempt 1, <sha>
+02:47 F4 done, attempt 1, ffbbcff
