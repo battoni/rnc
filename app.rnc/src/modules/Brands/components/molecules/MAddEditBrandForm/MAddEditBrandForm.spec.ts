@@ -117,4 +117,25 @@ describe('MAddEditBrandForm', () => {
     );
     expect(emitted().onSuccess).toBeUndefined();
   });
+  it("clears the API's contrast refusal once the primary changes, and keeps the other fields' errors", async () => {
+    server.use(
+      http.patch('http://localhost/brands/1', () =>
+        HttpResponse.json(
+          { errors: { brand_primary: ['brand.lowContrast'], tagline: ['brand.lowContrast'] }, message: 'x' },
+          { status: 422 }
+        )
+      )
+    );
+    renderForm();
+
+    await fireEvent.update(screen.getByTestId('brand-primary'), '#ffff00');
+    await fireEvent.click(screen.getByTestId('brand-save'));
+    await waitFor(() => expect(screen.getByTestId('brand-primary-error').textContent).toBeTruthy());
+
+    await fireEvent.update(screen.getByTestId('brand-primary'), '#3b2a86');
+
+    await waitFor(() => expect(screen.queryByTestId('brand-primary-error')).toBeNull());
+    expect(screen.getByTestId('brand-contrast-note').dataset.readable).toBe('true');
+    expect(screen.getAllByText('White text does not read on this colour', { exact: false })).toHaveLength(1);
+  });
 });

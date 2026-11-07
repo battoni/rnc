@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.0.1 — 2026-11-07
+
+### Fixed
+
+- `MAddEditBrandForm`: a refusal from the API (e.g. `brand.lowContrast`) is cleared from its field as soon as that field changes, instead of staying under a colour that now reads fine until the next save (rnc-3 Chrome QA, A5). Test: `MAddEditBrandForm.spec.ts`.
+
 ## 1.0.0 — 2026-11-07
 
 ### Added

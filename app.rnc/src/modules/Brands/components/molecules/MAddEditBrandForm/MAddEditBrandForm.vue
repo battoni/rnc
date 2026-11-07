@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { Brand, BrandPayload } from '../../../interfaces';
 import { translateError } from '@Helpers';
@@ -96,6 +96,19 @@ const preview = computed(() => {
     title: { color: WHITE },
   };
 });
+
+// A server refusal belongs to the value that was sent: once its field changes, it no longer holds.
+(['brand_accent', 'brand_primary', 'name', 'short_name', 'tagline'] as const).forEach((field) =>
+  watch(
+    () => form[field],
+    () => delete errors.value[field]
+  )
+);
+
+watch(
+  () => form.proof.map((point) => `${point.label}|${point.value}`).join('\n'),
+  () => delete errors.value.proof
+);
 
 // HELPERS
 function isColour(value: string): boolean {
