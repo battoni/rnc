@@ -3,10 +3,10 @@ Stage: build
 Updated: 07/11/2026
 ## Done
 Intent approved 07/11 · spec closed 07/11 (29 R · 24 A · 15 D) · plan approved 07/11 (F1–F10 with F6 split into F6a/F6b, after a clean-context Sonnet review and a `fable-reviewer` review — plan.md → Plan review, Amendments AM1–AM13). Nothing built yet. Branch `feature/rnc-2-reforma-hub-phase-2` starts from the finished `feature/rnc-1-reforma-hub-pilot` (8ed5ef3); rnc-1 is not on `main` yet.
-- **F1 Partner access — done 07/11** (commit in the log line below; A1, A2, A4): `parceiro` role, `users.partner_id` (unique), `partner_access_events`, `POST/DELETE partners/{id}/access` + `…/access/password`, `CurrentPartner` + `ResolveCurrentPartner` (`portal`), `GET portal/me`, the route matrix (`tests/Feature/Access`), the Portal SPA module (`/parceiro`), Home's bounce, the rail entry, "Acesso ao portal" in the registry, `PartnerUserSeeder`. Gate: 822 Pest · 884 Vitest · 122 Playwright. `parceiro.1` signed in against the served worktree API (port 8012, stopped after): `GET portal/me` 200, `GET leads` 403.
+- **F1 Partner access — done 07/11** (9916eb7; A1, A2, A4): `parceiro` role, `users.partner_id` (unique), `partner_access_events`, `POST/DELETE partners/{id}/access` + `…/access/password`, `CurrentPartner` + `ResolveCurrentPartner` (`portal`), `GET portal/me`, the route matrix (`tests/Feature/Access`), the Portal SPA module (`/parceiro`), Home's bounce, the rail entry, "Acesso ao portal" in the registry, `PartnerUserSeeder`. Gate: 822 Pest · 884 Vitest · 122 Playwright. `parceiro.1` signed in against the served worktree API (port 8012, stopped after): `GET portal/me` 200, `GET leads` 403.
 ## Next
 1. Read the W# list below and the spec's D1–D15 (every one taken while the owner was away).
-2. Build: `/loop /battoni-run rnc-2` (F1 Partner access first; read plan.md → Amendments before each phase), or attended `/battoni-start-session rnc-2` per phase.
+2. Build: `/loop /battoni-run rnc-2` — F2 Portal API next (F1 done; read plan.md → Amendments before each phase), or attended `/battoni-start-session rnc-2` per phase.
 3. Before verify's PR: rnc-1 must reach the remote first (its state.md → Next 2); this branch's PR bases on `feature/rnc-1-reforma-hub-pilot` until rnc-1 is merged.
 ## Pitfalls
 - Every rnc-1 pitfall still holds (`specs/rnc-1-reforma-hub-pilot/state.md` → Pitfalls); the plan's P1–P10 carry the ones that bite here.
