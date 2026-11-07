@@ -1,0 +1,68 @@
+<?php
+
+namespace App\Modules\Partner\Resources;
+
+use App\Modules\Firm\Services\CurrentFirm;
+use App\Modules\Partner\Enums\ReferralStatus;
+use App\Modules\Partner\Models\Referral;
+use App\Modules\Partner\Services\ReferralSla;
+use Carbon\CarbonInterface;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+/**
+ * A referral as its partner sees it (rnc-2 R6, D3) — an allow-list, field by field: the company,
+ * sector · regime · porte, the titles of the items its specialty covers, the score, Franco's
+ * message, the dates, the status and the SLA. The lead's contact only from the accept on (a partner
+ * that declines never saw a phone); a portfolio client's (`carteira`) way in is Franco's own phone
+ * and mailbox. The contract value only once closed, and it is the partner's own number. Never: a
+ * range, a note, the timeline, the consent, another referral. Moments in UTC, ISO-8601.
+ *
+ * @mixin Referral
+ */
+class PortalReferralResource extends JsonResource
+{
+    /** The lead's channel for a portfolio client referred from the Radar (rnc-2 R27, D13). */
+    public const PORTFOLIO_CHANNEL = 'carteira';
+
+    public function toArray(Request $request): array
+    {
+        $status = ReferralStatus::from($this->status);
+        $profile = $this->lead->profile ?? [];
+
+        return [
+            'id' => $this->id,
+            'status' => $this->status,
+            'received_at' => $this->moment($this->created_at),
+            'status_at' => $this->moment($this->status_at),
+            'company' => $this->lead->company,
+            'profile' => ['sector' => $profile['sector'] ?? null, 'regime' => $profile['regime'] ?? null, 'band' => $profile['band'] ?? null],
+            'covers' => array_column($this->covers, 'title'),
+            'score' => $this->score,
+            'message' => $this->message,
+            'sla' => app(ReferralSla::class)->of($this->resource),
+            'contacted_at' => $this->moment($this->contacted_at),
+            'meeting_at' => $this->moment($this->meeting_at),
+            'closed_at' => $this->moment($this->closed_at),
+            'contact' => $status->showsContact() ? $this->contact() : null,
+            ...($status === ReferralStatus::Fechado ? ['deal_value_cents' => $this->deal_value_cents] : []),
+        ];
+    }
+
+    /** @return array{via: string, name: string|null, phone: string|null, email: string|null} */
+    private function contact(): array
+    {
+        if ($this->lead->channel === self::PORTFOLIO_CHANNEL) {
+            $firm = app(CurrentFirm::class)->get();
+
+            return ['via' => 'firm', 'name' => $firm?->name, 'phone' => $firm?->phone, 'email' => $firm?->mailbox];
+        }
+
+        return ['via' => 'lead', 'name' => $this->lead->contact_name, 'phone' => $this->lead->phone, 'email' => $this->lead->email];
+    }
+
+    private function moment(?CarbonInterface $at): ?string
+    {
+        return $at?->toImmutable()->utc()->toIso8601String();
+    }
+}

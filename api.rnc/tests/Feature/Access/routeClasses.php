@@ -42,6 +42,9 @@ return [
 
     // PORTAL — the partner's (rnc-2)
     'GET portal/me' => 'portal',
+    'GET portal/referrals' => 'portal',
+    'GET portal/referrals/{id}' => 'portal',
+    'POST portal/referrals/{id}/transition' => 'portal',
 
     // STAFF — the back office
     'GET auth/permission-groups' => 'staff',

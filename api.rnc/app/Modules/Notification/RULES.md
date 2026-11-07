@@ -1,15 +1,17 @@
 ---
-version: 1.0.0
+version: 1.1.0
 origin: rnc
 ---
 # RULES — Notification Module
 
-> For AI agents. rnc-1 F4, 07/11/2026.
+> For AI agents. rnc-1 F4, 07/11/2026; rnc-2 F2 (`ReferralStatusNotification`).
 
 ## Domain
 
 The back office's bell (R17): Laravel database notifications (`notifications`, AM7) for the team —
-`NewLeadNotification` (a lead first left its contact) and `MeetingBookedNotification` — and the
+`NewLeadNotification` (a lead first left its contact), `MeetingBookedNotification` and, from rnc-2,
+`ReferralStatusNotification` (a partner accepted, declined or closed a referral — Partner's portal
+sends it after the move commits; contato, reunião and proposta do not ring) — and the
 person's own inbox: `GET notifications`, `PATCH notifications/{id}/read`, `POST notifications/read-all`,
 behind `notifications.read` (AM8).
 

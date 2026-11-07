@@ -8,7 +8,7 @@ This file is the canonical source for the unit's version (RULES.md frontmatter m
 ### Added
 
 - rnc-3 F1: the `firm_brands` table (sequence `300001`, kept apart from Phase 2's migrations) and `leads.brand_id` (nullable, indexed, no foreign key) folded into `create_leads_table`; `FirmBrandFactory`; `BrandSeeder` (local only) seeds Franco Express and Franco Prime from the demo; `PipelineSeeder` starts the 4th and 8th lead of every ten under them, with the brand's consent words; `RoleSeeder` documents Phase 3's seven keys (operator only until their phases). Schema dumped before and after `migrate:fresh` and diffed: only those changes.
-
+- rnc-2 F2: `referrals` gains `status_at`, `status_by` (no foreign key — W25), `contacted_at`, `meeting_at`, `deal_value_cents`, `closed_at` and an index on `(partner_id, status)`, folded into its `create_*` migration (D15). `PartnerSeeder` (local only) seeds the demo's twelve referrals (`REFERRAL_PLAN`: 3 `enviado` at 3/15/30 business hours, 4 `fechado` priced by band) with one `encaminhamento.status` line per step. `.schema referrals` read after `migrate:fresh`: the six columns and the index, nothing else.
 
 ## 1.7.0 — 2026-11-07
 

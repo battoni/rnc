@@ -1,17 +1,19 @@
 ---
-version: 1.1.0
+version: 1.2.0
 origin: rnc
 ---
 # RULES — Partner Module
 
-> For AI agents. rnc-1 F6, 07/11/2026; rnc-2 F1 (partner access, the portal's first route).
+> For AI agents. rnc-1 F6, 07/11/2026; rnc-2 F1 (partner access, the portal's first route), F2
+> (the portal's inbox, the moves along the graph, the SLA).
 
 ## Domain
 
 The firm's network (R21–R23): the partner registry, the routing score of each partner against a
 lead's diagnostic, the referral — Franco recommending one lead to one partner, only with the lead's
 consent — and the trail of every referral. It owns `partners` and `referrals`; the lead's timeline
-line goes through `LeadService::recordReferral` (Lead owns `lead_events`). From rnc-2 it also owns a
+line goes through `LeadService::recordReferral` (Lead owns `lead_events`), and each move the partner
+makes from its portal through `LeadService::recordReferralStatus`. From rnc-2 it also owns a
 partner's portal login — `partners.access_*_at` and `partner_access_events` — and the portal's
 `CurrentPartner` scope; the login's `users` row is written by Auth's `LinkedAccountService`.
 
@@ -30,6 +32,9 @@ partner's portal login — `partners.access_*_at` and `partner_access_events` �
 | `POST partners/{id}/access/password` | `partners.manage` | a new `password`, once; the login's sessions end; 404 `code: partner_access_missing` |
 | `DELETE partners/{id}/access` | `partners.manage` | the login deactivated, its sessions ended → the access as it is now; 404 `partner_access_missing` |
 | `GET portal/me` | `portal.access` + `portal` | `{partner: {id, name, specialty}, firm: {name, slug}}` |
+| `GET portal/referrals` | `portal.access` + `portal` | the partner's referrals (`PortalReferralResource`), open before closed, newest first; unpaginated (a partner's few dozen) |
+| `GET portal/referrals/{id}` | `portal.access` + `portal` | one of them; anybody else's, or no referral, 404 |
+| `POST portal/referrals/{id}/transition` | `portal.access` + `portal` | `{to, meeting_at? (reuniao, future), deal_value_cents? (fechado, > 0)}` → the referral as it is now; 422 `code: invalid_transition` off the graph |
 
 ## Intentional Decisions
 
@@ -59,8 +64,14 @@ partner's portal login — `partners.access_*_at` and `partner_access_events` �
 - **A partner is deactivated, never deleted**: `referrals.partner_id` restricts the delete, and the
   trail keeps pointing at it. A deactivated partner leaves the matches and cannot be chosen
   (`ReferLeadRequest`'s `exists` asks the firm AND `active`).
-- **`status` starts `enviado`** (`ReferralStatus` holds the demo's seven); Phase 2's partner portal
-  moves it.
+- **`status` starts `enviado`; the partner moves it, Franco reads it** (rnc-2 R7, D4): the graph
+  lives on `ReferralStatus` (`allowedTransitions` — enviado → aceito | recusado; aceito → contato →
+  reuniao → proposta → fechado; no step back, no skip; fechado and recusado terminal) and
+  `PortalReferralService::transition` asks it under the row's lock (`lockForUpdate`), so two racing
+  moves cannot both pass. Each move stores `status`, `status_at`, `status_by` (the partner's login)
+  and its step's own column — `contacted_at` on contato (the SLA's stop), `meeting_at` on reuniao,
+  `deal_value_cents` + `closed_at` on fechado. `TransitionReferralRequest` drops a meeting or a
+  value sent with another move (`exclude_unless`), so nothing stray is stored.
 - **Another firm's partner, lead or referral is a 404 or absent** (`BelongsToFirm` on both tables, A1).
 
 ### Partner access and the portal (rnc-2 F1, R1–R4, D1–D2)
@@ -85,23 +96,55 @@ partner's portal login — `partners.access_*_at` and `partner_access_events` �
   `partner_id` through FirmScope and requires `active`, else 403 `portal.noPartner` — the operator
   holds `portal.access` and is refused here. Portal code reads the partner from it, never from
   the request.
+
+### The portal's inbox and moves (rnc-2 F2, R4–R9, D3–D4)
+
+- **Portal reads go through `PortalReferralRepository`**: every query is
+  `where partner_id = CurrentPartner::id()` under `FirmScope` — never an id from the request.
+  Another partner's referral, another firm's, or an id that is a lead's is a 404 (A3), whatever
+  `X-Firm` says (the partner's firm comes from its login, AM1).
+- **What the partner sees is an allow-list** (`PortalReferralResource`, R6, D3): company, sector ·
+  regime · porte (never the rest of `profile`), the covered titles, score, message, dates, status,
+  SLA. The lead's contact only from the accept on (`ReferralStatus::showsContact` — a declined
+  referral never saw a phone); a `carteira` lead (a portfolio client, R27) shows Franco's own name,
+  phone and mailbox instead. `deal_value_cents` only once fechado — the partner's own number. Never
+  a range, a note, the timeline, the consent or another referral (A5 reads the bodies).
+- **Every move is one `encaminhamento.status` line** (`LeadService::recordReferralStatus`, by the
+  partner's login, `{referral_id, partner_id, partner, from, to[, meeting_at][, deal_value_cents]}`)
+  in the move's transaction; the lead's stage never moves (R9). **The bell rings on aceito,
+  recusado and fechado only** (Notification's `ReferralStatusNotification`, after the commit,
+  through `TeamNotifier`); contato, reunião and proposta reach the timeline alone.
+- **The SLA is computed, not stored** (`ReferralSla`, R8): 24 business hours from `created_at` to
+  `contacted_at` (or now), on the CURRENT firm's `business_hours` in `America/Sao_Paulo` minus
+  Booking's national holidays (`Helpers/BusinessHours`, pure maths). ok < 12 ≤ atencao < 24 ≤
+  estourado while open; cumprido ≤ 24 < fora once contacted; encerrado when declined. The state
+  reads the exact hours, the answer carries one decimal (a whole number reaches JSON as an integer).
 - **Every API route is classified** in `tests/Feature/Access/routeClasses.php` (public · portal ·
   staff · shared, A2): a route added without a class fails `RouteMatrixTest`.
 
 ## Tables read from other modules
 
-`leads`, `lead_consents` (Lead, through `LeadRepository` and `Lead::latestConsent`); `users` (the
+`leads`, `lead_consents` (Lead, through `LeadRepository`, `Lead::latestConsent` and the portal's
+`Referral::lead` — company, profile, contact, channel); `users` (the
 referrer's name; a partner's login through `Partner::account` and `CreatePartnerAccessRequest`'s
 uniqueness — written only by Auth's `LinkedAccountService`); `firms` (Franco's contact for the
-e-mail and the portal's firm name, through `CurrentFirm` / `BelongsToFirm::firm`).
+e-mail and the portal's firm name, through `CurrentFirm` / `BelongsToFirm::firm`; the SLA's
+`business_hours` and a `carteira` referral's phone and mailbox, through `CurrentFirm`). Booking's
+`Holidays` helper (no table) for the SLA's days off.
 
 ## Known Gaps
+
+*Retired 07/11/2026 (rnc-2 F2):* "The portal answers only `GET portal/me` so far" and "No SLA
+clock" — the inbox, the moves and `ReferralSla` now answer on the API.
 
 *Retired 07/11/2026 (rnc-2 F1):* "No partner login yet (D7)". A partner now has a portal login
 (`POST partners/{id}/access`); the status still stays `enviado` until the portal moves it (F2).
 
-- **The portal answers only `GET portal/me` so far** (rnc-2 F1): the inbox, the transitions and the
-  SLA arrive in F2–F3; until then a partner signs in to a landing that names it.
-- **No SLA clock** (the demo's 24 business hours): the message asks for it, nothing measures it.
+- **The portal's screens are not built yet** (rnc-2 F2): the inbox, the moves and the SLA answer on
+  the API; the SPA's inbox and cards, and Franco's status and SLA columns, arrive in F3.
+- **Seeded moves carry no login** (`PartnerSeeder`): `status_by` and the seeded lines' `user_id`
+  are null, because the partners' logins are seeded after the referrals (`PartnerUserSeeder`).
+- **A firm without `business_hours` never breaches the SLA** (zero hours a week): `firms` requires
+  the column, so only a hand-edited row meets it.
 - **The local seed's partners are placeholders** (`PartnerSeeder`, local only): production starts
   with an empty registry until Franco names its partners.
