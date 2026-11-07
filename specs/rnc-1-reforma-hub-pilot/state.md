@@ -141,3 +141,4 @@ Started: 2026-11-07
 - W55 F8: the seed's invented CNPJs → root `999` + the client's number on five digits, branch `9999`, valid check digits (`999.00NNN/9999-DD`) — plainly not real, never looked up; deterministic Mt19937 seed 2027, fees by band × regime ±10 % in R$ 900–9.000 (demo W27) (to reverse: `ClientSeeder::inventedCnpj`).
 - W56 F8: the list's shape → the whole filtered portfolio in one answer, biggest yearly uplift first, quoted on every read (only the mark is stored); a filter clears the selection; the detail sits beside the table from 1536 px and under it below (beside at 1440 cut the table to 526 of 669 px) (to reverse: `2xl:` in `RepricingView` and `DETAIL_BESIDE_QUERY`).
 04:48 F8 done, attempt 1, 99e044d
+04:52 Review fixes started, attempt 1
