@@ -18,7 +18,7 @@ return [
     |
     */
 
-    'frontend_url' => rtrim((string) env('FRONTEND_URL', 'https://app.rnc.test:5173'), '/'),
+    'frontend_url' => rtrim((string) env('FRONTEND_URL', 'http://localhost:5173'), '/'),
 
     /*
     |--------------------------------------------------------------------------
@@ -36,7 +36,7 @@ return [
     */
 
     'brand' => [
-        'name' => env('BRAND_NAME', 'rnc'),
+        'name' => env('BRAND_NAME', 'Franco Contabilidade'),
 
         /*
          * These are sampled from the LOGO FILE, not from the theme CSS, and the difference
@@ -46,8 +46,8 @@ return [
          * faint seam around it. The band takes the asset's colour and the tile disappears
          * into it.
          */
-        'accent' => env('BRAND_ACCENT', '#bfe021'),
-        'ink' => env('BRAND_INK', '#141313'),
+        'accent' => env('BRAND_ACCENT', '#14c3ff'),
+        'ink' => env('BRAND_INK', '#00375a'),
 
         /*
          * The mark, embedded in the message rather than linked. A linked image needs a

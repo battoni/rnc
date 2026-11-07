@@ -111,22 +111,6 @@ const outerMaxWidthClass = computed(() => (uiStore.isFullscreen ? 'max-w-none' :
             <slot />
           </div>
 
-          <!-- The Ideas module's quick-capture dialog, mounted once above every authenticated
-               screen. It belongs here and not on the board: the moment a person has something to
-               say about the product is the moment the product annoyed them, and a board they must
-               navigate to first is a board they reach after the feeling has passed. It opens with
-               the area already answered from the current route.
-
-               Mounted directly because the module is part of the bootstrap. A project mounts an
-               overlay of its OWN in `TheLocalOverlays.local.vue`, below — never by editing this file,
-               which would conflict on every sync. -->
-          <OIdeaCaptureDialog />
-
-          <!-- The Tips module's edit dialog, mounted once for the same reason: a tip is edited
-               from wherever it is READ, so the dialog has to exist above every screen that can
-               render an `<ATip>`. The store carries which anchor was asked for; this listens. -->
-          <OTipEditDialog />
-
           <!-- The project's own overlays: a LOCAL file the sync never touches, empty in rnc. -->
           <TheLocalOverlays />
         </main>

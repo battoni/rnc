@@ -1,5 +1,7 @@
 <?php
 
+use Database\Seeders\LocalUsersSeeder;
+
 /*
  * Project-owned seeders — the cortex sync NEVER touches this file (classified LOCAL).
  *
@@ -9,3 +11,6 @@
  *
  *   $this->call(\Database\Seeders\ReferenceSeeder::class);
  */
+
+// The pilot's team (Reinaldo, the team, the four specialists) — refuses to run in production.
+$this->call(LocalUsersSeeder::class);

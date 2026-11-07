@@ -3,6 +3,16 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 3.0.0 — 2026-11-07
+
+### Changed
+
+- **BREAKING — `home` moved from `/` to `/painel`**: the root belongs to the public site (rnc-1 AM15). The view greets the person and lists the workspaces their keys open.
+
+### Added
+
+- `WORKSPACES`, `useWorkspaces`/`visibleWorkspaces` and `WorkspaceRoutes` (`/equipe`, `/reinaldo`, `/operador` and their `en` paths) with one `WorkspaceView` (rnc-1 F1, R3, A2).
+
 ## 2.0.0 — 2026-09-09
 
 ### Removed

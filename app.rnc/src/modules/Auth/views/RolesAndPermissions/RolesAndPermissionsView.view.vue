@@ -264,10 +264,6 @@ function onConfirmDeleteReject(rejectCallback: () => void) {
   <TheLayout>
     <template #pageHeader>
       <ThePageHeader title="rolesAndPermissions.title">
-        <template #titleSuffix>
-          <ATip tip-key="roles.permissions" />
-        </template>
-
         <template
           v-if="canUpdate && !profileDialogVisible"
           #primaryAction

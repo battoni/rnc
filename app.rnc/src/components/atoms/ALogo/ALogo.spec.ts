@@ -2,34 +2,30 @@ import { describe, expect, it } from 'vitest';
 import { mountWithPlugins } from '@/test/mount';
 import ALogo from './ALogo.vue';
 
+/*
+ * Franco's mark is a text logo (rnc-1): the wordmark "Franco Contabilidade" in `full`, the "F" tile
+ * in `min`. No image to load, so it can never be missing, and its colour comes from tokens.
+ */
 describe('ALogo', () => {
-  it('renders an img element', () => {
+  it('writes the firm name in full', () => {
     const wrapper = mountWithPlugins(ALogo);
-    expect(wrapper.find('img').exists()).toBe(true);
+
+    expect(wrapper.text()).toBe('Franco Contabilidade');
   });
 
-  it('has descriptive alt text', () => {
-    const wrapper = mountWithPlugins(ALogo);
-    expect(wrapper.find('img').attributes('alt')).toBeTruthy();
+  it('reads the min tile as the product name, not as a letter', () => {
+    const tile = mountWithPlugins(ALogo, { props: { variant: 'min' } }).find('[role="img"]');
+
+    expect(tile.attributes('aria-label')).toBe('Franco Contabilidade');
+    expect(tile.text()).toBe('F');
   });
 
-  it('defaults to the full variant', () => {
-    const wrapper = mountWithPlugins(ALogo);
-    expect(wrapper.props('variant')).toBe('full');
+  it('paints from the brand token, or inherits the parent colour', () => {
+    expect(mountWithPlugins(ALogo).classes()).toContain('text-primary-500');
+    expect(mountWithPlugins(ALogo, { props: { tone: 'inherit' } }).classes()).not.toContain('text-primary-500');
   });
 
-  it('accepts the min variant', () => {
-    const wrapper = mountWithPlugins(ALogo, { props: { variant: 'min' } });
-    expect(wrapper.props('variant')).toBe('min');
-  });
-
-  it('uses a different image source for full vs min variant', () => {
-    const wrapperFull = mountWithPlugins(ALogo, { props: { variant: 'full' } });
-    const wrapperMin = mountWithPlugins(ALogo, { props: { variant: 'min' } });
-
-    const fullSrc = wrapperFull.find('img').attributes('src');
-    const minSrc = wrapperMin.find('img').attributes('src');
-
-    expect(fullSrc).not.toBe(minSrc);
+  it('carries no image', () => {
+    expect(mountWithPlugins(ALogo).find('img').exists()).toBe(false);
   });
 });

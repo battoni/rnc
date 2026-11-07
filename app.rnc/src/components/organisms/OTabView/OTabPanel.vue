@@ -5,7 +5,6 @@ defineOptions({ name: 'OTabPanel' });
 
 defineProps<{
   icon?: string;
-  tipKey?: string;
   title: string;
   to?: RouteLocationRaw;
   value?: string;

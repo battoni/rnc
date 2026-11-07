@@ -42,7 +42,7 @@ test.describe('primary contrast', () => {
     await page.route('**/auth/me**', (route) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: mockUser }) })
     );
-    await page.goto('/');
+    await page.goto('/painel');
 
     const declarations = await page.evaluate(() => {
       const found: string[] = [];
@@ -87,7 +87,7 @@ test.describe('primary contrast', () => {
     await page.route('**/auth/me**', (route) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: mockUser }) })
     );
-    await page.goto('/');
+    await page.goto('/painel');
 
     const measured = await page.evaluate(() => {
       const probe = document.createElement('span');
@@ -140,7 +140,7 @@ for (const scheme of ['light', 'dark'] as const) {
     await page.route('**/auth/me**', (route) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: mockUser }) })
     );
-    await page.goto('/');
+    await page.goto('/painel');
 
     const pairs = await page.evaluate(
       ({ grounds, schemeName, tiers }) => {
@@ -267,15 +267,17 @@ const BRAND_TEXT_PAIRS: [string, string][] = [
   ['--p-highlight-focus-color', '--p-highlight-focus-background'],
 ];
 
-const DESIGN_USER = { ...mockUser, permissions: [...mockUser.permissions, 'design.read'] };
+// The preset's variables are global: any signed-in screen resolves them (the gallery that used to
+// host this left with the Showcase module, rnc-1 F1).
+const DESIGN_USER = mockUser;
 
 async function openComponents(page: Page) {
   await seedAuthSession(page);
   await page.route('**/auth/me**', (route) =>
     route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: DESIGN_USER }) })
   );
-  await page.goto('/components');
-  await page.getByRole('tab').first().waitFor();
+  await page.goto('/painel');
+  await page.locator('main').first().waitFor();
 }
 
 for (const scheme of ['light', 'dark'] as const) {
@@ -329,21 +331,6 @@ async function renderedPairs(page: Page, selector: string) {
       background: ground(element),
     }));
   }, selector);
-}
-
-for (const scheme of ['light', 'dark'] as const) {
-  test(`badges and the active tab read on what they render on, ${scheme}`, async ({ page }) => {
-    await openComponents(page);
-    await stillTransitions(page);
-    await page.evaluate((name) => document.documentElement.setAttribute('data-theme', name), scheme);
-
-    const badges = await renderedPairs(page, '[data-pc-name="badge"]');
-    const activeTab = await renderedPairs(page, '[role="tab"][aria-selected="true"]');
-
-    expect(badges.length, 'the showcase renders its badges').toBeGreaterThanOrEqual(4);
-    expect(activeTab).toHaveLength(1);
-    expectReadable([...badges, ...activeTab], scheme);
-  });
 }
 
 /*
@@ -428,7 +415,7 @@ for (const scheme of ['light', 'dark'] as const) {
     await page.route('**/auth/me**', (route) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: DESIGN_USER }) })
     );
-    await page.goto('/');
+    await page.goto('/painel');
     await page.locator('.mobile-navbar-root button').first().click();
 
     const drawer = page.locator('[data-pc-name="drawer"]');

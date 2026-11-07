@@ -14,23 +14,16 @@ import { test, expect, mockUser, seedAuthSession } from '../fixtures/auth';
  * 1024 is `lg` (the rail exists, the bottom bar does not) and 1440 is a laptop.
  */
 
-// `design.read` because the Design group is a permission now, not the administrator's role slug:
-// the seeded administrator holds the key through `RoleSeeder`, and this mock has to say so too.
+// The operator's rail: the three hub groups (rnc-1) plus the settings entries.
 const SUPERADMIN = {
   ...mockUser,
-  permissions: ['users.read', 'permissions.read', 'ideas.read', 'tips.read', 'design.read'],
+  permissions: ['users.read', 'permissions.read', 'leads.read', 'metrics.read'],
 };
 
 async function signInAs(page: Page, user = SUPERADMIN) {
   await seedAuthSession(page);
   await page.route('**/auth/me**', (route) =>
     route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: user }) })
-  );
-  await page.route('**/ideas/news/unread-count**', (route) =>
-    route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: { unread: 0 } }) })
-  );
-  await page.route('**/tips**', (route) =>
-    route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: [] }) })
   );
 }
 
@@ -41,7 +34,7 @@ test.describe('navigation — 1440, the laptop', () => {
 
   test('the rail is present and the content column sits beside it, not under it', async ({ page }) => {
     await signInAs(page);
-    await page.goto('/');
+    await page.goto('/painel');
 
     const column = page.locator('[data-route-fade]');
     await expect(column).toBeVisible();
@@ -58,7 +51,7 @@ test.describe('navigation — 1440, the laptop', () => {
 
   test('collapsing the rail keeps it mounted, hands its width to the column, and is reversible', async ({ page }) => {
     await signInAs(page);
-    await page.goto('/');
+    await page.goto('/painel');
 
     const column = page.locator('[data-route-fade]');
     const widthBefore = (await column.boundingBox())!.width;
@@ -84,15 +77,16 @@ test.describe('navigation — 1440, the laptop', () => {
 
   test('a navigation group opens, stays open across a reload, and closes the one before it', async ({ page }) => {
     await signInAs(page);
-    await page.goto('/');
+    await page.goto('/painel');
 
-    const design = page.getByRole('button', { name: /Design/i }).first();
-    await design.click();
+    // The operator's group, the one that already has children (rnc-1: Users, Roles).
+    const operator = rail(page).locator('[aria-expanded]').first();
+    await operator.click();
 
-    await expect(page.getByRole('link', { name: 'Brand' })).toBeVisible();
+    await expect(rail(page).locator('ul a[href="/users"]').first()).toBeVisible();
 
     await page.reload();
-    await expect(page.getByRole('link', { name: 'Brand' })).toBeVisible();
+    await expect(rail(page).locator('ul a[href="/users"]').first()).toBeVisible();
   });
 });
 
@@ -101,7 +95,7 @@ test.describe('navigation — 1024, where the rail arrives', () => {
 
   test('the rail is on screen and the bottom bar is not', async ({ page }) => {
     await signInAs(page);
-    await page.goto('/');
+    await page.goto('/painel');
 
     await expect(rail(page)).toBeVisible();
     await expect(page.locator('.mobile-navbar-root')).toBeHidden();

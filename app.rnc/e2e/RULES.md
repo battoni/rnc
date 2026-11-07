@@ -85,8 +85,21 @@ and translation. IDs set by PrimeVue props (`#loginPassword` via `inputId`) and
 `mockUser.permissions` is not decoration: the route guards read it against the route's
 `meta.permission` and **redirect to home when it is missing**, so the spec then asserts against a
 page that never rendered and fails on a locator rather than on a permission. `/users` needs
-`users.read`, the roles screen `permissions.read`, the Design pages need `design.read`. When a route gains a `meta.permission`, grant it
+`users.read`, the roles screen `permissions.read`, the workspaces `leads.read` / `metrics.read` / `users.read`. When a route gains a `meta.permission`, grant it
 in the fixtures in the same change.
+
+## Signed-in specs start at `/painel`
+
+`/` is Franco's public site (rnc-1 AM15) and renders no rail; a spec that measures the back office
+goes to `/painel`, the `home` route.
+
+## Known Gaps
+
+- **No component gallery to measure** (rnc-1 F1). Four cases measured the Showcase's `/components`
+  page — list row actions under a finger, default-size controls at 44px, the rendered badges and
+  active tab, and the toggle/secondary/tag contrast (`contrast-controls.spec.ts`). They left with the
+  Showcase module. Their rules still hold through the preset, and the tokens-only contrast cases
+  remain; each comes back as a screen of the hub renders those controls (F5 kanban, F8 repricing).
 
 ## Measuring overflow
 

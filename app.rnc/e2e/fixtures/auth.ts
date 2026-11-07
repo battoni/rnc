@@ -42,7 +42,7 @@ export const mockUser = {
   last_name: 'Smith',
   username: 'alice',
   role: 'Admin',
-  role_slug: 'administrator',
+  role_slug: 'operador',
   status: 'active',
   // `permissions.*` because the roles screen closes its route on `permissions.read` (e2e/RULES.md).
   permissions: [

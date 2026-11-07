@@ -19,7 +19,6 @@
   "scripts": {
     "build": "run-s build-only type-check",
     "build-only": "vite build",
-    "build:features": "node scripts/build-features.mjs",
     "check:aliases": "node scripts/check-aliases.mjs",
     "dev": "vite",
     "format": "prettier --write src/",

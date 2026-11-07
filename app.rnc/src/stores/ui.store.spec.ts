@@ -1,20 +1,16 @@
 import { createPinia, setActivePinia } from 'pinia';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { resetSingleTipState, useSingleTip } from '@Composables';
+import { beforeEach, describe, expect, it } from 'vitest';
 import {
   FULLSCREEN_STORAGE_KEY,
   MENU_BUTTON_PINNED_STORAGE_KEY,
   NAV_COLLAPSED_STORAGE_KEY,
   NAV_EXPANDED_GROUPS_STORAGE_KEY,
-  TUTOR_STORAGE_KEY,
 } from '@Constants';
 import useUiStore from './ui.store';
 
 describe('ui.store', () => {
   beforeEach(() => {
     localStorage.clear();
-    delete document.documentElement.dataset.tutor;
-    resetSingleTipState();
     setActivePinia(createPinia());
   });
 
@@ -33,18 +29,6 @@ describe('ui.store', () => {
 
     const store = useUiStore();
     expect(store.isFullscreen).toBe(true);
-  });
-
-  it('initialises with isTutorEnabled true when storage is empty', () => {
-    const store = useUiStore();
-    expect(store.isTutorEnabled).toBe(true);
-  });
-
-  it('initialises isTutorEnabled from localStorage', () => {
-    localStorage.setItem(TUTOR_STORAGE_KEY, '0');
-
-    const store = useUiStore();
-    expect(store.isTutorEnabled).toBe(false);
   });
 
   it('toggleSidenav opens the sidenav when it is closed', () => {
@@ -82,39 +66,6 @@ describe('ui.store', () => {
     store.setFullscreen(false);
     expect(store.isFullscreen).toBe(false);
     expect(localStorage.getItem(FULLSCREEN_STORAGE_KEY)).toBe('0');
-  });
-
-  it('setTutorEnabled updates isTutorEnabled, persists, and applies data-tutor', () => {
-    const store = useUiStore();
-    store.setTutorEnabled(false);
-    expect(store.isTutorEnabled).toBe(false);
-    expect(localStorage.getItem(TUTOR_STORAGE_KEY)).toBe('0');
-    expect(document.documentElement.dataset.tutor).toBe('off');
-
-    store.setTutorEnabled(true);
-    expect(store.isTutorEnabled).toBe(true);
-    expect(localStorage.getItem(TUTOR_STORAGE_KEY)).toBe('1');
-    expect(document.documentElement.dataset.tutor).toBe('on');
-  });
-
-  it('setTutorEnabled(false) dismisses an open contextual tip', () => {
-    const { openTip } = useSingleTip();
-    const closeActiveTip = vi.fn();
-    openTip(closeActiveTip);
-
-    const store = useUiStore();
-    store.setTutorEnabled(false);
-
-    expect(closeActiveTip).toHaveBeenCalledOnce();
-  });
-
-  it('init applies data-tutor from stored preference', () => {
-    localStorage.setItem(TUTOR_STORAGE_KEY, '0');
-    setActivePinia(createPinia());
-
-    const store = useUiStore();
-    store.init();
-    expect(document.documentElement.dataset.tutor).toBe('off');
   });
 
   it('exposes appWidth and appHeight getters', () => {

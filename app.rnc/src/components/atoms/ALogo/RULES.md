@@ -1,38 +1,40 @@
 ---
-version: 1.2.0
+version: 2.0.0
 origin: pendulum
 based-on: 1.2.0
 ---
 
 # RULES — ALogo
 
-> For AI agents. Last updated: 2026-05-22.
+> For AI agents. Last updated: 2026-11-07.
 
 ## Purpose
 
-Renders the app logo as an `<img>` tag, switching between a full-width and a compact minimum variant.
+Franco Contabilidade's mark (rnc-1): a TEXT logo. `full` writes "Franco Contabilidade", `min` is
+the "F" tile. No image file.
 
-> **The behaviour contract lives in `.claude/rules/celer-09-brand-mark-contract.md`**, not here.
-> This file is `LOCAL` — the sync never touches it, which is right for a mark and wrong for
-> everything learned about how a mark should behave. Read the contract before adding a prop; this
-> file records only how THIS project's mark implements it.
+**The behaviour contract lives in `.claude/rules/celer-09-brand-mark-contract.md`**, not here. This
+file is `LOCAL` — the sync never touches it — and records only how this project's mark implements it.
 
 ## Intentional Decisions
 
-- **Logo PNGs are colocated in this folder**, not in `src/assets/`. Do not move them — the component imports them by relative path.
-- **`variant='full'` is the default**: explicit `withDefaults` keeps the prop optional at the call site.
-- **A raster mark, so only `variant` is implemented.** The contract's motion props (`pulse`,
-  `loop`, `entrance`, `tone`) are for a mark drawn as inline SVG. Do not add them to this
-  component and animate the `<img>` — that moves the picture rather than the mark, and it is the
-  wrong shape for the thing being asked for. A project that wants them redraws its mark as SVG
-  first, and then the contract is already written.
-- **Wrapper `div` is `flex`**: sizing is controlled by the parent (e.g. `max-w-[100px]`), not by the component itself. The `w-full` on the `<img>` fills whatever the parent constrains.
+- **Text, not a raster or an SVG.** The firm has no vector mark handed over yet, and the owner chose
+  a text logo for the pilot. Text cannot fail to load, scales with the type and takes the brand token.
+- **`variant` and `tone` only.** The motion props (`pulse`, `loop`, `entrance`) are for an inline-SVG
+  mark; a wordmark does not animate.
+- **`tone="brand"` paints `text-primary-500`** (the navy); `tone="inherit"` leaves the parent's colour,
+  for a filled band such as the sign-in screen's navy aside.
+- **Sized by the parent's font size.** The tile is `1.75em` square, so `text-xl` on the parent makes a
+  bigger mark; the atom sets no size of its own.
+- **`min` is `role="img"` with the product's name** as its `aria-label`; `full` needs none — the
+  words are the name.
 
 ## Prop & Emit Contract
 
-- `variant`: `'full'` renders the horizontal logo; `'min'` renders the icon-only version. No other values are accepted.
+- `variant`: `'full'` (default) | `'min'`.
+- `tone`: `'brand'` (default) | `'inherit'`.
 
 ## Do Not
 
-- **Do not add hardcoded width/height** on this component — size from the parent container.
-- **Do not add dark-mode variants here** without adding the corresponding PNG assets alongside.
+- **Do not write "Willy" or "APW"** here or anywhere in the product (rnc-1 R3).
+- **Do not hard-code a colour** — the token flips with the theme.

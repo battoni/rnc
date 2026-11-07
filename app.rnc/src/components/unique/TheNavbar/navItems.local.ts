@@ -1,6 +1,7 @@
 import { computed } from 'vue';
 import type { ComputedRef } from 'vue';
 import type { NavItem } from './interfaces';
+import { WORKSPACES } from '@HomeModule';
 
 /**
  * Project-owned navigation items — the cortex sync NEVER touches this file (classified LOCAL).
@@ -43,8 +44,37 @@ import type { NavItem } from './interfaces';
  * navigation is on every screen, so waiting for the module to load would leave the group empty
  * on arrival. Do not await: the group renders with what it has and grows when the answer lands.
  */
+/**
+ * What each group already holds. The operator's group carries the bootstrap's own administration
+ * screens; the team's and Reinaldo's fill up as F2–F8 add their screens.
+ */
+const OPERATOR_CHILDREN: Record<string, NavItem[] | undefined> = {
+  operator: [
+    { icon: 'pi pi-users', label: 'navigation.users', permission: 'users.read', routeName: 'users' },
+    {
+      icon: 'pi pi-key',
+      label: 'navigation.roles',
+      permission: 'permissions.read',
+      routeName: 'roles-and-permissions',
+    },
+  ],
+};
+
+/**
+ * The hub's rail (rnc-1 R3): Equipe · Reinaldo · Operador, in that order, each closed by the key
+ * only its audience holds (`WORKSPACES`, plan AM8) — so the team sees one group, Reinaldo two and
+ * the operator all three. Each is a link with a toggle (shape 3) once it has children.
+ */
 function useLocalNavItems(): ComputedRef<NavItem[]> {
-  return computed<NavItem[]>(() => []);
+  return computed<NavItem[]>(() =>
+    WORKSPACES.map((workspace) => ({
+      children: OPERATOR_CHILDREN[workspace.key],
+      icon: workspace.icon,
+      label: `navigation.${workspace.key}`,
+      permission: workspace.permission,
+      routeName: workspace.routeName,
+    }))
+  );
 }
 
 const localNavSettings: NavItem[] = [];

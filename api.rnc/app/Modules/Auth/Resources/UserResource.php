@@ -28,6 +28,9 @@ class UserResource extends JsonResource
             'profile_type' => $user->profile_type,
             'role' => $user->role?->name,
             'role_slug' => $user->role?->slug,
+            // Which firm's hub this person works in, and whether a visitor can book them (rnc-1 R2).
+            'firm_slug' => $user->firm?->slug,
+            'is_specialist' => (bool) $user->is_specialist,
             'status' => $user->status->value ?? UserStatus::ACTIVE->value,
             'permissions' => $user->getAttribute('permissions') ?? [],
         ];

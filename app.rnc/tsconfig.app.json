@@ -36,16 +36,12 @@
 
       "@AuthModule": ["./src/modules/Auth"],
       "@AuthModule/*": ["./src/modules/Auth/*"],
-      "@IdeaModule": ["./src/modules/Idea"],
-      "@IdeaModule/*": ["./src/modules/Idea/*"],
       "@HomeModule": ["./src/modules/Home"],
       "@HomeModule/*": ["./src/modules/Home/*"],
       "@PersonalizationModule": ["./src/modules/Personalization"],
       "@PersonalizationModule/*": ["./src/modules/Personalization/*"],
-      "@ShowcaseModule": ["./src/modules/Showcase"],
-      "@ShowcaseModule/*": ["./src/modules/Showcase/*"],
-      "@TipModule": ["./src/modules/Tip"],
-      "@TipModule/*": ["./src/modules/Tip/*"],
+      "@SiteModule": ["./src/modules/Site"],
+      "@SiteModule/*": ["./src/modules/Site/*"],
       "@UserModule": ["./src/modules/User"],
       "@UserModule/*": ["./src/modules/User/*"],
     }

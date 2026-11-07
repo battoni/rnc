@@ -1,8 +1,9 @@
 <?php
 
+use App\Modules\Auth\Helpers\PermissionGroupsHelper;
 use App\Modules\Auth\Models\Role;
 use App\Modules\Auth\Models\RolePermission;
-use Database\Seeders\ManagerSeeder;
+use Database\Seeders\FirmSeeder;
 use Database\Seeders\RoleSeeder;
 use Database\Seeders\SuperAdminSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -16,9 +17,12 @@ uses(RefreshDatabase::class);
  * every role on the way past. In lifeshifter that handed four unreleased screens to an ordinary
  * member, and nothing failed or warned. So the lists are written out here. Adding a key is allowed —
  * it just has to be a decision someone made in this file, in daylight, rather than a side effect.
+ *
+ * The table is the plan review's AM8 (rnc-1, 07/11/2026): the team works the pipeline, Reinaldo
+ * also runs the network, the numbers and the repricing, and the operator holds everything.
  */
 
-beforeEach(fn () => $this->seed([RoleSeeder::class, SuperAdminSeeder::class, ManagerSeeder::class]));
+beforeEach(fn () => $this->seed([FirmSeeder::class, RoleSeeder::class, SuperAdminSeeder::class]));
 
 function seededRoleKeys(string $slug): array
 {
@@ -32,43 +36,50 @@ function seededRoleKeys(string $slug): array
         ->all();
 }
 
-/*
- * Written from the seeders as they stand. The question this list used to carry — every member
- * receiving `users.read` (the whole account directory) and `users.reset_password` — was answered on
- * 2026-09-20: both are withheld (ARC-15). The directory was readable by anybody who signed
- * themselves up, and `users.read` was also the documentation portal's "this person is staff"
- * signal, so a member read the internal docs (LP-DOCS-01). `tips.read` followed on 2026-09-22: it
- * is the tips' back office (history, editors' names), and the tips themselves need no key.
- */
-describe('the seeded member role', function () {
-    it('holds exactly these keys', function () {
-        expect(seededRoleKeys('user'))->toBe([
+describe('the seeded roles', function () {
+    it('are exactly the three of the product', function () {
+        expect(Role::pluck('slug')->sort()->values()->all())->toBe(['ceo', 'equipe', 'operador']);
+    });
+
+    it('give the team only the pipeline', function () {
+        expect(seededRoleKeys('equipe'))->toBe([
+            'agenda.read',
             'home.read',
-            'ideas.create',
-            'ideas.read',
+            'leads.read',
+            'leads.update',
+            'notifications.read',
         ]);
     });
-});
 
-describe('the seeded manager role', function () {
-    it('holds exactly these keys', function () {
-        expect(seededRoleKeys('manager'))->toBe([
+    it('give Reinaldo the team keys plus the network, the numbers and the repricing', function () {
+        expect(seededRoleKeys('ceo'))->toBe([
+            'agenda.read',
+            'clients.import',
             'home.read',
-            'ideas.create',
-            'ideas.manage',
-            'ideas.read',
-            'news.manage',
-            'permissions.read',
-            'permissions.update',
-            'tips.manage',
-            'tips.read',
-            'users.archive',
-            'users.create',
-            'users.delete',
-            'users.read',
-            'users.reset_password',
-            'users.search',
-            'users.update',
+            'leads.read',
+            'leads.update',
+            'metrics.read',
+            'notifications.read',
+            'partners.manage',
+            'referrals.read',
+            'repricing.manage',
         ]);
+    });
+
+    it('give the operator every key there is', function () {
+        $expected = collect(PermissionGroupsHelper::getPermissionGroupsStructure())
+            ->flatMap(fn (array $group) => array_column($group['permissions'], 'key'))
+            ->sort()
+            ->values()
+            ->all();
+
+        expect(seededRoleKeys('operador'))->toBe($expected);
+    });
+
+    it('keep the staff directory and the permission matrix with the operator', function () {
+        foreach (['ceo', 'equipe'] as $slug) {
+            expect(seededRoleKeys($slug))->not->toContain('users.read')
+                ->and(seededRoleKeys($slug))->not->toContain('permissions.update');
+        }
     });
 });

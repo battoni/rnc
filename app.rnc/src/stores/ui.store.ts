@@ -1,12 +1,10 @@
 import { useWindowSize } from '@vueuse/core';
 import { defineStore } from 'pinia';
-import { resetSingleTipState } from '@Composables';
 import {
   FULLSCREEN_STORAGE_KEY,
   MENU_BUTTON_PINNED_STORAGE_KEY,
   NAV_COLLAPSED_STORAGE_KEY,
   NAV_EXPANDED_GROUPS_STORAGE_KEY,
-  TUTOR_STORAGE_KEY,
 } from '@Constants';
 
 interface UiState {
@@ -15,7 +13,6 @@ interface UiState {
   isMenuButtonPinned: boolean;
   isNavCollapsed: boolean;
   isSidenavOpen: boolean;
-  isTutorEnabled: boolean;
 }
 
 const { height, width } = useWindowSize();
@@ -60,14 +57,6 @@ function readStoredNavExpandedGroups(): string[] {
   return stored.split(',').slice(0, 1);
 }
 
-function readStoredTutorEnabled(): boolean {
-  const stored = localStorage.getItem(TUTOR_STORAGE_KEY);
-
-  if (stored === '0') return false;
-
-  return true;
-}
-
 function persistFullscreen(isFullscreen: boolean) {
   localStorage.setItem(FULLSCREEN_STORAGE_KEY, isFullscreen ? '1' : '0');
 }
@@ -84,10 +73,6 @@ function persistNavExpandedGroups(expandedNavGroups: string[]) {
   localStorage.setItem(NAV_EXPANDED_GROUPS_STORAGE_KEY, expandedNavGroups.join(','));
 }
 
-function persistTutorEnabled(isTutorEnabled: boolean) {
-  localStorage.setItem(TUTOR_STORAGE_KEY, isTutorEnabled ? '1' : '0');
-}
-
 export default defineStore('ui', {
   state: (): UiState => ({
     expandedNavGroups: readStoredNavExpandedGroups(),
@@ -95,17 +80,10 @@ export default defineStore('ui', {
     isMenuButtonPinned: readStoredMenuButtonPinned(),
     isNavCollapsed: readStoredNavCollapsed(),
     isSidenavOpen: false,
-    isTutorEnabled: readStoredTutorEnabled(),
   }),
   actions: {
-    applyTutor() {
-      document.documentElement.dataset.tutor = this.isTutorEnabled ? 'on' : 'off';
-    },
     closeSidenav() {
       this.isSidenavOpen = false;
-    },
-    init() {
-      this.applyTutor();
     },
     /**
      * Keep the menu button on screen at every width. Unpinning also brings the rail back:
@@ -147,23 +125,11 @@ export default defineStore('ui', {
 
       persistFullscreen(isFullscreen);
     },
-    setTutorEnabled(isTutorEnabled: boolean) {
-      this.isTutorEnabled = isTutorEnabled;
-
-      persistTutorEnabled(isTutorEnabled);
-
-      this.applyTutor();
-
-      if (!isTutorEnabled) resetSingleTipState();
-    },
     toggleFullscreen() {
       this.setFullscreen(!this.isFullscreen);
     },
     toggleSidenav() {
       this.isSidenavOpen = !this.isSidenavOpen;
-    },
-    toggleTutor() {
-      this.setTutorEnabled(!this.isTutorEnabled);
     },
   },
   getters: {

@@ -23,7 +23,7 @@ function matrixEditor(): User
     UserPermission::create(['user_id' => $user->id, 'permission_key' => 'permissions.read', 'value' => true]);
     UserPermission::create(['user_id' => $user->id, 'permission_key' => 'permissions.update', 'value' => true]);
     // Plus the keys these specs write into a matrix: a grant is capped by the giver's own (ARC-03).
-    UserPermission::create(['user_id' => $user->id, 'permission_key' => 'tips.read', 'value' => true]);
+    UserPermission::create(['user_id' => $user->id, 'permission_key' => 'leads.read', 'value' => true]);
 
     return $user;
 }
@@ -40,8 +40,8 @@ describe('the permission matrix a role is shown', function () {
         // The role has no rows at all. That used to mean an EMPTY matrix, and a group missing here
         // could never come back, because the screen saves only what it rendered.
         expect($groupIds)->toContain('users')
-            ->and($groupIds)->toContain('tips')
-            ->and($groupIds)->toContain('design');
+            ->and($groupIds)->toContain('leads')
+            ->and($groupIds)->toContain('referrals');
     });
 
     it('reports an ungranted key as false rather than hiding its group', function () {
@@ -49,7 +49,7 @@ describe('the permission matrix a role is shown', function () {
 
         $design = collect($this->actingAs(matrixEditor())
             ->getJson("/api/auth/roles/{$role->id}")
-            ->json('data.permissionGroups'))->firstWhere('id', 'design');
+            ->json('data.permissionGroups'))->firstWhere('id', 'referrals');
 
         expect($design['permissions'])->not->toBeEmpty()
             ->and($design['permissions'][0]['value'])->toBeFalse();
@@ -63,8 +63,8 @@ describe('which groups a role holds', function () {
         $role = Role::create(['name' => 'Held Role']);
 
         RolePermission::insert([
-            ['role_id' => $role->id, 'permission_key' => 'tips.read', 'value' => true],
-            ['role_id' => $role->id, 'permission_key' => 'tips.manage', 'value' => false],
+            ['role_id' => $role->id, 'permission_key' => 'leads.read', 'value' => true],
+            ['role_id' => $role->id, 'permission_key' => 'leads.update', 'value' => false],
         ]);
 
         $groups = collect($this->actingAs(matrixEditor())
@@ -72,9 +72,9 @@ describe('which groups a role holds', function () {
             ->assertOk()
             ->json('data.permissionGroups'))->keyBy('id');
 
-        expect($groups['tips']['isHeld'])->toBeTrue()
+        expect($groups['leads']['isHeld'])->toBeTrue()
             ->and($groups['users']['isHeld'])->toBeFalse()
-            ->and($groups['design']['isHeld'])->toBeFalse();
+            ->and($groups['referrals']['isHeld'])->toBeFalse();
     });
 });
 
@@ -83,49 +83,49 @@ describe('editing which groups a role holds', function () {
         $role = Role::create(['name' => 'Trimmed Role']);
 
         RolePermission::insert([
-            ['role_id' => $role->id, 'permission_key' => 'tips.read', 'value' => true],
-            ['role_id' => $role->id, 'permission_key' => 'tips.manage', 'value' => true],
-            ['role_id' => $role->id, 'permission_key' => 'ideas.read', 'value' => true],
+            ['role_id' => $role->id, 'permission_key' => 'leads.read', 'value' => true],
+            ['role_id' => $role->id, 'permission_key' => 'leads.update', 'value' => true],
+            ['role_id' => $role->id, 'permission_key' => 'agenda.read', 'value' => true],
         ]);
 
         $this->actingAs(matrixEditor())
-            ->patchJson("/api/auth/roles/{$role->id}", ['permission_group_ids' => ['tips']])
+            ->patchJson("/api/auth/roles/{$role->id}", ['permission_group_ids' => ['leads']])
             ->assertOk();
 
         $keys = RolePermission::where('role_id', $role->id)->pluck('value', 'permission_key');
 
-        expect($keys->get('tips.read'))->toBeTrue()
-            ->and($keys->get('tips.manage'))->toBeTrue()
-            ->and($keys->has('ideas.read'))->toBeFalse();
+        expect($keys->get('leads.read'))->toBeTrue()
+            ->and($keys->get('leads.update'))->toBeTrue()
+            ->and($keys->has('agenda.read'))->toBeFalse();
     });
 
     it('does not empty the matrix when the payload names a group the role lacks', function () {
         $role = Role::create(['name' => 'Growing Role']);
 
         RolePermission::insert([
-            ['role_id' => $role->id, 'permission_key' => 'tips.read', 'value' => true],
+            ['role_id' => $role->id, 'permission_key' => 'leads.read', 'value' => true],
         ]);
 
         $this->actingAs(matrixEditor())
-            ->patchJson("/api/auth/roles/{$role->id}", ['permission_group_ids' => ['tips', 'news']])
+            ->patchJson("/api/auth/roles/{$role->id}", ['permission_group_ids' => ['leads', 'metrics']])
             ->assertOk();
 
         $keys = RolePermission::where('role_id', $role->id)->pluck('value', 'permission_key');
 
-        expect($keys->get('tips.read'))->toBeTrue()
-            ->and($keys->has('news.manage'))->toBeTrue()
-            ->and($keys->get('news.manage'))->toBeFalse();
+        expect($keys->get('leads.read'))->toBeTrue()
+            ->and($keys->has('metrics.read'))->toBeTrue()
+            ->and($keys->get('metrics.read'))->toBeFalse();
     });
 
     it('refuses an unknown group id instead of silently dropping it', function () {
         $role = Role::create(['name' => 'Typo Role']);
 
         RolePermission::insert([
-            ['role_id' => $role->id, 'permission_key' => 'tips.read', 'value' => true],
+            ['role_id' => $role->id, 'permission_key' => 'leads.read', 'value' => true],
         ]);
 
         $this->actingAs(matrixEditor())
-            ->patchJson("/api/auth/roles/{$role->id}", ['permission_group_ids' => ['tips', 'tpis']])
+            ->patchJson("/api/auth/roles/{$role->id}", ['permission_group_ids' => ['leads', 'laeds']])
             ->assertStatus(422);
 
         expect(RolePermission::where('role_id', $role->id)->count())->toBe(1);
@@ -133,7 +133,7 @@ describe('editing which groups a role holds', function () {
 
     it('refuses an unknown group id when a role is created too', function () {
         $this->actingAs(matrixEditor())
-            ->postJson('/api/auth/roles', ['name' => 'Typo Role', 'permission_group_ids' => ['tpis']])
+            ->postJson('/api/auth/roles', ['name' => 'Typo Role', 'permission_group_ids' => ['laeds']])
             ->assertStatus(422);
 
         expect(Role::where('name', 'Typo Role')->exists())->toBeFalse();
@@ -204,9 +204,9 @@ describe('setting keys on the matrix', function () {
         $role = Role::create(['name' => 'Matrix Role']);
 
         $this->actingAs(matrixEditor())
-            ->patchJson("/api/auth/roles/{$role->id}/permissions", ['permissions' => ['tips.read' => true]])
+            ->patchJson("/api/auth/roles/{$role->id}/permissions", ['permissions' => ['leads.read' => true]])
             ->assertOk();
 
-        expect(RolePermission::where('role_id', $role->id)->where('permission_key', 'tips.read')->value('value'))->toBeTruthy();
+        expect(RolePermission::where('role_id', $role->id)->where('permission_key', 'leads.read')->value('value'))->toBeTruthy();
     });
 });

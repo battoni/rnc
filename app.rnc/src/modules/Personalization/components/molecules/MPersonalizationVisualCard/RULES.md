@@ -10,7 +10,7 @@ based-on: 1.1.2
 
 ## Purpose
 
-Card on the Personalization page for this device's preferences: dark mode, language, full-screen layout, a pinned menu button, and contextual tips.
+Card on the Personalization page for this device's preferences: dark mode, language, full-screen layout, and a pinned menu button.
 
 ## Intentional Decisions
 

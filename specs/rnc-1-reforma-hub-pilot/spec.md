@@ -155,3 +155,6 @@ mocked), `→ Chrome` (the battoni-test-in-chrome round against the real API and
 
 ## Out of scope
 Everything in intent "Out of scope". No deploy, no real e-mail delivery, no SSR.
+
+## Changes while building
+- C1 (F1, W3): the back office's landing is `/painel` (route `home`); `/` is the public site for everyone, signed in or not. The rail shows Equipe · Reinaldo · Operador by permission (`leads.read`, `metrics.read`, `users.read`), and Operador holds Usuários and Perfis.

@@ -56,12 +56,13 @@ Modules may import from other modules via their root alias. They must **not** re
 | Module            | Alias                    | Domain                                                               |
 | ----------------- | ------------------------ | -------------------------------------------------------------------- |
 | `Auth`            | `@AuthModule`            | Authentication, roles, permissions                                   |
-| `Home`            | `@HomeModule`            | Dashboard and marketing views                                        |
-| `Idea`            | `@IdeaModule`            | Idea board and News (`ideas.*` permissions)                          |
-| `Personalization` | `@PersonalizationModule` | Global UI preferences (dark mode, layout, tutor) — this browser only |
-| `Showcase`        | `@ShowcaseModule`        | Design system pages: brand, components, features (`design.read`)     |
-| `Tip`             | `@TipModule`             | Contextual tips and their management screen (`tips.read`)            |
+| `Home`            | `@HomeModule`            | Back-office landing and the three workspaces (Equipe · Reinaldo · Operador) |
+| `Personalization` | `@PersonalizationModule` | Global UI preferences (dark mode, language, layout) — this browser only |
+| `Site`            | `@SiteModule`            | Franco's public site (open routes, `ThePublicLayout`)                |
 | `User`            | `@UserModule`            | User management, session state                                       |
+
+*Retired 07/11/2026 (rnc-1 F1):* `Idea`, `Showcase` and `Tip` — bootstrap samples this product does
+not use, removed with their tests, routes, aliases and locale keys.
 
 ## Do Not
 

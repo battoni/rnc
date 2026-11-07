@@ -37,45 +37,12 @@ const { push, resolve } = useRouter();
 const toast = useToast();
 
 /** Routes allowed into the bottom bar. Children never appear there — the bar stays flat. */
-const MOBILE_ROUTE_NAMES = ['home', 'users'];
+const MOBILE_ROUTE_NAMES = ['home', 'users', 'team-home', 'ceo-home', 'operator-home'];
 
 /** The core entries; the local layer's own are appended and may be store-backed. */
 const CORE_NAV_ITEMS: NavItem[] = [{ icon: 'pi pi-home', label: 'navigation.home', routeName: 'home' }];
 
-/**
- * The design surface — the brand's own tokens, the component gallery, the composed showcase —
- * is one subject, and it was three rows sitting among the account's own settings. It reads as a
- * group because that is what it is, and it goes last in the main list rather than in the
- * settings footer: the footer renders flat links only and does not scroll, so a group that
- * unfolds there has nowhere to unfold into.
- *
- * A pure expander (`children`, no `routeName`) — there is no page that *is* Design, so the row
- * has nothing to navigate to and only opens and closes. The gate is repeated on every child:
- * the children are what actually reach a route, and a group whose children were all filtered
- * out is dropped whole by `toVisibleItems`.
- *
- * `design.read`, not a role check. A role check cannot be granted from the permissions tab, which
- * made this surface the one thing the owner could not hand to another person without editing code.
- * The permission group lives in `PermissionGroupsHelper`; the administrator holds it through
- * `RoleSeeder`, and `ManagerSeeder` withholds it from the manager and member roles, so nobody who
- * could not open these pages before can open them now.
- */
-const DESIGN_NAV_GROUP: NavItem = {
-  icon: 'pi pi-th-large',
-  label: 'navigation.design',
-  permission: 'design.read',
-  children: [
-    { icon: 'pi pi-bolt', label: 'navigation.brand', permission: 'design.read', routeName: 'brand' },
-    { icon: 'pi pi-palette', label: 'navigation.components', permission: 'design.read', routeName: 'components' },
-    { icon: 'pi pi-box', label: 'navigation.features', permission: 'design.read', routeName: 'features' },
-    { icon: 'pi pi-star', label: 'navigation.showcase', permission: 'design.read', routeName: 'showcase' },
-  ],
-};
-
 const settings = ref<NavItem[]>([
-  { icon: 'pi pi-megaphone', label: 'navigation.news', permission: 'ideas.read', routeName: 'news' },
-  { icon: 'pi pi-lightbulb', label: 'navigation.ideas', permission: 'ideas.read', routeName: 'ideas' },
-  { icon: 'pi pi-info-circle', label: 'navigation.tips', permission: 'tips.read', routeName: 'tips' },
   // Both carried no gate at all, so every account saw the admin surface — the filter below
   // only ever hid what declared a cost, and these two declared none. The API has enforced
   // `users.read` on those routes the whole time, so the navigation was offering a link it knew
@@ -88,7 +55,7 @@ const settings = ref<NavItem[]>([
 
 const drawerClass = computed(() => (isMobileView.value ? 'nav-drawer-mobile' : 'w-54'));
 const drawerPosition = computed(() => (isMobileView.value ? 'full' : 'left'));
-const itemsWithRoutes = computed(() => toVisibleItems([...CORE_NAV_ITEMS, ...localItems.value, DESIGN_NAV_GROUP]));
+const itemsWithRoutes = computed(() => toVisibleItems([...CORE_NAV_ITEMS, ...localItems.value]));
 const mobileItems = computed(() => itemsWithRoutes.value.filter(isMobileNavItem));
 // `false` would ship as inert="false", which HTML reads as inert. Absent is the only "off".
 const railInert = computed(() => uiStore.isNavCollapsed || undefined);

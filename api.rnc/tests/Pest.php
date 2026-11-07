@@ -73,21 +73,3 @@ function userWithPermissions(array $permissionKeys): User
 
     return $user;
 }
-
-/** Reads the board and can post to it — the ordinary member of the product's audience. */
-function ideaContributor(): User
-{
-    return userWithPermissions(['ideas.read', 'ideas.create']);
-}
-
-/** Runs the board: status, the public note, hiding, merging. */
-function ideaMaintainer(): User
-{
-    return userWithPermissions(['ideas.read', 'ideas.create', 'ideas.manage']);
-}
-
-/** Writes the changelog. Reads the board because an entry can credit the idea that started it. */
-function newsWriter(): User
-{
-    return userWithPermissions(['ideas.read', 'news.manage']);
-}

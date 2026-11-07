@@ -21,7 +21,7 @@ A reusable tabs organism with two modes:
 
 `OTabPanel` is **never mounted**. `OTabView` reads its own default-slot VNodes (`slots.default()`), filters to `OTabPanel` nodes by component name, and pulls everything off each VNode:
 
-- `vnode.props` → `title`, `value`, `icon`, `tipKey`, `to` — read through `readPanelProp`, which accepts the kebab-case attribute too: Vue normalises `tip-key` only for a component it instantiates, and a panel never is
+- `vnode.props` → `title`, `value`, `icon`, `to` — read through `readPanelProp`, which accepts the kebab-case attribute too: Vue normalises a kebab-case attribute only for a component it instantiates, and a panel never is
 - `vnode.children` → the slot functions: `default` (renamed `content`) and `actions`
 
 `OTabView` then renders the strip (`Tabs` / `TabList` / `Tab`) and the body itself, running the captured slot functions via `<component :is="...">`. This is why the actions slot (declared inside a panel) can render up in the **header** while the content renders in the **body**.
@@ -55,7 +55,6 @@ Consequences to respect:
 - `title: string` (required) — i18n key shown in the tab header.
 - `value?: string` — tab key. Falls back to the resolved route name, then the index.
 - `icon?: string` — `pi` icon class shown before the title.
-- `tipKey?: string` — a `TIP_ANCHORS` key; an `ATip` renders after the title (from new.impressao), wrapped in `@click.stop` like `#actions`, so opening it never switches the tab.
 - `to?: RouteLocationRaw` — required in `routes` mode; the tab's navigation target.
 - `#actions` slot — rendered in the tab header (wrapped in `@click.stop` so it never switches the tab).
 - default slot — the tab body. Used in `view` mode only (ignored in `routes` mode, where `<RouterView/>` renders).

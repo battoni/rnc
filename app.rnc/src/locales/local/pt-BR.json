@@ -1,1 +1,68 @@
-{}
+{
+  "auth": {
+    "brand": {
+      "domain": "franco-rnc.com.br",
+      "headline": "A Reforma chega.\nA Franco já está pronta.",
+      "tag": "Reforma Tributária",
+      "tagline": "O hub da Franco Contabilidade para levar cada cliente pela transição de 2026 a 2033."
+    }
+  },
+  "home": {
+    "title": "Início",
+    "greeting": "Olá, {name}",
+    "description": "Escolha onde trabalhar hoje. Cada área mostra só o que o seu papel pode abrir.",
+    "open": "Abrir",
+    "emptyTitle": "Nada por aqui ainda",
+    "workspaces": {
+      "team": {
+        "title": "Equipe",
+        "description": "Pipeline de leads, agenda das reuniões e notificações.",
+        "upcoming": "O pipeline, a ficha de cada lead e a agenda da equipe chegam aqui."
+      },
+      "ceo": {
+        "title": "Reinaldo",
+        "description": "Métricas do funil, rede de parceiros, trilha de encaminhamentos e reajuste de honorários.",
+        "upcoming": "As métricas, os parceiros, a trilha e o reajuste de honorários chegam aqui."
+      },
+      "operator": {
+        "title": "Operador",
+        "description": "Usuários, perfis e permissões do hub.",
+        "upcoming": "A operação do hub: usuários e perfis ficam no menu de configurações."
+      }
+    }
+  },
+  "navigation": {
+    "team": "Equipe",
+    "ceo": "Reinaldo",
+    "operator": "Operador"
+  },
+  "rolesAndPermissions": {
+    "groups": {
+      "leads": "Leads",
+      "agenda": "Agenda",
+      "notifications": "Notificações",
+      "partners": "Parceiros",
+      "referrals": "Trilha de encaminhamentos",
+      "metrics": "Métricas",
+      "repricing": "Reajuste de honorários"
+    },
+    "permissions": {
+      "import": "Importar"
+    }
+  },
+  "site": {
+    "landing": {
+      "kicker": "Reforma Tributária",
+      "title": "A sua empresa pronta para a Reforma Tributária",
+      "lede": "A Franco Contabilidade acompanha cada etapa da transição, de 2026 a 2033."
+    },
+    "footer": {
+      "tagline": "Contabilidade e consultoria empresarial em São Paulo há 35 anos.",
+      "contact": "Contato",
+      "hours": "Atendimento",
+      "hoursWeekdays": "Segunda a quinta, 8h às 18h",
+      "hoursFriday": "Sexta, 8h às 17h",
+      "copyright": "© {year} {name}"
+    }
+  }
+}

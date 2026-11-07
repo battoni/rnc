@@ -12,3 +12,10 @@ parameters:
 
     # Analyse only what the changed-files scripts pass in; the paths above scope
     # a full `phpstan analyse` run. Raise the level once the baseline is clean.
+
+    # rnc-1 F1: `BelongsToFirm` is used only by the test model of `FirmScopeTest` until F3's `Lead`
+    # becomes its first business model. Delete this entry in F3 (it then fails as "unmatched").
+    ignoreErrors:
+        -
+            identifier: trait.unused
+            path: app/Modules/Firm/Traits/BelongsToFirm.php

@@ -24,6 +24,12 @@ return new class extends Migration
             // `roles` is created first (its migration sorts before this one) so the key lives here,
             // in the table's only description, rather than in a later ALTER.
             $table->foreignId('role_id')->nullable()->constrained()->nullOnDelete();
+            // The firm the person works for (D1). Nullable only for the bootstrap's own tests and
+            // self-registration; every seeded account of the product belongs to a firm, and a firm
+            // with people cannot be deleted from under them.
+            $table->foreignId('firm_id')->nullable()->constrained()->restrictOnDelete();
+            // A team member a visitor can book a meeting with (R2, R15).
+            $table->boolean('is_specialist')->default(false);
             $table->enum('status', UserStatus::values())->default(UserStatus::ACTIVE->value);
             $table->string('password');
             $table->timestamp('email_verified_at')->nullable();

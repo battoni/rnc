@@ -20,7 +20,7 @@
  * returns a Uint8Array from another realm and its own invariant check fails. It reports "your
  * JavaScript environment is broken", naming neither the file nor the import. `@vitest-environment
  * node` did not rescue it. This repo already had the right shape for a config-level invariant:
- * `build-features.mjs --check`, a plain node script wired into CI.
+ * a plain node script wired into CI (the shape the retired features-catalogue check had).
  *
  * It reads the RESOLVED configs through vite's own loader, never their source text. Two attempts
  * to compare these three by parsing strings reported drift that did not exist — `vitest.config.ts`

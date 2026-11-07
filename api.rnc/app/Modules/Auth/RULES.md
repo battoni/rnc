@@ -9,11 +9,15 @@ based-on: 2.9.0
 
 ## Local extension points
 
-- `Helpers/permission-groups.local.php` — groups a project adds (appended to the core ones).
-- `Helpers/manager-exclusions.local.php` — keys a project denies to the seeded Manager (merged into
-  the core exclusions in `ManagerSeeder`).
-- `Helpers/user-exclusions.local.php` — keys a project denies to the seeded member (`user`), merged
-  the same way. All three are LOCAL: the sync never touches them.
+- `Helpers/permission-groups.local.php` — groups a project adds (appended to the core ones). LOCAL:
+  the sync never touches it. In rnc it holds the hub's keys (leads, agenda, notifications,
+  partners, referrals, metrics, repricing).
+
+*Retired 07/11/2026 (rnc-1 F1):* `manager-exclusions.local.php`, `user-exclusions.local.php` and
+`ManagerSeeder`. They shaped the bootstrap's `manager` and `user` roles, which this product does not
+have: `RoleSeeder` writes the three hub roles (`operador`, `ceo`, `equipe`) key by key instead, so
+there is no "everything minus a list" left to subtract from. The protected all-keys role
+(`RoleService::ADMINISTRATOR_SLUG`) is `operador`.
 
 ## Domain
 

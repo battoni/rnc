@@ -43,68 +43,68 @@ function divergencePayload(Role $role, array $permissions): array
 
 describe('what a user permission row is for', function () {
     it('stores nothing when the answer agrees with the profile', function () {
-        $role = divergenceRoleWith(['tips.read', 'ideas.read']);
+        $role = divergenceRoleWith(['leads.read', 'agenda.read']);
 
-        $response = $this->actingAs(userWithPermissions(['users.create', 'tips.read', 'ideas.read']))
-            ->postJson('/api/auth/users', divergencePayload($role, ['tips.read' => true, 'ideas.read' => true, 'users.read' => false]))
+        $response = $this->actingAs(userWithPermissions(['users.create', 'leads.read', 'agenda.read']))
+            ->postJson('/api/auth/users', divergencePayload($role, ['leads.read' => true, 'agenda.read' => true, 'users.read' => false]))
             ->assertCreated();
 
         expect(UserPermission::where('user_id', $response->json('data.id'))->count())->toBe(0);
     });
 
     it('keeps a grant the profile does not give', function () {
-        $role = divergenceRoleWith(['tips.read']);
+        $role = divergenceRoleWith(['leads.read']);
 
-        $response = $this->actingAs(userWithPermissions(['users.create', 'tips.read', 'ideas.read']))
-            ->postJson('/api/auth/users', divergencePayload($role, ['tips.read' => true, 'ideas.read' => true]));
+        $response = $this->actingAs(userWithPermissions(['users.create', 'leads.read', 'agenda.read']))
+            ->postJson('/api/auth/users', divergencePayload($role, ['leads.read' => true, 'agenda.read' => true]));
 
         $rows = UserPermission::where('user_id', $response->json('data.id'))->get();
 
         expect($rows)->toHaveCount(1)
-            ->and($rows->first()->permission_key)->toBe('ideas.read')
+            ->and($rows->first()->permission_key)->toBe('agenda.read')
             ->and((bool) $rows->first()->value)->toBeTrue();
     });
 
     it('keeps a denial of something the profile grants', function () {
-        $role = divergenceRoleWith(['tips.read', 'ideas.read']);
+        $role = divergenceRoleWith(['leads.read', 'agenda.read']);
 
-        $response = $this->actingAs(userWithPermissions(['users.create', 'tips.read', 'ideas.read']))
-            ->postJson('/api/auth/users', divergencePayload($role, ['tips.read' => true, 'ideas.read' => false]));
+        $response = $this->actingAs(userWithPermissions(['users.create', 'leads.read', 'agenda.read']))
+            ->postJson('/api/auth/users', divergencePayload($role, ['leads.read' => true, 'agenda.read' => false]));
 
         $rows = UserPermission::where('user_id', $response->json('data.id'))->get();
 
         expect($rows)->toHaveCount(1)
-            ->and($rows->first()->permission_key)->toBe('ideas.read')
+            ->and($rows->first()->permission_key)->toBe('agenda.read')
             ->and((bool) $rows->first()->value)->toBeFalse();
     });
 
     // The point of the change, as a test: take a key away from the profile and it goes away for the
     // people who never disagreed with it.
     it('lets a profile edit reach someone who never disagreed with it', function () {
-        $role = divergenceRoleWith(['tips.read', 'ideas.read']);
+        $role = divergenceRoleWith(['leads.read', 'agenda.read']);
 
-        $response = $this->actingAs(userWithPermissions(['users.create', 'tips.read', 'ideas.read']))
-            ->postJson('/api/auth/users', divergencePayload($role, ['tips.read' => true, 'ideas.read' => true]));
+        $response = $this->actingAs(userWithPermissions(['users.create', 'leads.read', 'agenda.read']))
+            ->postJson('/api/auth/users', divergencePayload($role, ['leads.read' => true, 'agenda.read' => true]));
 
         $user = User::find($response->json('data.id'));
-        expect(app(PermissionService::class)->forUser($user))->toContain('ideas.read');
+        expect(app(PermissionService::class)->forUser($user))->toContain('agenda.read');
 
-        RolePermission::where('role_id', $role->id)->where('permission_key', 'ideas.read')->delete();
+        RolePermission::where('role_id', $role->id)->where('permission_key', 'agenda.read')->delete();
         app(PermissionService::class)->forgetUserMemo($user->id);
 
-        expect(app(PermissionService::class)->forUser($user->fresh()))->not->toContain('ideas.read');
+        expect(app(PermissionService::class)->forUser($user->fresh()))->not->toContain('agenda.read');
     });
 });
 
 describe('pruning the copies that already exist', function () {
     it('removes what agrees with the profile and keeps what does not', function () {
-        $role = divergenceRoleWith(['tips.read', 'ideas.read']);
+        $role = divergenceRoleWith(['leads.read', 'agenda.read']);
         $user = User::factory()->create(['role_id' => $role->id]);
 
         UserPermission::insert([
-            ['user_id' => $user->id, 'permission_key' => 'tips.read', 'value' => true],
+            ['user_id' => $user->id, 'permission_key' => 'leads.read', 'value' => true],
             ['user_id' => $user->id, 'permission_key' => 'users.read', 'value' => false],
-            ['user_id' => $user->id, 'permission_key' => 'ideas.read', 'value' => false],
+            ['user_id' => $user->id, 'permission_key' => 'agenda.read', 'value' => false],
         ]);
 
         $this->artisan('permissions:prune-redundant')->assertSuccessful();
@@ -112,14 +112,14 @@ describe('pruning the copies that already exist', function () {
         $rows = UserPermission::where('user_id', $user->id)->get();
 
         expect($rows)->toHaveCount(1)
-            ->and($rows->first()->permission_key)->toBe('ideas.read');
+            ->and($rows->first()->permission_key)->toBe('agenda.read');
     });
 
     it('changes nothing on a dry run', function () {
-        $role = divergenceRoleWith(['tips.read']);
+        $role = divergenceRoleWith(['leads.read']);
         $user = User::factory()->create(['role_id' => $role->id]);
 
-        UserPermission::create(['user_id' => $user->id, 'permission_key' => 'tips.read', 'value' => true]);
+        UserPermission::create(['user_id' => $user->id, 'permission_key' => 'leads.read', 'value' => true]);
 
         $this->artisan('permissions:prune-redundant', ['--dry-run' => true])->assertSuccessful();
 

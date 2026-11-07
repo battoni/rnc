@@ -1,1 +1,68 @@
-{}
+{
+  "auth": {
+    "brand": {
+      "domain": "franco-rnc.com.br",
+      "headline": "The reform is coming.\nFranco is ready.",
+      "tag": "Tax reform",
+      "tagline": "Franco Contabilidade's hub to walk every client through the 2026–2033 transition."
+    }
+  },
+  "home": {
+    "title": "Home",
+    "greeting": "Hello, {name}",
+    "description": "Pick where to work today. Each area shows only what your role can open.",
+    "open": "Open",
+    "emptyTitle": "Nothing here yet",
+    "workspaces": {
+      "team": {
+        "title": "Team",
+        "description": "Lead pipeline, meeting agenda and notifications.",
+        "upcoming": "The pipeline, each lead's file and the team's agenda arrive here."
+      },
+      "ceo": {
+        "title": "Reinaldo",
+        "description": "Funnel metrics, partner network, referral trail and fee repricing.",
+        "upcoming": "Metrics, partners, the trail and fee repricing arrive here."
+      },
+      "operator": {
+        "title": "Operator",
+        "description": "The hub's users, profiles and permissions.",
+        "upcoming": "Running the hub: users and profiles live in the settings menu."
+      }
+    }
+  },
+  "navigation": {
+    "team": "Team",
+    "ceo": "Reinaldo",
+    "operator": "Operator"
+  },
+  "rolesAndPermissions": {
+    "groups": {
+      "leads": "Leads",
+      "agenda": "Agenda",
+      "notifications": "Notifications",
+      "partners": "Partners",
+      "referrals": "Referral trail",
+      "metrics": "Metrics",
+      "repricing": "Fee repricing"
+    },
+    "permissions": {
+      "import": "Import"
+    }
+  },
+  "site": {
+    "landing": {
+      "kicker": "Tax reform",
+      "title": "Your company ready for the tax reform",
+      "lede": "Franco Contabilidade walks you through every step of the transition, from 2026 to 2033."
+    },
+    "footer": {
+      "tagline": "Accounting and business consulting in São Paulo for 35 years.",
+      "contact": "Contact",
+      "hours": "Opening hours",
+      "hoursWeekdays": "Monday to Thursday, 8am to 6pm",
+      "hoursFriday": "Friday, 8am to 5pm",
+      "copyright": "© {year} {name}"
+    }
+  }
+}

@@ -161,16 +161,16 @@ describe('granting more than you hold', function () {
     });
 
     it('allows an override the editor does hold', function () {
-        $actor = userWithPermissions(['users.read', 'users.update', 'tips.manage']);
+        $actor = userWithPermissions(['users.read', 'users.update', 'leads.update']);
         $target = User::factory()->create();
 
         $this->actingAs($actor)
-            ->patchJson("/api/auth/users/{$target->id}", ['permissions' => ['tips.manage' => true]])
+            ->patchJson("/api/auth/users/{$target->id}", ['permissions' => ['leads.update' => true]])
             ->assertOk();
 
         $this->assertDatabaseHas('user_permissions', [
             'user_id' => $target->id,
-            'permission_key' => 'tips.manage',
+            'permission_key' => 'leads.update',
             'value' => true,
         ]);
     });
@@ -201,10 +201,10 @@ describe('granting more than you hold', function () {
     });
 
     it('allows a role whose keys the editor holds, and one that grants nothing', function () {
-        $actor = userWithPermissions(['users.read', 'users.update', 'tips.manage']);
+        $actor = userWithPermissions(['users.read', 'users.update', 'leads.update']);
         $target = User::factory()->create();
-        $tips = Role::create(['name' => 'Tips', 'slug' => 'tips']);
-        RolePermission::create(['role_id' => $tips->id, 'permission_key' => 'tips.manage', 'value' => true]);
+        $tips = Role::create(['name' => 'Tips', 'slug' => 'leads']);
+        RolePermission::create(['role_id' => $tips->id, 'permission_key' => 'leads.update', 'value' => true]);
         $empty = Role::create(['name' => 'Empty', 'slug' => 'empty']);
 
         $this->actingAs($actor)
@@ -248,13 +248,13 @@ describe('an account above the editor', function () {
      * — and then nobody held the key to put it back. The cap on grants did not reach that; this does.
      */
     beforeEach(function () {
-        $this->manager = userWithPermissions(['users.read', 'users.update', 'users.archive', 'users.delete', 'tips.read']);
-        $this->above = userWithPermissions(['users.read', 'design.read']);
+        $this->manager = userWithPermissions(['users.read', 'users.update', 'users.archive', 'users.delete', 'leads.read']);
+        $this->above = userWithPermissions(['users.read', 'referrals.read']);
     });
 
     dataset('edits of an account above', [
         'rename' => [fn () => ['name' => 'Renamed']],
-        'deny a key it holds' => [fn () => ['permissions' => ['design.read' => false]]],
+        'deny a key it holds' => [fn () => ['permissions' => ['referrals.read' => false]]],
         'move it to a smaller profile' => [fn () => ['role_id' => Role::create(['name' => 'Smaller', 'slug' => 'smaller'])->id]],
         'deactivate it' => [fn () => ['status' => UserStatus::INACTIVE->value]],
     ]);
@@ -290,7 +290,7 @@ describe('an account above the editor', function () {
     });
 
     it('still edits an account that holds no more than the editor', function () {
-        $peer = userWithPermissions(['users.read', 'tips.read']);
+        $peer = userWithPermissions(['users.read', 'leads.read']);
 
         $this->actingAs($this->manager)
             ->patchJson("/api/auth/users/{$peer->id}", ['name' => 'Renamed'])

@@ -1,4 +1,6 @@
 import type { RouteRecordRaw } from 'vue-router';
+import { WorkspaceRoutes } from '@HomeModule';
+import { SiteRoutes } from '@SiteModule';
 
 /**
  * Project-owned routes — the cortex sync NEVER touches this file (classified LOCAL).
@@ -13,6 +15,7 @@ import type { RouteRecordRaw } from 'vue-router';
  *
  *   const localRoutes: RouteRecordRaw[] = [...CatalogRoutes, ...ClientsRoutes];
  */
-const localRoutes: RouteRecordRaw[] = [];
+// rnc-1: the public site (F1 landing, F2 sector pages) and the back office's three workspaces.
+const localRoutes: RouteRecordRaw[] = [...SiteRoutes, ...WorkspaceRoutes];
 
 export default localRoutes;

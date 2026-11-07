@@ -358,7 +358,7 @@ describe('a role refusal', function () {
     });
 
     it('refuses to delete the administrator role, with a key', function () {
-        $role = Role::create(['name' => 'Administrator', 'slug' => 'administrator']);
+        $role = Role::create(['name' => 'Operador', 'slug' => 'operador']);
 
         $this->actingAs(userWithPermissions(['permissions.update']))
             ->deleteJson("/api/auth/roles/{$role->id}")

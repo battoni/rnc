@@ -93,8 +93,8 @@ sync-mirror-check: ## fail if any .cursor mirror has drifted from .claude (no wr
 pre-commit: check-app check-api check-portal check-cortex
 pre-commit: sync-mirror-check sanitize test-all ## mechanical pre-commit gate (static checks + mirror parity + sanitize + tests)
 
-check-app: ## app.rnc — CI's static checks: features catalogue, module aliases, type-check
-	cd app.rnc && node scripts/build-features.mjs --check && npm run check:aliases && npm run type-check
+check-app: ## app.rnc — CI's static checks: module aliases, type-check
+	cd app.rnc && npm run check:aliases && npm run type-check
 
 check-api: ## api.rnc — CI's static checks over the whole app: Pint (--test) + PHPStan
 	cd api.rnc && vendor/bin/pint --test && vendor/bin/phpstan analyse --memory-limit=1G --no-progress

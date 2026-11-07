@@ -10,13 +10,13 @@ based-on: 1.1.0
 
 ## Purpose
 
-Dedicated page for global UI preferences (dark mode, full width, tutor tips).
+Dedicated page for global UI preferences (dark mode, language, full width, pinned menu button).
 
 ## Intentional Decisions
 
 - **Template-only view** — no script block; composition lives in `MPersonalizationVisualCard`.
 - **Bilingual routes**: `/personalization` (`personalization-en`) and `/personalizacao` (`personalization-pt-BR`).
-- **`ThePageHeader` title uses i18n key** `personalization.title`, with the `personalization.appearance` tip (`ATip`) in `#titleSuffix`.
+- **`ThePageHeader` title uses i18n key** `personalization.title`.
 - **The wrapper is a `<div>`** — `TheLayout` already renders the page's `<main>`; do not nest a second one.
 
 ## Do Not

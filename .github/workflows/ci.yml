@@ -118,9 +118,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Features catalogue is current
-        run: node scripts/build-features.mjs --check
-
       # Before type-check and before the suite, because it explains a failure that both of
       # them report as something else: a missing alias surfaces as "cannot find module" in
       # a file nobody just edited. This names the config that is out of step instead.
