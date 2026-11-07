@@ -1,5 +1,5 @@
 # State: Franco Reforma Hub — Phase 2
-Stage: built, ready for verify
+Stage: verified — PR not opened (remote empty; publish with rnc-1)
 Updated: 07/11/2026
 ## Done
 Intent approved 07/11 · spec closed 07/11 (29 R · 24 A · 15 D) · plan approved 07/11 (F1–F10 with F6 split into F6a/F6b, after a clean-context Sonnet review and a `fable-reviewer` review — plan.md → Plan review, Amendments AM1–AM13). Nothing built yet. Branch `feature/rnc-2-reforma-hub-phase-2` starts from the finished `feature/rnc-1-reforma-hub-pilot` (8ed5ef3); rnc-1 is not on `main` yet.
