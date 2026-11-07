@@ -1,5 +1,5 @@
 ---
-version: 3.1.0
+version: 3.2.0
 origin: pendulum
 based-on: 2.0.0
 ---
@@ -28,7 +28,8 @@ opens: Equipe (`team-home`), Reinaldo (`ceo-home`) and Operador (`operator-home`
   is redirected to `home`, so a key on it would loop.
 - **One `WorkspaceView` for the landings**, told apart by `meta.workspace`. Each was an empty state
   in F1; later phases add their own screens as routes and rail children. The team's landing
-  (`team-home`) now redirects to its pipeline (F5), by path — Home imports nothing from Pipeline.
+  (`team-home`) now redirects to its pipeline (F5) and Reinaldo's (`ceo-home`) to his metrics (F7),
+  by path — Home imports nothing from Pipeline or Metrics.
 
 _Retired 07/11/2026:_ "Placeholder home view — do not add features until the product home screen is
 designed". The product (rnc-1) designed it: a greeting and the person's workspaces.

@@ -13,6 +13,7 @@ use App\Modules\Booking\Controllers\PublicReportController;
 use App\Modules\Content\Controllers\PublicSectorPageController;
 use App\Modules\Diagnostic\Controllers\PublicDiagnosticController;
 use App\Modules\Firm\Controllers\PublicFirmController;
+use App\Modules\Metrics\Controllers\FunnelController;
 use App\Modules\Notification\Controllers\NotificationController;
 use App\Modules\Partner\Controllers\PartnerController;
 use App\Modules\Partner\Controllers\ReferralController;
@@ -72,3 +73,6 @@ Route::get('partners/options', [PartnerController::class, 'options'])->middlewar
 Route::get('leads/{id}/partner-matches', [ReferralController::class, 'matches'])->middleware(['auth', 'permission:leads.read']);
 Route::post('leads/{id}/referrals', [ReferralController::class, 'store'])->middleware(['auth', 'permission:leads.update']);
 Route::get('referrals', [ReferralController::class, 'index'])->middleware(['auth', 'permission:referrals.read']);
+
+// Reinaldo's funnel (rnc-1 F7, R24, AM8): the last 7 or 30 days behind `metrics.read` (ceo, operador).
+Route::get('metrics/funnel', [FunnelController::class, 'show'])->middleware(['auth', 'permission:metrics.read']);

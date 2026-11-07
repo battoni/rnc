@@ -32,10 +32,11 @@ describe('useLocalNavItems', () => {
     ]);
   });
 
-  it("puts the partner registry and the trail in Reinaldo's group, each behind its own key (AM8)", () => {
+  it("puts the metrics, the partner registry and the trail in Reinaldo's group, each behind its own key (AM8)", () => {
     const ceo = useLocalNavItems().value[1];
 
     expect(ceo?.children?.map((child) => [child.routeName, child.permission])).toEqual([
+      ['metrics', 'metrics.read'],
       ['partners', 'partners.manage'],
       ['referral-trail', 'referrals.read'],
     ]);

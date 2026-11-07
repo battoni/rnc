@@ -4,7 +4,7 @@ import type { RouteRecordRaw } from 'vue-router';
  * One landing per rail group (Equipe · Reinaldo · Operador). `meta.permission` closes each route
  * with the same key that hides its rail entry (`WORKSPACES`); `meta.workspace` tells the shared view
  * which one it is. The screens of later phases arrive as their own routes and rail children; the
- * team's landing redirects to its pipeline (F5).
+ * team's landing redirects to its pipeline (F5), Reinaldo's to his metrics (F7).
  */
 const WORKSPACE_VIEW = () => import('./WorkspaceView.view.vue');
 
@@ -12,18 +12,9 @@ const WorkspaceRoutes: RouteRecordRaw[] = [
   // The team's landing IS its pipeline (F5): the rail's Equipe link and the home card arrive on the board.
   { path: '/team', name: 'team-home-en', redirect: '/team/pipeline' },
   { path: '/equipe', name: 'team-home-pt-BR', redirect: '/equipe/pipeline' },
-  {
-    path: '/ceo',
-    name: 'ceo-home-en',
-    meta: { permission: 'metrics.read', workspace: 'ceo' },
-    component: WORKSPACE_VIEW,
-  },
-  {
-    path: '/reinaldo',
-    name: 'ceo-home-pt-BR',
-    meta: { permission: 'metrics.read', workspace: 'ceo' },
-    component: WORKSPACE_VIEW,
-  },
+  // Reinaldo's landing IS his funnel (F7): the rail's Reinaldo link and the home card arrive on the metrics.
+  { path: '/ceo', name: 'ceo-home-en', redirect: '/ceo/metrics' },
+  { path: '/reinaldo', name: 'ceo-home-pt-BR', redirect: '/reinaldo/metricas' },
   {
     path: '/operator',
     name: 'operator-home-en',

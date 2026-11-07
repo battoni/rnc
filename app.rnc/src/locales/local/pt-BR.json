@@ -38,7 +38,8 @@
     "pipeline": "Pipeline",
     "agenda": "Agenda",
     "partners": "Parceiros",
-    "trail": "Trilha"
+    "trail": "Trilha",
+    "metrics": "Métricas"
   },
   "rolesAndPermissions": {
     "groups": {
@@ -681,5 +682,60 @@
       "emptyTitle": "Nenhum encaminhamento ainda",
       "emptyText": "Quando a equipe encaminhar um lead a um parceiro, ele aparece aqui com a autorização registrada."
     }
+  },
+  "metrics": {
+    "title": "Métricas",
+    "heading": "Funil dos últimos {days} dias",
+    "lede": "De onde vem cada visita, onde o empresário desiste e qual página de setor vende. Cada etapa conta só quem passou pela anterior.",
+    "period": "Período",
+    "days": "{days} dias",
+    "range": "{from} a {to}",
+    "kpis": {
+      "visits": "Visitas",
+      "contacts": "Contatos capturados",
+      "bookings": "Reuniões agendadas",
+      "conversion": "Visita → cliente"
+    },
+    "funnelTitle": "Funil por etapa",
+    "funnelLede": "Cada barra é a etapa contra o topo do funil; abaixo, quanto da etapa anterior não seguiu.",
+    "chartLabel": "Funil por etapa",
+    "steps": {
+      "visitas": "Visitas",
+      "cta": "Clique no CTA",
+      "inicio": "Início do diagnóstico",
+      "contato": "Contato capturado",
+      "resultado": "Resultado",
+      "agendou": "Agendou",
+      "cliente": "Cliente"
+    },
+    "drop": "{pct} da etapa anterior não seguiu · −{lost}",
+    "clientNote": "Cliente conta o lead que a equipe moveu para Cliente no pipeline dentro do período.",
+    "bySource": {
+      "title": "Por origem",
+      "lede": "Pela origem da primeira visita de cada pessoa."
+    },
+    "bySector": {
+      "title": "Por página de setor",
+      "lede": "Visitas que entraram por uma página de setor; as que entraram pela página inicial ficam fora desta tabela."
+    },
+    "sources": {
+      "organico": "Orgânico",
+      "pago": "Pago",
+      "parceiro": "Parceiro",
+      "direto": "Direto"
+    },
+    "columns": {
+      "source": "Origem",
+      "sector": "Página do setor",
+      "visitas": "Visitas",
+      "cta": "Cliques no CTA",
+      "ctaRate": "CTA / visita",
+      "contato": "Contatos",
+      "agendou": "Agendou",
+      "cliente": "Clientes",
+      "conversion": "Visita → cliente"
+    },
+    "loadFailed": "Não foi possível carregar o funil agora.",
+    "retry": "Tentar de novo"
   }
 }

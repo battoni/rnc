@@ -38,7 +38,8 @@
     "pipeline": "Pipeline",
     "agenda": "Agenda",
     "partners": "Partners",
-    "trail": "Trail"
+    "trail": "Trail",
+    "metrics": "Metrics"
   },
   "rolesAndPermissions": {
     "groups": {
@@ -681,5 +682,60 @@
       "emptyTitle": "No referrals yet",
       "emptyText": "When the team refers a lead to a partner, it shows here with the recorded consent."
     }
+  },
+  "metrics": {
+    "title": "Metrics",
+    "heading": "Funnel of the last {days} days",
+    "lede": "Where each visit comes from, where the business owner gives up and which sector page sells. Each step counts only those who passed the one before.",
+    "period": "Period",
+    "days": "{days} days",
+    "range": "{from} to {to}",
+    "kpis": {
+      "visits": "Visits",
+      "contacts": "Contacts captured",
+      "bookings": "Meetings booked",
+      "conversion": "Visit → client"
+    },
+    "funnelTitle": "Funnel by step",
+    "funnelLede": "Each bar is the step against the top of the funnel; below, how much of the step before did not go on.",
+    "chartLabel": "Funnel by step",
+    "steps": {
+      "visitas": "Visits",
+      "cta": "CTA click",
+      "inicio": "Diagnostic started",
+      "contato": "Contact captured",
+      "resultado": "Result",
+      "agendou": "Booked",
+      "cliente": "Client"
+    },
+    "drop": "{pct} of the step before did not go on · −{lost}",
+    "clientNote": "Client counts the lead the team moved to Client on the pipeline within the period.",
+    "bySource": {
+      "title": "By source",
+      "lede": "By the source of each person's first visit."
+    },
+    "bySector": {
+      "title": "By sector page",
+      "lede": "Visits that entered on a sector page; the landing page's are not in this table."
+    },
+    "sources": {
+      "organico": "Organic",
+      "pago": "Paid",
+      "parceiro": "Partner",
+      "direto": "Direct"
+    },
+    "columns": {
+      "source": "Source",
+      "sector": "Sector page",
+      "visitas": "Visits",
+      "cta": "CTA clicks",
+      "ctaRate": "CTA / visit",
+      "contato": "Contacts",
+      "agendou": "Booked",
+      "cliente": "Clients",
+      "conversion": "Visit → client"
+    },
+    "loadFailed": "The funnel could not be loaded right now.",
+    "retry": "Try again"
   }
 }

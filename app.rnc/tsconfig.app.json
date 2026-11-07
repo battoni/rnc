@@ -42,6 +42,8 @@
       "@NotificationModule/*": ["./src/modules/Notification/*"],
       "@HomeModule": ["./src/modules/Home"],
       "@HomeModule/*": ["./src/modules/Home/*"],
+      "@MetricsModule": ["./src/modules/Metrics"],
+      "@MetricsModule/*": ["./src/modules/Metrics/*"],
       "@PartnerModule": ["./src/modules/Partner"],
       "@PartnerModule/*": ["./src/modules/Partner/*"],
       "@PersonalizationModule": ["./src/modules/Personalization"],
