@@ -1,5 +1,5 @@
 # State: Franco Reforma Hub — Phase 3
-Stage: built, ready for verify (F1–F9 done)
+Stage: verified — PR not opened (remote empty; publish after rnc-1 and rnc-2)
 Updated: 07/11/2026
 ## Done
 Intent approved 07/11 · spec closed 07/11 (29 R · 27 A · 15 D) · plan approved 07/11 (F1–F9 with F3 split into F3a/F3b, after a clean-context Sonnet review — plan.md → Amendments AM1–AM14, Plan review — and a Fable review, AM15–AM23). Branch `feature/rnc-3-reforma-hub-phase-3` starts from `feature/rnc-2-reforma-hub-phase-2` at its F1 (454b0c5); neither rnc-1 nor rnc-2 is on `main`.
@@ -56,7 +56,10 @@ Intent approved 07/11 · spec closed 07/11 (29 R · 27 A · 15 D) · plan approv
 - (F4) A custom cast (`UtcDateTime`) caches the value it was set with: right after `update(['reviewed_at' => now()])` the model still holds the São Paulo instant, so a resource writes `->utc()->toIso8601String()`.
 - (F4) An `ApiResponse::error` puts its i18n key under `error`, not `message`: assert `assertJsonPath('error', …)`.
 ## QA
-- None yet.
+- Layer 1, tests (this worktree, Node 24): 1851 Pest · 1289 Vitest · 180 Playwright, all green.
+- Layer 2, Chrome 07/11 against this worktree's own servers (API :8016, SPA :5178, seeded SQLite). R1 brands 25/26 (1 blocked: the no-flash pop-up was blocked by the browser; covered by the Vitest for S1) → bug: brand colour error not cleared (fixed in 9f0766b). R2 briefing 13/13. R3 assistant 17/18 (the 1 "failure" is by design: "última em" is hidden below 640px and the window was 500px). R4 contracts 17/17. R5 RNC channel 7/10 (3 blocked by tooling: InputNumber ignores form_input and the auto-mode classifier refused direct POST probes; covered by Pest ChannelShareTest / ChannelStageTest / ChannelTest). R6 access sweep 12/12.
+- Layer 3, a person: owed. Script: /private/tmp/claude-501/-Users-battoni-Work-battoni-dev-dev/b02f101a-d83b-43db-8661-3e42c64d54f2/scratchpad/qa-rnc-3.md
+- Review: Sonnet plan review AM1–AM14, fable-reviewer plan review AM15–AM23; fable-reviewer branch review API (4 lows) + SPA (1 medium, 4 lows) applied in 27d674e, rejections W113–W117. Merges of rnc-2: b334bff, 2457255, c25fc01.
 ## Local environment
 - As rnc-1 and rnc-2 (their state.md → Local environment). Phase 3 adds: `?marca=express` / `?marca=prime` on the site, the 6 "(exemplo)" RNC firms, the 10 assistant notes (one draft), 40 contracts.
 ## Away run
@@ -179,3 +182,4 @@ Stop at: PR after verify · Reviewer: code-reviewer (Sonnet) · Chrome QA: on
 - W115 review S3: `BriefingView` re-reads the clock every 60 s (cleared on unmount) for the greeting and the date line — W105's "a briefing left open greets by the hour it was opened" no longer holds (to reverse: drop `CLOCK_TICK_MS` and read `new Date()` in the computeds).
 - W116 review S1: `usePublicFirm` owns one `isBrandPending` (true from a brand's request to its answer or failure) that the header marks, the footer's mark + tagline + copyright (`opacity-0`) and the landing's kicker + proof (`invisible`, since `motion-enter` drives the opacity) all read; it also covers a brand switch on an already-loaded firm, which the layout's old `!firm` test missed. A failure clears it (Franco's words over an empty shell). W38's Known Gap is retired in Site RULES (to reverse: the layout's own `isBrandPending` ref and no class on the landing).
 - W117 review S4 rejected: storing `updated_at`/a hash with the session palette cannot skip a stale one — the new value only arrives with `GET public/firm`, whose answer already repaints; the cost is one request of old colours after an operator's edit, recorded as a Site Known Gap (to reverse: n/a).
+- W118 verify: a server refusal on the brand form is cleared from its field when that field changes (watchers per field; the proof points as one group), not only at the next save — Chrome QA R1 saw "legível" beside a stale low-contrast error (to reverse: drop the watchers in `MAddEditBrandForm.vue`).
