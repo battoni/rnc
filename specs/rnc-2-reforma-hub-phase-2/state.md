@@ -2,10 +2,10 @@
 Stage: plan
 Updated: 07/11/2026
 ## Done
-Intent approved 07/11 · spec closed 07/11 (29 R · 24 A · 15 D) · plan approved 07/11 (F1–F10, after a clean-context Sonnet review — plan.md → Plan review). Nothing built yet. Branch `feature/rnc-2-reforma-hub-phase-2` starts from the finished `feature/rnc-1-reforma-hub-pilot` (8ed5ef3); rnc-1 is not on `main` yet.
+Intent approved 07/11 · spec closed 07/11 (29 R · 24 A · 15 D) · plan approved 07/11 (F1–F10 with F6 split into F6a/F6b, after a clean-context Sonnet review and a `fable-reviewer` review — plan.md → Plan review, Amendments AM1–AM13). Nothing built yet. Branch `feature/rnc-2-reforma-hub-phase-2` starts from the finished `feature/rnc-1-reforma-hub-pilot` (8ed5ef3); rnc-1 is not on `main` yet.
 ## Next
 1. Read the W# list below and the spec's D1–D15 (every one taken while the owner was away).
-2. Build: `/loop /battoni-run rnc-2` (F1 Partner access first), or attended `/battoni-start-session rnc-2` per phase.
+2. Build: `/loop /battoni-run rnc-2` (F1 Partner access first; read plan.md → Amendments before each phase), or attended `/battoni-start-session rnc-2` per phase.
 3. Before verify's PR: rnc-1 must reach the remote first (its state.md → Next 2); this branch's PR bases on `feature/rnc-1-reforma-hub-pilot` until rnc-1 is merged.
 ## Pitfalls
 - Every rnc-1 pitfall still holds (`specs/rnc-1-reforma-hub-pilot/state.md` → Pitfalls); the plan's P1–P10 carry the ones that bite here.
@@ -16,6 +16,7 @@ Intent approved 07/11 · spec closed 07/11 (29 R · 24 A · 15 D) · plan approv
 - None yet.
 ## Local environment
 - As rnc-1 (`specs/rnc-1-reforma-hub-pilot/state.md` → Local environment). F1 adds partner logins `parceiro.1`…`parceiro.8` (password `franco-local`, `SEEDER_PWD`), one per seeded "(exemplo)" partner — listed here by F1.
+- A second checkout (the worktree `rnc-wt-2`) runs the gate as `E2E_PORT=5175 make pre-commit` (Node 24): with the default port Playwright reuses the other checkout's server on 5173 (`app.rnc/e2e/RULES.md`). Its SQLite is its own `api.rnc/database/database.sqlite`.
 ## Away run
 Stop at: PR after verify · Reviewer: code-reviewer (Sonnet) · Chrome QA: on
 ## Decided while you were away
@@ -29,7 +30,7 @@ Stop at: PR after verify · Reviewer: code-reviewer (Sonnet) · Chrome QA: on
 - W8 spec: the demo's ERP column → the emitting system read from `ide/verProc` (clients carry no ERP field; `facts.md` §5) (to reverse: an `erp` column on `clients`).
 - W9 spec: an LLM for the chat → none; a scripted receptionist with a typed-text matcher (D11). No real driver for SEFAZ, a model or a bank is written at all, so nothing can call out (A24) (to reverse: bind a driver to `NfeDocumentSource`, add a server receptionist contract).
 - W10 spec: who sees the fiscal screens → equipe + ceo read, ceo imports and runs the Radar (D14; to reverse: `RoleSeeder`).
-- W11 plan: the high-risk Fable plan review (permissions, who sees what) → skipped: this session carries no `#fable`; the Sonnet clean-context review ran instead and the verify review stays (to reverse: run `fable-reviewer` on spec + plan before F1).
+- ~~W11 plan: the high-risk Fable plan review → skipped~~ — retired 07/11: the owner granted `#fable`, so `fable-reviewer` reviewed spec + plan; its 13 findings are plan.md → Amendments AM1–AM13 (and spec C1). The verify review stays.
 - W12 plan: the away settings, normally asked of the owner → stop at the PR after verify, `code-reviewer` on Sonnet (no `#fable`), Chrome QA on — rnc-1's choices except the reviewer (to reverse: edit the block above before `/battoni-run`).
 - W13 plan: the review found F2 at ~25 files → the ledger became its own phase (F4), so the plan has 10 phases, one over the 6–9 aimed at; the other phases keep rnc-1's size (to reverse: fold F4 back into F2 and F3).
 - W14 plan: open points a builder would have stopped on (operator keys, the 409 code, a document between two clients, subscription months, band revenue, the batch's order/score/message) → answered in the phases themselves (plan.md → Plan review; to reverse: edit the phase).

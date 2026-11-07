@@ -75,7 +75,7 @@ whose rules, amendments AM1–AM15 and changes C1–C11 all still hold.
   document is matched to a portfolio client: emitted by the client (`saida`) or addressed to it
   (`entrada`); a document matching no client is refused `client_unknown` (D5, D6).
 - R16. Per document the importer stores the access key (44 digits, check digit verified, unique per
-  firm — a repeat is skipped as `duplicate`), number, series, issue date, emitter CNPJ and CRT,
+  firm + client — C1; a repeat is skipped as `duplicate`), number, series, issue date, emitter CNPJ and CRT,
   recipient CNPJ (or "consumidor" for a CPF or none), total, item count, and per-item checks: IBS/CBS
   group present, CST and cClassTrib filled, 2026 test values shown (CBS 0,9 % · IBS 0,1 %,
   `facts.md` §2). The raw file is kept in private storage, never served publicly (D7).
@@ -147,14 +147,16 @@ whose rules, amendments AM1–AM15 and changes C1–C11 all still hold.
 Layers: `→ Pest`, `→ Vitest`, `→ E2E` (Playwright, API mocked), `→ Chrome` (real API + seeded DB).
 - A1 (R1, R2): `partners.manage` creates a partner access → a `parceiro` user with that `partner_id`,
   the password shown once, a second active login for the same partner refused (409); regenerate
-  changes it; revoke and partner deactivation make the next login answer `auth.accountInactive`; an
+  changes it; revoke and partner deactivation make the next login answer `auth.accountInactive`, and the revoked user's existing cookie gets 401
+  `auth.accountInactive` on its next request (its sessions are deleted — plan AM5); an
   `equipe` user gets 403 on the access endpoints. → Pest
 - A2 (R3, R4) **permission matrix**: a dataset over every route in `routes/api.local.php` — a
   `parceiro` user gets 403 on each non-portal, non-public route; `equipe`, `ceo` and `operador`
   without a `partner_id` get 403 on each portal route; a guest gets 401 on both. A test fails when a
   new route is added without being classified. → Pest
 - A3 (R4) **isolation**: partner A never lists, reads or moves partner B's referral (404), nor one of
-  firm B's partners with the same id shape (404); a lead never referred to A is not reachable by any
+  firm B's partners with the same id shape (404), not even by sending `X-Firm` of firm B (403/404 —
+  plan AM1); a lead never referred to A is not reachable by any
   portal route. → Pest
 - A4 (R3): a partner signs in and lands on `/parceiro`; its rail has only the portal; `/painel` and
   every back-office route bounce it to the portal; staff never see the portal links. → Vitest + E2E
@@ -183,10 +185,11 @@ Layers: `→ Pest`, `→ Vitest`, `→ E2E` (Playwright, API mocked), `→ Chrom
   the card shows the channel chip. → Pest + Vitest
 - A13 (R15, R16): a fixture `nfeProc` of a client's sale stores the key, CRT, recipient and the item
   checks; a purchase addressed to the client is `entrada`; an XML of no client is `client_unknown`;
-  the same file twice is one document and one `duplicate`; a bad check digit is `invalid_key`. → Pest
+  the same file twice is one document and one `duplicate`; a bad check digit is `invalid_key`; a document between two clients stores two rows, and its
+  re-upload stores nothing and reports `duplicate` per stored row (C1). → Pest
 - A14 (R17): a ZIP with one good XML, one non-XML and one XML carrying an external entity stores
-  one document, reports two refusals by file, and never reads the entity's target; the command
-  imports a folder the same way. → Pest
+  one document, reports two refusals by file, and never reads the entity's target (a `file:///etc/hostname` entity's content appears nowhere; a
+  billion-laughs file is refused — plan AM3); the command imports a folder the same way. → Pest
 - A15 (R16): the raw XML is not reachable by any URL; another firm's documents are absent. → Pest
 - A16 (R18, R19): fixtures at 96 % with 0 at risk → ok; 90 % → atenção; 96 % with 1 at risk →
   crítico; 70 % → crítico; a Simples client is absent; issue counts and samples match the fixture
@@ -203,9 +206,10 @@ Layers: `→ Pest`, `→ Vitest`, `→ E2E` (Playwright, API mocked), `→ Chrom
   evidence count and access keys; an item without XML says "do cadastro". → Pest
 - A21 (R27, R28): a batch sends at most 10, skips clients without consent and those already
   referred to that partner, offers only covering partners, creates `carteira` leads whose referral
-  carries the client's consent `via = contrato`, and the partner sees them in its inbox; a second
+  carries the client's consent `via = contrato`, and the partner sees them in its inbox with the client's company name (plan AM10); a second
   identical batch sends 0 and the button says "Todos já encaminhados". → Pest + Vitest
-- A22 (R28): a CSV with `autoriza_parceiros` `sim`/`não`/empty imports consent true/false/none; a
+- A22 (R28): a CSV with `autoriza_parceiros` `sim`/`não`/empty imports consent true/false/none, in any case and
+  with or without the accent (`SIM`, `nao`, `NÃO` — plan AM11); a
   value outside those names the line; the 7-column CSV still imports. → Pest
 - A23 (R29, all): the seeds run on a fresh database; every new screen renders with the seed without a
   console error and with no horizontal scroll at 390 and 1440 px; no "Willy" or "APW" anywhere;
@@ -293,3 +297,6 @@ agenda", `network.js`) — not in the module's menu line (`seed.js` 306); partne
 billing commissions.
 
 ## Changes while building
+- C1 (plan, AM4): R16's access key is unique per firm + key + **client**, not per firm + key: a document
+  between two portfolio clients is stored twice, once as each one's saída/entrada. A13's re-upload of
+  such a document stores nothing and reports `duplicate` for each client row it already has.

@@ -1,6 +1,7 @@
 # Plan: Franco Reforma Hub — Phase 2 (client data and the partner network)
 ID: rnc-2 · Spec: `specs/rnc-2-reforma-hub-phase-2/spec.md` (closed 07/11/2026)
-Approved: 07/11/2026 (Claude, owner away — `/battoni-run` mode, W# logged in `state.md`)
+Approved: 07/11/2026 (Claude, owner away — `/battoni-run` mode, W# logged in `state.md`) ·
+reviewed by `fable-reviewer` 07/11/2026 → Amendments AM1–AM13 below
 
 Every phase: Pest tests red first for the API, then Vitest for the SPA, then code; then
 `make pre-commit` green (stop `npm run dev` first); then commit `rnc-2: F<n> <what>`. API code
@@ -39,7 +40,8 @@ bumped); routes go in `routes/api.local.php`; permission keys are declared in
   writes its half red-first and the later phase, named in its header, completes the proof. A23 is
   proved by Verify.
 - **P10 Route matrix** — from F1 on, every new route is classified in
-  `tests/Feature/Access/routeClasses.php` (public · portal · staff + key) or A2's test fails.
+  `tests/Feature/Access/routeClasses.php` (public · portal · staff + key · shared) or A2's test
+  fails; the matrix walks `routes/api.php` and `routes/api.local.php` (AM2).
 
 ## Phases
 
@@ -50,18 +52,28 @@ bumped); routes go in `routes/api.local.php`; permission keys are declared in
   `RoleSeeder` (changed: role `parceiro` = `portal.access`; ceo gets `ledger.read` — its other new
   keys are granted in their phases; `operador` holds every declared key from F1 on, as it always
   does, and is refused by the portal for lacking a `partner_id`); `partners` create migration
-  (changed: `access_granted_at`, `access_revoked_at`, UTC — the subscription months of F4 read them); Partner module: `Services/PartnerAccessService.php`,
+  (changed: `access_granted_at`, `access_revoked_at`, UTC — the current state only) + new
+  `create_partner_access_events_table` (firm, partner_id, user_id, type granted|revoked, at UTC —
+  `PartnerAccessService` writes one row per grant and revoke; F4's subscription months read these,
+  AM9); Partner module: `Services/PartnerAccessService.php`,
   `Controllers/PartnerAccessController.php` (`POST partners/{id}/access`, `POST …/access/password`,
   `DELETE …/access`, `partners.manage`; a second active login 409 `partner_access_exists`; the
-  e-mail and username follow the bootstrap's `users` uniqueness rules), `Requests/CreatePartnerAccessRequest.php`,
-  `Resources/PartnerAccessResource.php` (password only on create/regenerate), partner deactivation
-  also deactivates its user (`PartnerService`, changed); `app/Modules/Partner/Services/CurrentPartner.php`
-  (scoped binding) + `app/Http/Middleware/ResolveCurrentPartner.php` (sets it from `users.partner_id`;
-  registered in `bootstrap/app.php`); `GET portal/me` (partner name, specialty, firm) behind
-  `permission:portal.access` → 403 `portal.noPartner` without a partner; `UserResource` gains
+  e-mail and username follow the bootstrap's `users` uniqueness rules; the user is created with
+  `firm_id = partner.firm_id` — AM1), `Requests/CreatePartnerAccessRequest.php`,
+  `Resources/PartnerAccessResource.php` (password only on create/regenerate); regenerate and revoke
+  delete the user's `sessions` rows, and revoke also sets the user inactive (AM5); partner
+  deactivation also deactivates its user (`PartnerService`, changed); `app/Modules/Partner/Services/CurrentPartner.php`
+  (scoped binding) + `app/Http/Middleware/ResolveCurrentPartner.php` (loads the Partner of
+  `users.partner_id` through `FirmScope` under `CurrentFirm`, 403 `portal.noPartner` when absent;
+  registered in `bootstrap/app.php` as the route alias `portal`, put on every `portal/*` route —
+  never global, AM1); `GET portal/me` (partner name, specialty, firm) behind
+  `permission:portal.access` + `portal` → 403 `portal.noPartner` without a partner; `UserResource` gains
   `partner_id`.
-- Tests first: `tests/Feature/Partner/PartnerAccessTest.php` (A1), `tests/Feature/Access/RouteMatrixTest.php`
-  + `routeClasses.php` classifying every existing route (A2), `tests/Feature/Partner/PortalMeTest.php`.
+- Tests first: `tests/Feature/Partner/PartnerAccessTest.php` (A1, incl. the old cookie → 401
+  `auth.accountInactive` right after revoke — AM5), `tests/Feature/Access/RouteMatrixTest.php`
+  + `routeClasses.php` classifying every existing route of `api.php` + `api.local.php` in four
+  classes public · portal · staff + key · `shared` (any authenticated user 2xx, guest 401:
+  `auth/me`, `PATCH auth/me`, `auth/logout` — AM2) (A2), `tests/Feature/Partner/PortalMeTest.php`.
 - SPA files: new `src/modules/Portal/` (`ThePortalLayout` or a `layout: portal` meta, `routes.ts`
   `/parceiro` + `/partner` with `meta.permission: portal.access`, `PortalHomeView` placeholder with the
   partner's name, `getPortalMe.service.ts`); `Home` route `home` redirects a user holding
@@ -95,7 +107,7 @@ bumped); routes go in `routes/api.local.php`; permission keys are declared in
   business hours, 4 fechado with `dealHint` values by band), statuses with their dates.
 - Tests first: `tests/Unit/Modules/Partner/ReferralStatusTest.php` + `BusinessHoursTest.php` +
   `ReferralSlaTest.php` (A6 graph, A7); `tests/Feature/Partner/PortalReferralsTest.php` (A3 isolation:
-  two partners, two firms; A5 allow-list before/after accept; A6 feature 422s; A8's Pest half: line +
+  two partners, two firms, and partner A sending `X-Firm` of firm B → 403/404 — AM1; A5 allow-list before/after accept; A6 feature 422s; A8's Pest half: line +
   notifications + stage unchanged); route classes updated.
 - Done when: pre-commit green; `curl` as `parceiro.3` walks one seeded referral enviado → fechado and
   `laravel.log`/DB show the timeline lines and notifications.
@@ -121,8 +133,10 @@ bumped); routes go in `routes/api.local.php`; permission keys are declared in
   (the only writer); Partner `Services/LedgerService.php` — `statementFor(partner, month)` and
   `networkStatement(month)` (+ the other model's total). A closing belongs to the month of its
   `closed_at` in `America/Sao_Paulo`; a partner owes the subscription for a month when its access
-  existed on any day of it (`access_granted_at` ≤ month end and `access_revoked_at` null or ≥ month
-  start). Endpoints `GET portal/statement?month=` (`portal.access`), `GET ledger?month=`
+  existed on any day of it, derived from the access event rows (`partner_access_events`: granted /
+  revoked, UTC, one row per change — `access_granted_at`/`access_revoked_at` stay as the current
+  state only, AM9); commission per closing = `intdiv(deal_value_cents * rate_bp + 5000, 10000)`
+  (half-up, AM9). Endpoints `GET portal/statement?month=` (`portal.access`), `GET ledger?month=`
   (`ledger.read`), `PATCH ledger/model` (`partners.manage`).
 - SPA: Portal `PortalStatementView` (`/parceiro/extrato` + `/partner/statement`, month ◀ ▶, lines,
   "Total devido à Franco", never the other model); Partner `LedgerView` at `/reinaldo/extrato`
@@ -130,7 +144,8 @@ bumped); routes go in `routes/api.local.php`; permission keys are declared in
   the other model's; both carry "valor a conferir — sem cobrança automática"; rail child "Extrato da
   rede" under Reinaldo (`ledger.read`); services `getPortalStatement`, `getLedger`, `updateLedgerModel`.
 - Tests first: `tests/Feature/Partner/LedgerTest.php` (3.600 / 490, month boundaries, partner sees
-  only its lines, equipe 403 on ledger and model), `tests/Unit/Modules/Partner/LedgerServiceTest.php`;
+  only its lines, equipe 403 on ledger and model; revoke → regrant in a later month still bills the
+  first month; R$ 12.345,67 at 10 % → R$ 1.234,57 — AM9), `tests/Unit/Modules/Partner/LedgerServiceTest.php`;
   `PortalStatementView.spec.ts`, `LedgerView.spec.ts` (switch reloads both totals, label shown).
 - Done when: pre-commit green; live, closing a referral moves the partner's extrato and Reinaldo's
   total; switching to assinatura shows R$ 490 × partners with access.
@@ -149,8 +164,11 @@ bumped); routes go in `routes/api.local.php`; permission keys are declared in
   `MSlotPicker`); `DiagnosticView` toggle "Formulário · Conversar no chat" (changed). Pipeline
   `MLeadCard` + `LeadView` channel chip; Metrics `MFunnelTable` "Por canal".
 - Tests first: `ReceptionistScript.spec.ts` (every turn's matcher, "Não entendi…", contact validation —
-  A11), `useChatReceptionist.spec.ts` + `MChatReceptionist.spec.ts` (channel chat on start, switch
-  mid-way keeps answers), E2E `e2e/diagnostic/chat.spec.ts` (A10: same result count as the form);
+  A11), `useChatReceptionist.spec.ts` (A10's proof: for "Simples, B2B 80 %, serviços" the sequence of
+  PATCH bodies the chat produces deep-equals the form's — AM8) + `MChatReceptionist.spec.ts` (channel
+  chat on start, switch mid-way keeps answers), E2E `e2e/diagnostic/chat.spec.ts` (the chat walk
+  reaches the result and the slot picker; no item-count claim — the API is mocked, so result-count
+  parity is checked in Verify's Chrome round, AM8);
   `MLeadCard.spec.ts` + `MFunnelTable.spec.ts` (changed: chip, "Por canal");
   Pest `tests/Feature/Diagnostic/ChatChannelTest.php` (channel + consent via; a later PATCH or a
   form start on the same visitor never changes the channel) and
@@ -158,7 +176,27 @@ bumped); routes go in `routes/api.local.php`; permission keys are declared in
 - Done when: pre-commit green; live, a chat walk to booking creates a `chat` lead that shows the chip
   on the board and +1 in "Por canal".
 
-**F6 NF-e import** (R15–R17 · proves A13, A14, A15, A24)
+**F6 NF-e import** — built as two phases (AM12): **F6a** parser, key, importer and upload (proves
+A13, A14's XML half, A15) and **F6b** ZIP, command, builder, seeder and batch list (proves A14's ZIP
+and command half, A24). The list below is tagged per item; nothing else is renumbered.
+
+**F6a NF-e parser, key, importer, upload** (R15–R17 · proves A13, A15; A14's XML half)
+**F6b NF-e ZIP, command, seeder, batches** (R15, R17 · proves A14, A24)
+- F6a: new Fiscal `RULES.md` records that `POST fiscal/readiness/{id}/notice` and
+  `POST fiscal/supplier-credit/{id}/review` write under `fiscal.read` on purpose — they only add a
+  client timeline line, no fiscal data — so reviewers do not reopen it (AM13).
+- F6a XML safety (AM3): any content containing `<!DOCTYPE` (string check, before `loadXML`) is
+  refused `not_nfe`; never `LIBXML_PARSEHUGE`; the stored filename is built only from the validated
+  access key and the integer client id.
+- F6b ZIP and folder safety (AM3): never trust `statIndex` sizes — read each entry through
+  `getStream` capped at 1 MB + 1 byte (over → `too_large`), total read cap 20 MB; skip directories,
+  nested `.zip` and non-`.xml` names; `nfe:import` resolves the folder with `realpath`, accepts a
+  directory only and skips symlinks.
+- F6a: `NfeImporter`, `NfeXmlParser`, `AccessKey`, `UploadedNfeSource` for a single XML,
+  `POST fiscal/imports`, migrations, `NfeImportTest` A13/A15 + A14's XML fixtures. F6b: ZIP in
+  `UploadedNfeSource`, `FolderNfeSource`, `ImportNfeFolder`, `GET fiscal/imports`, `NfeXmlBuilder`
+  (F6a's tests may start with hand-written fixtures, F6b moves them onto the builder), `NfeSeeder`,
+  `NoOutwardClientsTest` (A24).
 - New API module `Fiscal`: migrations `create_nfe_imports_table` (firm, user, source upload|folder,
   files, stored, refused json, at) and `create_nfe_documents_table` (firm, client_id, import_id,
   direction saida|entrada, access_key 44 — unique per (firm, key, client): a document between two
@@ -180,14 +218,20 @@ bumped); routes go in `routes/api.local.php`; permission keys are declared in
   Presumido/Real clients, 90 days, 15–60 sales and 10–40 purchases each, readiness tiers ≈ the demo's
   46/50/4 %, supplier CRT by the demo's `SIMPLES_SHARE_BY_BAND`, recipients CNPJ vs CPF by the
   client's B2B share (CPFs root `999`, valid digits), run through `NfeImporter` (one code path).
+  `NfeSeeder` first deletes `storage/app/private/nfe/<firm>/`; the Pest suite never runs it (tests
+  build their own documents); its run time is recorded in `state.md` → Local environment (AM7).
 - Tests first: `tests/Unit/Modules/Fiscal/AccessKeyTest.php`, `NfeXmlParserTest.php` (fixtures from
-  the builder; XXE fixture — A14), `tests/Feature/Fiscal/NfeImportTest.php` (A13, A14 ZIP + command,
+  the builder; XXE fixture — A14: an external entity pointing at `file:///etc/hostname` whose
+  content appears nowhere in the stored row, the file or the refusal, and a billion-laughs fixture
+  refused — AM3), `tests/Feature/Fiscal/NfeImportTest.php` (A13 incl. the re-upload of a document
+  shared by two clients — AM4, A14 ZIP + command incl. oversize entry, nested zip and symlink,
   A15 no URL + firm isolation), `tests/Feature/NoOutwardClientsTest.php` (A24: an `arch()` that no
   class under `app/` uses a SEFAZ/LLM/bank SDK namespace, and every test file using `Http::fake`
   also calls `preventStrayRequests`).
-- Done when: pre-commit green; `make fresh-seed` imports the seeded XMLs (counts printed), and
-  `php artisan nfe:import` on a folder of three builder files reports 1 stored, 1 duplicate, 1
-  `client_unknown`.
+- Done when (F6a): pre-commit green; `curl` uploading one XML as `ceo` stores it and a second upload
+  reports `duplicate`. Done when (F6b): pre-commit green; `make fresh-seed` imports the seeded XMLs
+  (counts and seed time printed), and `php artisan nfe:import` on a folder of three builder files
+  reports 1 stored, 1 duplicate, 1 `client_unknown`.
 
 **F7 Fiscal analytics API** (R18–R23 API side · proves A16, A18)
 - Fiscal module: `Services/ReadinessService.php` (30-day window, Presumido/Real, status by
@@ -199,7 +243,10 @@ bumped); routes go in `routes/api.local.php`; permission keys are declared in
   Radar reads it); endpoints `GET fiscal/readiness?status=&system=`,
   `GET fiscal/readiness/{clientId}`, `GET fiscal/supplier-credit?sector=` (KPI "revisões propostas" =
   clients with a `fornecedores.revisao` event) (`fiscal.read`); `POST fiscal/readiness/{clientId}/notice` and
-  `POST fiscal/supplier-credit/{clientId}/review` (`fiscal.read`; review 422 `no_simples_purchases`).
+  `POST fiscal/supplier-credit/{clientId}/review` (`fiscal.read` on purpose, recorded in Fiscal
+  `RULES.md` — AM13; review 422 `no_simples_purchases`). `ReadinessService` reads the window with
+  one aggregate query grouped by `client_id` per call and does the maths in PHP — no query per
+  client (AM6).
 - Portfolio module (changed): `create_client_events_table` (firm, client_id, user_id, type, data, at),
   `ClientService::recordEvent` (the only writer), `GET clients/{id}/events` (`fiscal.read`).
 - Grants: equipe and ceo get `fiscal.read`.
@@ -207,7 +254,8 @@ bumped); routes go in `routes/api.local.php`; permission keys are declared in
   `SplitPaymentCalculatorTest.php` (A19's unit half), `tests/Feature/Fiscal/ReadinessTest.php` (A16),
   `SupplierCreditTest.php`, `ClientEventsTest.php` (A17's Pest half); route classes updated.
 - Done when: pre-commit green; `curl` on the seeded DB returns readiness rows in all three statuses
-  and a supplier-credit list whose top row's range matches the formula by hand.
+  and a supplier-credit list whose top row's range matches the formula by hand; `GET fiscal/readiness`
+  on the seed answers in < 2 s (measured, logged in `state.md`).
 
 **F8 Fiscal screens** (R18–R22 UI, R17 UI · proves A17)
 - New SPA module `Fiscal`: `ReadinessView` at `/equipe/nfe` (+ `/team/invoices`: hero, KPIs, status
@@ -228,23 +276,28 @@ bumped); routes go in `routes/api.local.php`; permission keys are declared in
 **F9 Radar API and client consent** (R24–R26, R28 · proves A19, A20, A22)
 - Portfolio (changed): `clients` create migration + `partner_consent` (nullable bool),
   `partner_consent_at`, `partner_consent_via`; `ClientCsvParser`/`ClientImportService` accept the
-  optional `autoriza_parceiros` (sim/não/empty; else a line error `consent_invalid`); template gains
+  optional `autoriza_parceiros` (sim/não/empty, case- and accent-insensitive: `sim`, `SIM`, `não`,
+  `nao`, `NÃO`, `Não` all accepted — AM11; else a line error `consent_invalid`); template gains
   the column; `ClientSeeder` (changed) ~85 % consent `via contrato`.
 - New API module `Radar` (no table; reads Portfolio, Fiscal, uses Diagnostic `RulesEngine` and
   Fiscal's calculators; a client's profile is `Client::profile()` — ICMS incentives and export false,
   rnc-1 C11 — with the measured B2B share when D9 applies): `Services/EvidenceBuilder.php` (measured B2B share by value when ≥ 10 sales
-  documents — D9; per-rule proof; up to 3 keys), `Services/RadarService.php` (`summary()` — totals,
+  documents — D9; per-rule proof; up to 3 keys; one aggregate query per call grouped by `client_id`,
+  maths in pure PHP — AM6), `Services/RadarService.php` (`summary()` — totals,
   types sorted, opportunity Σ only; `type(rule)` — clients with ranges and evidence; split row Σ of
   R23), `GET radar`, `GET radar/types/{rule}` (`radar.manage`); ceo gets `radar.manage`.
 - Tests first: `tests/Feature/Radar/RadarSummaryTest.php` (A20; A19's Radar Σ),
   `tests/Unit/Modules/Radar/EvidenceBuilderTest.php`, `tests/Feature/Portfolio/ClientConsentImportTest.php`
-  (A22); route classes updated.
-- Done when: pre-commit green; `curl GET radar` on the seed analyses 500 clients and the split row
-  equals Σ of `GET fiscal/split`.
+  (A22, with `nao`, `NÃO`, `Não`, `SIM` — AM11); route classes updated.
+- Done when: pre-commit green; `curl GET radar` on the seed analyses 500 clients in < 2 s (measured,
+  logged in `state.md` — AM6) and the split row equals Σ of `SplitPaymentCalculator` over the
+  clients (`GET fiscal/split` was dropped).
 
 **F10 Radar screen and batch referral** (R27 · proves A21)
 - API: Lead (changed) `leads` create migration + `client_id` nullable (indexed, no FK);
   `LeadService::findOrStartPortfolioLead(client)` (`channel carteira`, stage `cliente`, no contact,
+  copies the client's name → `company`, `cnpj`, and sector, regime, band and B2B share → `profile`
+  — AM10;
   consent row copied from the client `via contrato` with `ConsentTerms::CONTRACT_TEXT`); Partner
   `ReferralService::referBatch(rule, partnerId, User)` (covering partners only → 422
   `partner_not_covering`; top 10 by the range's top, ties by client id, not yet referred to that
@@ -261,7 +314,7 @@ bumped); routes go in `routes/api.local.php`; permission keys are declared in
   under Reinaldo.
 - Tests first: `tests/Feature/Radar/RadarBatchReferralTest.php` (A21: ≤ 10, consent and already-sent
   skipped, covering only, carteira lead + consent via contrato, visible in the partner's portal
-  inbox, second batch 0); `RadarView.spec.ts`, `MRadarTypeDetail.spec.ts`; E2E `e2e/radar/radar.spec.ts`.
+  inbox with `company` set in `PortalReferralResource` — AM10, second batch 0); `RadarView.spec.ts`, `MRadarTypeDetail.spec.ts`; E2E `e2e/radar/radar.spec.ts`.
 - Done when: pre-commit green; live, Reinaldo sends a batch and `parceiro.4`'s inbox shows the
   portfolio referrals with Franco's contact.
 
@@ -269,6 +322,63 @@ bumped); routes go in `routes/api.local.php`; permission keys are declared in
 (`feature/rnc-1-reforma-hub-pilot..`), fixes, then the Chrome rounds (A23): partner walk, Franco's
 view of it, chat walk, fiscal screens, Radar batch, the access sweep (partner bounces, staff never
 see the portal) at 390 and 1440 against `make serve-api` + `make serve-app` on `make fresh-seed`.
+
+## Amendments from the plan review (fable-reviewer, 07/11/2026) — each OVERRIDES the step it amends
+Every AM below is also written into the phase it amends, so a builder reading only its phase sees
+it; where a phase line and an AM disagree, the AM wins.
+- **AM1 Partner firm (F1, F2; A3).** Overrides F1's `PartnerAccessService` and `ResolveCurrentPartner`.
+  A partner user with no `users.firm_id` fell through `ResolveCurrentFirm` (lines 35-48) to the
+  `X-Firm` header, so partner A could send `X-Firm` of firm B and read firm B's referrals of a
+  partner with the same id. `PartnerAccessService` creates the user with
+  `firm_id = partner.firm_id`; `ResolveCurrentPartner` loads the Partner through `FirmScope` under
+  `CurrentFirm` and answers 403 `portal.noPartner` when it is not found; it is the route alias
+  `portal` on every `portal/*` route, never global middleware. A3 gains "partner A with `X-Firm` of
+  firm B → 403/404" (F2's `PortalReferralsTest`).
+- **AM2 Route matrix `shared` class (F1; A2).** Overrides P10 and F1's matrix. `auth/me`,
+  `PATCH auth/me` and `auth/logout` (`routes/api.php` 14-18) fit none of public · portal · staff. A
+  fourth class `shared`: any authenticated user 2xx, guest 401. The matrix walks `routes/api.php` and
+  `routes/api.local.php`.
+- **AM3 XML and ZIP safety (F6a, F6b; A14).** Overrides F6's parser and source lines. Any content
+  containing `<!DOCTYPE` is refused `not_nfe` by a string check before `loadXML`; never
+  `LIBXML_PARSEHUGE`. ZIP: never trust `statIndex` sizes — read each entry through `getStream`
+  capped at 1 MB + 1 byte (over → `too_large`), total cap 20 MB, skip directories, nested `.zip` and
+  non-`.xml` names. The stored filename comes only from the validated key and the integer client id.
+  `nfe:import` resolves the folder with `realpath`, accepts a directory only, follows no symlink. A14
+  gains an external-entity fixture pointing at `file:///etc/hostname` (its content appears nowhere)
+  and a billion-laughs fixture refused.
+- **AM4 R16 uniqueness (F6a; A13).** The spec said unique per firm + key; the plan stores a document
+  between two portfolio clients twice. Recorded in spec.md → Changes while building (C1): unique per
+  firm + key + client. A13 defines the re-upload of a document shared by two clients: the second
+  upload stores nothing and reports one `duplicate` per client row already stored (two lines for the
+  file, both `duplicate`); a first upload stores two rows and no refusal.
+- **AM5 Revoke kills sessions (F1; A1).** Overrides F1's access service. Revoke and regenerate delete
+  the user's `sessions` rows (`SESSION_DRIVER=database`); revoke also sets the user inactive. A1
+  asserts the old cookie gets 401 `auth.accountInactive` (`EnsureAccountActive`) right after revoke.
+- **AM6 No N+1 (F7, F9).** Overrides `ReadinessService` and `EvidenceBuilder`. One aggregate query per
+  call, grouped by `client_id`, then pure-PHP maths. F7 and F9 "Done when" gain a measured ceiling:
+  `GET fiscal/readiness` and `GET radar` answer in < 2 s on the seed, the number logged in `state.md`.
+- **AM7 NfeSeeder hygiene (F6b).** `NfeSeeder` first deletes `storage/app/private/nfe/<firm>/`; the Pest
+  suite never runs it; its run time goes in `state.md` → Local environment.
+- **AM8 A10's proof (F5).** Overrides F5's E2E claim. "Same number of items" cannot fail against a
+  mocked API. The proof becomes a Vitest deep-equal of the PATCH sequence `useChatReceptionist`
+  produces against the form's, for "Simples, B2B 80 %, serviços"; the result-count parity moves to
+  Verify's Chrome round (A23's chat walk).
+- **AM9 Ledger history and rounding (F1, F4; A9).** Overrides F4's subscription rule. One
+  `access_granted_at`/`access_revoked_at` pair loses a revoke → regrant history. F1 adds
+  `partner_access_events` (granted/revoked, UTC, one row per change, written by
+  `PartnerAccessService`); F4 derives the billed months from those rows; the two columns stay as the
+  current state. Commission per closing: `intdiv(deal_value_cents * rate_bp + 5000, 10000)`
+  (half-up), with an odd-cents test: R$ 12.345,67 at 10 % → R$ 1.234,57.
+- **AM10 Portfolio lead content (F10; A21).** `findOrStartPortfolioLead` copies the client's name
+  (→ `company`), CNPJ, and sector, regime, band and B2B share (→ `profile`) onto the lead. A21
+  asserts `company` in `PortalReferralResource`.
+- **AM11 Consent values (F9; A22).** `autoriza_parceiros` is case- and accent-insensitive: `sim`, `SIM`,
+  `não`, `nao`, `NÃO`, `Não` all accepted; A22 includes them.
+- **AM12 F6 split (F6).** F6 becomes F6a (parser, key, importer, upload; A13–A15) and F6b (ZIP,
+  command, builder, seeder, batch list; A24). Nothing else is renumbered.
+- **AM13 Fiscal writes under `fiscal.read` (F6a, F7).** `POST …/notice` and `POST …/review` only add
+  a client timeline line, so they stay under `fiscal.read`; F6a writes this into Fiscal `RULES.md`
+  so reviewers do not reopen it.
 
 ## Defaults
 SLA 24 business hours, warn 12 · commission 10 % · subscription R$ 490/month · readiness window 30
