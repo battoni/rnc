@@ -39,7 +39,7 @@ const PROGRESS_STEPS = [
   { key: 'company', steps: [DIAGNOSTIC_STEP.COMPANY, DIAGNOSTIC_STEP.CONTACT] },
   { key: 'profile', steps: [DIAGNOSTIC_STEP.PROFILE] },
   { key: 'revenue', steps: [DIAGNOSTIC_STEP.REVENUE] },
-  { key: 'result', steps: [DIAGNOSTIC_STEP.RESULT, DIAGNOSTIC_STEP.BOOKING] },
+  { key: 'result', steps: [DIAGNOSTIC_STEP.RESULT, DIAGNOSTIC_STEP.BOOKING, DIAGNOSTIC_STEP.BOOKED] },
 ] as const;
 
 const EMPTY_PROFILE: DiagnosticProfile = {
@@ -60,13 +60,21 @@ const TAX_SWATCH_CLASSES: Record<string, string> = {
   'pis-cofins': 'bg-warn-200',
 };
 
+/** The screens this module owns besides the site's `/diagnostico` — linked by name (celer-05). */
+const DIAGNOSTIC_ROUTE_NAMES = { report: 'site-report' } as const;
+
+/** The agenda's zone (plan AM9): every meeting time is shown in it, wherever the visitor is. */
+const MEETING_TIME_ZONE = 'America/Sao_Paulo';
+
 export {
   B2B_OPTIONS,
   BAND_OPTIONS,
   CNPJ_LENGTH,
+  DIAGNOSTIC_ROUTE_NAMES,
   EMPTY_PROFILE,
   LOOKUP_STEP_MS,
   LOOKUP_STEPS,
+  MEETING_TIME_ZONE,
   PROGRESS_STEPS,
   REGIME_OPTIONS,
   SECTOR_OPTIONS,

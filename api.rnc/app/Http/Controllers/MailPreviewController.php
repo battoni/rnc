@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Mail\EmailVerificationCodeMail;
+use App\Modules\Booking\DTOs\MeetingMailDTO;
+use App\Modules\Booking\Mail\BookingConfirmed;
+use App\Modules\Booking\Mail\MeetingReminder;
+use Carbon\CarbonImmutable;
 use Illuminate\Http\Response;
 use Illuminate\Mail\Mailable;
 
@@ -34,7 +38,34 @@ class MailPreviewController extends Controller
                 'label' => 'Registration — verification code',
                 'make' => fn (): Mailable => new EmailVerificationCodeMail('482913'),
             ],
+            'booking-confirmed' => [
+                'label' => 'Booking — confirmation with the Relatório de Impacto link',
+                'make' => fn (): Mailable => (new BookingConfirmed($this->sampleMeeting()))->locale('pt_BR'),
+            ],
+            'meeting-reminder' => [
+                'label' => 'Booking — the 24-hour reminder',
+                'make' => fn (): Mailable => (new MeetingReminder($this->sampleMeeting()))->locale('pt_BR'),
+            ],
         ];
+    }
+
+    /** A meeting as a visitor of the demo would book it (invented names, rnc-1 F4). */
+    private function sampleMeeting(): MeetingMailDTO
+    {
+        return new MeetingMailDTO(
+            firstName: 'Ana',
+            company: 'Clínica Horizonte',
+            specialist: 'Juliana Reis',
+            area: 'Contábil · Simples Nacional',
+            startsAt: CarbonImmutable::parse('2026-11-24 14:30', 'America/Sao_Paulo'),
+            minutes: 30,
+            opportunities: 3,
+            risks: 2,
+            reportUrl: config('rnc.frontend_url').'/relatorio/exemplo',
+            firmName: (string) config('rnc.brand.name'),
+            firmAddress: 'Av. Corifeu de Azevedo Marques, 2333, Butantã, São Paulo-SP',
+            firmPhone: '11 3732-5500',
+        );
     }
 
     public function index(): Response

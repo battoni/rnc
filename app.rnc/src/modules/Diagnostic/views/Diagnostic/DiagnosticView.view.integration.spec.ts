@@ -12,7 +12,10 @@ import MDiagnosticContactForm from '../../components/molecules/MDiagnosticContac
 import MDiagnosticProgress from '../../components/molecules/MDiagnosticProgress/MDiagnosticProgress.vue';
 import MDiagnosticResult from '../../components/molecules/MDiagnosticResult/MDiagnosticResult.vue';
 import MImpactSimulator from '../../components/molecules/MImpactSimulator/MImpactSimulator.vue';
+import MSlotPicker from '../../components/molecules/MSlotPicker/MSlotPicker.vue';
 import {
+  AVAILABILITY_FIXTURE,
+  BOOKING_FIXTURE,
   COMPANY_FIXTURE,
   CONSENT_TEXT,
   LEAD_FIXTURE,
@@ -69,6 +72,7 @@ function renderDiagnostic() {
         MDiagnosticProgress,
         MDiagnosticResult,
         MImpactSimulator,
+        MSlotPicker,
       },
       stubs: STUBS,
     },
@@ -118,6 +122,12 @@ beforeEach(() => {
       return HttpResponse.json({ data: { ...LEAD_FIXTURE, token: undefined } });
     }),
     http.get(`${API}/:token/result`, () => HttpResponse.json({ data: RESULT_FIXTURE })),
+    http.get(`${API}/:token/availability`, () => HttpResponse.json({ data: AVAILABILITY_FIXTURE })),
+    http.post(`${API}/:token/booking`, async ({ request }) => {
+      record('POST', 'booking', await request.json());
+
+      return HttpResponse.json({ data: BOOKING_FIXTURE }, { status: 201 });
+    }),
     http.get(`${API}/:token/simulation`, () => HttpResponse.json({ data: SIMULATION_FIXTURE }))
   );
 });
@@ -209,7 +219,27 @@ describe('DiagnosticView — the quiz path', () => {
 
     await fireEvent.click(screen.getByTestId('schedule-cta'));
 
-    expect(await screen.findByTestId('booking-soon')).toBeTruthy();
+    await screen.findAllByTestId('specialist');
+
+    // The contact gave an e-mail, so the picker does not ask for one (AM5).
+    expect(screen.queryByTestId('booking-email')).toBeNull();
+
+    await fireEvent.click(screen.getAllByTestId('slot')[1]!);
+    await fireEvent.click(screen.getByTestId('slot-confirm'));
+
+    const confirmed = await screen.findByTestId('booking-confirmed');
+
+    expect(requests.find((request) => request.path === 'booking')?.body).toEqual({
+      specialist_id: 3,
+      starts_at: '2026-11-24T14:30:00-03:00',
+    });
+    expect(confirmed.textContent).toContain('Juliana Reis');
+    expect(confirmed.textContent).toContain('14:30');
+    expect(JSON.parse(screen.getByTestId('open-report').getAttribute('data-to')!)).toEqual({
+      name: 'site-report',
+      params: { token: BOOKING_FIXTURE.report_token },
+    });
+    expect((await beacons()).map((event) => event.type)).toContain('booking');
   });
 
   it('starts with the sector a sector page sent', async () => {

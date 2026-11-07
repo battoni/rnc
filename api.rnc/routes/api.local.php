@@ -8,9 +8,12 @@
  * inherit the parent's).
  */
 
+use App\Modules\Booking\Controllers\PublicBookingController;
+use App\Modules\Booking\Controllers\PublicReportController;
 use App\Modules\Content\Controllers\PublicSectorPageController;
 use App\Modules\Diagnostic\Controllers\PublicDiagnosticController;
 use App\Modules\Firm\Controllers\PublicFirmController;
+use App\Modules\Notification\Controllers\NotificationController;
 use App\Modules\Tracking\Controllers\PublicEventController;
 use Illuminate\Support\Facades\Route;
 
@@ -33,3 +36,15 @@ Route::post('public/diagnostics/{token}/cnpj', [PublicDiagnosticController::clas
 Route::patch('public/diagnostics/{token}', [PublicDiagnosticController::class, 'update'])->middleware('throttle:60,1,diagnostic');
 Route::get('public/diagnostics/{token}/result', [PublicDiagnosticController::class, 'result'])->middleware('throttle:60,1,diagnostic');
 Route::get('public/diagnostics/{token}/simulation', [PublicDiagnosticController::class, 'simulation'])->middleware('throttle:60,1,diagnostic');
+
+// Booking (rnc-1 F4, R15–R17): the slot picker on the same lead token, and the "Relatório de
+// Impacto" on its own token (AM4). A booking is a write a loop could lean on: 10 a minute.
+Route::get('public/diagnostics/{token}/availability', [PublicBookingController::class, 'availability'])->middleware('throttle:60,1,diagnostic');
+Route::post('public/diagnostics/{token}/booking', [PublicBookingController::class, 'store'])->middleware('throttle:10,1,booking');
+Route::get('public/reports/{reportToken}', [PublicReportController::class, 'show'])->middleware('throttle:60,1,report');
+
+// The back office's bell (R17): a person's own notifications, behind `notifications.read` (AM8).
+$bell = ['auth', 'permission:notifications.read'];
+Route::get('notifications', [NotificationController::class, 'index'])->middleware($bell);
+Route::patch('notifications/{id}/read', [NotificationController::class, 'markRead'])->middleware($bell)->whereUuid('id');
+Route::post('notifications/read-all', [NotificationController::class, 'markAllRead'])->middleware($bell);

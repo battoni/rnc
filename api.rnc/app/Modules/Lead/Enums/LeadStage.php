@@ -5,7 +5,7 @@ namespace App\Modules\Lead\Enums;
 /**
  * The pipeline's stages (rnc-1 R18, plan AM13). The diagnostic moves a lead only forward along its
  * own steps: `visitante` at step 1 (no personal data), `lead_parcial` with the contact, `lead` when
- * the result is seen; F4's booking makes it `reuniao_marcada`. `proposta`, `cliente` and `perdido`
+ * the result is seen; the booking (F4) makes it `reuniao_marcada` from any of those three. `proposta`, `cliente` and `perdido`
  * are the team's (F5).
  */
 enum LeadStage: string
@@ -31,6 +31,12 @@ enum LeadStage: string
     public function canAdvanceByDiagnosticTo(self $next): bool
     {
         return in_array($next, $this->allowedDiagnosticTransitions(), true);
+    }
+
+    /** The visitor books a meeting only once, from a stage the team has not taken over (AM13). */
+    public function canBeBooked(): bool
+    {
+        return ! $this->locksProfile();
     }
 
     /** From the booked meeting on, the visitor can no longer change the answers (AM3). */

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 /*
  * A prospect from the public diagnostic (rnc-1 R11, plan AM3/AM13). Created at step 1 as a
  * `visitante` with no personal data; the contact turns it into a `lead_parcial`. `token` is the
- * only key the public routes know (48 random characters, 30 days). `stage`, `last_step`, `path`,
+ * only key the public routes know (48 random characters, 30 days); `report_token` opens the report. `stage`, `last_step`, `path`,
  * `channel` and `source` are strings checked by the code, never enum columns (AM11). The visitor is
  * kept by its UUID — the `visitors` row belongs to Tracking, and the two meet on (firm, uuid).
  */
@@ -20,6 +20,10 @@ return new class extends Migration
             $table->foreignId('firm_id')->constrained()->cascadeOnDelete();
             $table->string('token', 48)->unique();
             $table->timestamp('token_expires_at');
+            // The "Relatório de Impacto" link (F4, plan AM4): made at booking, 30 days, a key of its own
+            // so the e-mailed link never doubles as the diagnostic's token.
+            $table->string('report_token', 48)->nullable()->unique();
+            $table->timestamp('report_expires_at')->nullable();
             $table->uuid('visitor_uuid')->nullable()->index();
             $table->string('stage', 20);
             $table->string('last_step', 20)->nullable();

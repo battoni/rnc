@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { useSlots, useTemplateRef } from 'vue';
 import { useViewport } from '@Composables';
+// Imported, against the auto-import rule: the `.local.vue` name is not a component name the
+// resolver registers, and the file has to stay recognisable as a project's LOCAL half (as
+// TheLayout's TheLocalOverlays).
+import ThePageHeaderActions from './ThePageHeaderActions.local.vue';
 
 /**
  * The page's title row, and the one place a screen's actions live.
@@ -153,6 +157,9 @@ function onOverflowClick(event: Event) {
           </div>
         </Popover>
       </template>
+
+      <!-- The project's own header actions (the bell, rnc-1 F4): a LOCAL file the sync never touches. -->
+      <ThePageHeaderActions />
     </div>
   </div>
 </template>

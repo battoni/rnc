@@ -2,14 +2,15 @@ import type { Page } from '@playwright/test';
 import { expect, seedLanguage, test } from '../fixtures/auth';
 
 /*
- * The diagnostic (rnc-1 F3, R9–R14) with the API mocked: the quiz from step 1 to the locked result
- * and the specialist CTA, the CNPJ path's refusal of a wrong check digit, and A15's width check on
- * the result — the longest screen of the flow — at 390 px and 1440 px. Measured in Portuguese.
+ * The diagnostic (rnc-1 F3–F4, R9–R17) with the API mocked: the quiz from step 1 to the locked
+ * result, the slot picker (asking the e-mail of a phone-only lead, AM5), the confirmation and the
+ * "Relatório de Impacto"; the CNPJ path's refusal of a wrong check digit; and A15's width check on
+ * the result, the picker and the report at 390 px and 1440 px. Measured in Portuguese.
  */
 const TOKEN = 'k'.repeat(48);
 const CONSENT = 'Autorizo a Franco a me apresentar a especialistas da Rede de Especialistas Franco quando o diagnóstico indicar.';
 const PROFILE = { b2b: null, band: null, exporta: false, incentivos: false, regime: null, sector: null };
-const LEAD = { cnpj: null, company: null, consent: { text: CONSENT, version: 1 }, has_contact: false, last_step: 'empresa', path: 'quiz', profile: PROFILE, stage: 'visitante' };
+const LEAD = { cnpj: null, company: null, consent: { text: CONSENT, version: 1 }, has_contact: false, has_email: false, last_step: 'empresa', path: 'quiz', profile: PROFILE, stage: 'visitante' };
 
 const RESULT = {
   company: 'Clínica Horizonte',
@@ -49,6 +50,30 @@ const SIMULATION = {
   }),
 };
 
+const REPORT_TOKEN = 'r'.repeat(48);
+const MEETING = { area: 'Contábil · Simples Nacional', ends_at: '2026-11-24T15:00:00-03:00', specialist: 'Juliana Reis', starts_at: '2026-11-24T14:30:00-03:00' };
+
+const DAYS = ['2026-11-23', '2026-11-24', '2026-11-25', '2026-11-26', '2026-11-27', '2026-11-30', '2026-12-01', '2026-12-02', '2026-12-03', '2026-12-04'];
+const HALF_HOURS = Array.from({ length: 20 }, (_, index) => `${String(8 + Math.floor(index / 2)).padStart(2, '0')}:${index % 2 ? '30' : '00'}`);
+
+function agendaOf(id: number, name: string, area: string, suggested: boolean) {
+  return { area, days: DAYS.map((date, index) => ({ date, slots: HALF_HOURS.map((time) => `${date}T${time}:00-03:00`), weekday: (index % 5) + 1 })), id, name, suggested };
+}
+
+const AVAILABILITY = {
+  slot_minutes: 30,
+  specialists: [
+    agendaOf(1, 'Mariana Toledo', 'Tributário · Reforma', false),
+    agendaOf(2, 'Carlos Prado', 'Tributário · Indústria', false),
+    agendaOf(3, 'Juliana Reis', 'Contábil · Simples Nacional', true),
+    agendaOf(4, 'Rafael Antunes', 'Planejamento tributário', false),
+  ],
+  suggested_specialist_id: 3,
+  timezone: 'America/Sao_Paulo',
+};
+
+const REPORT = { company: 'Clínica Horizonte', meeting: MEETING, profile: { b2b: 80, band: 'b2', regime: 'simples', sector: 'servicos' } };
+
 async function mockDiagnosticApi(page: Page) {
   const json = (data: unknown, status = 200) => ({ status, contentType: 'application/json', body: JSON.stringify(data) });
 
@@ -60,6 +85,13 @@ async function mockDiagnosticApi(page: Page) {
   await page.route(`**/public/diagnostics/${TOKEN}`, (route) => route.fulfill(json({ data: LEAD })));
   await page.route(`**/public/diagnostics/${TOKEN}/result`, (route) => route.fulfill(json({ data: RESULT })));
   await page.route(`**/public/diagnostics/${TOKEN}/simulation`, (route) => route.fulfill(json({ data: SIMULATION })));
+  await page.route(`**/public/diagnostics/${TOKEN}/availability`, (route) => route.fulfill(json({ data: AVAILABILITY })));
+  await page.route(`**/public/diagnostics/${TOKEN}/booking`, (route) =>
+    route.fulfill(json({ data: { meeting: MEETING, report_token: REPORT_TOKEN } }, 201))
+  );
+  await page.route(`**/public/reports/${REPORT_TOKEN}`, (route) =>
+    route.fulfill(json({ data: { ...REPORT, result: RESULT, simulation: SIMULATION } }))
+  );
   await page.route(`**/public/diagnostics/${TOKEN}/cnpj`, (route) =>
     route.fulfill(json({ errors: { cnpj: ['diagnostic.cnpj.invalid'] }, message: 'invalid' }, 422))
   );
@@ -85,6 +117,13 @@ async function walkQuizToResult(page: Page) {
   await expect(page.getByTestId('result')).toBeVisible();
 }
 
+async function bookTheSuggestedSlot(page: Page) {
+  await page.getByTestId('schedule-cta').click();
+  await expect(page.getByTestId('specialist')).toHaveCount(4);
+  await page.locator('[data-testid="slot-day"][data-day="2026-11-24"]').click();
+  await page.locator('[data-testid="slot"][data-slot="2026-11-24T14:30:00-03:00"]').click();
+}
+
 async function horizontalOverflow(page: Page) {
   return page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
 }
@@ -104,9 +143,37 @@ test('walks the quiz from step 1 to the locked result and the specialist CTA', a
   await expect(page.getByTestId('split-payment')).toContainText('R$ 16–28 mil/mês');
   await expect(page).toHaveTitle('Diagnóstico gratuito da Reforma Tributária · Franco Contabilidade');
 
-  await page.getByTestId('schedule-cta').click();
+  await bookTheSuggestedSlot(page);
 
-  await expect(page.getByTestId('booking-soon')).toContainText('A agenda online abre em breve');
+  await expect(page.locator('[data-testid="specialist"][aria-checked="true"]')).toContainText('Indicado para o seu perfil');
+
+  // The contact was a phone only, so the picker asks for the e-mail before confirming (AM5).
+  await page.getByTestId('slot-confirm').click();
+  await expect(page.getByTestId('booking-error')).toContainText('e-mail');
+  await page.getByTestId('booking-email').fill('ana@horizonte.com.br');
+  // A person takes longer than the ClickGuard's 350 ms to type an address; the spec waits it out.
+  await expect(page.getByTestId('slot-confirm')).not.toHaveAttribute('data-click-guard', 'locked');
+  await page.getByTestId('slot-confirm').click();
+
+  await expect(page.getByTestId('booking-confirmed')).toContainText('Juliana Reis');
+  await expect(page.getByTestId('booking-when')).toContainText('24/11 às 14:30');
+
+  await page.getByTestId('open-report').click();
+
+  await expect(page).toHaveURL(new RegExp(`/relatorio/${REPORT_TOKEN}$`));
+  await expect(page.getByTestId('report-company')).toHaveText('Clínica Horizonte');
+  await expect(page.getByTestId('report-meeting')).toContainText('Juliana Reis');
+  await expect(page.getByTestId('sim-year')).toHaveCount(8);
+});
+
+test('says calmly that a dead report link expired', async ({ page }) => {
+  await page.route('**/public/reports/*', (route) =>
+    route.fulfill({ status: 404, contentType: 'application/json', body: JSON.stringify({ error: 'booking.reportNotFound' }) })
+  );
+
+  await page.goto(`/relatorio/${'x'.repeat(48)}`);
+
+  await expect(page.getByTestId('report-missing')).toContainText('Este link expirou ou não existe');
 });
 
 test('says a CNPJ with a wrong check digit is wrong', async ({ page }) => {
@@ -129,5 +196,23 @@ for (const width of [390, 1440]) {
     const simulator = await page.getByTestId('simulator').boundingBox();
 
     expect(simulator!.x + simulator!.width).toBeLessThanOrEqual(width);
+  });
+
+  test(`the slot picker and the report do not scroll sideways at ${width} px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+
+    await walkQuizToResult(page);
+    await bookTheSuggestedSlot(page);
+
+    expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+
+    const confirm = await page.getByTestId('slot-confirm').boundingBox();
+
+    expect(confirm!.x + confirm!.width).toBeLessThanOrEqual(width);
+
+    await page.goto(`/relatorio/${REPORT_TOKEN}`);
+    await expect(page.getByTestId('impact-report')).toBeVisible();
+
+    expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
   });
 }

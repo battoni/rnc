@@ -38,6 +38,8 @@
       "@AuthModule/*": ["./src/modules/Auth/*"],
       "@DiagnosticModule": ["./src/modules/Diagnostic"],
       "@DiagnosticModule/*": ["./src/modules/Diagnostic/*"],
+      "@NotificationModule": ["./src/modules/Notification"],
+      "@NotificationModule/*": ["./src/modules/Notification/*"],
       "@HomeModule": ["./src/modules/Home"],
       "@HomeModule/*": ["./src/modules/Home/*"],
       "@PersonalizationModule": ["./src/modules/Personalization"],

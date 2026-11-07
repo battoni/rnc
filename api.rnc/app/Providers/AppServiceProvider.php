@@ -99,7 +99,7 @@ class AppServiceProvider extends ServiceProvider
         View::composer('mail.*', function ($view) {
             $view->with([
                 'accent' => config('rnc.brand.accent'),
-                'brandLogo' => public_path(config('rnc.brand.logo')),
+                'brandLogo' => config('rnc.brand.logo') ? public_path(config('rnc.brand.logo')) : null,
                 'brandName' => config('rnc.brand.name'),
                 'frontendUrl' => config('rnc.frontend_url'),
                 'ink' => config('rnc.brand.ink'),

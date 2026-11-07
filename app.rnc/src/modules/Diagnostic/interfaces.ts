@@ -17,6 +17,8 @@ interface PublicLead {
   company: string | null;
   consent: { text: string; version: number };
   has_contact: boolean;
+  /** Whether the booking has to ask for an e-mail (AM5) — never the address itself. */
+  has_email: boolean;
   last_step: DIAGNOSTIC_STEP | null;
   path: DIAGNOSTIC_PATH;
   profile: DiagnosticProfile;
@@ -108,7 +110,60 @@ interface DiagnosticContactPayload {
 interface UpdateDiagnosticPayload {
   contact?: DiagnosticContactPayload;
   profile?: Partial<DiagnosticProfile>;
-  step?: Exclude<DIAGNOSTIC_STEP, DIAGNOSTIC_STEP.BOOKING>;
+  step?: Exclude<DIAGNOSTIC_STEP, DIAGNOSTIC_STEP.BOOKED | DIAGNOSTIC_STEP.BOOKING>;
+}
+
+/** One working day of a specialist's agenda: its free starts, ISO-8601 with the São Paulo offset. */
+interface AvailabilityDay {
+  date: string;
+  slots: string[];
+  weekday: number;
+}
+
+interface AvailabilitySpecialist {
+  area: string | null;
+  days: AvailabilityDay[];
+  id: number;
+  name: string;
+  suggested: boolean;
+}
+
+/** `PublicAvailabilityResource` (R15): the next 10 working days of every specialist. */
+interface Availability {
+  slot_minutes: number;
+  specialists: AvailabilitySpecialist[];
+  suggested_specialist_id: number | null;
+  timezone: string;
+}
+
+/** What `BookMeetingRequest` validates, key for key. */
+interface BookMeetingPayload {
+  email?: string;
+  specialist_id: number;
+  starts_at: string;
+}
+
+/** `PublicMeetingResource`. */
+interface PublicMeeting {
+  area: string | null;
+  ends_at: string;
+  specialist: string;
+  starts_at: string;
+}
+
+/** `PublicBookingResource`: the meeting and the report's own token (AM4). */
+interface BookingConfirmation {
+  meeting: PublicMeeting;
+  report_token: string;
+}
+
+/** `PublicReportResource` — the "Relatório de Impacto", never a contact (AM4). */
+interface PublicReport {
+  company: string | null;
+  meeting: PublicMeeting | null;
+  profile: Pick<DiagnosticProfile, 'b2b' | 'band' | 'regime' | 'sector'>;
+  result: DiagnosticResult;
+  simulation: DiagnosticSimulation;
 }
 
 /** One answer of a choice group: the value sent, the i18n key shown. */
@@ -118,6 +173,11 @@ interface ChoiceOption {
 }
 
 export type {
+  Availability,
+  AvailabilityDay,
+  AvailabilitySpecialist,
+  BookingConfirmation,
+  BookMeetingPayload,
   ChoiceOption,
   CnpjCompany,
   CnpjLookupResult,
@@ -127,6 +187,8 @@ export type {
   DiagnosticResultItem,
   DiagnosticSimulation,
   PublicLead,
+  PublicMeeting,
+  PublicReport,
   SimulationPart,
   SimulationTax,
   SimulationYear,

@@ -55,11 +55,14 @@ return [
          * mail. Relative to `public/`, so a project drops its own file in and changes
          * nothing else.
          *
+         * Empty means "no logo file": the band shows the brand's initial in an accent tile
+         * instead (rnc-1 F4 — Franco's mark is text, W6). Set BRAND_LOGO to a path to use one.
+         *
          * Cropped to the glyph on purpose. The app's logo tile is a 500px square in which
          * the mark occupies 27% of the width — at a header's 40px that leaves a 10px glyph
          * beside 19px text, which reads as a speck rather than a logo.
          */
-        'logo' => env('BRAND_LOGO', 'logo/png/logo-brand-mark.png'),
+        'logo' => env('BRAND_LOGO') ?: null,
     ],
 
 ];

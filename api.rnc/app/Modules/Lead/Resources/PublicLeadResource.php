@@ -45,6 +45,8 @@ class PublicLeadResource extends JsonResource
                 'exporta' => (bool) ($profile['exporta'] ?? false),
             ],
             'has_contact' => $this->hasContact(),
+            // Whether the booking has to ask for an e-mail (AM5) — never the address itself.
+            'has_email' => $this->hasEmail(),
             'consent' => ['text' => ConsentTerms::TEXT, 'version' => ConsentTerms::VERSION],
         ];
     }

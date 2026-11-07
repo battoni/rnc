@@ -2,7 +2,7 @@
 
 namespace App\Modules\Lead\Enums;
 
-/** The lines of a lead's timeline the diagnostic writes (rnc-1 R19). F5 adds the team's. */
+/** The lines of a lead's timeline the diagnostic and the booking write (rnc-1 R19). F5 adds the team's. */
 enum LeadEventType: string
 {
     case DiagnosticStarted = 'diagnostico.inicio';
@@ -10,4 +10,5 @@ enum LeadEventType: string
     case ContactCaptured = 'contato.capturado';
     case StepReached = 'diagnostico.passo';
     case ResultSeen = 'resultado.visto';
+    case MeetingBooked = 'reuniao.marcada';
 }

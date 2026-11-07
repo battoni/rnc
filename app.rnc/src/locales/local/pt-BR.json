@@ -219,7 +219,8 @@
       "perfil": "Perfil da empresa",
       "faturamento": "Faturamento e operação",
       "resultado": "Seu resultado",
-      "agendar": "Agende com um especialista"
+      "agendar": "Agende com um especialista",
+      "agendado": "Reunião confirmada"
     },
     "progress": {
       "label": "Passo {current} de {total}",
@@ -350,11 +351,72 @@
     },
     "schedule": {
       "title": "Os detalhes de cada item estão com o especialista",
-      "text": "Em 1 hora, online ou na Franco, ele explica a conta por trás de cada valor e o plano de ação. A reunião é gratuita.",
+      "text": "Em 30 minutos, online ou na Franco, ele explica a conta por trás de cada valor e o plano de ação. A reunião é gratuita.",
       "action": "Agendar com um especialista"
     },
     "booking": {
-      "text": "A agenda online abre em breve. Enquanto isso, fale com a equipe da Franco pelo telefone ou pelo e-mail e diga que fez o diagnóstico: o seu resultado já está com ela."
+      "intro": "Escolha quem vai atender você e o horário. São {minutes} minutos, online ou no escritório da Franco, para abrir o detalhe de cada item e o plano de ação. Horários dos próximos 10 dias úteis.",
+      "specialists": "Especialista",
+      "suggested": "Indicado para o seu perfil",
+      "days": "Dia",
+      "slots": "Horário",
+      "slotsOf": "Horários de {day}",
+      "slotCount": "sem horário | 1 horário | {n} horários",
+      "noSlots": "Este dia não tem horário livre. Escolha outro dia ou outro especialista.",
+      "email": "Seu e-mail",
+      "emailHint": "A confirmação e o link do Relatório de Impacto vão para este endereço.",
+      "confirm": "Confirmar {meeting}",
+      "chooseSlot": "Escolha um horário",
+      "meetingLabel": "{weekday}, {day} às {time}",
+      "loading": "Carregando a agenda dos especialistas…",
+      "errors": {
+        "chooseSlot": "Escolha um horário antes de confirmar.",
+        "email": "Informe um e-mail válido: é para ele que vão a confirmação e o Relatório de Impacto.",
+        "slotTaken": "Esse horário acabou de ser reservado. Escolha outro.",
+        "slotUnavailable": "Esse horário não está mais na agenda. Escolha outro.",
+        "alreadyBooked": "Este diagnóstico já tem uma reunião marcada. A equipe da Franco entra em contato para qualquer mudança.",
+        "unavailable": "Não conseguimos falar com a agenda agora. Tente de novo em instantes."
+      },
+      "confirmed": {
+        "with": "com {specialist}",
+        "length": "{minutes} minutos, online ou no escritório da Franco.",
+        "sent": "Enviamos a confirmação para o seu e-mail com o link do Relatório de Impacto, e um lembrete na véspera.",
+        "found": "{company} · {opportunities} e {risks} para conversar.",
+        "openReport": "Abrir o Relatório de Impacto",
+        "addToCalendar": "Anote na agenda"
+      }
+    },
+    "report": {
+      "kicker": "Relatório de Impacto",
+      "title": "Relatório de Impacto da Reforma Tributária",
+      "issuedFor": "Preparado para",
+      "print": "Imprimir ou salvar em PDF",
+      "nextStep": "Próximo passo",
+      "meeting": "Reunião {meeting} com {specialist}",
+      "legal": "Valores estimados a partir da faixa de faturamento e de alíquotas de referência (LC 214/2025 e alterações). Não é cálculo fiscal nem parecer: o especialista confirma cada item com os dados da empresa.",
+      "loading": "Carregando o relatório…",
+      "missingTitle": "Este link expirou ou não existe",
+      "missingText": "O Relatório de Impacto fica disponível por 30 dias depois do agendamento. Faça o diagnóstico de novo ou fale com a equipe da Franco.",
+      "missingAction": "Fazer o diagnóstico",
+      "seoTitle": "Relatório de Impacto da Reforma Tributária",
+      "seoDescription": "O resultado do diagnóstico da Reforma Tributária, com o simulador 2026–2033."
     }
+  },
+  "notifications": {
+    "bell": "Notificações",
+    "bellUnread": "Notificações: {count} não lidas",
+    "title": "Notificações",
+    "empty": "Nada novo por aqui. Quando um lead deixar o contato ou marcar uma reunião, aparece aqui.",
+    "markRead": "Marcar como lida",
+    "markAllRead": "Marcar todas como lidas",
+    "kinds": {
+      "new_lead": "{company} deixou o contato no diagnóstico",
+      "meeting_booked": "{company} marcou reunião com {specialist} para {when}"
+    },
+    "kindTitles": {
+      "new_lead": "Novo lead",
+      "meeting_booked": "Reunião marcada"
+    },
+    "unknownCompany": "Uma empresa"
   }
 }

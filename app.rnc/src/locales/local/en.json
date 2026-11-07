@@ -219,7 +219,8 @@
       "perfil": "Company profile",
       "faturamento": "Revenue and operations",
       "resultado": "Your result",
-      "agendar": "Book a specialist"
+      "agendar": "Book a specialist",
+      "agendado": "Meeting confirmed"
     },
     "progress": {
       "label": "Step {current} of {total}",
@@ -350,11 +351,72 @@
     },
     "schedule": {
       "title": "The details of each item are with the specialist",
-      "text": "In 1 hour, online or at Franco, they explain the math behind each value and the action plan. The meeting is free.",
+      "text": "In 30 minutes, online or at Franco, they explain the numbers behind each value and the action plan. The meeting is free.",
       "action": "Book a specialist"
     },
     "booking": {
-      "text": "Online booking opens soon. Meanwhile, talk to Franco's team by phone or e-mail and say you took the diagnostic: your result is already with them."
+      "intro": "Choose who will see you and when. It is {minutes} minutes, online or at Franco's office, to open each item and the action plan. Slots over the next 10 working days.",
+      "specialists": "Specialist",
+      "suggested": "Recommended for your profile",
+      "days": "Day",
+      "slots": "Time",
+      "slotsOf": "Times on {day}",
+      "slotCount": "no slot | 1 slot | {n} slots",
+      "noSlots": "This day has no free slot. Choose another day or another specialist.",
+      "email": "Your e-mail",
+      "emailHint": "The confirmation and the Impact Report link go to this address.",
+      "confirm": "Confirm {meeting}",
+      "chooseSlot": "Choose a time",
+      "meetingLabel": "{weekday}, {day} at {time}",
+      "loading": "Loading the specialists' agenda…",
+      "errors": {
+        "chooseSlot": "Choose a time before confirming.",
+        "email": "Enter a valid e-mail: the confirmation and the Impact Report go to it.",
+        "slotTaken": "That time has just been booked. Choose another one.",
+        "slotUnavailable": "That time is no longer on the agenda. Choose another one.",
+        "alreadyBooked": "This diagnostic already has a meeting booked. Franco's team will contact you for any change.",
+        "unavailable": "We could not reach the agenda right now. Try again in a moment."
+      },
+      "confirmed": {
+        "with": "with {specialist}",
+        "length": "{minutes} minutes, online or at Franco's office.",
+        "sent": "We sent the confirmation to your e-mail with the Impact Report link, and a reminder the day before.",
+        "found": "{company} · {opportunities} and {risks} to discuss.",
+        "openReport": "Open the Impact Report",
+        "addToCalendar": "Add to your calendar"
+      }
+    },
+    "report": {
+      "kicker": "Impact Report",
+      "title": "Tax Reform Impact Report",
+      "issuedFor": "Prepared for",
+      "print": "Print or save as PDF",
+      "nextStep": "Next step",
+      "meeting": "Meeting {meeting} with {specialist}",
+      "legal": "Values estimated from the revenue band and reference rates (LC 214/2025 and amendments). Not a tax calculation or an opinion: the specialist confirms each item with the company's data.",
+      "loading": "Loading the report…",
+      "missingTitle": "This link has expired or was not found",
+      "missingText": "The Impact Report stays available for 30 days after the booking. Take the diagnostic again or talk to Franco's team.",
+      "missingAction": "Take the diagnostic",
+      "seoTitle": "Tax Reform Impact Report",
+      "seoDescription": "The Tax Reform diagnostic result, with the 2026–2033 simulator."
     }
+  },
+  "notifications": {
+    "bell": "Notifications",
+    "bellUnread": "Notifications: {count} unread",
+    "title": "Notifications",
+    "empty": "Nothing new here. When a lead leaves a contact or books a meeting, it shows up here.",
+    "markRead": "Mark as read",
+    "markAllRead": "Mark all as read",
+    "kinds": {
+      "new_lead": "{company} left a contact in the diagnostic",
+      "meeting_booked": "{company} booked a meeting with {specialist} for {when}"
+    },
+    "kindTitles": {
+      "new_lead": "New lead",
+      "meeting_booked": "Meeting booked"
+    },
+    "unknownCompany": "A company"
   }
 }

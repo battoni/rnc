@@ -13,8 +13,13 @@ its timeline (`lead_events`). F3 creates them from the public diagnostic; F5 add
 
 ## Intentional Decisions
 
-- **`LeadService` is the only writer** of the three tables. The Diagnostic module calls it; Tracking
-  only reads (`findLeadByToken`).
+- **`LeadService` is the only writer** of the three tables. The Diagnostic and Booking modules call
+  it; Tracking only reads (`findLeadByToken`).
+- **The booking (F4) is `recordBooking`**: `reuniao_marcada`, the e-mail the confirmation goes to,
+  and the report's own token (`report_token`, 48 characters, 30 days, AM4) — a second key, so the
+  e-mailed link never opens the diagnostic's routes.
+- **The first contact rings the bell**: when a lead becomes a `lead_parcial` (and only then),
+  `TeamNotifier` sends `NewLeadNotification` to the team (Notification module).
 - **The token (AM3)** is `Str::random(48)`, unique, valid 30 days (`token_expires_at`); a lookup
   only finds a live token in the current firm. The internal `id` never leaves through a public route.
 - **`PublicLeadResource` is an allow-list**: never the phone, the e-mail, the contact's name, the
@@ -22,6 +27,7 @@ its timeline (`lead_events`). F3 creates them from the public diagnostic; F5 add
   (`withToken()`).
 - **Stages (AM13)** are the `LeadStage` enum's slugs, stored as strings (AM11). The diagnostic only
   moves `visitante → lead_parcial` (the contact) and `lead_parcial → lead` (the result, once);
+  the booking moves any of those three to `reuniao_marcada`;
   `locksProfile()` refuses any change from `reuniao_marcada` on (409 `lead_locked`).
 - **Every contact submission writes a consent row (AM12)**, given true or false — the box starts
   unticked — with `ConsentTerms::TEXT`, `VERSION` 1, `via = formulario` and `given_at`. No IP, no

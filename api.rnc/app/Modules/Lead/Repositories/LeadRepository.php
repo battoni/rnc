@@ -22,6 +22,12 @@ class LeadRepository
         return Lead::query()->where('token', $token)->where('token_expires_at', '>', $now)->first();
     }
 
+    /** The lead whose "Relatório de Impacto" link has not expired, in the current firm (AM4). */
+    public function findLeadByLiveReportToken(string $reportToken, Carbon $now): ?Lead
+    {
+        return Lead::query()->where('report_token', $reportToken)->where('report_expires_at', '>', $now)->first();
+    }
+
     /** @param  array<string, mixed>  $attributes */
     public function updateLead(Lead $lead, array $attributes): Lead
     {

@@ -5,11 +5,12 @@ origin: rnc
 
 # RULES — Diagnostic Module
 
-> For AI agents. rnc-1 F3, 07/11/2026.
+> For AI agents. rnc-1 F3–F4, 07/11/2026.
 
 The public Reforma diagnostic at `/diagnostico` (route `SITE_ROUTE_NAMES.diagnostic`, taken over
 from the Site's F2 placeholder): step 1 by CNPJ or quiz, the contact right after it, the profile,
-the faturamento, the locked result with the 2026–2033 simulator, and the specialist CTA.
+the faturamento, the locked result with the 2026–2033 simulator, the specialist slot picker, the
+confirmation, and the "Relatório de Impacto" at `/relatorio/:token` (route `DIAGNOSTIC_ROUTE_NAMES.report`).
 
 ## Intentional Decisions
 
@@ -33,11 +34,16 @@ the faturamento, the locked result with the 2026–2033 simulator, and the speci
 - **A label wrapping a checkbox reads as a sentence** (`franco.css`, `label:has(.p-checkbox)`): the
   base theme draws every `label` as a mono, upper-case caption — unlayered, so a utility class
   cannot outvote it — and the consent read in capitals is a wall.
-- **Route meta is `isOpen`** like every site route (W4).
+- **Route meta is `isOpen`** like every site route (W4), the report included (AM15).
+- **The slot picker is `MSlotPicker` + `useBooking`** (F4): the indicated specialist chosen first,
+  the first day with a free slot, the e-mail asked only when the contact had none (AM5, `hasEmail`
+  from the contact step). A `slot_taken`/`slot_unavailable` refusal reads the agenda again.
+- **Meeting times are always São Paulo's** (`useMeetingTime`, `MEETING_TIME_ZONE`, AM9) whatever the
+  browser's zone; the API sends ISO-8601 with the offset.
+- **The report prints**: `ThePublicLayout`'s header and footer and the print button are `print:hidden`.
 
 ## Known Gaps
 
-- **"Agendar com um especialista" opens a holding step** (`DIAGNOSTIC_STEP.BOOKING`) that hands over
-  Franco's phone and mailbox: F4 replaces it with the slot picker (W20).
+- **No rescheduling by the visitor**: one meeting per lead (409 `already_booked`); changes are the team's.
 - **A refresh starts over**: the token lives only in the page. The lead already saved stays with the
   team; resuming a diagnostic from a link is not built.

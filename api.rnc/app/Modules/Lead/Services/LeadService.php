@@ -11,6 +11,8 @@ use App\Modules\Lead\Exceptions\LeadException;
 use App\Modules\Lead\Helpers\ConsentTerms;
 use App\Modules\Lead\Models\Lead;
 use App\Modules\Lead\Repositories\LeadRepository;
+use App\Modules\Notification\Notifications\NewLeadNotification;
+use App\Modules\Notification\Services\TeamNotifier;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -25,6 +27,8 @@ class LeadService
 
     private const TOKEN_DAYS = 30;
 
+    private const REPORT_DAYS = 30;
+
     private const FORM_CHANNEL = 'formulario';
 
     /** The answers a profile holds, all unanswered at the start. */
@@ -33,6 +37,7 @@ class LeadService
     public function __construct(
         private CurrentFirm $currentFirm,
         private LeadRepository $leadRepository,
+        private TeamNotifier $teamNotifier,
     ) {}
 
     /**
@@ -75,6 +80,12 @@ class LeadService
         return $this->leadRepository->findLeadByLiveToken($token, Carbon::now());
     }
 
+    /** The lead of a live "Relatório de Impacto" link (AM4); null is the report's 404. */
+    public function findLeadByReportToken(string $reportToken): ?Lead
+    {
+        return $this->leadRepository->findLeadByLiveReportToken($reportToken, Carbon::now());
+    }
+
     /**
      * The CNPJ the visitor typed and what the registry said about it: the company name and the
      * answers it could fill. A lookup that found nothing still keeps the CNPJ.
@@ -99,7 +110,8 @@ class LeadService
 
     /**
      * The contact right after step 1 (R11): the lead becomes a `lead_parcial` and the consent
-     * answer is stored with the words read, the time and the channel — given or not (AM12).
+     * answer is stored with the words read, the time and the channel — given or not (AM12). The
+     * first time a lead becomes a lead parcial the team's bell rings (R17, `NewLead`).
      */
     public function recordContact(Lead $lead, LeadContactDTO $contact): Lead
     {
@@ -107,14 +119,15 @@ class LeadService
 
         $now = Carbon::now();
         $stage = LeadStage::from($lead->stage);
+        $becomesLeadParcial = $stage->canAdvanceByDiagnosticTo(LeadStage::LeadParcial);
 
-        return DB::transaction(function () use ($lead, $contact, $now, $stage) {
+        DB::transaction(function () use ($lead, $contact, $now, $stage, $becomesLeadParcial) {
             $this->leadRepository->updateLead($lead, [
                 'company' => $contact->company,
                 'contact_name' => $contact->name,
                 'phone' => $contact->phone,
                 'email' => $contact->email,
-                'stage' => $stage->canAdvanceByDiagnosticTo(LeadStage::LeadParcial) ? LeadStage::LeadParcial->value : $stage->value,
+                'stage' => $becomesLeadParcial ? LeadStage::LeadParcial->value : $stage->value,
             ]);
 
             $this->leadRepository->createLeadConsent($lead, [
@@ -126,9 +139,13 @@ class LeadService
             ]);
 
             $this->leadRepository->createLeadEvent($lead, LeadEventType::ContactCaptured->value, ['consent' => $contact->consent], $now);
-
-            return $lead;
         });
+
+        if ($becomesLeadParcial) {
+            $this->teamNotifier->notifyTeam(new NewLeadNotification($lead->id, (string) $lead->company, $lead->profile['sector'] ?? null));
+        }
+
+        return $lead;
     }
 
     /**
@@ -173,6 +190,32 @@ class LeadService
 
         $this->leadRepository->updateLead($lead, $attributes);
         $this->leadRepository->createLeadEvent($lead, LeadEventType::ResultSeen->value, ['opportunities' => $opportunities, 'risks' => $risks], Carbon::now());
+
+        return $lead;
+    }
+
+    /**
+     * The booked meeting (R16, AM4, AM13): the lead becomes `reuniao_marcada` — its answers lock —
+     * keeps the e-mail the confirmation goes to, and gets the "Relatório de Impacto" link, valid 30
+     * days. The caller holds the transaction that also writes the appointment.
+     *
+     * @param  array{specialist: string, starts_at: string}  $meeting
+     */
+    public function recordBooking(Lead $lead, string $email, array $meeting): Lead
+    {
+        if (! LeadStage::from($lead->stage)->canBeBooked()) {
+            throw LeadException::locked();
+        }
+
+        $now = Carbon::now();
+
+        $this->leadRepository->updateLead($lead, [
+            'email' => $email,
+            'stage' => LeadStage::ReuniaoMarcada->value,
+            'report_token' => Str::random(self::TOKEN_LENGTH),
+            'report_expires_at' => $now->copy()->addDays(self::REPORT_DAYS),
+        ]);
+        $this->leadRepository->createLeadEvent($lead, LeadEventType::MeetingBooked->value, $meeting, $now);
 
         return $lead;
     }

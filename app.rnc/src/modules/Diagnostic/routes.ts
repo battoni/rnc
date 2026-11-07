@@ -1,7 +1,7 @@
 import type { RouteRecordRaw } from 'vue-router';
-import { DiagnosticRoutes } from './views';
+import { DiagnosticRoutes, ReportRoutes } from './views';
 
-/* The public diagnostic — open, under the site's layout (AM15 via `meta.isOpen`, W4). */
-const DiagnosticModuleRoutes: RouteRecordRaw[] = [...DiagnosticRoutes];
+/* The public diagnostic and its report — open, under the site's layout (AM15 via `meta.isOpen`, W4). */
+const DiagnosticModuleRoutes: RouteRecordRaw[] = [...DiagnosticRoutes, ...ReportRoutes];
 
 export { DiagnosticModuleRoutes };

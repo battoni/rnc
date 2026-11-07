@@ -18,6 +18,8 @@ use Illuminate\Support\Carbon;
  * @property int $firm_id
  * @property string $token
  * @property Carbon $token_expires_at
+ * @property string|null $report_token
+ * @property Carbon|null $report_expires_at
  * @property string|null $visitor_uuid
  * @property string $stage
  * @property string|null $last_step
@@ -33,7 +35,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $medium
  * @property-read LeadConsent|null $latestConsent
  */
-#[Fillable(['token', 'token_expires_at', 'visitor_uuid', 'stage', 'last_step', 'path', 'company', 'cnpj', 'contact_name', 'phone', 'email', 'profile', 'channel', 'source', 'medium'])]
+#[Fillable(['token', 'token_expires_at', 'report_token', 'report_expires_at', 'visitor_uuid', 'stage', 'last_step', 'path', 'company', 'cnpj', 'contact_name', 'phone', 'email', 'profile', 'channel', 'source', 'medium'])]
 class Lead extends Model
 {
     use BelongsToFirm;
@@ -45,6 +47,7 @@ class Lead extends Model
     {
         return [
             'token_expires_at' => 'datetime',
+            'report_expires_at' => 'datetime',
             'profile' => 'array',
         ];
     }
@@ -65,6 +68,11 @@ class Lead extends Model
     public function events(): HasMany
     {
         return $this->hasMany(LeadEvent::class);
+    }
+
+    public function hasEmail(): bool
+    {
+        return $this->email !== null;
     }
 
     public function hasContact(): bool

@@ -47,11 +47,24 @@
                                             a public URL that has to still answer in five years.
                                             `$message` exists while the mailer renders; the preview
                                             route renders without it and falls back to the URL.
+                                            A brand with no logo file (Franco, rnc-1 W6) gets its
+                                            initial in a tile instead — text, so it shows even
+                                            with images blocked.
                                         --}}
-                                        <img
-                                            src="{{ isset($message) ? $message->embed($brandLogo) : url(config('rnc.brand.logo')) }}"
-                                            width="40" height="40" alt="{{ $brandName }}"
-                                            style="display:block;width:40px;height:40px;border:0;border-radius:6px;">
+                                        @if ($brandLogo)
+                                            <img
+                                                src="{{ isset($message) ? $message->embed($brandLogo) : url(config('rnc.brand.logo')) }}"
+                                                width="40" height="40" alt="{{ $brandName }}"
+                                                style="display:block;width:40px;height:40px;border:0;border-radius:6px;">
+                                        @else
+                                            <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                                                <tr>
+                                                    <td width="40" height="40" align="center" valign="middle" style="width:40px;height:40px;border-radius:8px;background-color:{{ $accent }};color:{{ $ink }};font-size:20px;line-height:40px;font-weight:800;">
+                                                        {{ mb_substr($brandName, 0, 1) }}
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        @endif
                                     </td>
                                     {{--
                                         The name stays as TEXT beside the mark. Most clients block
@@ -74,7 +87,12 @@
 
                     <tr>
                         <td style="background-color:#f4f4f5;padding:20px 32px;font-size:12px;line-height:18px;color:#71717a;">
-                            {{ __('mail.common.footer_reason') }}<br>
+                            {{-- A message sent for another reason than an account says so (`@section('footer_reason')`). --}}
+                            @hasSection('footer_reason')
+                                @yield('footer_reason')<br>
+                            @else
+                                {{ __('mail.common.footer_reason') }}<br>
+                            @endif
                             <a href="{{ $frontendUrl }}" style="color:{{ $ink }};text-decoration:underline;">{{ $frontendUrl }}</a>
                         </td>
                     </tr>

@@ -1,4 +1,12 @@
-import type { CnpjCompany, DiagnosticResult, DiagnosticSimulation, PublicLead } from '../interfaces';
+import type {
+  Availability,
+  BookingConfirmation,
+  CnpjCompany,
+  DiagnosticResult,
+  DiagnosticSimulation,
+  PublicLead,
+  PublicReport,
+} from '../interfaces';
 import { DIAGNOSTIC_PATH, DIAGNOSTIC_STEP, RESULT_KIND } from '../enums';
 
 /* The API's answers as the Diagnostic specs need them — the shapes of the `Public*` resources. */
@@ -12,6 +20,7 @@ const LEAD_FIXTURE: PublicLead = {
   company: null,
   consent: { text: CONSENT_TEXT, version: 1 },
   has_contact: false,
+  has_email: false,
   last_step: DIAGNOSTIC_STEP.COMPANY,
   path: DIAGNOSTIC_PATH.QUIZ,
   profile: { b2b: null, band: null, exporta: false, incentivos: false, regime: null, sector: null },
@@ -99,4 +108,69 @@ const SIMULATION_FIXTURE: DiagnosticSimulation = {
   }),
 };
 
-export { COMPANY_FIXTURE, CONSENT_TEXT, LEAD_FIXTURE, RESULT_FIXTURE, SIMULATION_FIXTURE, TOKEN_FIXTURE };
+/* Two specialists over three working days (the API sends ten); Juliana is indicated (Simples). */
+const AVAILABILITY_FIXTURE: Availability = {
+  slot_minutes: 30,
+  specialists: [
+    {
+      area: 'Tributário · Reforma',
+      days: [
+        { date: '2026-11-23', slots: ['2026-11-23T08:00:00-03:00', '2026-11-23T08:30:00-03:00'], weekday: 1 },
+        { date: '2026-11-24', slots: [], weekday: 2 },
+        { date: '2026-11-25', slots: ['2026-11-25T14:00:00-03:00'], weekday: 3 },
+      ],
+      id: 1,
+      name: 'Mariana Toledo',
+      suggested: false,
+    },
+    {
+      area: 'Contábil · Simples Nacional',
+      days: [
+        { date: '2026-11-23', slots: [], weekday: 1 },
+        {
+          date: '2026-11-24',
+          slots: ['2026-11-24T09:00:00-03:00', '2026-11-24T14:30:00-03:00', '2026-11-24T15:00:00-03:00'],
+          weekday: 2,
+        },
+        { date: '2026-11-25', slots: ['2026-11-25T10:00:00-03:00'], weekday: 3 },
+      ],
+      id: 3,
+      name: 'Juliana Reis',
+      suggested: true,
+    },
+  ],
+  suggested_specialist_id: 3,
+  timezone: 'America/Sao_Paulo',
+};
+
+const REPORT_TOKEN_FIXTURE = 'r'.repeat(48);
+
+const MEETING_FIXTURE = {
+  area: 'Contábil · Simples Nacional',
+  ends_at: '2026-11-24T15:00:00-03:00',
+  specialist: 'Juliana Reis',
+  starts_at: '2026-11-24T14:30:00-03:00',
+};
+
+const BOOKING_FIXTURE: BookingConfirmation = { meeting: MEETING_FIXTURE, report_token: REPORT_TOKEN_FIXTURE };
+
+const REPORT_FIXTURE: PublicReport = {
+  company: 'Clínica Horizonte',
+  meeting: MEETING_FIXTURE,
+  profile: { b2b: 80, band: 'b2', regime: 'simples', sector: 'servicos' },
+  result: RESULT_FIXTURE,
+  simulation: SIMULATION_FIXTURE,
+};
+
+export {
+  AVAILABILITY_FIXTURE,
+  BOOKING_FIXTURE,
+  COMPANY_FIXTURE,
+  CONSENT_TEXT,
+  LEAD_FIXTURE,
+  REPORT_FIXTURE,
+  REPORT_TOKEN_FIXTURE,
+  RESULT_FIXTURE,
+  SIMULATION_FIXTURE,
+  TOKEN_FIXTURE,
+};

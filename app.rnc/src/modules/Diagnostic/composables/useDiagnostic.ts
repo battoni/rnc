@@ -1,6 +1,7 @@
 import { ref } from 'vue';
 import type { DIAGNOSTIC_PATH } from '../enums';
 import type {
+  BookingConfirmation,
   CnpjCompany,
   CnpjLookupResult,
   DiagnosticContactPayload,
@@ -35,9 +36,11 @@ const NON_DIGITS = /\D/g;
 function useDiagnostic() {
   const { track, visitContext } = useTracking();
 
+  const booking = ref<BookingConfirmation | null>(null);
   const company = ref<CnpjCompany | null>(null);
   const consentText = ref('');
   const errorKey = ref<string | null>(null);
+  const hasEmail = ref(false);
   const isSaving = ref(false);
   const lookupStatus = ref<LOOKUP_STATUS>(LOOKUP_STATUS.IDLE);
   const lookupStepIndex = ref(0);
@@ -164,6 +167,7 @@ function useDiagnostic() {
 
     save({ contact, step: DIAGNOSTIC_STEP.PROFILE })
       .then(() => {
+        hasEmail.value = !!contact.email;
         step.value = DIAGNOSTIC_STEP.PROFILE;
 
         track(TRACKING_EVENT_TYPE.DIAGNOSTIC_CONTACT, profile.value.sector, token.value);
@@ -204,14 +208,25 @@ function useDiagnostic() {
       .catch(() => fail('diagnostic.errors.unavailable'));
   }
 
-  /** "Agendar com um especialista" — the slot picker is F4's; until then a holding step (W20). */
+  /** "Agendar com um especialista" → the slot picker (R15). */
   function openBooking() {
+    errorKey.value = null;
     step.value = DIAGNOSTIC_STEP.BOOKING;
   }
 
+  /** The slot is booked (R16): the confirmation, and the funnel's "agendou" with the token. */
+  function confirmBooking(confirmation: BookingConfirmation) {
+    booking.value = confirmation;
+    step.value = DIAGNOSTIC_STEP.BOOKED;
+
+    track(TRACKING_EVENT_TYPE.BOOKING, profile.value.sector, token.value);
+  }
+
   function restart() {
+    booking.value = null;
     company.value = null;
     errorKey.value = null;
+    hasEmail.value = false;
     lookupStatus.value = LOOKUP_STATUS.IDLE;
     path.value = null;
     profile.value = { ...EMPTY_PROFILE };
@@ -222,12 +237,15 @@ function useDiagnostic() {
   }
 
   return {
+    booking,
     choosePath,
     company,
+    confirmBooking,
     confirmCompany,
     consentText,
     errorKey,
     finish,
+    hasEmail,
     isSaving,
     lookupCnpj,
     lookupStatus,

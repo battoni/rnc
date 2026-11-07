@@ -2,6 +2,7 @@
 
 use Database\Seeders\LocalUsersSeeder;
 use Database\Seeders\SectorPageSeeder;
+use Database\Seeders\SpecialistSeeder;
 
 /*
  * Project-owned seeders — the cortex sync NEVER touches this file (classified LOCAL).
@@ -18,3 +19,7 @@ $this->call(SectorPageSeeder::class);
 
 // The pilot's team (Reinaldo, the team, the four specialists) — refuses to run in production.
 $this->call(LocalUsersSeeder::class);
+
+// Every `is_specialist` member's weekly hours, from the firm's business hours (rnc-1 R15). After
+// the people, so the four specialists exist; on production it finds none until one is flagged.
+$this->call(SpecialistSeeder::class);

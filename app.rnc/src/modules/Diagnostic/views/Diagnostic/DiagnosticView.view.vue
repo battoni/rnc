@@ -3,27 +3,30 @@ import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 import { SITE_ROUTE_NAMES, TRACKING_EVENT_TYPE, usePublicFirm, useSeo, useTracking } from '@SiteModule';
-import { useDiagnostic } from '../../composables';
-import { B2B_OPTIONS, BAND_OPTIONS, REGIME_OPTIONS, SECTOR_OPTIONS } from '../../constants';
+import { useDiagnostic, useMeetingTime, useProfileLine } from '../../composables';
+import { B2B_OPTIONS, BAND_OPTIONS, DIAGNOSTIC_ROUTE_NAMES, REGIME_OPTIONS, SECTOR_OPTIONS } from '../../constants';
 import { DIAGNOSTIC_PATH, DIAGNOSTIC_STEP, LOOKUP_STATUS } from '../../enums';
 
 /*
  * The public diagnostic (rnc-1 F3, R9–R14) at `/diagnostico`, where every CTA of the site lands.
  * Step 1 by the CNPJ or the quiz, the contact right after it (the lead exists from then on, R11),
- * the profile, the faturamento, then the locked result with the 2026–2033 simulator and the
- * "Agendar com um especialista" CTA that F4 wires to the slot picker (W20).
+ * the profile, the faturamento, then the locked result with the 2026–2033 simulator, the
+ * "Agendar com um especialista" slot picker (F4) and the confirmation with the report's link.
  */
 const { firm, load } = usePublicFirm();
 const route = useRoute();
 const { t } = useI18n();
 const { track } = useTracking();
 const {
+  booking,
   choosePath,
   company,
+  confirmBooking,
   confirmCompany,
   consentText,
   errorKey,
   finish,
+  hasEmail,
   isSaving,
   lookupCnpj,
   lookupStatus,
@@ -38,29 +41,27 @@ const {
   saveProfile,
   simulation,
   step,
+  token,
 } = useDiagnostic();
+const { formatMeeting } = useMeetingTime();
+const { profileLine } = useProfileLine(profile);
+
+const MINUTE_MS = 60_000;
 
 const asksRegimeAfterLookup = computed(() => lookupStatus.value === LOOKUP_STATUS.FOUND && !company.value?.regime);
 const isCompanyFound = computed(() => lookupStatus.value === LOOKUP_STATUS.FOUND);
+
+const meetingMinutes = computed(() => {
+  const meeting = booking.value?.meeting;
+
+  return meeting ? Math.round((Date.parse(meeting.ends_at) - Date.parse(meeting.starts_at)) / MINUTE_MS) : 0;
+});
 
 const seo = computed(() => ({
   description: t('site.seo.diagnosticDescription'),
   siteName: firm.value?.name ?? null,
   title: t('site.seo.diagnosticTitle'),
 }));
-
-const profileLine = computed(() => {
-  const { b2b, band, regime, sector } = profile.value;
-
-  return [
-    sector && t(`diagnostic.sectors.${sector}`),
-    regime && t(`diagnostic.regimes.${regime}`),
-    band && t(`diagnostic.bands.${band}`),
-    b2b !== null && t('diagnostic.result.b2bShare', { value: b2b }),
-  ]
-    .filter(Boolean)
-    .join(' · ');
-});
 
 useSeo(seo);
 
@@ -399,44 +400,76 @@ function onSwitchPath() {
           </div>
         </div>
 
+        <MSlotPicker
+          v-else-if="step === DIAGNOSTIC_STEP.BOOKING && token"
+          :needs-email="!hasEmail"
+          :token
+          @on-booked="confirmBooking"
+        />
+
         <div
-          v-else-if="step === DIAGNOSTIC_STEP.BOOKING"
-          class="flex flex-col items-start gap-4"
-          data-testid="booking-soon"
+          v-else-if="step === DIAGNOSTIC_STEP.BOOKED && booking"
+          class="flex flex-col gap-6"
+          data-testid="booking-confirmed"
         >
-          <p class="text-body text-lg leading-relaxed">
-            {{ $t('diagnostic.booking.text') }}
+          <div class="border-success-200 bg-success-50 flex items-start gap-4 rounded-lg border p-5">
+            <span
+              aria-hidden="true"
+              class="bg-success-600 text-success-50 flex size-10 shrink-0 items-center justify-center rounded-full"
+            >
+              <i class="pi pi-check" />
+            </span>
+
+            <div class="flex min-w-0 flex-col gap-1">
+              <strong
+                class="text-heading text-xl first-letter:uppercase"
+                data-testid="booking-when"
+              >
+                {{ formatMeeting(booking.meeting.starts_at) }}
+              </strong>
+
+              <span class="text-body">
+                {{ $t('diagnostic.booking.confirmed.with', { specialist: booking.meeting.specialist }) }}
+                <template v-if="booking.meeting.area">· {{ booking.meeting.area }}</template>
+              </span>
+
+              <span class="text-muted text-sm">
+                {{ $t('diagnostic.booking.confirmed.length', { minutes: meetingMinutes }) }}
+              </span>
+            </div>
+          </div>
+
+          <p
+            v-if="result"
+            class="text-body"
+          >
+            {{
+              $t('diagnostic.booking.confirmed.found', {
+                company: result.company ?? company?.name ?? '',
+                opportunities: $t('diagnostic.result.opportunities', result.opportunities),
+                risks: $t('diagnostic.result.risks', result.risks),
+              })
+            }}
           </p>
 
-          <div
-            v-if="firm"
-            class="flex flex-col gap-3 sm:flex-row"
-          >
-            <a
-              v-if="firm.phone_href"
-              class="touch-target bg-primary-500 text-primary-contrast hover:bg-primary-600 inline-flex items-center gap-2 rounded-md px-5 py-3 font-semibold"
-              :href="firm.phone_href"
+          <p class="text-muted text-sm leading-relaxed">
+            {{ $t('diagnostic.booking.confirmed.sent') }}
+          </p>
+
+          <div class="flex flex-col gap-3 sm:flex-row">
+            <RouterLink
+              class="touch-target bg-primary-500 text-primary-contrast hover:bg-primary-600 inline-flex items-center justify-center gap-2 rounded-md px-5 py-3 font-semibold"
+              data-testid="open-report"
+              exact-active-class=""
+              :to="{ name: DIAGNOSTIC_ROUTE_NAMES.report, params: { token: booking.report_token } }"
             >
               <i
                 aria-hidden="true"
-                class="pi pi-phone"
+                class="pi pi-file"
               />
 
-              {{ firm.phone }}
-            </a>
-
-            <a
-              v-if="firm.mailbox"
-              class="touch-target border-line-strong text-heading hover:bg-panel-muted inline-flex items-center gap-2 rounded-md border px-5 py-3 font-semibold break-all"
-              :href="`mailto:${firm.mailbox}`"
-            >
-              <i
-                aria-hidden="true"
-                class="pi pi-envelope"
-              />
-
-              {{ firm.mailbox }}
-            </a>
+              {{ $t('diagnostic.booking.confirmed.openReport') }}
+            </RouterLink>
           </div>
         </div>
 

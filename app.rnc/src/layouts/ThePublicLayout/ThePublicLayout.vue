@@ -66,7 +66,8 @@ function onDiagnosticClick() {
 
 <template>
   <div class="bg-canvas text-body flex min-h-dvh w-full flex-col overflow-x-clip">
-    <header class="border-line bg-canvas/90 sticky top-0 z-20 border-b backdrop-blur">
+    <!-- `print:hidden` on the chrome: the printable pages (the "Relatório de Impacto", F4) print only their own header. -->
+    <header class="border-line bg-canvas/90 sticky top-0 z-20 border-b backdrop-blur print:hidden">
       <div class="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-5 py-3">
         <!-- `exact-active-class` empty: the theme's glowing bar marks the back office's rail, not the site.
              Each logo sits in its own span, because ALogo's own `inline-flex` outvotes a `hidden`. -->
@@ -140,7 +141,7 @@ function onDiagnosticClick() {
     </main>
 
     <footer
-      class="bg-panel border-line border-t"
+      class="bg-panel border-line border-t print:hidden"
       data-testid="site-footer"
     >
       <div class="mx-auto grid w-full max-w-6xl gap-8 px-5 py-12 text-sm sm:grid-cols-2 lg:grid-cols-4">

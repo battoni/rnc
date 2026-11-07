@@ -5,10 +5,11 @@ enum DIAGNOSTIC_PATH {
 }
 
 /**
- * The diagnostic's screens, in order. All but `BOOKING` are the API's `LeadStep` — the "parou em" a
- * lead parcial shows the team. `BOOKING` is the step F4 fills (W20).
+ * The diagnostic's screens, in order. All but `BOOKING` (the slot picker) and `BOOKED` (the
+ * confirmation) are the API's `LeadStep` — the "parou em" a lead parcial shows the team.
  */
 enum DIAGNOSTIC_STEP {
+  BOOKED = 'agendado',
   BOOKING = 'agendar',
   COMPANY = 'empresa',
   CONTACT = 'contato',
@@ -32,4 +33,12 @@ enum RESULT_KIND {
   RISK = 'risco',
 }
 
-export { DIAGNOSTIC_PATH, DIAGNOSTIC_STEP, LOOKUP_STATUS, RESULT_KIND };
+/** A booking refusal the slot picker acts on — the API's `BookingException` codes. */
+enum BOOKING_ERROR {
+  ALREADY_BOOKED = 'already_booked',
+  EMAIL_REQUIRED = 'email_required',
+  SLOT_TAKEN = 'slot_taken',
+  SLOT_UNAVAILABLE = 'slot_unavailable',
+}
+
+export { BOOKING_ERROR, DIAGNOSTIC_PATH, DIAGNOSTIC_STEP, LOOKUP_STATUS, RESULT_KIND };
