@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.8.0 — 2026-11-07
+
+### Added
+
+- rnc-2 F2: `referrals` gains `status_at`, `status_by` (no foreign key — W25), `contacted_at`, `meeting_at`, `deal_value_cents`, `closed_at` and an index on `(partner_id, status)`, folded into its `create_*` migration (D15). `PartnerSeeder` (local only) seeds the demo's twelve referrals (`REFERRAL_PLAN`: 3 `enviado` at 3/15/30 business hours, 4 `fechado` priced by band) with one `encaminhamento.status` line per step. `.schema referrals` read after `migrate:fresh`: the six columns and the index, nothing else.
+
 ## 1.7.0 — 2026-11-07
 
 ### Added

@@ -1,10 +1,10 @@
 ---
-version: 1.4.0
+version: 1.5.0
 origin: rnc
 ---
 # RULES — Lead Module
 
-> For AI agents. rnc-1 F3–F5, 07/11/2026.
+> For AI agents. rnc-1 F3–F5, 07/11/2026; rnc-2 F2 (the partner's moves on the timeline).
 
 ## Domain
 
@@ -15,7 +15,7 @@ them and writes the team's notes — through this module's service.
 ## Intentional Decisions
 
 - **`LeadService` is the only writer** of the three tables. The Diagnostic, Booking and Pipeline
-  modules call it (Partner too, for the referral line, F6); Tracking only reads (`findLeadByToken`).
+  modules call it (Partner too, for the referral line, F6, and the partner's moves, rnc-2 F2); Tracking only reads (`findLeadByToken`).
 - **The booking (F4) is `recordBooking`**: `reuniao_marcada`, the e-mail the confirmation goes to,
   and the report's own token (`report_token`, 48 characters, 30 days, AM4) — a second key, so the
   e-mailed link never opens the diagnostic's routes.
@@ -38,6 +38,10 @@ them and writes the team's notes — through this module's service.
   `encaminhamento.enviado` line `{referral_id, partner_id, partner, specialty, score}` with the user
   and touches the lead; the stage stays — Franco remains the owner. The `referrals` row is the
   Partner module's, written in the same transaction.
+- **A partner's move is a timeline line too, never a stage (rnc-2 R9)**: `recordReferralStatus`
+  writes one `encaminhamento.status` line `{referral_id, partner_id, partner, from, to[, meeting_at]
+  [, deal_value_cents]}` with the partner's login as `user_id` and touches the lead, so its card
+  rises. The partner never moves the lead's stage; Franco's team reads the line and decides.
 - **Every contact submission writes a consent row (AM12)**, given true or false — the box starts
   unticked — with `ConsentTerms::TEXT`, `VERSION` 1, `via = formulario` and `given_at`. No IP, no
   user agent. A new wording is a new version; the stored text is the text read.

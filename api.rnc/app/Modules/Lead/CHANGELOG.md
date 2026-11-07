@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.5.0 — 2026-11-07
+
+### Added
+
+- `LeadEventType::ReferralStatusChanged` (`encaminhamento.status`) and `LeadService::recordReferralStatus` — one timeline line per partner move, by the partner's login; the stage never moves (rnc-2 F2, R9; tested by `PortalReferralsTest`).
+
 ## 1.4.0 — 2026-11-07
 
 ### Changed

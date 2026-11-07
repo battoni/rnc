@@ -2,6 +2,15 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.2.0 — 2026-11-07
+
+### Added
+
+- The partner's inbox and its moves (rnc-2 F2, R4–R9; A3, A5–A7 and A8's Pest half; plan AM1): `GET portal/referrals`, `GET portal/referrals/{id}`, `POST portal/referrals/{id}/transition` (`PortalController`, `PortalReferralService`, `PortalReferralRepository` — always `partner_id = CurrentPartner` — `TransitionReferralRequest`, `TransitionReferralDTO`, `PortalReferralResource`, the allow-list: contact only from the accept on, Franco's for a `carteira` lead, the value only once closed).
+- `ReferralStatus` graph: `allowedTransitions`, `canTransitionTo`, `isTerminal`, `label`, `showsContact`; `ReferralException::invalidTransition` (422 `referral.invalidTransition`, `code: invalid_transition`).
+- The SLA: `Helpers/BusinessHours` (the firm's week in São Paulo minus Booking's `Holidays`) and `Services/ReferralSla` (24/12 business hours; ok · atencao · estourado · cumprido · fora · encerrado). `referrals` gains `status_at`, `status_by`, `contacted_at`, `meeting_at`, `deal_value_cents`, `closed_at` (UTC, `UtcDateTime`).
+- Tested by `PortalReferralsTest`, `tests/Unit/Modules/Partner/{ReferralStatus,BusinessHours,ReferralSla}Test` and `PartnerSeederTest` (the demo's twelve referrals).
+
 ## 1.1.0 — 2026-11-07
 
 ### Added

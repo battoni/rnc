@@ -91,6 +91,12 @@ Route::delete('partners/{id}/access', [PartnerAccessController::class, 'destroy'
 $portal = ['auth', 'permission:portal.access', 'portal'];
 Route::get('portal/me', [PortalController::class, 'me'])->middleware($portal);
 
+// The partner's inbox and its moves (rnc-2 F2, R5–R9): only its own referrals — the repository
+// filters by `CurrentPartner` — and one step of the graph at a time (`ReferralStatus`).
+Route::get('portal/referrals', [PortalController::class, 'referrals'])->middleware($portal);
+Route::get('portal/referrals/{id}', [PortalController::class, 'referral'])->middleware($portal);
+Route::post('portal/referrals/{id}/transition', [PortalController::class, 'transition'])->middleware($portal);
+
 // Reinaldo's funnel (rnc-1 F7, R24, AM8): the last 7 or 30 days behind `metrics.read` (ceo, operador).
 Route::get('metrics/funnel', [FunnelController::class, 'show'])->middleware(['auth', 'permission:metrics.read']);
 

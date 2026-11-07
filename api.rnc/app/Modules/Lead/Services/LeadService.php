@@ -297,6 +297,20 @@ class LeadService
             ->setRelation('user', $by);
     }
 
+    /**
+     * A partner moved its referral (rnc-2 R9): one timeline line by the partner's login, with where
+     * the referral went. The stage does not move — the lead stays Franco's. The caller (Partner)
+     * holds the transaction that also moves the referral; the lead is touched, so its card rises.
+     *
+     * @param  array{referral_id: int, partner_id: int, partner: string, from: string, to: string, meeting_at?: string, deal_value_cents?: int}  $move
+     */
+    public function recordReferralStatus(Lead $lead, array $move, User $by): LeadEvent
+    {
+        $lead->touch();
+
+        return $this->leadRepository->createLeadEvent($lead, LeadEventType::ReferralStatusChanged->value, $move, Carbon::now(), $by->id);
+    }
+
     private function assertOpen(Lead $lead): void
     {
         if (LeadStage::from($lead->stage)->locksProfile()) {
