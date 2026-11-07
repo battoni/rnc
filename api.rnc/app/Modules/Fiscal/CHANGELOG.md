@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 
 
+## 1.3.0 — 2026-11-07
+
+### Added
+
+- What the Radar reads (rnc-2 F9, R25, D9; plan AM6): `NfeDocumentRepository::sumNfeDocumentSalesByClient` (one aggregate per firm grouped by client: 90-day sales count, value and value to a CNPJ, plus the 30-day readiness counts) and `findNfeDocumentSalesKeysByClients` (one query for a type's clients); DTOs `SalesTotals` and `SalesKey`. Tested through `tests/Feature/Radar/RadarSummaryTest` and `tests/Unit/Modules/Radar/EvidenceBuilderTest`.
+
 ## 1.2.0 — 2026-11-07
 
 ### Added

@@ -4,6 +4,12 @@ All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
 
+## 1.14.0 — 2026-11-07
+
+### Changed
+
+- rnc-2 F9 (R28): `create_clients_table` gains `partner_consent` (nullable bool), `partner_consent_at` (UTC) and `partner_consent_via` (folded, D15; schema diffed before and after: only the three columns). `ClientSeeder` gives ~85 % of the 500 clients consent `via contrato` (a second seeded generator, profiles and fees unchanged). `RoleSeeder` gives `ceo` `radar.manage`.
+
 ## 1.13.0 — 2026-11-07
 
 ### Added

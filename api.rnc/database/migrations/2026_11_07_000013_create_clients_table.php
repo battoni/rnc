@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\Schema;
  * `{at, by, pct, suggested}`, copied at the moment of the mark (arcus "What was agreed is copied
  * onto the row"); null until marked. One row per CNPJ per firm: a re-import updates it. Plain
  * strings, no enum column (AM11).
+ *
+ * rnc-2 F9 (R28, folded — D15): the client's consent to be introduced to partners —
+ * `partner_consent` true (sim) · false (não) · null (never answered), with when (UTC) and how it
+ * was given (`contrato`: the clause of the services contract, the CSV's `autoriza_parceiros`).
  */
 return new class extends Migration
 {
@@ -27,6 +31,9 @@ return new class extends Migration
             $table->unsignedTinyInteger('b2b_share');
             $table->decimal('monthly_fee', 10, 2);
             $table->json('repricing')->nullable();
+            $table->boolean('partner_consent')->nullable();
+            $table->timestamp('partner_consent_at')->nullable();
+            $table->string('partner_consent_via', 20)->nullable();
             $table->timestamps();
 
             $table->unique(['firm_id', 'cnpj']);

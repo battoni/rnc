@@ -1,5 +1,5 @@
 ---
-version: 1.0.0
+version: 1.1.0
 origin: rnc
 ---
 
@@ -40,7 +40,8 @@ spread by band of percent, the sector and regime filters, the client list, one c
   the API's sentence. The service forwards the error (`forwardError`) — a refused file is the
   form's to explain, not an unexpected failure to log.
 - **The template is the API's** (`GET clients/import/template`), saved through a Blob as
-  `modelo-clientes.csv`; the columns and accepted values are also printed in the dialog.
+  `modelo-clientes.csv`; the columns and accepted values are also printed in the dialog. The 8th,
+  `autoriza_parceiros` (rnc-2 R28), is optional on the API: a 7-column file still imports.
 - **The table scrolls inside its own frame, both ways** (`w-0 min-w-full overflow-auto`, a sticky
   header, `max-h-[38rem]`), so 500 rows and a 390 px screen never scroll the page sideways. Below
   `2xl` the detail sits under the list (beside it at 1440 the table was cut to 526 px of 669) and opening a client scrolls to it.

@@ -1,11 +1,11 @@
 ---
-version: 1.2.0
+version: 1.3.0
 origin: rnc
-based-on: 1.2.0
+based-on: 1.3.0
 ---
 # RULES — Portfolio Module
 
-> For AI agents. rnc-1 F8, 07/11/2026; rnc-2 F7 (the client's timeline), 07/11/2026.
+> For AI agents. rnc-1 F8, 07/11/2026; rnc-2 F7 (the client's timeline), 07/11/2026; rnc-2 F9 (the client's partner consent), 07/11/2026.
 
 ## Domain
 
@@ -24,8 +24,8 @@ revisão" (`fornecedores.revisao`), each with who and when.
 | `GET repricing/{id}` | `repricing.manage` | the row plus `items: [{id, kind, title, rule, detail}]` |
 | `GET repricing/{id}/letter` | `repricing.manage` | `{client, current_cents, suggested_cents, pct, items: [{kind, title}], firm: {name, address, phone, mailbox}, issued_on, effective_from}` |
 | `POST repricing/mark` | `repricing.manage` | `{client_ids}` → `{marked, clients: [row]}`; each client stores `{at, by, pct, suggested}` |
-| `POST clients/import` | `clients.import` | multipart `file` → `{created, updated, total}`; 422 with `code` (below) |
-| `GET clients/import/template` | `clients.import` | `modelo-clientes.csv`: a BOM and the header row |
+| `POST clients/import` | `clients.import` | multipart `file` → `{created, updated, total}`; 422 with `code` (below). The optional 8th column `autoriza_parceiros` (rnc-2 R28): `sim` / `não` in any case, with or without the accent, or empty; anything else a line error `consent_invalid` |
+| `GET clients/import/template` | `clients.import` | `modelo-clientes.csv`: a BOM and the header row, `autoriza_parceiros` last |
 | `GET clients/{id}/events` | `fiscal.read` | the client's timeline, newest first: `[{id, client_id, type, data, at, user: {id, name} \| null}]`; 404 for another firm's or an unknown client. Behind Fiscal's key: the fiscal screens are the only ones that write it so far |
 
 ## Intentional Decisions
@@ -72,7 +72,20 @@ revisão" (`fornecedores.revisao`), each with who and when.
   `ClientEventType` value, a plain string column (AM11). A line is never edited or deleted; the same
   line may be written twice (a second notice is a second warning).
 
+- **The client's partner consent (rnc-2 R28)** lives on the client (`partner_consent` true · false ·
+  null, `partner_consent_at` UTC, `partner_consent_via` — only `contrato`, `Client::CONSENT_VIA_CONTRACT`,
+  the partner clause of the services contract). Null means never answered and counts as NO for
+  anything partner-facing (the Radar's "sem autorização", F10's batch). The CSV writes it only when
+  the header has `autoriza_parceiros`: a 7-column re-import leaves it; an empty cell clears all
+  three; an answer that did not change keeps its first moment, a changed one is stamped with the
+  import's. Values are read with `Str::ascii` + lower case (`sim`, `SIM`, `nao`, `NÃO`, `Não`; plan
+  AM11). The seed gives ~85 % yes, the rest no, all `via contrato` (a second seeded generator, so
+  rnc-1's profiles and fees are unchanged).
+
 ## Read by other modules
+
+The Radar (rnc-2 F9) reads the whole portfolio through `ClientRepository::findAllClients`, each
+client's `profile()` and `partner_consent` — read only.
 
 Fiscal (rnc-2 F6a) matches each NF-e to a client by CNPJ through `ClientRepository::findClientIdsByCnpjs`
 — read only; a change to `clients.cnpj` (14 digits, unique per firm) is a change for Fiscal too.

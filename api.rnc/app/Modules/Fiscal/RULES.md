@@ -1,13 +1,13 @@
 ---
-version: 1.2.0
+version: 1.3.0
 origin: rnc
-based-on: 1.2.0
+based-on: 1.3.0
 ---
 # RULES — Fiscal Module
 
 > For AI agents. rnc-2 F6a–F7, 07/11/2026 (the NF-e parser, the access key, the importer, the upload
 > of an XML or a ZIP, the folder command, the batch list and the seed; F7 the readiness and
-> supplier-credit API and the split-payment calculator).
+> supplier-credit API and the split-payment calculator; F9 the sales aggregate and keys the Radar reads).
 
 ## Domain
 
@@ -134,6 +134,11 @@ and a table of the refusals; exit 1 for an unknown or absent firm, or a folder i
   supplier credit the clients with a review; sums, percentages, statuses and ranges are pure PHP.
   `ReadinessTest` and `SupplierCreditTest` count the queries for few and many clients. Measured on
   the seed (500 clients, 2629 documents): see `state.md` → F7.
+- **What the Radar reads (rnc-2 F9)**: `NfeDocumentRepository::sumNfeDocumentSalesByClient` — ONE
+  aggregate of the issued invoices per client over the 90 days (count, value, value to a CNPJ by
+  `recipient_kind`) with the readiness counts of the last 30 days in the same pass (`SalesTotals`) —
+  and `findNfeDocumentSalesKeysByClients` (one query, key, recipient kind, date, incomplete;
+  `SalesKey`), never `path`. The maths is the Radar's `EvidenceBuilder`.
 - **Window bounds are UTC strings**: `issued_at` is UTC and the app runs in São Paulo time, so
   `NfeDocumentRepository` formats both Carbon bounds in UTC before `whereBetween`.
 - **The timeline is Portfolio's**: the notice and the review go through `ClientService::recordEvent`

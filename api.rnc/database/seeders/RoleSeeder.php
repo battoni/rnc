@@ -48,6 +48,7 @@ class RoleSeeder extends Seeder
         'clients.import',
         'ledger.read',
         'fiscal.import',
+        'radar.manage',
     ];
 
     public const PARCEIRO_KEYS = [

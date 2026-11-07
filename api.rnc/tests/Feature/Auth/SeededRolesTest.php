@@ -72,6 +72,7 @@ describe('the seeded roles', function () {
             'metrics.read',
             'notifications.read',
             'partners.manage',
+            'radar.manage',
             'referrals.read',
             'repricing.manage',
         ]);

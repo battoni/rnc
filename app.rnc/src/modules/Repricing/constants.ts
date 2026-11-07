@@ -11,7 +11,10 @@ const REPRICING_SECTORS: CLIENT_SECTOR[] = Object.values(CLIENT_SECTOR);
 
 const REPRICING_REGIMES: CLIENT_REGIME[] = Object.values(CLIENT_REGIME);
 
-/** The columns of the import's CSV, in the template's order (api `ClientCsvParser::COLUMNS`). */
+/**
+ * The columns of the import's CSV, in the template's order (api `ClientCsvParser::COLUMNS` and the
+ * optional `CONSENT_COLUMN`, rnc-2 R28 — a 7-column file still imports).
+ */
 const IMPORT_COLUMNS = [
   'nome',
   'cnpj',
@@ -20,6 +23,7 @@ const IMPORT_COLUMNS = [
   'faixa_faturamento',
   'percentual_b2b',
   'mensalidade',
+  'autoriza_parceiros',
 ] as const;
 
 /** The file the template downloads as, and the files the picker offers. */

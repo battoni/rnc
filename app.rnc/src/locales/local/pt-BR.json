@@ -988,7 +988,7 @@
       "title": "Importar carteira de clientes",
       "lede": "Uma linha por cliente, em UTF-8, separada por ponto e vírgula ou vírgula. Um CNPJ que já está na carteira é atualizado. Se alguma linha tiver erro, nada é importado.",
       "columns": "Colunas do arquivo",
-      "accepted": "setor: comercio, industria, servicos, saude, educacao ou agro · regime: simples, presumido ou real · faixa_faturamento: b1 a b5 · percentual_b2b: 0 a 100 · mensalidade em reais, como 1.850,00 (mínimo R$ 250)",
+      "accepted": "setor: comercio, industria, servicos, saude, educacao ou agro · regime: simples, presumido ou real · faixa_faturamento: b1 a b5 · percentual_b2b: 0 a 100 · mensalidade em reais, como 1.850,00 (mínimo R$ 250) · autoriza_parceiros (opcional): sim, não ou vazio",
       "template": "Baixar modelo",
       "file": "Arquivo CSV",
       "fileRequired": "Escolha um arquivo CSV.",
@@ -1015,6 +1015,7 @@
         "regime_invalid": "regime desconhecido (simples, presumido ou real)",
         "band_invalid": "faixa de faturamento desconhecida (b1 a b5)",
         "b2b_invalid": "percentual B2B fora de 0 a 100",
+        "consent_invalid": "autorização de parceiros diferente de sim ou não",
         "fee_invalid": "mensalidade inválida (mínimo R$ 250)",
         "columns": "faltam colunas nesta linha"
       },
@@ -1025,7 +1026,8 @@
         "regime": "Regime",
         "faixa_faturamento": "Faixa de faturamento",
         "percentual_b2b": "Percentual B2B",
-        "mensalidade": "Mensalidade"
+        "mensalidade": "Mensalidade",
+        "autoriza_parceiros": "Autoriza parceiros"
       }
     },
     "letter": {

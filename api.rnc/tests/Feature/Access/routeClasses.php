@@ -96,5 +96,7 @@ return [
     'POST fiscal/readiness/{id}/notice' => 'staff',
     'GET fiscal/supplier-credit' => 'staff',
     'POST fiscal/supplier-credit/{id}/review' => 'staff',
+    'GET radar' => 'staff',
+    'GET radar/types/{rule}' => 'staff',
     'GET clients/{id}/events' => 'staff',
 ];

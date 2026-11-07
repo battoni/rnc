@@ -4,7 +4,10 @@ namespace App\Modules\Fiscal\Repositories;
 
 use App\Modules\Fiscal\DTOs\PurchaseTotals;
 use App\Modules\Fiscal\DTOs\ReadinessCounts;
+use App\Modules\Fiscal\DTOs\SalesKey;
+use App\Modules\Fiscal\DTOs\SalesTotals;
 use App\Modules\Fiscal\Enums\NfeDirection;
+use App\Modules\Fiscal\Enums\NfeRecipientKind;
 use App\Modules\Fiscal\Models\NfeDocument;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Collection;
@@ -110,6 +113,70 @@ class NfeDocumentRepository
                 documents: (int) $row->documents,
                 purchasesCents: (int) $row->purchases_cents,
                 simplesCents: (int) $row->simples_cents,
+            ));
+    }
+
+    /**
+     * The Radar's facts (rnc-2 R25, D9): the issued invoices (saída) from `$from` to `$to` per client
+     * — count, value, value to a CNPJ — and, from `$recentFrom` on, the readiness counts. ONE aggregate
+     * query for the whole firm, whatever the number of clients (plan AM6); the Radar does the maths.
+     *
+     * @return Collection<int, SalesTotals>
+     */
+    public function sumNfeDocumentSalesByClient(CarbonImmutable $from, CarbonImmutable $recentFrom, CarbonImmutable $to): Collection
+    {
+        $recent = $recentFrom->utc()->format(self::UTC_FORMAT);
+
+        return NfeDocument::query()
+            ->toBase()
+            ->select('client_id')
+            ->selectRaw('COUNT(*) AS documents')
+            ->selectRaw('SUM(total_cents) AS sales_cents')
+            ->selectRaw('SUM(CASE WHEN recipient_kind = ? THEN total_cents ELSE 0 END) AS b2b_cents', [NfeRecipientKind::Cnpj->value])
+            ->selectRaw('SUM(CASE WHEN issued_at >= ? THEN 1 ELSE 0 END) AS recent_invoices', [$recent])
+            ->selectRaw('SUM(CASE WHEN issued_at >= ? AND items_missing_group = 0 AND items_missing_codes = 0 AND items_without_test_values = 0 THEN 1 ELSE 0 END) AS recent_complete', [$recent])
+            ->selectRaw('SUM(CASE WHEN issued_at >= ? AND items_missing_group > 0 THEN 1 ELSE 0 END) AS recent_at_risk', [$recent])
+            ->where('direction', NfeDirection::Saida->value)
+            ->whereBetween('issued_at', self::utcBounds($from, $to))
+            ->groupBy('client_id')
+            ->get()
+            ->map(fn (object $row) => new SalesTotals(
+                clientId: (int) $row->client_id,
+                documents: (int) $row->documents,
+                salesCents: (int) $row->sales_cents,
+                b2bCents: (int) $row->b2b_cents,
+                recentInvoices: (int) $row->recent_invoices,
+                recentComplete: (int) $row->recent_complete,
+                recentAtRisk: (int) $row->recent_at_risk,
+            ));
+    }
+
+    /**
+     * The access keys of some clients' issued invoices of the window, newest first — the Radar's
+     * proof of one rule (R25: up to three per client, picked by the Radar). ONE query for every
+     * listed client; a few columns only, never the raw file.
+     *
+     * @param  list<int>  $clientIds
+     * @return Collection<int, SalesKey>
+     */
+    public function findNfeDocumentSalesKeysByClients(array $clientIds, CarbonImmutable $from, CarbonImmutable $to): Collection
+    {
+        return NfeDocument::query()
+            ->toBase()
+            ->select('client_id', 'access_key', 'recipient_kind', 'issued_at')
+            ->selectRaw('CASE WHEN items_missing_group > 0 OR items_missing_codes > 0 OR items_without_test_values > 0 THEN 1 ELSE 0 END AS incomplete')
+            ->whereIn('client_id', $clientIds)
+            ->where('direction', NfeDirection::Saida->value)
+            ->whereBetween('issued_at', self::utcBounds($from, $to))
+            ->orderByDesc('issued_at')
+            ->orderByDesc('id')
+            ->get()
+            ->map(fn (object $row) => new SalesKey(
+                clientId: (int) $row->client_id,
+                accessKey: (string) $row->access_key,
+                toCompany: $row->recipient_kind === NfeRecipientKind::Cnpj->value,
+                issuedAt: CarbonImmutable::parse((string) $row->issued_at, 'UTC'),
+                incomplete: (int) $row->incomplete === 1,
             ));
     }
 

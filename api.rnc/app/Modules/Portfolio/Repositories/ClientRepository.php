@@ -62,6 +62,29 @@ class ClientRepository
     }
 
     /**
+     * The firm's clients by CNPJ, keyed by it — what a re-import is about to update (rnc-2 R28: an
+     * unchanged consent keeps its moment). One query.
+     *
+     * @param  list<string>  $cnpjs
+     * @return Collection<string, Client>
+     */
+    public function findClientsByCnpjs(array $cnpjs): Collection
+    {
+        return Client::query()->whereIn('cnpj', $cnpjs)->get()->keyBy('cnpj');
+    }
+
+    /**
+     * The whole portfolio, by id — the Radar runs the rules engine over every client (rnc-2 R24).
+     * One query whatever its size.
+     *
+     * @return Collection<int, Client>
+     */
+    public function findAllClients(): Collection
+    {
+        return Client::query()->orderBy('id')->get();
+    }
+
+    /**
      * Who marked a repricing, by id (reads Auth's `users`).
      *
      * @param  list<int>  $ids
@@ -88,7 +111,7 @@ class ClientRepository
     /**
      * One row per CNPJ per firm: an existing CNPJ is updated, a new one created.
      *
-     * @param  array{name: string, cnpj: string, sector: string, regime: string, band: string, b2b_share: int, monthly_fee: float}  $attributes
+     * @param  array<string, mixed>  $attributes  the CSV's columns, and the consent when the file has it
      */
     public function upsertClientByCnpj(array $attributes): Client
     {

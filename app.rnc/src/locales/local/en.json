@@ -988,7 +988,7 @@
       "title": "Import the client portfolio",
       "lede": "One line per client, in UTF-8, separated by semicolons or commas. A CNPJ already in the portfolio is updated. If any line has an error, nothing is imported.",
       "columns": "File columns",
-      "accepted": "setor: comercio, industria, servicos, saude, educacao or agro · regime: simples, presumido or real · faixa_faturamento: b1 to b5 · percentual_b2b: 0 to 100 · mensalidade in reais, like 1.850,00 (minimum R$ 250)",
+      "accepted": "setor: comercio, industria, servicos, saude, educacao or agro · regime: simples, presumido or real · faixa_faturamento: b1 to b5 · percentual_b2b: 0 to 100 · mensalidade in reais, like 1.850,00 (minimum R$ 250) · autoriza_parceiros (optional): sim, não or empty",
       "template": "Download template",
       "file": "CSV file",
       "fileRequired": "Choose a CSV file.",
@@ -1015,6 +1015,7 @@
         "regime_invalid": "unknown regime (simples, presumido or real)",
         "band_invalid": "unknown revenue band (b1 to b5)",
         "b2b_invalid": "B2B share outside 0 to 100",
+        "consent_invalid": "partner consent other than sim or não",
         "fee_invalid": "invalid monthly fee (minimum R$ 250)",
         "columns": "columns missing on this line"
       },
@@ -1025,7 +1026,8 @@
         "regime": "Regime",
         "faixa_faturamento": "Revenue band",
         "percentual_b2b": "B2B share",
-        "mensalidade": "Monthly fee"
+        "mensalidade": "Monthly fee",
+        "autoriza_parceiros": "Partner consent"
       }
     },
     "letter": {

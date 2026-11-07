@@ -3,6 +3,16 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 
 
+## 1.3.0 — 2026-11-07
+
+### Added
+
+- The client's partner consent (rnc-2 F9, R28, A22; plan AM11): `clients.partner_consent` (nullable bool), `partner_consent_at` (UTC, `UtcDateTime`), `partner_consent_via` folded into `create_clients_table` (D15); `Client::CONSENT_VIA_CONTRACT`; `ClientCsvParser` reads the optional `autoriza_parceiros` (`sim`/`não`, any case, with or without the accent, or empty — else `consent_invalid`) and the template gains it last; `ClientImportService` stamps `via contrato` and the moment, keeping an unchanged answer's; `ClientRepository::findClientsByCnpjs` (one query for the re-import) and `findAllClients` (the Radar). Tested in `tests/Feature/Portfolio/ClientConsentImportTest` and `ClientSeederTest`.
+
+### Changed
+
+- `ClientImportTest`'s template line gains `;autoriza_parceiros`.
+
 ## 1.2.0 — 2026-11-07
 
 ### Added
