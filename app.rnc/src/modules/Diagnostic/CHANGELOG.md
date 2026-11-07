@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.2.1 — 2026-11-07
+
+### Changed
+
+- Every public service goes through the Site module's `publicApi` (rnc-3 F2, R2, C1): the diagnostic, its CNPJ lookup, result, simulation, availability, booking and the report carry the tab's `X-Brand`, so a lead started under a sub-brand is stored under it and the consent the visitor ticks names that brand (AM3). Tested by `DiagnosticView.view.integration.spec.ts` ("under a sub-brand").
+
 ## 1.2.0 — 2026-11-07
 
 ### Changed

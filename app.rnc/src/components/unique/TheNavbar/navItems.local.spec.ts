@@ -23,7 +23,13 @@ describe('useLocalNavItems', () => {
   it("puts the bootstrap's administration screens in the operator's group", () => {
     const operator = useLocalNavItems().value[2];
 
-    expect(operator?.children?.map((child) => child.routeName)).toEqual(['users', 'roles-and-permissions']);
+    expect(operator?.children?.map((child) => child.routeName)).toEqual(['users', 'roles-and-permissions', 'brands']);
+  });
+
+  it("puts the brands console in the operator's group, behind its own key (rnc-3 R5, D3)", () => {
+    const brands = useLocalNavItems().value[2]?.children?.find((child) => child.routeName === 'brands');
+
+    expect([brands?.label, brands?.permission]).toEqual(['navigation.brands', 'brands.manage']);
   });
 
   it("puts the team's pipeline and agenda in its group", () => {

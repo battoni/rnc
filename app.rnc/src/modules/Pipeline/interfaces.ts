@@ -9,8 +9,22 @@ interface LeadMeeting {
   starts_at: string;
 }
 
+/** The sub-brand a lead was started under (rnc-3 R4); null on the main brand. */
+interface LeadBrand {
+  id: number;
+  short_name: string;
+}
+
+/** One option of the board's "Marca" filter (`BrandOptionResource`, rnc-3 F2). */
+interface BoardBrandOption {
+  active: boolean;
+  short_name: string;
+  slug: string;
+}
+
 /** `LeadCardResource`: one card on the board. */
 interface LeadCard {
+  brand: LeadBrand | null;
   channel: string;
   company: string | null;
   contact_name: string | null;
@@ -37,6 +51,7 @@ interface BoardColumn {
 
 /** `GET /api/leads`. */
 interface LeadBoard {
+  brands: BoardBrandOption[];
   columns: BoardColumn[];
 }
 
@@ -88,6 +103,7 @@ interface LeadProfile {
 
 /** `LeadDetailResource`: the lead detail (R19). */
 interface LeadDetail {
+  brand: LeadBrand | null;
   channel: string;
   cnpj: string | null;
   company: string | null;
@@ -166,8 +182,10 @@ export type {
   AgendaDay,
   AgendaMeeting,
   AgendaWeek,
+  BoardBrandOption,
   BoardColumn,
   LeadBoard,
+  LeadBrand,
   LeadCard,
   LeadConsent,
   LeadDetail,

@@ -1,5 +1,5 @@
 ---
-version: 1.1.1
+version: 1.2.0
 origin: rnc
 ---
 
@@ -38,6 +38,10 @@ The team's screens (R18–R20): the board (`/equipe/pipeline`, route `pipeline`)
   Paulo's (AM9, `MEETING_TIME_ZONE` from Diagnostic).
 - **Contact actions are real links** (`contactLinks`): `tel:+55…`, `https://wa.me/55…`, `mailto:`.
 - **Sector, regime and band labels are Diagnostic's** (`diagnostic.sectors.*` …): one wording.
+
+- **The "Marca" filter's options come with the board** (`GET leads` → `brands`), not from
+  `GET brands`, which is `brands.manage` — the team holds `leads.read` only. `main` is the main
+  brand's word (`MAIN_BRAND_FILTER`); null asks for every brand (rnc-3 R4, AM13).
 
 ## Known Gaps
 

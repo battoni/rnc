@@ -17,6 +17,41 @@ const FIRM_FIXTURE: PublicFirm = {
   slug: 'franco',
 };
 
+/* The same firm under a sub-brand (rnc-3 R2): the brand's look over Franco's own contact. */
+const EXPRESS_FIRM_FIXTURE: PublicFirm = {
+  ...FIRM_FIXTURE,
+  brand: 'express',
+  brand_accent: '#ff8a3d',
+  brand_primary: '#3b2a86',
+  logo_text: 'Franco Express Contabilidade',
+  name: 'Franco Express Contabilidade',
+  proof: [
+    { label: 'da Franco em São Paulo', value: '35 anos' },
+    { label: 'empresas e Simples Nacional', value: 'Pequenas' },
+    { label: 'rotina sem papel', value: 'Online' },
+    { label: 'Rede Nacional de Contabilidade', value: 'RNC' },
+  ],
+  short_name: 'Franco Express',
+  tagline: 'A contabilidade da Franco no ritmo da pequena empresa',
+};
+
+const PRIME_FIRM_FIXTURE: PublicFirm = {
+  ...FIRM_FIXTURE,
+  brand: 'prime',
+  brand_accent: '#c9a35a',
+  brand_primary: '#24262b',
+  logo_text: 'Franco Prime Contabilidade',
+  name: 'Franco Prime Contabilidade',
+  proof: [
+    { label: 'da Franco em São Paulo', value: '35 anos' },
+    { label: 'empresas, Presumido e Real', value: 'Médias e grandes' },
+    { label: 'dedicado a cada conta', value: 'Sócio' },
+    { label: 'qualidade certificada', value: 'ISO 9001' },
+  ],
+  short_name: 'Franco Prime',
+  tagline: 'A Franco dedicada às empresas de maior porte',
+};
+
 const SECTOR_SLUGS = ['comercio', 'industria', 'servicos', 'saude', 'educacao', 'agro'];
 const SECTOR_LABELS = ['Comércio', 'Indústria', 'Serviços', 'Saúde', 'Educação', 'Agro'];
 
@@ -44,4 +79,4 @@ const AGRO_PAGE_FIXTURE: SectorPage = {
   title: 'Reforma Tributária para o agro',
 };
 
-export { AGRO_PAGE_FIXTURE, FIRM_FIXTURE, SECTORS_FIXTURE };
+export { AGRO_PAGE_FIXTURE, EXPRESS_FIRM_FIXTURE, FIRM_FIXTURE, PRIME_FIRM_FIXTURE, SECTORS_FIXTURE };

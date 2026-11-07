@@ -134,6 +134,52 @@ beforeEach(() => {
 
 afterEach(() => vi.unstubAllGlobals());
 
+/*
+ * A2 / AM3 (rnc-3 F2, R3): under `?marca=prime` every diagnostic call carries `X-Brand: prime`, so the
+ * API stores the lead under Prime and answers Prime's consent sentence — the one the visitor ticks.
+ * No other firm's name is on the contact step.
+ */
+describe('DiagnosticView — under a sub-brand', () => {
+  const PRIME_CONSENT =
+    'Autorizo a Franco Prime Contabilidade a me apresentar a especialistas da Rede de Especialistas Franco quando o diagnóstico indicar.';
+  const brands: (string | null)[] = [];
+
+  beforeEach(() => {
+    brands.length = 0;
+    window.history.replaceState({}, '', '/diagnostico?marca=prime');
+    server.use(
+      http.post(API, async ({ request }) => {
+        brands.push(request.headers.get('X-Brand'));
+        record('POST', 'start', await request.json());
+
+        return HttpResponse.json(
+          { data: { ...LEAD_FIXTURE, consent: { ...LEAD_FIXTURE.consent, text: PRIME_CONSENT } } },
+          { status: 201 }
+        );
+      }),
+      http.patch(`${API}/:token`, async ({ request }) => {
+        brands.push(request.headers.get('X-Brand'));
+        record('PATCH', 'update', await request.json());
+
+        return HttpResponse.json({ data: { ...LEAD_FIXTURE, token: undefined } });
+      })
+    );
+  });
+
+  afterEach(() => window.history.replaceState({}, '', '/'));
+
+  it("sends the brand on every call and shows the brand's consent sentence", async () => {
+    renderDiagnostic();
+    await answerQuizStepOne();
+
+    const form = screen.getByTestId('contact-form').textContent ?? '';
+
+    expect(brands).toEqual(['prime', 'prime']);
+    expect(form).toContain(PRIME_CONSENT);
+    ['Franco Contabilidade', 'Franco Express', 'Alvorada'].forEach((name) => expect(form, name).not.toContain(name));
+  });
+});
+
 describe('DiagnosticView — the quiz path', () => {
   it('starts the lead when the visitor picks a path, with the visit it came from', async () => {
     renderDiagnostic();

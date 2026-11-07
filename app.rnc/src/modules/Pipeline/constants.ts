@@ -50,6 +50,9 @@ const PIPELINE_PERMISSIONS = { agenda: 'agenda.read', read: 'leads.read', update
 /** The drag payload's type: only a card of this board is a drop the columns take. */
 const LEAD_DRAG_TYPE = 'application/x-rnc-lead';
 
+/** The board filter's word for the main brand (`GET leads?brand=main`, rnc-3 AM13). */
+const MAIN_BRAND_FILTER = 'main';
+
 /** How long the search waits after the last key before asking the API. */
 const SEARCH_DEBOUNCE_MS = 300;
 
@@ -60,6 +63,7 @@ export {
   BOARD_STAGES,
   LEAD_DRAG_TYPE,
   LOST_REASON_MAX_LENGTH,
+  MAIN_BRAND_FILTER,
   PIPELINE_PERMISSIONS,
   PIPELINE_ROUTE_NAMES,
   SEARCH_DEBOUNCE_MS,

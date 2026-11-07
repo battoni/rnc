@@ -1,20 +1,38 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import type { DeepReadonly } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import type { PublicFirmHours } from '@SiteModule';
-import { SECTOR_GRID_ANCHOR, SITE_ROUTE_NAMES, TRACKING_EVENT_TYPE, usePublicFirm, useTracking } from '@SiteModule';
+import {
+  brandOfTab,
+  currentBrand,
+  isBrandPreview,
+  SECTOR_GRID_ANCHOR,
+  SITE_ROUTE_NAMES,
+  TRACKING_EVENT_TYPE,
+  useBrandTheme,
+  usePublicFirm,
+  useTracking,
+} from '@SiteModule';
 
 /*
  * The public site's shell (rnc-1 R3, R5): Franco's header with the CTA, and the footer with the
  * public contact, the hours and the credentials — all read from `GET /api/public/firm`, so a second
  * firm (Phase 3) is a row, not a build.
+ *
+ * Under a sub-brand (rnc-3 R2, R3) the same shell is the brand's: its colours over the whole document
+ * (`useBrandTheme`), its name in the mark and the copyright, its tagline in the footer — over Franco's
+ * own address, phone, mailbox and hours. While the brand's answer is on its way the mark waits
+ * unseen, so Franco's name never flashes on an Express page. The operator's "Ver como" tab (`?previa=1`,
+ * R5) wears a banner saying so.
  */
 const { firm, load } = usePublicFirm();
 const { push } = useRouter();
 const { t } = useI18n();
 const { track } = useTracking();
+
+useBrandTheme(firm);
 
 const CURRENT_YEAR = new Date().getFullYear();
 const NAV_LINKS = [
@@ -22,7 +40,16 @@ const NAV_LINKS = [
   { key: 'sectors', to: { hash: `#${SECTOR_GRID_ANCHOR}`, name: SITE_ROUTE_NAMES.home } },
 ] as const;
 
+const isBrandPending = ref(false);
+const isPreview = ref(false);
+
+const brandName = computed(() => (firm.value?.brand ? firm.value.name : null));
+const footerTagline = computed(() => firm.value?.tagline ?? t('site.footer.tagline'));
 const hoursLines = computed(() => (firm.value?.business_hours ?? []).map(formatHours));
+
+watch(firm, onFirmChange);
+// A refused brand was dropped on the way (AM21): the shell asks for the main brand's firm.
+watch(brandOfTab, onBrandChange);
 
 onMounted(onComponentMount);
 
@@ -53,8 +80,21 @@ function formatTime(time: string): string {
 }
 
 // EVENTS
-function onComponentMount() {
+function onBrandChange() {
   load();
+}
+
+function onComponentMount() {
+  isBrandPending.value = !firm.value && currentBrand() !== null;
+  onFirmChange();
+  load();
+}
+
+function onFirmChange() {
+  if (!firm.value) return;
+
+  isBrandPending.value = false;
+  isPreview.value = Boolean(firm.value.brand) && isBrandPreview();
 }
 
 function onDiagnosticClick() {
@@ -67,21 +107,43 @@ function onDiagnosticClick() {
 <template>
   <div class="bg-canvas text-body flex min-h-dvh w-full flex-col overflow-x-clip">
     <!-- `print:hidden` on the chrome: the printable pages (the "Relatório de Impacto", F4) print only their own header. -->
+    <div
+      v-if="isPreview"
+      class="bg-primary-950 text-primary-50 print:hidden"
+      data-testid="brand-preview-banner"
+      role="status"
+    >
+      <p class="mx-auto flex w-full max-w-6xl items-center gap-2 px-5 py-2 text-xs font-medium sm:text-sm">
+        <i
+          aria-hidden="true"
+          class="pi pi-eye text-primary-300"
+        />
+
+        {{ $t('site.preview.banner', { name: firm?.name ?? '' }) }}
+      </p>
+    </div>
+
     <header class="border-line bg-canvas/90 sticky top-0 z-20 border-b backdrop-blur print:hidden">
       <div class="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-5 py-3">
         <!-- `exact-active-class` empty: the theme's glowing bar marks the back office's rail, not the site.
              Each logo sits in its own span, because ALogo's own `inline-flex` outvotes a `hidden`. -->
         <RouterLink
-          class="touch-target shrink-0 text-lg sm:text-xl"
           exact-active-class=""
+          :class="[
+            'touch-target motion-quick shrink-0 text-lg transition-opacity sm:text-xl',
+            { 'opacity-0': isBrandPending },
+          ]"
           :to="{ name: SITE_ROUTE_NAMES.home }"
         >
           <span class="sm:hidden">
-            <ALogo variant="min" />
+            <ALogo
+              variant="min"
+              :name="brandName"
+            />
           </span>
 
           <span class="hidden sm:inline">
-            <ALogo />
+            <ALogo :name="brandName" />
           </span>
         </RouterLink>
 
@@ -146,10 +208,13 @@ function onDiagnosticClick() {
     >
       <div class="mx-auto grid w-full max-w-6xl gap-8 px-5 py-12 text-sm sm:grid-cols-2 lg:grid-cols-4">
         <div class="flex flex-col gap-3">
-          <ALogo class="text-lg" />
+          <ALogo
+            class="text-lg"
+            :name="brandName"
+          />
 
           <p class="text-muted leading-relaxed">
-            {{ $t('site.footer.tagline') }}
+            {{ footerTagline }}
           </p>
         </div>
 

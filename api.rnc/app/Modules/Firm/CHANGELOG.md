@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.2.1 — 2026-11-07
+
+### Added
+
+- `BrandService::all()` — the firm's sub-brands by name, inactive too, for the board's brand filter (rnc-3 F2).
+
 ## 1.2.0 — 2026-11-07
 
 ### Added

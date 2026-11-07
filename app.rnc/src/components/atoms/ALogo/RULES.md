@@ -1,5 +1,5 @@
 ---
-version: 2.1.0
+version: 2.2.0
 origin: pendulum
 based-on: 1.2.0
 ---
@@ -20,7 +20,8 @@ file is `LOCAL` — the sync never touches it — and records only how this proj
 
 - **Text, not a raster or an SVG.** The firm has no vector mark handed over yet, and the owner chose
   a text logo for the pilot. Text cannot fail to load, scales with the type and takes the brand token.
-- **`variant` and `tone` only.** The motion props (`pulse`, `loop`, `entrance`) are for an inline-SVG
+- **`variant`, `tone` and `name`.** `name` (rnc-3 R3) is the public site's sub-brand, written in the
+  same mark; the back office never passes it. The motion props (`pulse`, `loop`, `entrance`) are for an inline-SVG
   mark; a wordmark does not animate.
 - **`tone="brand"` paints `text-brand-word`** — navy on paper, the theme's `--color-primary-text`
   (the cyan) on a dark ground; `tone="inherit"` leaves the parent's colour, for a filled band such as
@@ -36,6 +37,7 @@ file is `LOCAL` — the sync never touches it — and records only how this proj
 
 - `variant`: `'full'` (default) | `'min'`.
 - `tone`: `'brand'` (default) | `'inherit'`.
+- `name`: a sub-brand's full name (default "Franco Contabilidade").
 
 ## Do Not
 

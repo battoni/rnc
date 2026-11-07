@@ -244,12 +244,27 @@ function onNoteSaved(note: LeadTimelineEvent) {
         class="bg-panel shadow-lift flex flex-col gap-4 rounded-lg p-5 lg:flex-row lg:items-center lg:justify-between"
       >
         <div class="flex min-w-0 flex-col gap-1.5">
-          <h2
-            class="text-heading text-2xl font-bold tracking-tight break-words"
-            data-testid="lead-company"
-          >
-            {{ lead.company ?? $t('pipeline.anonymous') }}
-          </h2>
+          <div class="flex flex-wrap items-center gap-2">
+            <h2
+              class="text-heading text-2xl font-bold tracking-tight break-words"
+              data-testid="lead-company"
+            >
+              {{ lead.company ?? $t('pipeline.anonymous') }}
+            </h2>
+
+            <!-- rnc-3 R4: the face of Franco the visitor saw. -->
+            <span
+              v-if="lead.brand"
+              class="bg-primary-50 text-primary-950 inline-flex items-center gap-1 rounded-sm px-2 py-0.5 text-xs font-semibold"
+              data-testid="lead-brand"
+              :title="$t('pipeline.brandChip', { name: lead.brand.short_name })"
+            >
+              <i
+                aria-hidden="true"
+                class="pi pi-palette text-xs"
+              />{{ lead.brand.short_name }}
+            </span>
+          </div>
 
           <p class="text-muted text-sm">
             {{

@@ -41,7 +41,8 @@
     "trail": "Trilha",
     "metrics": "Métricas",
     "repricing": "Reajuste",
-    "portal": "Portal do parceiro"
+    "portal": "Portal do parceiro",
+    "brands": "Marcas"
   },
   "rolesAndPermissions": {
     "groups": {
@@ -227,6 +228,9 @@
       "d5": "sexta",
       "d6": "sábado",
       "d7": "domingo"
+    },
+    "preview": {
+      "banner": "Prévia: o site como a {name} aparece ao visitante."
     }
   },
   "diagnostic": {
@@ -602,7 +606,14 @@
       "empty": "Sem reuniões.",
       "loadFailed": "Não foi possível carregar a agenda."
     },
-    "noDiagnosis": "Sem diagnóstico ainda"
+    "noDiagnosis": "Sem diagnóstico ainda",
+    "brandFilter": {
+      "label": "Marca",
+      "all": "Todas as marcas",
+      "main": "Marca principal",
+      "inactive": "{name} (inativa)"
+    },
+    "brandChip": "Lead da {name}"
   },
   "partners": {
     "title": "Parceiros",
@@ -931,5 +942,54 @@
     "loadFailed": "Não foi possível carregar o portal.",
     "retry": "Tentar de novo",
     "noPartner": "Este acesso não está ligado a um parceiro."
+  },
+  "brands": {
+    "title": "Marcas",
+    "lede": "A Franco e as suas submarcas: mesmos dados, mesma rede de parceiros e mesmo endereço, com nome, cores e posicionamento próprios. O site muda de marca por ?marca=; o back office continua da Franco.",
+    "main": "Marca principal",
+    "mainNote": "A marca do escritório, editada no tema do site.",
+    "active": "Ativa",
+    "inactive": "Inativa",
+    "leads": "{count} leads | {count} lead | {count} leads",
+    "edit": "Editar",
+    "viewAs": "Ver como {name}",
+    "deactivate": "Desativar",
+    "reactivate": "Reativar",
+    "saved": "{name} salva.",
+    "deactivated": "{name} desativada: o site volta para a Franco em ?marca={slug}.",
+    "reactivated": "{name} reativada.",
+    "loadFailed": "Não foi possível carregar as marcas.",
+    "retry": "Tentar de novo",
+    "emptyTitle": "Nenhuma submarca",
+    "emptyText": "As submarcas Express e Prime chegam pela carga inicial do escritório.",
+    "notFound": "Esta marca não existe mais.",
+    "form": {
+      "name": "Nome completo",
+      "shortName": "Nome curto",
+      "tagline": "Frase do site",
+      "taglineHint": "Aparece no topo da página inicial e no rodapé.",
+      "colours": "Cores",
+      "primary": "Cor principal",
+      "accent": "Cor de destaque",
+      "pick": "Escolher a {field}",
+      "contrastOk": "Texto branco sobre a cor principal: {ratio}:1 — legível.",
+      "contrastLow": "Texto branco sobre a cor principal: {ratio}:1 — abaixo de {min}:1, o site recusa esta cor.",
+      "contrastUnknown": "Escreva a cor principal como #rrggbb para medir o contraste.",
+      "previewLede": "Como o visitante vê o topo do site",
+      "previewCta": "Fazer o diagnóstico",
+      "proof": "Números da página inicial",
+      "proofHint": "Quatro destaques: o número ou a palavra forte, e a legenda.",
+      "proofValue": "Destaque {n}",
+      "proofLabel": "Legenda do destaque {n}",
+      "proofValuePlaceholder": "35 anos",
+      "proofLabelPlaceholder": "em São Paulo",
+      "proofRequired": "Preencha os quatro destaques e as suas legendas.",
+      "required": "Obrigatório.",
+      "invalidColour": "Use uma cor no formato #rrggbb.",
+      "lowContrast": "Texto branco não fica legível nesta cor (abaixo de {min}:1). Escolha uma mais escura.",
+      "cancel": "Cancelar",
+      "save": "Salvar marca",
+      "heading": "Editar marca"
+    }
   }
 }

@@ -105,3 +105,17 @@ describe('the brand chip (A4)', function () {
         expect($queriesFor())->toBe($before);
     });
 });
+
+describe("the board's brand options (rnc-3 F2, R4)", function () {
+    it("lists the firm's sub-brands for the filter, inactive too, never another firm's", function () {
+        FirmBrand::factory()->create(['firm_id' => Firm::factory()->create()->id, 'slug' => 'alheia', 'name' => 'Alheia']);
+        $this->prime->update(['active' => false]);
+
+        $this->actingAs($this->team)->getJson('/api/leads')
+            ->assertOk()
+            ->assertJsonPath('data.brands', [
+                ['slug' => 'express', 'short_name' => 'Franco Express', 'active' => true],
+                ['slug' => 'prime', 'short_name' => 'Franco Prime', 'active' => false],
+            ]);
+    });
+});

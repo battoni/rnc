@@ -8,6 +8,7 @@ import { useUserStore } from '@UserModule';
 import { useLeadBoard, useLeadFormat } from '../../composables';
 import {
   LEAD_DRAG_TYPE,
+  MAIN_BRAND_FILTER,
   PIPELINE_PERMISSIONS,
   PIPELINE_ROUTE_NAMES,
   SEARCH_DEBOUNCE_MS,
@@ -20,6 +21,8 @@ import { MoveLeadStageService } from '../../services';
  * The team's pipeline (rnc-1 R18): one column per stage, a card per lead, moved by ◀ ▶ ✕ or by
  * dragging it to another column — each move a line on the lead's timeline with who and how.
  * Perdido asks for the reason first. The board scrolls sideways inside its own frame, never the page.
+ * "Marca" (rnc-3 R4) narrows it to the leads of one face of Franco — the main brand or a sub-brand —
+ * and stays off for a firm with no sub-brand.
  */
 interface MoveError {
   response?: { status?: number };
@@ -34,8 +37,9 @@ const userStore = useUserStore();
 const { t } = useI18n();
 const toast = useToast();
 const { stageLabel } = useLeadFormat();
-const { appliedSearch, applyMove, columns, findCard, hasFailed, isLoading, load } = useLeadBoard();
+const { appliedSearch, applyMove, brands, columns, findCard, hasFailed, isLoading, load } = useLeadBoard();
 
+const brand = ref<string | null>(null);
 const dialogVisible = ref(false);
 const dropStage = ref<LEAD_STAGE | null>(null);
 const movingId = ref<number | null>(null);
@@ -46,9 +50,19 @@ const canReadAgenda = computed(() => userStore.hasPermission(PIPELINE_PERMISSION
 const canUpdate = computed(() => userStore.hasPermission(PIPELINE_PERMISSIONS.update));
 const isEmptySearch = computed(() => appliedSearch.value !== '' && columns.value.every((column) => column.count === 0));
 
+const brandOptions = computed(() => [
+  { label: t('pipeline.brandFilter.all'), value: null },
+  { label: t('pipeline.brandFilter.main'), value: MAIN_BRAND_FILTER },
+  ...brands.value.map((option) => ({
+    label: option.active ? option.short_name : t('pipeline.brandFilter.inactive', { name: option.short_name }),
+    value: option.slug,
+  })),
+]);
+
 let searchTimer: ReturnType<typeof setTimeout> | null = null;
 
 watch(search, onSearchInput);
+watch(brand, onBrandChange);
 
 onMounted(() => load(''));
 onBeforeUnmount(() => searchTimer && clearTimeout(searchTimer));
@@ -92,14 +106,18 @@ function isLeadDrag(event: DragEvent): boolean {
 }
 
 // EVENTS
+function onBrandChange(value: string | null) {
+  load(appliedSearch.value, value);
+}
+
 function onSearchInput(value: string) {
   if (searchTimer) clearTimeout(searchTimer);
 
-  searchTimer = setTimeout(() => load(value.trim()), SEARCH_DEBOUNCE_MS);
+  searchTimer = setTimeout(() => load(value.trim(), brand.value), SEARCH_DEBOUNCE_MS);
 }
 
 function onRetry() {
-  load(appliedSearch.value);
+  load(appliedSearch.value, brand.value);
 }
 
 function onCardMove(card: LeadCard, stage: LEAD_STAGE) {
@@ -189,18 +207,31 @@ function onLostSaved(move: LeadMove) {
       <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <p class="text-muted text-sm">{{ $t('pipeline.lede') }}</p>
 
-        <IconField class="w-full shrink-0 lg:w-80">
-          <InputIcon class="pi pi-search" />
-
-          <InputText
-            v-model="search"
-            class="w-full"
-            data-testid="pipeline-search"
-            type="search"
-            :aria-label="$t('pipeline.searchLabel')"
-            :placeholder="$t('pipeline.searchPlaceholder')"
+        <div class="flex w-full shrink-0 flex-col gap-3 sm:flex-row lg:w-auto">
+          <Select
+            v-if="brands.length > 0"
+            v-model="brand"
+            class="w-full sm:w-56"
+            inputId="pipeline-brand"
+            optionLabel="label"
+            optionValue="value"
+            :ariaLabel="$t('pipeline.brandFilter.label')"
+            :options="brandOptions"
           />
-        </IconField>
+
+          <IconField class="w-full lg:w-80">
+            <InputIcon class="pi pi-search" />
+
+            <InputText
+              v-model="search"
+              class="w-full"
+              data-testid="pipeline-search"
+              type="search"
+              :aria-label="$t('pipeline.searchLabel')"
+              :placeholder="$t('pipeline.searchPlaceholder')"
+            />
+          </IconField>
+        </div>
       </div>
 
       <div

@@ -21,8 +21,23 @@ const sectors = ref<SectorPageSummary[]>([]);
 
 // The hero assembles on mount, one `--motion-stagger` apart: the kicker, then the headline word by
 // word (`AWordRise`), then the lede, the buttons, the countdown and the picture of the product.
+/*
+ * Under a sub-brand (rnc-3 R3) the kicker is the brand's tagline and the proof strip its four points;
+ * the main brand keeps Franco's own copy (`PROOF_POINTS`, i18n).
+ */
+const kicker = computed(() => firm.value?.tagline ?? t('site.landing.kicker'));
 const titleWordCount = computed(() => t('site.landing.title').split(' ').length);
 const wordCount = computed(() => titleWordCount.value + t('site.landing.ask').split(' ').length);
+
+const proofPoints = computed(() =>
+  firm.value?.proof
+    ? firm.value.proof.map((point) => ({
+        figure: point.value,
+        key: `${point.value}-${point.label}`,
+        label: point.label,
+      }))
+    : PROOF_POINTS.map((point) => ({ ...point, label: t(`site.landing.proof.${point.key}`) }))
+);
 
 const seo = computed(() => ({
   description: t('site.seo.landingDescription'),
@@ -116,13 +131,14 @@ function onSectorsSettled() {
           <div class="flex min-w-0 flex-col gap-6">
             <p
               class="motion-enter text-primary-200 inline-flex items-center gap-2 text-xs font-semibold tracking-widest uppercase"
+              data-testid="hero-kicker"
             >
               <span
                 aria-hidden="true"
                 class="bg-primary-300 shadow-primary-300/60 size-2 rounded-full shadow-[0_0_0_4px]"
               />
 
-              {{ $t('site.landing.kicker') }}
+              {{ kicker }}
             </p>
 
             <!-- Semibold, not bold: at 60px Space Grotesk's 700 reads as shouting; 600 is the demo's weight. -->
@@ -192,19 +208,19 @@ function onSectorsSettled() {
           :aria-label="$t('site.landing.proofLabel')"
         >
           <li
-            v-for="point in PROOF_POINTS"
-            class="bg-panel flex flex-col gap-1 p-5 sm:p-6"
+            v-for="point in proofPoints"
+            class="bg-panel flex min-w-0 flex-col gap-1 p-5 sm:p-6"
             :key="point.key"
           >
             <strong
               v-count-up
-              class="text-heading text-2xl font-bold tracking-tight tabular-nums sm:text-3xl"
+              class="text-heading text-2xl font-bold tracking-tight break-words tabular-nums sm:text-3xl"
             >
               {{ point.figure }}
             </strong>
 
             <span class="text-muted text-sm">
-              {{ $t(`site.landing.proof.${point.key}`) }}
+              {{ point.label }}
             </span>
           </li>
         </ul>

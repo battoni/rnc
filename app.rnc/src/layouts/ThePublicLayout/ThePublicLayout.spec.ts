@@ -1,10 +1,10 @@
 import { flushPromises } from '@vue/test-utils';
 import { http, HttpResponse } from 'msw';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import ALogo from '@/components/atoms/ALogo/ALogo.vue';
 import { mountWithPlugins } from '@/test/mount';
 import { server } from '@/test/msw/server';
-import { FIRM_FIXTURE } from '../../modules/Site/test/fixtures';
+import { EXPRESS_FIRM_FIXTURE, FIRM_FIXTURE } from '../../modules/Site/test/fixtures';
 import ThePublicLayout from './ThePublicLayout.vue';
 
 const push = vi.fn();
@@ -29,7 +29,18 @@ beforeEach(() => {
   push.mockClear();
   sendBeacon.mockClear();
   vi.stubGlobal('navigator', { ...navigator, sendBeacon });
-  server.use(http.get('http://localhost/public/firm', () => HttpResponse.json({ data: FIRM_FIXTURE })));
+  sessionStorage.clear();
+  server.use(
+    http.get('http://localhost/public/firm', ({ request }) =>
+      HttpResponse.json({ data: request.headers.get('X-Brand') === 'express' ? EXPRESS_FIRM_FIXTURE : FIRM_FIXTURE })
+    )
+  );
+});
+
+afterEach(() => {
+  window.history.replaceState({}, '', '/');
+  document.documentElement.removeAttribute('style');
+  document.documentElement.removeAttribute('data-brand');
 });
 
 describe('ThePublicLayout', () => {
@@ -73,5 +84,71 @@ describe('ThePublicLayout', () => {
 
     expect(text).not.toContain('Willy');
     expect(text).not.toContain('APW');
+  });
+
+  it('paints nothing over the theme on the main brand', async () => {
+    await mountLayout();
+
+    expect(document.documentElement.style.getPropertyValue('--color-primary-500')).toBe('');
+    expect(document.documentElement.dataset.brand).toBeUndefined();
+  });
+});
+
+/*
+ * A2 (rnc-3 F2, R2, R3; AM3): under `?marca=express` the site is Express's — its colours on the
+ * document root (so PrimeVue's tokens and every overlay follow), its name in the header and the
+ * copyright, its tagline in the footer — over Franco's own contact. No other firm's name renders.
+ * A6: the operator's "Ver como" tab (`previa=1`) wears the preview banner; a visitor's tab does not.
+ */
+describe('ThePublicLayout under a sub-brand', () => {
+  it("sets the brand's colours as CSS properties on the document root", async () => {
+    window.history.replaceState({}, '', '/?marca=express');
+
+    await mountLayout();
+
+    const root = document.documentElement;
+
+    expect(root.style.getPropertyValue('--color-primary-500')).toBe('#3b2a86');
+    expect(root.style.getPropertyValue('--color-primary-300')).toBe('#ff8a3d');
+    expect(root.dataset.brand).toBe('express');
+  });
+
+  it("names the brand in the header, the footer's tagline and the copyright, with Franco's contact", async () => {
+    window.history.replaceState({}, '', '/?marca=express');
+
+    const wrapper = await mountLayout();
+    const header = wrapper.find('header');
+    const footer = wrapper.find('footer');
+
+    expect(header.text()).toContain('Franco Express Contabilidade');
+    expect(footer.text()).toContain('A contabilidade da Franco no ritmo da pequena empresa');
+    expect(footer.text()).toContain(`© ${new Date().getFullYear()} Franco Express Contabilidade`);
+    expect(footer.find('a[href="tel:+551137325500"]').exists()).toBe(true);
+    expect(footer.find('a[href="mailto:saf@franco-rnc.com.br"]').exists()).toBe(true);
+  });
+
+  it("renders no other firm's name: not the main brand's, not another sub-brand's, not the demo's Alvorada", async () => {
+    window.history.replaceState({}, '', '/?marca=express');
+
+    const text = (await mountLayout()).text();
+
+    ['Franco Contabilidade', 'Franco Prime', 'Alvorada', 'Willy', 'APW'].forEach((name) =>
+      expect(text, name).not.toContain(name)
+    );
+  });
+
+  it('shows the preview banner only on the operator\'s "Ver como" tab (A6)', async () => {
+    window.history.replaceState({}, '', '/?marca=express&previa=1');
+
+    const preview = await mountLayout();
+    const banner = preview.find('[data-testid="brand-preview-banner"]');
+
+    expect(banner.exists()).toBe(true);
+    expect(banner.text()).toContain('Preview: the site as Franco Express Contabilidade appears to visitors.');
+
+    preview.unmount();
+    window.history.replaceState({}, '', '/?marca=express');
+
+    expect((await mountLayout()).find('[data-testid="brand-preview-banner"]').exists()).toBe(false);
   });
 });

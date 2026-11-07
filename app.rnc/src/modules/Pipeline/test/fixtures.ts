@@ -3,6 +3,7 @@ import { LEAD_STAGE } from '../enums';
 
 /** A lead that has seen its result — the `lead` column's only card. */
 const LEAD_CARD_FIXTURE: LeadCard = {
+  brand: null,
   channel: 'formulario',
   company: 'Padaria Trigo Dourado',
   contact_name: 'Ana Almeida',
@@ -41,6 +42,10 @@ const BOARD_FIXTURE: LeadBoard = {
     { count: 0, items: [], stage: LEAD_STAGE.CLIENTE },
     { count: 0, items: [], stage: LEAD_STAGE.PERDIDO },
   ],
+  brands: [
+    { active: true, short_name: 'Franco Express', slug: 'express' },
+    { active: false, short_name: 'Franco Prime', slug: 'prime' },
+  ],
 };
 
 /** What the API answers to a move of `LEAD_CARD_FIXTURE` to `stage`. */
@@ -58,6 +63,7 @@ function moveFixture(stage: LEAD_STAGE, via: string, reason?: string): LeadMove 
 }
 
 const LEAD_DETAIL_FIXTURE: LeadDetail = {
+  brand: null,
   channel: 'formulario',
   cnpj: '90001371000159',
   company: 'Padaria Trigo Dourado',

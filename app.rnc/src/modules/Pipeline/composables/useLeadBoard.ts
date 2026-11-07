@@ -1,26 +1,31 @@
 import { ref } from 'vue';
-import type { BoardColumn, LeadCard, LeadMove } from '../interfaces';
+import type { BoardBrandOption, BoardColumn, LeadCard, LeadMove } from '../interfaces';
 import { GetLeadBoardService } from '../services';
 
 /**
  * The board's state (rnc-1 R18): the columns as the API answered them, the search they answered, and
  * the granular update after a move — the card leaves its column and lands on top of the new one,
- * each count following, without asking for the board again.
+ * each count following, without asking for the board again. The brand filter (rnc-3 R4) rides with
+ * the search, and the board's own answer says which sub-brands there are to filter by.
  */
 function useLeadBoard() {
+  const appliedBrand = ref<string | null>(null);
   const appliedSearch = ref('');
+  const brands = ref<BoardBrandOption[]>([]);
   const columns = ref<BoardColumn[]>([]);
   const hasFailed = ref(false);
   const isLoading = ref(false);
 
   // HELPERS
-  function load(search: string): Promise<unknown> {
+  function load(search: string, brand: string | null = appliedBrand.value): Promise<unknown> {
     isLoading.value = true;
     hasFailed.value = false;
 
-    return GetLeadBoardService(search)
+    return GetLeadBoardService(search, brand)
       .then((response) => {
+        brands.value = response.data.brands ?? [];
         columns.value = response.data.columns;
+        appliedBrand.value = brand;
         appliedSearch.value = search;
       })
       .catch(() => (hasFailed.value = true))
@@ -52,7 +57,7 @@ function useLeadBoard() {
     target.count += 1;
   }
 
-  return { appliedSearch, applyMove, columns, findCard, hasFailed, isLoading, load };
+  return { appliedBrand, appliedSearch, applyMove, brands, columns, findCard, hasFailed, isLoading, load };
 }
 
 export { useLeadBoard };

@@ -44,7 +44,7 @@ describe('the partner network is never named', () => {
   // Each phase that adds a module names it here (rnc-2 P11): the glob is what reads it, and this
   // fails if a module ever moved outside it.
   it('reads every module of the hub, the partner portal included', () => {
-    const MODULES = ['Diagnostic', 'Home', 'Metrics', 'Partner', 'Pipeline', 'Portal', 'Repricing', 'Site'];
+    const MODULES = ['Brands', 'Diagnostic', 'Home', 'Metrics', 'Partner', 'Pipeline', 'Portal', 'Repricing', 'Site'];
 
     MODULES.forEach((module) =>
       expect(Object.keys(SOURCES).some((path) => path.startsWith(`/src/modules/${module}/`))).toBe(true)

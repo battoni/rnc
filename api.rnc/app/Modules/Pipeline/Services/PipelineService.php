@@ -7,6 +7,7 @@ use App\Modules\Booking\Models\Appointment;
 use App\Modules\Booking\Repositories\AppointmentRepository;
 use App\Modules\Diagnostic\DTOs\DiagnosticProfileDTO;
 use App\Modules\Diagnostic\Services\RulesEngine;
+use App\Modules\Firm\Models\FirmBrand;
 use App\Modules\Firm\Services\BrandService;
 use App\Modules\Lead\Enums\LeadStage;
 use App\Modules\Lead\Models\Lead;
@@ -55,6 +56,17 @@ class PipelineService
         }
 
         return $columns;
+    }
+
+    /**
+     * The board's "Marca" filter options (rnc-3 F2, R4): the firm's sub-brands by name, a deactivated
+     * one too — its leads are still filtered by it. The main brand is the SPA's own option.
+     *
+     * @return Collection<int, FirmBrand>
+     */
+    public function brandOptions(): Collection
+    {
+        return $this->brandService->all();
     }
 
     /**

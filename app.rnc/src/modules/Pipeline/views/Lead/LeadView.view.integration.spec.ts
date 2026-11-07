@@ -97,6 +97,27 @@ describe('LeadView', () => {
     expect(screen.getByTestId('diagnosis-item').textContent).toContain('LC 214/2025');
   });
 
+  it("wears the sub-brand's chip beside the company (rnc-3 A4)", async () => {
+    server.use(
+      http.get('http://localhost/leads/7', () =>
+        HttpResponse.json({
+          data: { ...structuredClone(LEAD_DETAIL_FIXTURE), brand: { id: 1, short_name: 'Franco Express' } },
+        })
+      )
+    );
+    renderLead();
+
+    expect((await screen.findByTestId('lead-brand')).textContent).toContain('Franco Express');
+  });
+
+  it('wears no brand chip for a main-brand lead', async () => {
+    renderLead();
+
+    await screen.findByTestId('lead-detail');
+
+    expect(screen.queryByTestId('lead-brand')).toBeNull();
+  });
+
   it('shows the consent as given, with its text and when', async () => {
     renderLead();
 

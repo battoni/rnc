@@ -1,6 +1,7 @@
 import { computed } from 'vue';
 import type { ComputedRef } from 'vue';
 import type { NavItem } from './interfaces';
+import { BRANDS_PERMISSIONS, BRANDS_ROUTE_NAMES } from '@BrandsModule';
 import { WORKSPACES } from '@HomeModule';
 import { METRICS_PERMISSIONS, METRICS_ROUTE_NAMES } from '@MetricsModule';
 import { PARTNER_PERMISSIONS, PARTNER_ROUTE_NAMES } from '@PartnerModule';
@@ -102,6 +103,13 @@ const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
       label: 'navigation.roles',
       permission: 'permissions.read',
       routeName: 'roles-and-permissions',
+    },
+    // rnc-3 F2: Franco's sub-brands (R5), the operator's alone (D3).
+    {
+      icon: 'pi pi-palette',
+      label: 'navigation.brands',
+      permission: BRANDS_PERMISSIONS.manage,
+      routeName: BRANDS_ROUTE_NAMES.list,
     },
   ],
 };

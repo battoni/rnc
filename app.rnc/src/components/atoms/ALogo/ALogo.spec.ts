@@ -31,4 +31,19 @@ describe('ALogo', () => {
   it('carries no image', () => {
     expect(mountWithPlugins(ALogo).find('img').exists()).toBe(false);
   });
+
+  // rnc-3 R3: the public site under a sub-brand writes that brand's name, in the same mark.
+  it("writes a sub-brand's name when given one, the first word in the heavier weight", () => {
+    const wrapper = mountWithPlugins(ALogo, { props: { name: 'Franco Express Contabilidade' } });
+
+    expect(wrapper.text()).toBe('Franco Express Contabilidade');
+    expect(wrapper.find('.font-normal').text()).toBe('Express Contabilidade');
+
+    const tile = mountWithPlugins(ALogo, { props: { name: 'Franco Express Contabilidade', variant: 'min' } }).find(
+      '[role="img"]'
+    );
+
+    expect(tile.attributes('aria-label')).toBe('Franco Express Contabilidade');
+    expect(tile.text()).toBe('F');
+  });
 });

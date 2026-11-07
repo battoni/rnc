@@ -25,7 +25,16 @@ import PipelineView from './PipelineView.view.vue';
 const API = 'http://localhost/leads';
 const moves: { body: Record<string, unknown>; id: string }[] = [];
 
+const boardRequests: URLSearchParams[] = [];
+
 const STUBS = {
+  // A native select with Select's contract: jsdom cannot open PrimeVue's overlay.
+  Select: {
+    emits: ['update:modelValue'],
+    props: ['inputId', 'modelValue', 'options'],
+    template:
+      '<select :id="inputId" data-testid="pipeline-brand" :value="modelValue ?? \'\'" @change="$emit(\'update:modelValue\', $event.target.value || null)"><option v-for="option in options" :key="option.value ?? \'\'" :value="option.value ?? \'\'">{{ option.label }}</option></select>',
+  },
   AFormError: { props: ['error'], template: '<p v-if="error" data-testid="form-error">{{ error }}</p>' },
   MMainDialog: { props: ['visible'], template: '<div v-if="visible" data-testid="dialog"><slot /></div>' },
   RouterLink: { props: ['to'], template: '<a :data-to="JSON.stringify(to)"><slot :navigate="() => {}" /></a>' },
@@ -58,8 +67,13 @@ function countOf(stage: LEAD_STAGE): string {
 
 beforeEach(() => {
   moves.length = 0;
+  boardRequests.length = 0;
   server.use(
-    http.get(API, () => HttpResponse.json({ data: structuredClone(BOARD_FIXTURE) })),
+    http.get(API, ({ request }) => {
+      boardRequests.push(new URL(request.url).searchParams);
+
+      return HttpResponse.json({ data: structuredClone(BOARD_FIXTURE) });
+    }),
     http.patch(`${API}/:id/stage`, async ({ params, request }) => {
       const body = (await request.json()) as Record<string, unknown>;
 
@@ -178,5 +192,51 @@ describe('PipelineView', () => {
     renderBoard();
 
     expect((await screen.findByTestId('pipeline-failed')).textContent).toContain('The pipeline could not be loaded.');
+  });
+});
+
+/*
+ * A4, the SPA half (rnc-3 F2, R4): the board's "Marca" filter — every brand, the main one, then each
+ * sub-brand the board answered (an inactive one says so, its leads still filtered) — narrows the
+ * board by slug, the search kept. A firm with no sub-brand has no filter at all.
+ */
+describe('PipelineView — the brand filter', () => {
+  it('offers every brand, the main one and each sub-brand, by name', async () => {
+    renderBoard();
+
+    const select = (await screen.findByTestId('pipeline-brand')) as HTMLSelectElement;
+
+    expect([...select.options].map((option) => [option.value, option.textContent])).toEqual([
+      ['', 'All brands'],
+      ['main', 'Main brand'],
+      ['express', 'Franco Express'],
+      ['prime', 'Franco Prime (inactive)'],
+    ]);
+  });
+
+  it('narrows the board to the brand picked, by slug, and back to every brand', async () => {
+    renderBoard();
+
+    const select = await screen.findByTestId('pipeline-brand');
+
+    await fireEvent.update(select, 'express');
+    await waitFor(() => expect(boardRequests[boardRequests.length - 1]?.get('brand')).toBe('express'));
+
+    await fireEvent.update(select, 'main');
+    await waitFor(() => expect(boardRequests[boardRequests.length - 1]?.get('brand')).toBe('main'));
+
+    await fireEvent.update(select, '');
+    await waitFor(() => expect(boardRequests).toHaveLength(4));
+    expect(boardRequests[boardRequests.length - 1]?.has('brand')).toBe(false);
+  });
+
+  it('has no brand filter when the firm has no sub-brand', async () => {
+    server.use(http.get(API, () => HttpResponse.json({ data: { ...structuredClone(BOARD_FIXTURE), brands: [] } })));
+
+    renderBoard();
+
+    await screen.findAllByTestId('lead-card');
+
+    expect(screen.queryByTestId('pipeline-brand')).toBeNull();
   });
 });

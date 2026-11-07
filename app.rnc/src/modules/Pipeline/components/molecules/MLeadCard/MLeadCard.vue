@@ -9,7 +9,7 @@ import { LEAD_STAGE } from '../../../enums';
 /*
  * One card of the board (rnc-1 R18): who, where it stopped or what the diagnostic found, the meeting
  * or why it was lost — and, for whoever holds `leads.update`, the ◀ ▶ ✕ moves and the drag. The view
- * owns the move: the card only says where to.
+ * owns the move: the card only says where to. A lead started under a sub-brand wears its chip (rnc-3 R4).
  */
 const emit = defineEmits<{
   onMove: [stage: LEAD_STAGE];
@@ -71,6 +71,18 @@ function onDragStart(event: DragEvent) {
         class="bg-panel-muted text-body rounded-sm px-1.5 py-0.5 font-medium"
       >
         {{ $t(`diagnostic.sectors.${props.lead.sector}`) }}
+      </span>
+
+      <span
+        v-if="props.lead.brand"
+        class="bg-primary-50 text-primary-950 inline-flex items-center gap-1 rounded-sm px-1.5 py-0.5 font-semibold"
+        data-testid="lead-brand"
+        :title="$t('pipeline.brandChip', { name: props.lead.brand.short_name })"
+      >
+        <i
+          aria-hidden="true"
+          class="pi pi-palette text-[0.7rem]"
+        />{{ props.lead.brand.short_name }}
       </span>
 
       <span>{{ $t(`pipeline.sources.${props.lead.source}`) }}</span>

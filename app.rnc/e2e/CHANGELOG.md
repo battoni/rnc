@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.10.0 — 2026-11-07
+
+### Added
+
+- `site/brands.spec.ts` (rnc-3 F2, A2, A6): `?marca=express` re-themes the site over Franco's phone, a reload keeps it, `?marca=franco` drops it, a refused brand lands on Franco; the preview banner only on `previa=1`; under Express and Prime, in both schemes, the brand-painted pairs read at 4,5:1 (colours read back through a canvas, since the theme mixes in `oklab`), and nothing scrolls sideways at 390 or 1440.
+
 ## 1.9.0 — 2026-11-07
 
 ### Added

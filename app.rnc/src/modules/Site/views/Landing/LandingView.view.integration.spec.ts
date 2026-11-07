@@ -2,14 +2,14 @@ import { screen, waitFor } from '@testing-library/vue';
 import { http, HttpResponse } from 'msw';
 import Button from 'primevue/button';
 import Skeleton from 'primevue/skeleton';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { server } from '@/test/msw/server';
 import { renderWithPlugins } from '@/test/render';
 import AWordRise from '../../components/atoms/AWordRise/AWordRise.vue';
 import MCbsCountdown from '../../components/molecules/MCbsCountdown/MCbsCountdown.vue';
 import MReformaTimeline from '../../components/molecules/MReformaTimeline/MReformaTimeline.vue';
 import MSectorGrid from '../../components/molecules/MSectorGrid/MSectorGrid.vue';
-import { FIRM_FIXTURE, SECTORS_FIXTURE } from '../../test/fixtures';
+import { FIRM_FIXTURE, PRIME_FIRM_FIXTURE, SECTORS_FIXTURE } from '../../test/fixtures';
 import LandingView from './LandingView.view.vue';
 
 /* A3 (rnc-1 F2, R5, R8): the landing, with its content, its CTA and its own title. */
@@ -39,7 +39,9 @@ beforeEach(() => {
   sendBeacon.mockClear();
   vi.stubGlobal('navigator', { ...navigator, sendBeacon });
   server.use(
-    http.get('http://localhost/public/firm', () => HttpResponse.json({ data: FIRM_FIXTURE })),
+    http.get('http://localhost/public/firm', ({ request }) =>
+      HttpResponse.json({ data: request.headers.get('X-Brand') === 'prime' ? PRIME_FIRM_FIXTURE : FIRM_FIXTURE })
+    ),
     http.get('http://localhost/public/sectors', () => HttpResponse.json({ data: SECTORS_FIXTURE }))
   );
 });
@@ -101,5 +103,43 @@ describe('LandingView', () => {
       expect(document.title).toBe('Tax reform 2026–2033: what changes for your company · Franco Contabilidade')
     );
     expect(document.head.querySelector('meta[name="description"]')?.getAttribute('content')).toContain('01/01/2027');
+  });
+});
+
+/*
+ * A2 (rnc-3 F2, R3): under `?marca=prime` the hero carries Prime's tagline, the proof strip Prime's
+ * four points and the title Prime's name; on the main brand the landing keeps Franco's own copy.
+ */
+describe('LandingView under a sub-brand', () => {
+  afterEach(() => {
+    window.history.replaceState({}, '', '/');
+    sessionStorage.clear();
+  });
+
+  it("carries the brand's tagline, proof points and name in the title", async () => {
+    window.history.replaceState({}, '', '/?marca=prime');
+
+    renderLanding();
+
+    await waitFor(() =>
+      expect(screen.getByTestId('hero-kicker').textContent).toContain('A Franco dedicada às empresas de maior porte')
+    );
+
+    const proof = screen.getByTestId('proof');
+
+    expect(proof.querySelectorAll('li')).toHaveLength(4);
+    expect(proof.textContent).toContain('Médias e grandes');
+    expect(proof.textContent).toContain('dedicado a cada conta');
+    expect(proof.textContent).not.toContain('500+');
+    expect(document.title).toBe('Tax reform 2026–2033: what changes for your company · Franco Prime Contabilidade');
+  });
+
+  it("keeps Franco's own kicker and proof points on the main brand", async () => {
+    renderLanding();
+
+    await waitFor(() => expect(document.title).toContain('· Franco Contabilidade'));
+
+    expect(screen.getByTestId('hero-kicker').textContent).toContain('LC 214/2025');
+    expect(screen.getByTestId('proof').textContent).toContain('500+');
   });
 });

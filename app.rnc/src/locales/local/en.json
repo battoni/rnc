@@ -41,7 +41,8 @@
     "trail": "Trail",
     "metrics": "Metrics",
     "repricing": "Repricing",
-    "portal": "Partner portal"
+    "portal": "Partner portal",
+    "brands": "Brands"
   },
   "rolesAndPermissions": {
     "groups": {
@@ -227,6 +228,9 @@
       "d5": "Friday",
       "d6": "Saturday",
       "d7": "Sunday"
+    },
+    "preview": {
+      "banner": "Preview: the site as {name} appears to visitors."
     }
   },
   "diagnostic": {
@@ -602,7 +606,14 @@
       "empty": "No meetings.",
       "loadFailed": "The agenda could not be loaded."
     },
-    "noDiagnosis": "No diagnostic yet"
+    "noDiagnosis": "No diagnostic yet",
+    "brandFilter": {
+      "label": "Brand",
+      "all": "All brands",
+      "main": "Main brand",
+      "inactive": "{name} (inactive)"
+    },
+    "brandChip": "{name} lead"
   },
   "partners": {
     "title": "Partners",
@@ -931,5 +942,54 @@
     "loadFailed": "The portal could not be loaded.",
     "retry": "Try again",
     "noPartner": "This login is not linked to a partner."
+  },
+  "brands": {
+    "title": "Brands",
+    "lede": "Franco and its sub-brands: the same data, the same partner network and the same address, with their own name, colours and positioning. The site switches brand by ?marca=; the back office stays Franco's.",
+    "main": "Main brand",
+    "mainNote": "The firm's own brand, edited in the site's theme.",
+    "active": "Active",
+    "inactive": "Inactive",
+    "leads": "{count} leads | {count} lead | {count} leads",
+    "edit": "Edit",
+    "viewAs": "View as {name}",
+    "deactivate": "Deactivate",
+    "reactivate": "Reactivate",
+    "saved": "{name} saved.",
+    "deactivated": "{name} deactivated: ?marca={slug} now shows Franco.",
+    "reactivated": "{name} reactivated.",
+    "loadFailed": "The brands could not be loaded.",
+    "retry": "Try again",
+    "emptyTitle": "No sub-brands",
+    "emptyText": "The Express and Prime sub-brands arrive with the firm's initial load.",
+    "notFound": "This brand no longer exists.",
+    "form": {
+      "name": "Full name",
+      "shortName": "Short name",
+      "tagline": "Site tagline",
+      "taglineHint": "Shown at the top of the landing page and in the footer.",
+      "colours": "Colours",
+      "primary": "Primary colour",
+      "accent": "Accent colour",
+      "pick": "Pick the {field}",
+      "contrastOk": "White text on the primary: {ratio}:1 — readable.",
+      "contrastLow": "White text on the primary: {ratio}:1 — under {min}:1, the site refuses this colour.",
+      "contrastUnknown": "Write the primary as #rrggbb to measure its contrast.",
+      "previewLede": "How visitors see the top of the site",
+      "previewCta": "Take the diagnostic",
+      "proof": "Landing page figures",
+      "proofHint": "Four highlights: the figure or the strong word, and its caption.",
+      "proofValue": "Highlight {n}",
+      "proofLabel": "Caption of highlight {n}",
+      "proofValuePlaceholder": "35 years",
+      "proofLabelPlaceholder": "in São Paulo",
+      "proofRequired": "Fill in the four highlights and their captions.",
+      "required": "Required.",
+      "invalidColour": "Use a colour written as #rrggbb.",
+      "lowContrast": "White text does not read on this colour (under {min}:1). Pick a darker one.",
+      "cancel": "Cancel",
+      "save": "Save brand",
+      "heading": "Edit brand"
+    }
   }
 }

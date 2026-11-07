@@ -8,6 +8,7 @@ use App\Modules\Firm\Models\FirmBrand;
 use App\Modules\Firm\Repositories\BrandRepository;
 use App\Modules\Lead\Models\Lead;
 use App\Modules\Lead\Repositories\LeadRepository;
+use Illuminate\Database\Eloquent\Collection;
 
 /**
  * The sub-brands console (rnc-3 R5, D3): the firm's main brand and its sub-brands, each with its
@@ -39,6 +40,12 @@ class BrandService
                 ->values()
                 ->all(),
         ];
+    }
+
+    /** @return Collection<int, FirmBrand> the firm's sub-brands by name, inactive too */
+    public function all(): Collection
+    {
+        return $this->brandRepository->findAllBrands();
     }
 
     /** @return array{brand: FirmBrand, lead_count: int}|null null for an unknown or another firm's brand */

@@ -1,5 +1,15 @@
 # Changelog — Site Module
 
+## 1.4.0 — 2026-11-07
+
+### Added
+
+- Sub-brands on the site (rnc-3 F2, R2, R3; AM21, C1): `publicBrand.ts` — `currentBrand()` reads `?marca=` into `sessionStorage` (`app.rnc:brand`, `?marca=franco` drops it), `isBrandPreview()` (`?previa=1`), `forgetBrand()`, and `publicApi()`, the one way a public call leaves (Site and Diagnostic services): it sends `X-Brand`, and on a 404 `brands.notFound` drops the brand (storage and address bar) and asks the same call again as the main brand. `brandPalette()` and `contrastRatio()` (pure): the `--color-primary-*` ramp from primary/accent in Franco's ramp shape, the accent and the hero tints lightened until they read. `useBrandTheme()`: the ramp inline on `<html>` while a public page is up, cached for the tab so the next page paints it on mount, handed back one second after the last public page goes. Tests: `usePublicFirm.spec.ts`, `brandPalette.spec.ts`, `ThePublicLayout.spec.ts`, `LandingView` and `e2e/site/brands.spec.ts` (A2, A6).
+
+### Changed
+
+- `usePublicFirm` asks again when the tab's brand changed since its last answer. `PublicFirm` carries `brand`, `short_name`, `tagline`, `proof`. The landing's kicker is the brand's tagline and its proof strip the brand's four points under a sub-brand; Franco's own copy stays on the main brand.
+
 ## 1.3.1 — 2026-11-07
 
 ### Changed

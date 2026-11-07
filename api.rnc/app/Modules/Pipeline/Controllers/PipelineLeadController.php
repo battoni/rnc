@@ -11,6 +11,7 @@ use App\Modules\Pipeline\DTOs\MoveLeadStageDTO;
 use App\Modules\Pipeline\Requests\ListLeadsRequest;
 use App\Modules\Pipeline\Requests\StoreLeadNoteRequest;
 use App\Modules\Pipeline\Requests\UpdateLeadStageRequest;
+use App\Modules\Pipeline\Resources\BrandOptionResource;
 use App\Modules\Pipeline\Resources\LeadCardResource;
 use App\Modules\Pipeline\Resources\LeadDetailResource;
 use App\Modules\Pipeline\Resources\LeadEventResource;
@@ -31,6 +32,7 @@ class PipelineLeadController extends Controller
 
         return ApiResponse::success(data: [
             'columns' => array_map(fn (array $column) => [...$column, 'items' => LeadCardResource::collection($column['items'])], $columns),
+            'brands' => BrandOptionResource::collection($this->pipelineService->brandOptions()),
         ]);
     }
 

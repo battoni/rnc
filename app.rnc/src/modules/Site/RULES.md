@@ -1,5 +1,5 @@
 ---
-version: 1.3.1
+version: 1.4.0
 origin: rnc
 ---
 
@@ -64,8 +64,27 @@ No login. The CTA's destination `/diagnostico` is the Diagnostic module's (F3); 
   coloured left stripe: the stripe is the news line's, and a stripe on a sector card made it read as
   a notice.
 
+- **A sub-brand rides in the address once, then in the tab** (rnc-3 R2, D2): `?marca=<slug>` →
+  `sessionStorage` `app.rnc:brand`, read on every ask so whatever page carries `?marca=` wins;
+  `?marca=franco` and any 404 `brands.notFound` drop it (the refusal also leaves the address bar, or
+  the next read would store the stale slug again). A slug outside `[a-z0-9-]{1,40}` is never sent.
+- **Every public call goes through `publicApi`** — never `API` straight — so `X-Brand` is on all of
+  them (C1) and a refused brand is retried once as the main brand: a stale tab lands on Franco, not on
+  an error. The events beacon cannot carry a header; the API counts it on the main brand (AM21).
+- **The brand's colours go on `<html>`, inline** (`useBrandTheme`), not on the layout's element:
+  PrimeVue's `--p-primary-*`, the dark scheme's `--color-primary-text` and every teleported overlay
+  are declared on the root and resolve there. The ramp is `brandPalette`'s — Franco's shape (500 the
+  primary, 300 the accent) with each pair the site paints measured, so any accent the operator picks
+  still reads; `e2e/site/brands.spec.ts` measures the painted pairs in both schemes.
+- **Under a sub-brand the copy that is Franco's own gives way**: the header and footer mark and the
+  copyright carry the brand's name, the footer and the hero kicker its tagline, the proof strip its
+  points. The rest of the site's words keep "a Franco" — the sub-brands keep the Franco name (D1).
+
 ## Known Gaps
 
 - **No server-side rendering** (D4): crawlers that run no JavaScript see an empty shell.
 - **`index.html` and the API still say `noindex`** (the bootstrap's back-office default). The public
   routes must lift it before the site is launched — a deploy decision, out of Phase 1's scope.
+- **The first page of a brand's tab flashes Franco's kicker and proof** until `GET public/firm`
+  answers (the mark waits unseen, the colours come from the tab's cache on every later page). A
+  server render (D4) or a brand in the bundle would remove it; neither is in scope (rnc-3 F2).

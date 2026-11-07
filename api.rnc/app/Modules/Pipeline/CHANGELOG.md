@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.2.0 — 2026-11-07
+
+### Added
+
+- `GET leads` answers `brands` — the firm's sub-brands by name, inactive too, as `BrandOptionResource` `{slug, short_name, active}` — the options of the board's "Marca" filter (rnc-3 F2, R4), since the team cannot read `GET brands` (`brands.manage`). One query whatever the board's size. Tested by `BrandFilterTest`.
+
 ## 1.1.0 — 2026-11-07
 
 ### Added
