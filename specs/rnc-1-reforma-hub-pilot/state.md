@@ -131,3 +131,4 @@ Started: 2026-11-07
 - W50 F7: where the screen lives → `/reinaldo/metricas` (+ `/ceo/metrics`), the first child of Reinaldo's rail group, and `ceo-home` (`/reinaldo`) redirects to it like the team's landing does to the pipeline; no `days` = 30, anything but 7/30 = 422 (to reverse: restore the `WorkspaceView` route in `Home/views/Workspace/routes.ts`). Spec C10.
 - W51 F7: the local traffic → `MetricsSeeder`, deterministic: 14–36 anonymous visitors a day climbing towards today, half on a sector page, CTA 22–46 % by page, the source mix of `SOURCE_MIX`; plus each seeded lead's own walk (visit, CTA, one beacon per timeline line) under its `visitor_uuid` and source; bulk insert, refuses production (to reverse: drop it from `seeders.local.php`).
 04:14 F7 done, attempt 1, 3a83dd3
+04:14 F8 started, attempt 1
