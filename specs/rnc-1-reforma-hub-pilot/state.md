@@ -121,3 +121,4 @@ Started: 2026-11-07
 - W46 F6: what the partner's e-mail carries → the company, its sector, the diagnostic items the partner covers, the message, who sent it and Franco's phone, mailbox and address, with reply-to the firm's mailbox — never the lead's phone, e-mail or name (to reverse: `ReferralMailDTO`).
 - W47 F6: where the network screens live → Partner module routes `/reinaldo/parceiros` and `/reinaldo/trilha` (+ `/ceo/…`), children of Reinaldo's rail group; the routing panel is the Partner module's `MLeadRouting`, mounted by the Pipeline's `LeadView` (to reverse: move the panel into Pipeline).
 03:51 F6 done, attempt 1, 7bc99c7
+03:52 F7 started, attempt 1
