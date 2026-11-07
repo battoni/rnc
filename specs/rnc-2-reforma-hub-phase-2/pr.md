@@ -34,6 +34,6 @@ Branch review (fable-reviewer): API 5 findings and SPA 7 findings, applied in 34
 
 ## Decided while you were away
 
-W1–W127 in `specs/rnc-2-reforma-hub-phase-2/state.md` → "Decided while you were away"; spec changes C1–C4 and later in `spec.md` → "Changes while building".
+W1–W127 in `specs/rnc-2-reforma-hub-phase-2/state.md` → "Decided while you were away"; spec changes C1–C4 in `spec.md` → "Changes while building".
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
