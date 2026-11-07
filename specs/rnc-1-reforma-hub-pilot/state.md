@@ -120,3 +120,4 @@ Started: 2026-11-07
 - W45 F6: one lead to the same partner twice → refused (409 `already_referred`, unique pair); a deactivated partner leaves the matches and cannot be chosen, is never deleted (the trail points at it); deactivation is a reversible switch with no confirm popup (to reverse: drop the unique index; a confirm in `PartnersView`). Spec C9.
 - W46 F6: what the partner's e-mail carries → the company, its sector, the diagnostic items the partner covers, the message, who sent it and Franco's phone, mailbox and address, with reply-to the firm's mailbox — never the lead's phone, e-mail or name (to reverse: `ReferralMailDTO`).
 - W47 F6: where the network screens live → Partner module routes `/reinaldo/parceiros` and `/reinaldo/trilha` (+ `/ceo/…`), children of Reinaldo's rail group; the routing panel is the Partner module's `MLeadRouting`, mounted by the Pipeline's `LeadView` (to reverse: move the panel into Pipeline).
+03:51 F6 done, attempt 1, 7bc99c7
