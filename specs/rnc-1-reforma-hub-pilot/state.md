@@ -15,3 +15,4 @@ F1 Foundation.
 Stop at: PR after verify · Reviewer: fable-reviewer (#fable session) · Chrome QA: on
 Started: 2026-11-07
 ## Decided while you were away
+00:07 F1 started, attempt 1
