@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.10.0 — 2026-11-07
+
+### Added
+
+- rnc-3 F4: the `assistant_notes`, `assistant_questions` and `assistant_asks` tables (sequence `300004`–`300006`; people and notes are ids without a foreign key — W25); `AssistantNoteFactory` (a served note); `AssistantNoteSeeder` (local only) seeds the demo's ten notes word for word, each citing its `facts.md` §2 lines, read 05/11/2026, reviewed 1–5 days back by the four seeded specialists and written by Reinaldo — `credito-simples` a rascunho (§2 unverified) — plus two open questions from Patrícia to Mariana and Carlos; a person missing from the seeded staff stops the seed (AM10); `RoleSeeder` grants the team and Reinaldo `assistant.ask` and Reinaldo `assistant.manage`.
+
 ## 1.9.0 — 2026-11-07
 
 ### Added

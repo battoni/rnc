@@ -9,6 +9,8 @@
  */
 
 use App\Http\Middleware\ResolveCurrentBrand;
+use App\Modules\Assistant\Controllers\AssistantController;
+use App\Modules\Assistant\Controllers\NoteController;
 use App\Modules\Booking\Controllers\PublicBookingController;
 use App\Modules\Booking\Controllers\PublicReportController;
 use App\Modules\Channel\Controllers\ChannelController;
@@ -136,3 +138,20 @@ Route::get('channel', [ChannelController::class, 'index'])->middleware(['auth', 
 Route::post('channel/firms', [ChannelController::class, 'store'])->middleware($channelManage);
 Route::patch('channel/firms/{id}', [ChannelController::class, 'update'])->middleware($channelManage);
 Route::post('channel/firms/{id}/advance', [ChannelController::class, 'advance'])->middleware($channelManage);
+
+// The Reforma assistant (rnc-3 F4, R10–R16, D7–D9): the team and Reinaldo ask (`assistant.ask`) and
+// get one of Franco's reviewed, in-date notes or a hand-off to a specialist — nothing is generated.
+// "Base da Reforma" is `assistant.ask` + `AssistantNotePolicy` (write: `assistant.manage` or a
+// specialist; review: a specialist who is not the last editor); retire and the gaps are
+// `assistant.manage` (AM4). Another firm's note is a 404.
+$assistantAsk = ['auth', 'permission:assistant.ask'];
+$assistantManage = ['auth', 'permission:assistant.manage'];
+Route::post('assistant/ask', [AssistantController::class, 'ask'])->middleware($assistantAsk);
+Route::get('assistant/suggestions', [AssistantController::class, 'suggestions'])->middleware($assistantAsk);
+Route::post('assistant/questions', [AssistantController::class, 'handOff'])->middleware($assistantAsk);
+Route::get('assistant/gaps', [AssistantController::class, 'gaps'])->middleware($assistantManage);
+Route::get('assistant/notes', [NoteController::class, 'index'])->middleware($assistantAsk);
+Route::post('assistant/notes', [NoteController::class, 'store'])->middleware($assistantAsk);
+Route::patch('assistant/notes/{id}', [NoteController::class, 'update'])->middleware($assistantAsk);
+Route::post('assistant/notes/{id}/review', [NoteController::class, 'review'])->middleware($assistantAsk);
+Route::post('assistant/notes/{id}/retire', [NoteController::class, 'retire'])->middleware($assistantManage);

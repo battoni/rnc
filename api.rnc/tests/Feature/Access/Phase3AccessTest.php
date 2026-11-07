@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use App\Modules\Assistant\Models\AssistantNote;
 use App\Modules\Auth\Models\Role;
 use App\Modules\Channel\Models\ChannelFirm;
 use App\Modules\Firm\Models\Firm;
@@ -129,5 +130,62 @@ describe('F3a channel (A25)', function () {
         expect($names)->toHaveCount(6)
             ->and($names)->not->toContain('Firma B Parceira (exemplo)')
             ->and(ChannelFirm::withoutGlobalScopes()->findOrFail($theirs->id)->stage)->toBe('contato');
+    });
+});
+
+/** F4 — the Reforma assistant (`assistant.ask` equipe + ceo, `assistant.manage` ceo + operador: R28, AM4). */
+dataset('phase 3 assistant routes', [
+    'POST assistant/ask' => ['POST', '/api/assistant/ask', false],
+    'GET assistant/suggestions' => ['GET', '/api/assistant/suggestions', false],
+    'POST assistant/questions' => ['POST', '/api/assistant/questions', false],
+    'GET assistant/notes' => ['GET', '/api/assistant/notes', false],
+    'POST assistant/notes' => ['POST', '/api/assistant/notes', false],
+    'PATCH assistant/notes/{id}' => ['PATCH', '/api/assistant/notes/{id}', false],
+    'POST assistant/notes/{id}/review' => ['POST', '/api/assistant/notes/{id}/review', false],
+    'POST assistant/notes/{id}/retire' => ['POST', '/api/assistant/notes/{id}/retire', true],
+    'GET assistant/gaps' => ['GET', '/api/assistant/gaps', true],
+]);
+
+describe('F4 assistant (A25)', function () {
+    beforeEach(function () {
+        $this->note = AssistantNote::factory()->create(['firm_id' => $this->franco->id]);
+    });
+
+    it('refuses a partner with 403', function (string $method, string $uri) {
+        $this->actingAs(phase3Partner())->json($method, str_replace('{id}', (string) $this->note->id, $uri))->assertForbidden();
+    })->with('phase 3 assistant routes');
+
+    it('asks a guest to sign in', function (string $method, string $uri) {
+        $this->json($method, str_replace('{id}', (string) $this->note->id, $uri))->assertUnauthorized();
+    })->with('phase 3 assistant routes');
+
+    it('refuses the team, a specialist too, with 403 on the assistant.manage routes (retire, gaps)', function (string $method, string $uri, bool $manage) {
+        $response = $this->actingAs(assistantPerson('equipe', specialist: true))->json($method, str_replace('{id}', (string) $this->note->id, $uri));
+
+        $manage ? $response->assertForbidden() : expect($response->status())->not->toBe(403);
+    })->with('phase 3 assistant routes');
+
+    it('lets the team ask, see the chips and hand a question off (assistant.ask)', function () {
+        assistantPerson('equipe', specialist: true);
+        $team = phase3Person('equipe');
+
+        $this->actingAs($team)->postJson('/api/assistant/ask', ['question' => 'qual o melhor ERP'])->assertOk();
+        $this->actingAs($team)->getJson('/api/assistant/suggestions')->assertOk();
+        $this->actingAs($team)->postJson('/api/assistant/questions', ['question' => 'qual o melhor ERP'])->assertCreated();
+    });
+
+    it("answers 404 on firm B's note, and lists none of firm B's", function () {
+        $firmB = Firm::factory()->create(['slug' => 'firma-b']);
+        $theirs = AssistantNote::factory()->create(['firm_id' => $firmB->id, 'slug' => 'deles']);
+        $operator = phase3Person('operador');
+
+        $this->actingAs($operator)->patchJson("/api/assistant/notes/{$theirs->id}", ['answer' => 'roubada'])->assertNotFound();
+        $this->actingAs($operator)->postJson("/api/assistant/notes/{$theirs->id}/retire")->assertNotFound();
+        $this->actingAs(assistantPerson('equipe', specialist: true))->postJson("/api/assistant/notes/{$theirs->id}/review")->assertNotFound();
+
+        $slugs = collect($this->actingAs($operator)->getJson('/api/assistant/notes')->assertOk()->json('data'))->pluck('slug');
+
+        expect($slugs)->not->toContain('deles')
+            ->and(AssistantNote::withoutGlobalScopes()->findOrFail($theirs->id)->status)->toBe('revisada');
     });
 });

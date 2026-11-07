@@ -1,10 +1,10 @@
 ---
-version: 1.1.0
+version: 1.2.0
 origin: rnc
 ---
 # RULES — Notification Module
 
-> For AI agents. rnc-1 F4, 07/11/2026; rnc-2 F2 (`ReferralStatusNotification`).
+> For AI agents. rnc-1 F4, 07/11/2026; rnc-2 F2 (`ReferralStatusNotification`); rnc-3 F4 (`AssistantQuestionNotification`, `notifyUser`).
 
 ## Domain
 
@@ -19,6 +19,9 @@ behind `notifications.read` (AM8).
 
 - **`TeamNotifier` decides who hears the bell**: every active `equipe` and `ceo` member of the
   current firm. The operator is not paged by a firm's leads. No firm set → nobody.
+- **`notifyUser` rings one person the caller picked** (rnc-3 F4): the Assistant module's hand-off
+  rings only the specialist the question went to (`AssistantQuestionNotification`); the caller has
+  already checked that person is an active specialist of the firm.
 - **A notification stores data, not sentences**: `kind` plus the fields; the SPA writes the pt-BR
   line from them, so wording changes never need a data migration.
 - **Database channel only, not queued**: it is one insert per person in the request.

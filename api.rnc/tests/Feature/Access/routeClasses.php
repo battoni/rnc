@@ -98,4 +98,15 @@ return [
     'POST channel/firms' => 'staff',
     'PATCH channel/firms/{id}' => 'staff',
     'POST channel/firms/{id}/advance' => 'staff',
+
+    // STAFF — Phase 3 (rnc-3): F4 the Reforma assistant, `assistant.ask` / `assistant.manage`
+    'POST assistant/ask' => 'staff',
+    'GET assistant/suggestions' => 'staff',
+    'POST assistant/questions' => 'staff',
+    'GET assistant/notes' => 'staff',
+    'POST assistant/notes' => 'staff',
+    'PATCH assistant/notes/{id}' => 'staff',
+    'POST assistant/notes/{id}/review' => 'staff',
+    'POST assistant/notes/{id}/retire' => 'staff',
+    'GET assistant/gaps' => 'staff',
 ];

@@ -47,9 +47,10 @@ describe('the seeded roles', function () {
         expect(seededRoleKeys('parceiro'))->toBe(['portal.access']);
     });
 
-    it('give the team only the pipeline', function () {
+    it('give the team the pipeline and the Reforma assistant', function () {
         expect(seededRoleKeys('equipe'))->toBe([
             'agenda.read',
+            'assistant.ask',
             'home.read',
             'leads.read',
             'leads.update',
@@ -57,9 +58,11 @@ describe('the seeded roles', function () {
         ]);
     });
 
-    it('give Reinaldo the team keys plus the network, the numbers, the repricing and the channel', function () {
+    it('give Reinaldo the team keys plus the network, the numbers, the repricing, the channel and the knowledge base', function () {
         expect(seededRoleKeys('ceo'))->toBe([
             'agenda.read',
+            'assistant.ask',
+            'assistant.manage',
             'channel.read',
             'clients.import',
             'home.read',
@@ -86,13 +89,18 @@ describe('the seeded roles', function () {
 
     it("keep Phase 3's keys with the operator until their own phase grants them (rnc-3 R28)", function () {
         $phase3 = ['brands.manage', 'channel.read', 'channel.manage', 'assistant.ask', 'assistant.manage', 'contracts.manage', 'briefing.read'];
-        $granted = ['ceo' => ['channel.read'], 'equipe' => [], 'parceiro' => []];
+        $granted = ['ceo' => ['assistant.ask', 'assistant.manage', 'channel.read'], 'equipe' => ['assistant.ask'], 'parceiro' => []];
 
         expect(seededRoleKeys('operador'))->toContain(...$phase3);
 
         foreach ($granted as $slug => $keys) {
             expect(array_values(array_intersect(seededRoleKeys($slug), $phase3)))->toBe($keys);
         }
+    });
+
+    it('let the team ask the assistant and keep retiring notes and the gaps with Reinaldo and the operator (rnc-3 F4, AM4)', function () {
+        expect(seededRoleKeys('equipe'))->toContain('assistant.ask')->not->toContain('assistant.manage')
+            ->and(seededRoleKeys('ceo'))->toContain('assistant.ask', 'assistant.manage');
     });
 
     it('keep the channel\'s writes and its price with the operator: Reinaldo reads it (rnc-3 F3a, R9)', function () {

@@ -28,7 +28,9 @@ use Illuminate\Database\Seeder;
  * `brands.manage` stays the operator's alone (D3); the channel, assistant, contracts and briefing
  * keys are granted to Reinaldo and the team in their own phases (F3a, F4, F6, F8). F3a gives
  * Reinaldo `channel.read` — the RNC board read-only, without the platform's price (R9, AM15);
- * `channel.manage` stays the operator's.
+ * `channel.manage` stays the operator's. F4 gives the team and Reinaldo `assistant.ask` (ask the
+ * Reforma assistant) and Reinaldo `assistant.manage` (write and retire notes, the gaps); reviewing a
+ * note is a specialist's, by `users.is_specialist`, not a key (AM4).
  *
  * Re-running the seeder rewrites the four matrices to exactly this table. A key added to a role
  * is a line here, and `SeededRolesTest` states the result.
@@ -41,6 +43,7 @@ class RoleSeeder extends Seeder
         'leads.update',
         'agenda.read',
         'notifications.read',
+        'assistant.ask',
     ];
 
     public const CEO_EXTRA_KEYS = [
@@ -51,6 +54,7 @@ class RoleSeeder extends Seeder
         'clients.import',
         'ledger.read',
         'channel.read',
+        'assistant.manage',
     ];
 
     public const PARCEIRO_KEYS = [

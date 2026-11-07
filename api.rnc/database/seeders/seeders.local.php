@@ -1,5 +1,6 @@
 <?php
 
+use Database\Seeders\AssistantNoteSeeder;
 use Database\Seeders\BrandSeeder;
 use Database\Seeders\ChannelSeeder;
 use Database\Seeders\ClientSeeder;
@@ -58,3 +59,8 @@ $this->call(ClientSeeder::class);
 // Franco's RNC channel (rnc-3 F3a): the demo's six "(exemplo)" member firms, three active, on the
 // default fee and share — local only (refuses production).
 $this->call(ChannelSeeder::class);
+
+// The Reforma knowledge base (rnc-3 F4): the demo's ten notes citing facts.md §2 (one a draft), reviewed
+// 1–5 days back by the four specialists, and two open questions — local only (refuses production),
+// after the people it names.
+$this->call(AssistantNoteSeeder::class);

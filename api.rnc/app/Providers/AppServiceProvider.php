@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Helpers\Brazil\AddressColumns;
 use App\Helpers\Brazil\PhoneNumber;
+use App\Modules\Assistant\Contracts\ReformaAnswerer;
+use App\Modules\Assistant\Drivers\CuratedNotesAnswerer;
 use App\Modules\Auth\Contracts\LoginCodeSender;
 use App\Modules\Auth\Senders\LogLoginCodeSender;
 use App\Modules\Firm\Services\CurrentBrand;
@@ -26,6 +28,15 @@ class AppServiceProvider extends ServiceProvider
      */
     private const LOGIN_CODE_SENDERS = [
         'log' => LogLoginCodeSender::class,
+    ];
+
+    /**
+     * Name => class for `assistant.driver` (rnc-3 R16, D9). `curated` — Franco's reviewed notes,
+     * matched by words — is the only one: no model, no embedding, no outward client. An unknown name
+     * stops the app at boot rather than falling back to an answerer nobody chose.
+     */
+    private const ASSISTANT_DRIVERS = [
+        'curated' => CuratedNotesAnswerer::class,
     ];
 
     /*
@@ -82,6 +93,8 @@ class AppServiceProvider extends ServiceProvider
             return $app->make($senderClass);
         });
 
+        $this->app->bind(ReformaAnswerer::class, fn ($app) => $app->make(self::assistantDriver()));
+
         // Scoped, not a singleton: the firm of one request must never be the next one's (AM6).
         $this->app->scoped(CurrentFirm::class);
         // The portal's partner, the same way (rnc-2 D2): set per request by `ResolveCurrentPartner`.
@@ -112,12 +125,23 @@ class AppServiceProvider extends ServiceProvider
             ]);
         });
 
+        // An unknown assistant driver fails here, at boot, not on the first question (rnc-3 R16).
+        self::assistantDriver();
+
         Route::patterns(array_fill_keys(self::NUMERIC_ROUTE_PARAMETERS, '[0-9]+'));
 
         $this->configureRateLimiting();
 
         // `$table->addressColumns()` / `localityColumns()` — Brazil's address block (Helpers/Brazil).
         AddressColumns::register();
+    }
+
+    /** @return class-string<ReformaAnswerer> the class `config('assistant.driver')` names */
+    private static function assistantDriver(): string
+    {
+        $driver = (string) config('assistant.driver');
+
+        return self::ASSISTANT_DRIVERS[$driver] ?? throw new InvalidArgumentException("Unknown assistant driver [{$driver}].");
     }
 
     /**

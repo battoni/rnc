@@ -1,7 +1,9 @@
 <?php
 
 use App\Models\User;
+use App\Modules\Auth\Models\Role;
 use App\Modules\Auth\Models\UserPermission;
+use App\Modules\Firm\Models\Firm;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
@@ -81,6 +83,23 @@ function userWithPermissions(array $permissionKeys): User
     }
 
     return $user;
+}
+
+/**
+ * A member of a firm in one of the seeded roles (`RoleSeeder` must have run), for the Reforma
+ * assistant's tests (rnc-3 F4): six files ask "who is acting" — a specialist, the team, Reinaldo,
+ * the operator, another firm's specialist.
+ *
+ * @param  array<string, mixed>  $attributes
+ */
+function assistantPerson(string $role, bool $specialist = false, ?Firm $firm = null, array $attributes = []): User
+{
+    return User::factory()->create([
+        'firm_id' => ($firm ?? Firm::where('slug', 'franco')->firstOrFail())->id,
+        'role_id' => Role::where('slug', $role)->value('id'),
+        'is_specialist' => $specialist,
+        ...$attributes,
+    ]);
 }
 
 /*
