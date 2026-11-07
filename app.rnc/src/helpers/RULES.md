@@ -1,5 +1,5 @@
 ---
-version: 1.12.0
+version: 1.13.0
 origin: pendulum
 based-on: 1.12.0
 ---
@@ -34,6 +34,7 @@ Shared pure utility functions with no Vue reactivity. Helpers are plain TypeScri
 | `withExternalLinks.helper.ts`          | `withExternalLinks` — every `<a>` in sanitised rich text gets `target="_blank" rel="noopener noreferrer"`, as a pair; idempotent   |
 | `localDate.helper.ts`                  | `toLocalDateString` / `toLocalDateTimeString` / `fromDayMonthYear` — a day on the person's own calendar                            |
 | `sentenceCase.helper.ts`               | Capitalizes the first character of a localized `Intl` label — never CSS `capitalize`                                               |
+| `prefersReducedMotion.helper.ts`       | `prefersReducedMotionHelper` — the system's reduced-motion preference, read when asked, `false` without `matchMedia`               |
 | `i18n/attachLocalePathGuard.helper.ts` | Rewrites EN↔PT route names so the URL matches the active locale                                                                    |
 | `i18n/getI18nRouteName.helper.ts`      | Resolves a localized route name with fallback to base name                                                                         |
 | `i18n/getLoginPath.helper.ts`          | Locale-aware login path (`/entrar` vs `/login`)                                                                                    |

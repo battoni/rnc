@@ -1,5 +1,5 @@
 ---
-version: 1.0.0
+version: 1.2.0
 origin: rnc
 ---
 
@@ -35,6 +35,11 @@ confirmation, and the "Relatório de Impacto" at `/relatorio/:token` (route `DIA
   base theme draws every `label` as a mono, upper-case caption — unlayered, so a utility class
   cannot outvote it — and the consent read in capitals is a wall.
 - **Route meta is `isOpen`** like every site route (W4), the report included (AM15).
+- **A step change is an `out-in` cross-fade keyed on `step` AND `path`** (`step-fade`, in
+  `styles/components/motion.css`), so picking "CNPJ" or "responder" crosses over too. The entrances
+  inside a step are mount-time CSS (`motion-enter`, `motion-wipe-x`), never `v-reveal`: a step is on
+  screen when it arrives. The simulator's columns wipe in sideways because their height is the rate
+  (theme RULES, Motion: never animate the axis that carries a datum).
 - **The slot picker is `MSlotPicker` + `useBooking`** (F4): the indicated specialist chosen first,
   the first day with a free slot, the e-mail asked only when the contact had none (AM5, `hasEmail`
   from the contact step). A `slot_taken`/`slot_unavailable` refusal reads the agenda again.

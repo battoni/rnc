@@ -24,7 +24,10 @@ const currentIndex = computed(() =>
       :aria-current="index === currentIndex ? 'step' : undefined"
     >
       <span
-        :class="['h-1.5 rounded-sm transition-colors', index <= currentIndex ? 'bg-primary-500' : 'bg-panel-muted']"
+        :class="[
+          'motion-calm h-1.5 rounded-sm transition-colors',
+          index <= currentIndex ? 'bg-primary-500' : 'bg-panel-muted',
+        ]"
       />
 
       <span

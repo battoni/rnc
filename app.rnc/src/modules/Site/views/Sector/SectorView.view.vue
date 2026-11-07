@@ -3,6 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 import type { SectorPage, SectorPageSummary } from '../../interfaces';
+import { vReveal } from '@Directives';
 import { HTTP_STATUS } from '@Enums';
 import { usePublicFirm, useSeo, useTracking } from '../../composables';
 import { SECTOR_GRID_ANCHOR, SITE_ROUTE_NAMES } from '../../constants';
@@ -104,30 +105,55 @@ function onSlugChange() {
       data-testid="sector-page"
       :data-sector="slug"
     >
-      <header class="from-primary-500 to-primary-800 text-primary-contrast bg-linear-to-br">
-        <div class="mx-auto flex w-full max-w-6xl flex-col gap-5 px-5 py-12 lg:py-16">
+      <header
+        class="from-primary-500 via-primary-600 to-primary-900 text-primary-contrast relative overflow-hidden bg-linear-to-br"
+      >
+        <div
+          aria-hidden="true"
+          class="pointer-events-none absolute inset-0"
+        >
+          <div
+            class="from-primary-300/30 absolute -top-40 -right-20 size-[36rem] rounded-full bg-radial to-transparent to-70% blur-3xl"
+          />
+
+          <div
+            class="absolute inset-0 [background-image:radial-gradient(var(--color-primary-100)_1px,transparent_1px)] bg-size-[28px_28px] opacity-[0.07]"
+          />
+        </div>
+
+        <div class="relative mx-auto flex w-full max-w-6xl flex-col gap-5 px-5 py-12 lg:py-16">
           <RouterLink
-            class="touch-target text-primary-200 hover:text-primary-contrast inline-flex items-center gap-2 self-start text-sm font-semibold"
+            class="touch-target text-primary-200 hover:text-primary-contrast motion-quick group inline-flex items-center gap-2 self-start text-sm font-semibold transition"
             :to="{ name: SITE_ROUTE_NAMES.home, hash: `#${SECTOR_GRID_ANCHOR}` }"
           >
             <i
               aria-hidden="true"
-              class="pi pi-arrow-left text-xs"
+              class="pi pi-arrow-left motion-quick text-xs transition group-hover:-translate-x-1"
             />
 
             {{ $t('site.sector.back') }}
           </RouterLink>
 
+          <!-- The hero assembles when the page arrives: kicker, title, lede, one stagger apart. -->
           <template v-if="page">
-            <p class="text-primary-200 text-xs font-semibold tracking-widest uppercase">
+            <p
+              class="motion-enter text-primary-200 text-xs font-semibold tracking-widest uppercase"
+              style="--reveal-index: 0"
+            >
               {{ $t('site.sector.kicker') }} · {{ page.label }}
             </p>
 
-            <h1 class="text-3xl leading-tight font-bold tracking-tight text-balance sm:text-5xl">
+            <h1
+              class="motion-enter text-3xl leading-[1.05] font-bold tracking-tight text-balance sm:text-5xl"
+              style="--reveal-index: 1"
+            >
               {{ page.title }}
             </h1>
 
-            <p class="text-primary-100 max-w-3xl text-base leading-relaxed sm:text-lg">
+            <p
+              class="motion-enter text-primary-100 max-w-3xl text-base leading-relaxed sm:text-lg"
+              style="--reveal-index: 2"
+            >
               {{ page.lede }}
             </p>
           </template>
@@ -160,22 +186,33 @@ function onSlugChange() {
         </div>
       </header>
 
-      <div class="mx-auto flex w-full max-w-6xl flex-col gap-10 px-5 py-12">
+      <div class="mx-auto flex w-full max-w-6xl flex-col gap-12 px-5 py-12 lg:py-16">
         <section
           v-if="page"
           class="flex flex-col gap-5"
         >
-          <h2 class="text-heading text-xl font-bold sm:text-2xl">
+          <h2
+            class="motion-enter text-heading text-xl font-bold sm:text-2xl"
+            style="--reveal-index: 3"
+          >
             {{ $t('site.sector.factsTitle') }}
           </h2>
 
-          <ol class="flex flex-col gap-3">
+          <!-- The dated facts: a timeline — each row holds a dot on a vertical rule, and the rows land
+               one after the other on arrival (the first screen) rather than on scroll. -->
+          <ol class="border-line relative ml-2 flex flex-col gap-3 border-l-2 pl-6 sm:ml-0 sm:border-l-0 sm:pl-0">
             <li
               v-for="(fact, index) in page.facts"
-              class="bg-panel shadow-lift grid gap-3 rounded-lg p-5 sm:grid-cols-[9rem_1fr] sm:gap-6"
+              class="motion-enter bg-panel shadow-lift hover:shadow-lift-lg motion-quick relative grid gap-3 rounded-lg p-5 transition hover:-translate-y-0.5 sm:grid-cols-[9rem_1fr] sm:gap-6"
               data-testid="sector-fact"
               :key="index"
+              :style="{ '--reveal-index': index + 4 }"
             >
+              <span
+                aria-hidden="true"
+                class="bg-primary-300 ring-canvas absolute top-6 -left-[1.95rem] size-3 rounded-full ring-4 sm:hidden"
+              />
+
               <span class="text-heading text-lg font-bold tabular-nums">
                 {{ fact.date }}
               </span>
@@ -237,10 +274,16 @@ function onSlugChange() {
 
         <section
           v-if="page"
-          class="from-primary-500 to-primary-800 text-primary-contrast flex flex-col items-start gap-5 rounded-xl bg-linear-to-r p-8 lg:flex-row lg:items-center lg:justify-between"
+          v-reveal
+          class="from-primary-500 to-primary-800 text-primary-contrast shadow-lift-lg relative flex flex-col items-start gap-5 overflow-hidden rounded-2xl bg-linear-to-r p-8 lg:flex-row lg:items-center lg:justify-between lg:p-10"
         >
-          <div class="flex flex-col gap-2">
-            <h2 class="text-xl font-bold text-balance sm:text-2xl">
+          <div
+            aria-hidden="true"
+            class="from-primary-300/30 pointer-events-none absolute -top-32 -right-16 size-[24rem] rounded-full bg-radial to-transparent to-70% blur-3xl"
+          />
+
+          <div class="relative flex flex-col gap-2">
+            <h2 class="text-xl font-bold text-balance sm:text-2xl lg:text-3xl">
               {{ $t('site.sector.ctaTitle', { sector: page.label.toLowerCase() }) }}
             </h2>
 
@@ -250,7 +293,7 @@ function onSlugChange() {
           </div>
 
           <button
-            class="touch-target bg-primary-300 text-primary-950 hover:bg-primary-200 focus-visible:outline-primary-300 motion-quick shrink-0 rounded-md px-6 py-3.5 text-base font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2"
+            class="touch-target bg-primary-300 text-primary-950 hover:bg-primary-200 focus-visible:outline-primary-300 motion-quick shadow-primary-950/30 relative shrink-0 rounded-md px-6 py-3.5 text-base font-semibold shadow-lg transition hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2"
             data-testid="sector-cta"
             type="button"
             @click="onDiagnosticClick"
@@ -263,7 +306,10 @@ function onSlugChange() {
           v-if="otherSectors.length"
           class="flex flex-col gap-5"
         >
-          <h2 class="text-heading text-xl font-bold">
+          <h2
+            v-reveal
+            class="text-heading text-xl font-bold"
+          >
             {{ $t('site.sector.others') }}
           </h2>
 

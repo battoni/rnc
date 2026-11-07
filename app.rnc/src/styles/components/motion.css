@@ -1,0 +1,238 @@
+/*
+ * Entrance and hover motion for the public site and the diagnostic (rnc-1): what the directives
+ * in `src/directives/` switch on, the mount-time entrances, and the step cross-fade.
+ *
+ * Two kinds of entrance, and the difference is who decides WHEN:
+ *
+ * - `.motion-enter`, `.motion-wipe-*`, `.motion-word` play on MOUNT, in CSS alone. An animation
+ *   with `backwards` fill starts hidden and always runs to its end, so nothing stays hidden if a
+ *   script fails: the worst case is the entrance plays with nobody looking. For what is on screen
+ *   when the page opens — the hero, a step that just arrived.
+ * - `[data-reveal]` plays when the element SCROLLS INTO VIEW. The `pending` state (hidden) is set
+ *   by `v-reveal` only after it has confirmed an IntersectionObserver exists and the person has
+ *   not asked for less motion. Markup the directive never touched is plain, visible markup.
+ *   A mount-time entrance inside a pending block is paused until the block is shown, so the two
+ *   compose: a bar inside a revealed card wipes in when the card does, not before.
+ *
+ * `--reveal-index` (set by `v-reveal.stagger` on children, or by hand in a `style`) delays an
+ * entrance by that many `--motion-stagger`; it inherits, so a bar inside the third card waits for
+ * the third card.
+ *
+ * Every duration is a token (`tailwind.css`, MOTION), so the reduced-motion collapse reaches it;
+ * `--motion-stagger` goes to nothing there and a staggered row arrives as one step. The rises
+ * also swap to a plain fade under that preference: a near-instant step is right, a near-instant
+ * jump of 18px is not. Paper holds still and shows everything.
+ */
+
+/* ---- Mount-time entrances */
+.motion-enter {
+  animation: motion-rise var(--motion-settle) var(--motion-ease-settle) backwards;
+  animation-delay: calc(var(--reveal-index, 0) * var(--motion-stagger));
+}
+
+/* A headline's words rising from behind a mask. The outer span clips, the inner one moves;
+   the padding keeps descenders inside the clip. */
+.motion-word {
+  display: inline-block;
+  margin-bottom: -0.12em;
+  overflow: hidden;
+  padding-bottom: 0.12em;
+  vertical-align: top;
+}
+
+.motion-word > span {
+  animation: motion-word-rise var(--motion-settle) var(--motion-ease-settle) backwards;
+  animation-delay: calc(var(--reveal-index, 0) * var(--motion-stagger));
+  display: inline-block;
+}
+
+/* A bar wiping in ACROSS the axis that carries its number (theme RULES, Motion: never animate
+   the property that is the datum — a bar growing to its height shows a false number while it
+   grows). A vertical bar wipes in sideways; a horizontal bar thickens from its baseline. One
+   `calm` after its row, so the card is in place before the line is drawn on it. */
+.motion-wipe-x,
+.motion-wipe-y {
+  animation: motion-wipe-x var(--motion-settle) var(--motion-ease-settle) backwards;
+  animation-delay: calc(var(--reveal-index, 0) * var(--motion-stagger) + var(--motion-calm));
+  transform-origin: center;
+}
+
+.motion-wipe-y {
+  animation-name: motion-wipe-y;
+  transform-origin: bottom;
+}
+
+/* ---- Reveal on scroll (v-reveal / v-reveal.stagger) */
+[data-reveal='pending'] {
+  opacity: 0;
+}
+
+[data-reveal='pending'] :is(.motion-enter, .motion-wipe-x, .motion-wipe-y, .motion-word > span) {
+  animation-play-state: paused;
+}
+
+[data-reveal='shown']:not([data-stagger]) {
+  animation: motion-rise var(--motion-settle) var(--motion-ease-settle) backwards;
+}
+
+[data-reveal='shown'][data-stagger] > * {
+  animation: motion-rise var(--motion-settle) var(--motion-ease-settle) backwards;
+  animation-delay: calc(var(--reveal-index, 0) * var(--motion-stagger));
+}
+
+@keyframes motion-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+
+@keyframes motion-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes motion-word-rise {
+  from {
+    opacity: 0;
+    transform: translateY(105%);
+  }
+}
+
+@keyframes motion-wipe-x {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes motion-wipe-y {
+  from {
+    transform: scaleY(0);
+  }
+}
+
+/* ---- Rolling numbers (v-count-up). The element keeps its real text; while it rolls the text
+   is painted transparent and the in-between value sits on top. `currentColor` is still the
+   element's own colour: only the fill was cleared. */
+[data-counting] {
+  position: relative;
+  -webkit-text-fill-color: transparent;
+}
+
+[data-counting]::after {
+  content: attr(data-show);
+  inset: 0;
+  position: absolute;
+  white-space: nowrap;
+  -webkit-text-fill-color: currentColor;
+}
+
+/* ---- Spotlight (v-spotlight): a brand light under the pointer, between the card's fill and
+   its content. `isolation` keeps the negative z-index inside the card. */
+[data-spotlight] {
+  isolation: isolate;
+  position: relative;
+}
+
+[data-spotlight]::before {
+  background: radial-gradient(
+    22rem circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    color-mix(in srgb, var(--color-primary-300) 18%, transparent),
+    transparent 60%
+  );
+  border-radius: inherit;
+  content: '';
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  transition: opacity var(--motion-calm) var(--motion-ease-settle);
+  z-index: -1;
+}
+
+[data-spotlight]:hover::before {
+  opacity: 1;
+}
+
+/* ---- Tilt (v-tilt): the lean toward the pointer, settling back on its own curve. */
+[data-tilt] {
+  transform: perspective(1200px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+  transform-style: preserve-3d;
+  transition: transform var(--motion-settle) var(--motion-ease-settle);
+}
+
+/* ---- Ambient drift for the hero's picture of the product: the one idle animation on the site.
+   Outside the four-step scale on purpose — the scale times a response to something, and this
+   answers nothing; it is what makes the card read as floating before anyone moves. Infinite, so
+   the e2e wait for finite animations ignores it; gone under reduced motion. */
+.motion-float {
+  animation: motion-float 7s ease-in-out infinite alternate;
+}
+
+@keyframes motion-float {
+  to {
+    transform: translateY(-8px);
+  }
+}
+
+/* ---- Step change in the diagnostic (`<Transition name="step-fade" mode="out-in">`): the old
+   step fades on `quick`, the new one rises on `calm`. */
+.step-fade-enter-active {
+  transition:
+    opacity var(--motion-calm) var(--motion-ease-settle),
+    translate var(--motion-calm) var(--motion-ease-settle);
+}
+
+.step-fade-leave-active {
+  transition: opacity var(--motion-quick) var(--motion-ease-settle);
+}
+
+.step-fade-enter-from {
+  opacity: 0;
+  translate: 0 10px;
+}
+
+.step-fade-leave-to {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-enter,
+  .motion-word > span,
+  .motion-wipe-x,
+  .motion-wipe-y,
+  [data-reveal='shown']:not([data-stagger]),
+  [data-reveal='shown'][data-stagger] > * {
+    animation-name: motion-fade;
+  }
+
+  .motion-float {
+    animation: none;
+  }
+
+  .step-fade-enter-from {
+    translate: none;
+  }
+}
+
+@media print {
+  .motion-enter,
+  .motion-word > span,
+  .motion-wipe-x,
+  .motion-wipe-y,
+  .motion-float,
+  [data-reveal],
+  [data-reveal] > * {
+    animation: none;
+    opacity: 1;
+  }
+
+  [data-counting] {
+    -webkit-text-fill-color: currentColor;
+  }
+
+  [data-counting]::after {
+    content: none;
+  }
+}

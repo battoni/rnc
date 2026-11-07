@@ -130,6 +130,8 @@ export default defineConfig(({ mode }) => {
         '@Assets/*': getPath('./src/assets/*'),
         '@Constants': getPath('./src/constants'),
         '@Constants/*': getPath('./src/constants/*'),
+        '@Directives': getPath('./src/directives'),
+        '@Directives/*': getPath('./src/directives/*'),
         '@Enums': getPath('./src/enums'),
         '@Enums/*': getPath('./src/enums/*'),
         '@Helpers': getPath('./src/helpers'),

@@ -33,6 +33,7 @@ const moduleAliases = [
   'Assets',
   'Composables',
   'Constants',
+  'Directives',
   'Enums',
   'Helpers',
   'Interfaces',

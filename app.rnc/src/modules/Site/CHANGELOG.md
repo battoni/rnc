@@ -1,5 +1,22 @@
 # Changelog — Site Module
 
+## 1.3.0 — 2026-11-07
+
+### Added
+
+- The motion after the demo (rnc-1): the hero assembles on mount (kicker, headline word by word via
+  the new `AWordRise` atom, lede, buttons, countdown, then the picture of the product, which floats,
+  leans toward the pointer and rolls its count); the proof figures roll up (`v-count-up`); every
+  band below the fold rises into view (`v-reveal`, staggered cards); the "o que muda" and sector
+  cards lift and carry a spotlight; the timeline bars thicken in. The sector page's hero and facts
+  land in sequence and its facts read as a timeline on a phone. `AWordRise.spec.ts`.
+
+### Changed
+
+- `MDiagnosticPreview` takes `enterIndex` (where the hero's words end) so the card follows the copy.
+- The navy bands carry a cyan glow and a faint dot grid; section headers an eyebrow rule; the
+  closing band a larger radius and relief. Hover on a CTA lifts it.
+
 ## 1.2.0 — 2026-11-07
 
 ### Changed

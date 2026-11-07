@@ -13,6 +13,8 @@
       "@Assets/*": ["./src/assets/*"],
       "@Constants": ["./src/constants"],
       "@Constants/*": ["./src/constants/*"],
+      "@Directives": ["./src/directives"],
+      "@Directives/*": ["./src/directives/*"],
       "@Enums": ["./src/enums"],
       "@Enums/*": ["./src/enums/*"],
       "@Helpers": ["./src/helpers"],
