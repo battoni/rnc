@@ -92,7 +92,7 @@ describe('ReceptionistScript — the turns (R12)', () => {
     expect(running.replies).toEqual([]);
     expect(running.input).toBeNull();
     expect(found.askParams.name).toBe(COMPANY_FIXTURE.name);
-    expect(found.replies.map((reply) => reply.value)).toEqual(['sim', 'nao']);
+    expect(found.replies.map((reply) => reply.value)).toEqual(['sim', 'cnpj', 'quiz']);
     expect(unavailable.replies.map((reply) => reply.value)).toEqual(['quiz', 'cnpj']);
   });
 
@@ -194,7 +194,9 @@ describe('ReceptionistScript — typed text at an option turn (R13, A11)', () =>
     const unavailable = { lookupStatus: LOOKUP_STATUS.UNAVAILABLE };
 
     expect(read(CHAT_TURN.LOOKUP, 'sim, é ela', found).value).toBe('sim');
-    expect(read(CHAT_TURN.LOOKUP, 'não é essa', found).value).toBe('nao');
+    expect(read(CHAT_TURN.LOOKUP, 'não é essa', found).value).toBe('cnpj');
+    expect(read(CHAT_TURN.LOOKUP, 'outro cnpj', found).value).toBe('cnpj');
+    expect(read(CHAT_TURN.LOOKUP, 'questionário', found).value).toBe('quiz');
     expect(read(CHAT_TURN.LOOKUP, 'questionário', unavailable).value).toBe('quiz');
     expect(read(CHAT_TURN.LOOKUP, 'outro cnpj', unavailable).value).toBe('cnpj');
     expect(read(CHAT_TURN.LOOKUP, 'sim', { lookupStatus: LOOKUP_STATUS.RUNNING }).errorKey).toBe(NOT_UNDERSTOOD);

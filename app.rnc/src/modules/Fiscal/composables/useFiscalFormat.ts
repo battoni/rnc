@@ -5,9 +5,10 @@ import { formatReal } from '@Helpers';
 const CENTS_PER_REAL = 100;
 
 /**
- * The fiscal screens' figures in the screen's language: counts, percentages to one decimal, a
- * money range in full ("R$ 77.400,00 – R$ 84.600,00") or short for a headline that must fit a card
- * at 390 px ("R$ 1,2 mi – R$ 1,3 mi", the demo's `fMoneyShort`), and a moment in São Paulo.
+ * The fiscal screens' figures: counts and percentages to one decimal in the screen's language (the
+ * app's convention); always in pt-BR, whatever the language, a money range in full ("R$ 77.400,00 –
+ * R$ 84.600,00") or short for a headline that must fit a card at 390 px ("R$ 1,2 mi – R$ 1,3 mi",
+ * the demo's `fMoneyShort`), and a moment in São Paulo (Fiscal RULES.md).
  */
 export default function useFiscalFormat() {
   const { locale } = useI18n();

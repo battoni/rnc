@@ -1,7 +1,7 @@
 ---
-version: 1.0.0
+version: 1.0.1
 origin: rnc
-based-on: 1.0.0
+based-on: 1.0.1
 ---
 
 # RULES — Fiscal Module
@@ -25,6 +25,11 @@ has no screen here: the Radar (rnc-2 F10) shows it.
   status, the hero, the supplier shares and the lost-credit range — comes computed (F7). Money is
   integer cents through `formatReal`; percentages and counts through `useFiscalFormat` in the
   screen's language. Never re-derive a status or a range here.
+- **Counts and percentages follow the UI language; money and moments are always pt-BR** (rnc-2
+  review S4). Counts and % are the app's convention (Metrics, Repricing, the Portal's SLA chip all
+  format them in the screen's locale); money is BRL and a moment is São Paulo's, so they read as
+  Franco's papers do ("R$ 1.234,56", "07/11/2026 14:30") in any language. In English one line may
+  therefore mix "1,234 invoices" with "R$ 1.234,56" — accepted, not a bug.
 - **Ranges, labelled estimates.** The credit lost a year is always `[low, high]`, shown as
   "R$ x – R$ y" with an "estimativa" tag; the KPI headline uses the short form ("R$ 1,2 mi – R$ 1,3
   mi", the full range in its `title`) so it fits a card at 390 px. Readiness counts are facts read

@@ -301,6 +301,39 @@ for (const scheme of ['light', 'dark'] as const) {
 }
 
 /*
+ * The state words in their own tint, and the body text on the muted panel (rnc-2, W91).
+ *
+ * The state palettes do not flip with the scheme, so a chip (`bg-danger-50 text-danger-800`) reads
+ * the same in both — but only as a pair: the screens' own contrast tests (chat, Fiscal, Radar) reach
+ * the pairs they render, and the Portal, Ledger, Partner and Pipeline chips are measured nowhere
+ * else. Every tint pair a screen writes is listed here, so a palette change fails once, at the token.
+ */
+const STATE_TINT_PAIRS: [string, string][] = [
+  ['--color-danger-800', '--color-danger-50'],
+  ['--color-success-800', '--color-success-50'],
+  ['--color-success-800', '--color-success-100'],
+  ['--color-info-800', '--color-info-50'],
+  ['--color-warn-800', '--color-warn-50'],
+  ['--color-warn-800', '--color-warn-100'],
+  ['--color-warn-900', '--color-warn-50'],
+  ['--color-primary-950', '--color-primary-50'],
+  ['--color-primary-950', '--color-primary-100'],
+  ['--color-body', '--color-panel-muted'],
+  ['--color-heading', '--color-panel-muted'],
+];
+
+for (const scheme of ['light', 'dark'] as const) {
+  test(`every state tint pair and the muted panel's text clear 4.5:1, ${scheme}`, async ({ page }) => {
+    await openComponents(page);
+
+    const resolved = await resolvePairs(page, scheme, STATE_TINT_PAIRS);
+
+    expect(resolved).toHaveLength(STATE_TINT_PAIRS.length);
+    expectReadable(resolved, scheme);
+  });
+}
+
+/*
  * What actually renders: the colour an element is painted in, against the first opaque ground
  * behind it. A token can be right and a stylesheet can still outvote it — the global `.p-badge`
  * rule painted every badge lime with white text (1.51:1) whatever its severity said.

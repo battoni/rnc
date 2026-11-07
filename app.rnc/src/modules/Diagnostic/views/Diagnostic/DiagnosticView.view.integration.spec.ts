@@ -328,6 +328,20 @@ describe('DiagnosticView — the CNPJ path', () => {
     expect(await screen.findByTestId('cnpj-invalid', {}, { timeout: 3000 })).toBeTruthy();
   });
 
+  it('says the diagnostic is unavailable, not that the CNPJ is wrong, when the start failed — and retries it', async () => {
+    server.use(http.post(API, () => HttpResponse.json({ message: 'down' }, { status: 500 }), { once: true }));
+    renderDiagnostic();
+
+    await fireEvent.click(screen.getByTestId('path-cnpj'));
+    await screen.findByTestId('step-error');
+    await fireEvent.update(screen.getByTestId('cnpj-input'), '11.222.333/0001-81');
+    await fireEvent.click(screen.getByTestId('cnpj-lookup'));
+
+    expect(screen.queryByTestId('cnpj-invalid')).toBeNull();
+    expect(screen.getByTestId('step-error').textContent).toContain('Could not save right now');
+    await waitFor(() => expect(requests.filter((request) => request.path === 'start')).toHaveLength(1));
+  });
+
   it('does not call the API for a CNPJ without 14 digits', async () => {
     renderDiagnostic();
 

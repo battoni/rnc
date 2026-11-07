@@ -154,13 +154,17 @@ test('says "Não entendi…" to a line that matches no option, and keeps the que
   await turnIs(page, 'sector');
   await say(page, 'não sei de nada');
 
-  await expect(page.getByRole('alert')).toHaveText(/Não entendi\. Escolha uma das opções abaixo\./);
+  await expect(page.getByRole('log').getByTestId('chat-error')).toHaveText(
+    /Não entendi\. Escolha uma das opções abaixo\./
+  );
+  // The log is the live region: no alert inside it, or a screen reader says the line twice.
+  await expect(page.getByRole('alert')).toHaveCount(0);
   await turnIs(page, 'sector');
 
   await say(page, 'saude');
 
   await turnIs(page, 'regime');
-  await expect(page.getByRole('alert')).toHaveCount(0);
+  await expect(page.getByTestId('chat-error')).toHaveCount(0);
 });
 
 test('keeps the answers when the visitor switches to the form mid-way', async ({ page }) => {
@@ -192,7 +196,7 @@ for (const scheme of ['light', 'dark'] as const) {
     await openChat(page);
     await tap(page, 'quiz');
     await say(page, 'não sei de nada');
-    await expect(page.getByRole('alert')).toBeVisible();
+    await expect(page.getByTestId('chat-error')).toBeVisible();
 
     const ratios = await page.evaluate((schemeName) => {
       document.documentElement.setAttribute('data-theme', schemeName);

@@ -173,9 +173,11 @@ describe('who each class refuses (A2)', function () {
         $this->actingAs(matrixPartnerUser())->json($method, matrixUrl($method, $uri), ['name' => 'NexoERP'])->assertSuccessful();
     })->with('shared routes');
 
-    it('lets a partner through the gate of every portal route', function (string $method, string $uri) {
+    it('lets a partner through the gate of every portal route: 200, or 404/422 for the placeholder, never 5xx', function (string $method, string $uri) {
+        // No body and a placeholder id: a list answers 200, an id that is not the partner's 404, a
+        // write without its fields 422. Anything else — 401/403 (the gate) or a 5xx — is a failure.
         $status = $this->actingAs(matrixPartnerUser())->json($method, matrixUrl($method, $uri))->status();
 
-        expect($status)->not->toBeIn([401, 403]);
+        expect($status)->toBeIn([200, 404, 422]);
     })->with('portal routes');
 });

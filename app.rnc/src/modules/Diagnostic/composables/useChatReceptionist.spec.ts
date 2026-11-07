@@ -250,7 +250,7 @@ describe('useChatReceptionist — the talk (R12–R13)', () => {
 
     expect(chat.log.value.slice(1)).toMatchObject([
       { key: 'diagnostic.chat.asks.path', speaker: 'reception' },
-      { speaker: 'visitor', text: "I don't have the CNPJ" },
+      { key: 'diagnostic.chat.replies.noCnpj', speaker: 'visitor' },
     ]);
     expect(chat.turn.value).toBe(CHAT_TURN.SECTOR);
   });
@@ -329,6 +329,88 @@ describe('useChatReceptionist — the talk (R12–R13)', () => {
     expect(chat.turn.value).toBe(CHAT_TURN.CNPJ);
     expect(chat.errorKey.value).toBe('diagnostic.cnpj.invalid');
     expect(requests.some((request) => request.path === 'cnpj')).toBe(false);
+  });
+
+  it('says the diagnostic is unavailable, not that the CNPJ is wrong, when the start failed — and retries it', async () => {
+    server.use(http.post(API, () => HttpResponse.json({ message: 'down' }, { status: 500 }), { once: true }));
+    const { chat, diagnostic } = mountChat();
+
+    await reply(chat, 'cnpj');
+    await waitFor(() => expect(diagnostic.errorKey.value).toBe('diagnostic.errors.unavailable'));
+    await waitFor(() => expect(chat.isBusy.value).toBe(false));
+    chat.typed.value = '11.222.333/0001-81';
+    chat.send();
+
+    expect(chat.turn.value).toBe(CHAT_TURN.CNPJ);
+    expect(chat.errorKey.value).toBe('diagnostic.errors.unavailable');
+    expect(requests.some((request) => request.path === 'cnpj')).toBe(false);
+
+    await waitStarted();
+    await type(chat, '11.222.333/0001-81');
+
+    expect(chat.turn.value).toBe(CHAT_TURN.LOOKUP);
+    expect(chat.errorKey.value).toBeNull();
+  });
+
+  it("drops the API's refusal of the contact once the visitor answers the turn again", async () => {
+    let refusals = 1;
+
+    server.use(
+      http.patch(`${API}/:token`, async ({ request }) => {
+        const body = (await request.clone().json()) as Record<string, unknown>;
+
+        if (!body.contact || refusals-- <= 0) return undefined;
+
+        return HttpResponse.json({ message: 'invalid' }, { status: 422 });
+      })
+    );
+    const { chat } = mountChat();
+
+    await reply(chat, 'quiz');
+    await waitStarted();
+    await reply(chat, 'saude');
+    await reply(chat, 'simples');
+    await type(chat, 'Clínica Horizonte');
+    await type(chat, 'Ana');
+    await type(chat, '(11) 98888-7777');
+    await reply(chat, 'autorizo');
+
+    expect(chat.turn.value).toBe(CHAT_TURN.CONTACT);
+    expect(chat.errorKey.value).toBe('diagnostic.errors.contactInvalid');
+
+    await type(chat, 'ana@horizonte.com.br');
+
+    expect(chat.turn.value).toBe(CHAT_TURN.CONSENT);
+    expect(chat.errorKey.value).toBeNull();
+  });
+
+  it('offers another CNPJ or the questionnaire when the company found is not theirs', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    const { chat, diagnostic } = mountChat();
+
+    await reply(chat, 'cnpj');
+    await waitStarted();
+    await waitFor(() => expect(chat.isBusy.value).toBe(false));
+    chat.typed.value = '11.222.333/0001-81';
+    chat.send();
+    await vi.advanceTimersByTimeAsync(2000);
+    await waitFor(() => expect(diagnostic.lookupStatus.value).toBe(LOOKUP_STATUS.FOUND));
+
+    expect(chat.prompt.value?.replies.map((entry) => entry.value)).toEqual(['sim', 'cnpj', 'quiz']);
+
+    await reply(chat, 'cnpj');
+
+    expect(chat.turn.value).toBe(CHAT_TURN.CNPJ);
+    expect(diagnostic.company.value).toBeNull();
+    expect(diagnostic.contact.value.company).toBe('');
+  });
+
+  it('keeps a quick reply as its key, so the transcript follows a language switch', async () => {
+    const { chat } = mountChat();
+
+    await reply(chat, 'quiz');
+
+    expect(chat.log.value[2]).toEqual({ id: 2, key: 'diagnostic.chat.replies.noCnpj', params: {}, speaker: 'visitor' });
   });
 });
 
