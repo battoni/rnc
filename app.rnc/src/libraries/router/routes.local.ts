@@ -1,5 +1,6 @@
 import type { RouteRecordRaw } from 'vue-router';
 import { BrandsModuleRoutes } from '@BrandsModule';
+import { ChannelModuleRoutes } from '@ChannelModule';
 import { DiagnosticModuleRoutes } from '@DiagnosticModule';
 import { WorkspaceRoutes } from '@HomeModule';
 import { MetricsModuleRoutes } from '@MetricsModule';
@@ -24,7 +25,7 @@ import { SiteRoutes } from '@SiteModule';
  */
 // rnc-1: the public site (F1 landing, F2 sector pages, F3 diagnostic), the back office's three workspaces and the
 // team's pipeline (F5), Reinaldo's network (F6), metrics (F7) and fee repricing (F8). rnc-2: the
-// partner's portal (F1). rnc-3: the operator's brands console (F2).
+// partner's portal (F1). rnc-3: the operator's brands console (F2) and the RNC channel (F3b).
 const localRoutes: RouteRecordRaw[] = [
   ...SiteRoutes,
   ...DiagnosticModuleRoutes,
@@ -35,6 +36,7 @@ const localRoutes: RouteRecordRaw[] = [
   ...RepricingModuleRoutes,
   ...PortalModuleRoutes,
   ...BrandsModuleRoutes,
+  ...ChannelModuleRoutes,
 ];
 
 export default localRoutes;

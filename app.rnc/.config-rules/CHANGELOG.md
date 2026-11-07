@@ -3,6 +3,13 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.3.0 — 2026-11-07
+
+### Added
+- rnc-3: the `@BrandsModule` (F2) and `@ChannelModule` (F3b) aliases in the three files, and
+  `primevue/inputnumber` in `optimizeDeps.include` — the channel form is its first template
+  (`optimizeDeps.spec.ts` went red without it).
+
 ## 1.2.0 — 2026-09-12
 
 ### Added

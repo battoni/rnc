@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.11.0 — 2026-11-07
+
+### Added
+
+- `channel/channel.spec.ts` (rnc-3 F3b, R8, R9, A9): the operator advances Litoral and the hero follows the board the move answers (R$ 1.575 → R$ 2.100 a month), the move naming its target; Reinaldo's screen has no button, no "R$ 3.500" and no "pela plataforma" at 390 in light and 1440 in dark, with no sideways scroll; the channel is in his rail.
+
 ## 1.10.0 — 2026-11-07
 
 ### Added

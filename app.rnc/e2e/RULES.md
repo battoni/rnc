@@ -1,5 +1,5 @@
 ---
-version: 1.9.0
+version: 1.11.0
 origin: pendulum
 based-on: 1.8.2
 ---
@@ -57,6 +57,7 @@ e2e/
   theme/             ← what the theme promises, as the browser computed it: contrast, relief,
                        touch targets, scrollbars, the viewport height, the dialog mask
   ideas/             ← the Ideas board and an opened idea, at phone width
+  channel/           ← the RNC channel: the operator's advance, Reinaldo's read-only screen (rnc-3)
   static/            ← what the app serves, not what a person does (robots.txt)
 ```
 

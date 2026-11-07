@@ -48,6 +48,8 @@
       "@MetricsModule/*": ["./src/modules/Metrics/*"],
       "@BrandsModule": ["./src/modules/Brands"],
       "@BrandsModule/*": ["./src/modules/Brands/*"],
+      "@ChannelModule": ["./src/modules/Channel"],
+      "@ChannelModule/*": ["./src/modules/Channel/*"],
       "@PartnerModule": ["./src/modules/Partner"],
       "@PartnerModule/*": ["./src/modules/Partner/*"],
       "@PortalModule": ["./src/modules/Portal"],

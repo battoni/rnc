@@ -42,7 +42,8 @@
     "metrics": "Metrics",
     "repricing": "Repricing",
     "portal": "Partner portal",
-    "brands": "Brands"
+    "brands": "Brands",
+    "channel": "RNC channel"
   },
   "rolesAndPermissions": {
     "groups": {
@@ -990,6 +991,63 @@
       "cancel": "Cancel",
       "save": "Save brand",
       "heading": "Edit brand"
+    }
+  },
+  "channel": {
+    "title": "RNC channel",
+    "manageLede": "Franco belongs to the Rede Nacional de Contabilidade and introduces the platform to the network's firms. Each active firm pays {fee} a month for the platform, and Franco keeps {share} as the channel. The firms are examples.",
+    "readLede": "The Rede Nacional de Contabilidade firms Franco introduces, the stage each one is at and what Franco earns once they go live. The firms are examples.",
+    "hero": {
+      "label": "Franco's revenue from the channel",
+      "base": "No active firm yet · {yearly} a year. | {count} active firm · {yearly} a year. | {count} active firms · {yearly} a year.",
+      "pending": "{amount}/month more when the others go live.",
+      "allActive": "Every firm in the channel is active."
+    },
+    "perMonth": "{amount}/month",
+    "toVerify": "Amount to be checked — no automatic billing",
+    "stagesLabel": "Firms by stage",
+    "stages": {
+      "contato": "Contact",
+      "demo": "Demo",
+      "implantacao": "Onboarding",
+      "ativo": "Active"
+    },
+    "stageAria": "Stage: {stage}",
+    "listTitle": "Firms in the channel",
+    "since": "{city} · at this stage since {date}",
+    "shareLabel": "Franco's share",
+    "feeLabel": "Monthly fee",
+    "onActivation": "once active",
+    "advance": "Move to {stage}",
+    "edit": "Edit",
+    "add": "Add firm",
+    "advanced": "{name} moved to {stage}.",
+    "stale": "{name} had already changed stage. The board was refreshed.",
+    "saved": "{name} saved.",
+    "added": "{name} joined the channel, at Contact.",
+    "loadFailed": "The channel could not be loaded.",
+    "retry": "Try again",
+    "emptyTitle": "No firm in the channel",
+    "emptyManage": "Add the first network firm Franco is introducing.",
+    "emptyRead": "When Franco introduces a network firm, it shows up here.",
+    "invalidTransition": "This firm has already changed stage.",
+    "notFound": "This firm is no longer in the channel.",
+    "form": {
+      "addHeading": "New firm in the channel",
+      "editHeading": "Edit firm",
+      "name": "Firm",
+      "city": "City",
+      "fee": "Platform monthly fee",
+      "share": "Franco's share (%)",
+      "notes": "Notes",
+      "notesHint": "Only whoever runs the channel sees these.",
+      "preview": "Franco's share: {amount}/month once active",
+      "startsAt": "Starts at Contact; the stage moves with the Move button.",
+      "required": "Required.",
+      "feeBounds": "Between {min} and {max}.",
+      "shareBounds": "Between {min}% and {max}%.",
+      "save": "Save",
+      "cancel": "Cancel"
     }
   }
 }

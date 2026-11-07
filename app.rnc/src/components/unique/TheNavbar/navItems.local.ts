@@ -2,6 +2,7 @@ import { computed } from 'vue';
 import type { ComputedRef } from 'vue';
 import type { NavItem } from './interfaces';
 import { BRANDS_PERMISSIONS, BRANDS_ROUTE_NAMES } from '@BrandsModule';
+import { CHANNEL_PERMISSIONS, CHANNEL_ROUTE_NAMES } from '@ChannelModule';
 import { WORKSPACES } from '@HomeModule';
 import { METRICS_PERMISSIONS, METRICS_ROUTE_NAMES } from '@MetricsModule';
 import { PARTNER_PERMISSIONS, PARTNER_ROUTE_NAMES } from '@PartnerModule';
@@ -52,7 +53,7 @@ import { REPRICING_PERMISSIONS, REPRICING_ROUTE_NAMES } from '@RepricingModule';
  */
 /**
  * What each group already holds. The team's has its pipeline and agenda (F5); the operator's carries
- * the bootstrap's own administration screens; Reinaldo's has the metrics (F7), the network (F6) and the fee repricing (F8). Route
+ * the bootstrap's own administration screens; Reinaldo's has the metrics (F7), the network (F6) and the fee repricing (F8); rnc-3 F3b puts the RNC channel in his and the operator's. Route
  * names are the owners' (celer-05), never an import of their screens.
  */
 const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
@@ -95,6 +96,13 @@ const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
       permission: REPRICING_PERMISSIONS.manage,
       routeName: REPRICING_ROUTE_NAMES.list,
     },
+    // rnc-3 F3b: the RNC channel, read-only for Reinaldo (R9).
+    {
+      icon: 'pi pi-share-alt',
+      label: 'navigation.channel',
+      permission: CHANNEL_PERMISSIONS.read,
+      routeName: CHANNEL_ROUTE_NAMES.ceo,
+    },
   ],
   operator: [
     { icon: 'pi pi-users', label: 'navigation.users', permission: 'users.read', routeName: 'users' },
@@ -110,6 +118,13 @@ const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
       label: 'navigation.brands',
       permission: BRANDS_PERMISSIONS.manage,
       routeName: BRANDS_ROUTE_NAMES.list,
+    },
+    // rnc-3 F3b: the RNC channel Franco runs (R8).
+    {
+      icon: 'pi pi-share-alt',
+      label: 'navigation.channel',
+      permission: CHANNEL_PERMISSIONS.read,
+      routeName: CHANNEL_ROUTE_NAMES.operator,
     },
   ],
 };

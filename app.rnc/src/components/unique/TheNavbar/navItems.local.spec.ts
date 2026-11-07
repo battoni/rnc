@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import type { NavItem } from './interfaces';
 import { useLocalNavItems } from './navItems.local';
 
 /*
@@ -23,7 +24,12 @@ describe('useLocalNavItems', () => {
   it("puts the bootstrap's administration screens in the operator's group", () => {
     const operator = useLocalNavItems().value[2];
 
-    expect(operator?.children?.map((child) => child.routeName)).toEqual(['users', 'roles-and-permissions', 'brands']);
+    expect(operator?.children?.map((child) => child.routeName)).toEqual([
+      'users',
+      'roles-and-permissions',
+      'brands',
+      'channel',
+    ]);
   });
 
   it("puts the brands console in the operator's group, behind its own key (rnc-3 R5, D3)", () => {
@@ -49,6 +55,18 @@ describe('useLocalNavItems', () => {
       ['partners', 'partners.manage'],
       ['referral-trail', 'referrals.read'],
       ['repricing', 'repricing.manage'],
+      ['ceo-channel', 'channel.read'],
     ]);
+  });
+
+  it("puts the RNC channel in the operator's group and in Reinaldo's, both on the read key (rnc-3 R8, R9)", () => {
+    const [, ceo, operator] = useLocalNavItems().value;
+    const channelOf = (children: NavItem['children']) =>
+      children
+        ?.filter((child) => child.label === 'navigation.channel')
+        .map((child) => [child.routeName, child.permission]);
+
+    expect(channelOf(operator?.children)).toEqual([['channel', 'channel.read']]);
+    expect(channelOf(ceo?.children)).toEqual([['ceo-channel', 'channel.read']]);
   });
 });

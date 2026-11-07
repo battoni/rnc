@@ -42,7 +42,8 @@
     "metrics": "Métricas",
     "repricing": "Reajuste",
     "portal": "Portal do parceiro",
-    "brands": "Marcas"
+    "brands": "Marcas",
+    "channel": "Canal RNC"
   },
   "rolesAndPermissions": {
     "groups": {
@@ -990,6 +991,63 @@
       "cancel": "Cancelar",
       "save": "Salvar marca",
       "heading": "Editar marca"
+    }
+  },
+  "channel": {
+    "title": "Canal RNC",
+    "manageLede": "A Franco é da Rede Nacional de Contabilidade e apresenta a plataforma aos escritórios da rede. Cada escritório ativo paga {fee}/mês pela plataforma, e a Franco fica com {share} como canal. Os escritórios são exemplos.",
+    "readLede": "Os escritórios da Rede Nacional de Contabilidade que a Franco apresenta, a etapa de cada um e o que cabe à Franco quando ativam. Os escritórios são exemplos.",
+    "hero": {
+      "label": "Receita da Franco pelo canal",
+      "base": "Nenhum escritório ativo ainda · {yearly} por ano. | {count} escritório ativo · {yearly} por ano. | {count} escritórios ativos · {yearly} por ano.",
+      "pending": "Mais {amount}/mês quando os outros ativarem.",
+      "allActive": "Todos os escritórios do canal estão ativos."
+    },
+    "perMonth": "{amount}/mês",
+    "toVerify": "Valor a conferir — sem cobrança automática",
+    "stagesLabel": "Escritórios por etapa",
+    "stages": {
+      "contato": "Contato",
+      "demo": "Demo",
+      "implantacao": "Implantação",
+      "ativo": "Ativo"
+    },
+    "stageAria": "Etapa: {stage}",
+    "listTitle": "Escritórios no canal",
+    "since": "{city} · nesta etapa desde {date}",
+    "shareLabel": "Parte da Franco",
+    "feeLabel": "Mensalidade",
+    "onActivation": "na ativação",
+    "advance": "Avançar para {stage}",
+    "edit": "Editar",
+    "add": "Adicionar escritório",
+    "advanced": "{name} avançou para {stage}.",
+    "stale": "{name} já tinha mudado de etapa. O quadro foi atualizado.",
+    "saved": "{name} salvo.",
+    "added": "{name} entrou no canal, em Contato.",
+    "loadFailed": "Não foi possível carregar o canal.",
+    "retry": "Tentar de novo",
+    "emptyTitle": "Nenhum escritório no canal",
+    "emptyManage": "Adicione o primeiro escritório da rede que a Franco está apresentando.",
+    "emptyRead": "Quando a Franco apresentar um escritório da rede, ele aparece aqui.",
+    "invalidTransition": "Esse escritório já mudou de etapa.",
+    "notFound": "Esse escritório não está mais no canal.",
+    "form": {
+      "addHeading": "Novo escritório no canal",
+      "editHeading": "Editar escritório",
+      "name": "Escritório",
+      "city": "Cidade",
+      "fee": "Mensalidade da plataforma",
+      "share": "Parte da Franco (%)",
+      "notes": "Anotações",
+      "notesHint": "Só quem administra o canal vê.",
+      "preview": "Parte da Franco: {amount}/mês quando ativo",
+      "startsAt": "Entra em Contato; a etapa muda pelo botão Avançar.",
+      "required": "Obrigatório.",
+      "feeBounds": "Entre {min} e {max}.",
+      "shareBounds": "Entre {min}% e {max}%.",
+      "save": "Salvar",
+      "cancel": "Cancelar"
     }
   }
 }
