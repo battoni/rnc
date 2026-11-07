@@ -9,7 +9,8 @@ use App\Modules\Briefing\Helpers\ActionPicker;
  * starts at the meetings. Each action names its kind, the numbers its sentence needs (the sentence
  * itself is the screen's and the e-mail's, in their own language) and the screen it opens.
  *
- * The Radar's opportunity (R25's fifth) waits for rnc-2's Radar on this branch (state.md W81).
+ * The fifth is the Radar's first opportunity type (rnc-3 F6b, W81, now that rnc-2's Radar is merged):
+ * its rule, title, clients and range, opening `/reinaldo/radar`.
  */
 function briefingFacts(array $overrides = []): array
 {
@@ -18,6 +19,7 @@ function briefingFacts(array $overrides = []): array
         'meetings_today' => 2,
         'proposals' => ['count' => 3, 'range_cents' => [5400000, 10800000]],
         'partial_leads' => 4,
+        'radar' => ['rule' => 'contratos', 'title' => 'Contratos longos sem cláusula', 'clients' => 12, 'range_cents' => [1200000, 3600000], 'period' => 'ano'],
         ...$overrides,
     ];
 }
@@ -50,7 +52,7 @@ describe('ActionPicker (A22)', function () {
     it('leaves out every action that does not apply, keeping the order of the rest', function () {
         $actions = ActionPicker::pick(briefingFacts(['meetings_today' => 0, 'proposals' => ['count' => 0, 'range_cents' => [0, 0]]]));
 
-        expect(array_column($actions, 'kind'))->toBe(['sla_breached', 'partial_leads']);
+        expect(array_column($actions, 'kind'))->toBe(['sla_breached', 'partial_leads', 'radar']);
     });
 
     it('answers no action on a quiet day', function () {
@@ -59,6 +61,7 @@ describe('ActionPicker (A22)', function () {
             'meetings_today' => 0,
             'proposals' => ['count' => 0, 'range_cents' => null],
             'partial_leads' => 0,
+            'radar' => null,
         ])))->toBe([]);
     });
 
@@ -66,5 +69,21 @@ describe('ActionPicker (A22)', function () {
         $actions = ActionPicker::pick(briefingFacts(['breached' => null, 'meetings_today' => 0, 'proposals' => ['count' => 1, 'range_cents' => null]]));
 
         expect($actions[0])->toBe(['kind' => 'proposals', 'params' => ['count' => 1, 'range_cents' => null], 'to' => '/equipe/pipeline?etapa=proposta']);
+    });
+
+    it('puts the Radar\'s first opportunity fifth, opening the Radar (R25, W81)', function () {
+        $actions = ActionPicker::pick(briefingFacts(['breached' => null, 'meetings_today' => 0]));
+
+        expect(array_column($actions, 'kind'))->toBe(['proposals', 'partial_leads', 'radar'])
+            ->and($actions[2])->toBe([
+                'kind' => 'radar',
+                'params' => ['rule' => 'contratos', 'title' => 'Contratos longos sem cláusula', 'clients' => 12, 'range_cents' => [1200000, 3600000], 'period' => 'ano'],
+                'to' => '/reinaldo/radar',
+            ]);
+    });
+
+    it('leaves the Radar out when it found no opportunity, and never lets it pass the first four', function () {
+        expect(array_column(ActionPicker::pick(briefingFacts(['breached' => null, 'meetings_today' => 0, 'radar' => null])), 'kind'))->toBe(['proposals', 'partial_leads'])
+            ->and(array_column(ActionPicker::pick(briefingFacts(['breached' => null])), 'kind'))->toBe(['meetings_today', 'proposals', 'partial_leads']);
     });
 });

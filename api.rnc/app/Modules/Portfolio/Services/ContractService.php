@@ -16,8 +16,10 @@ use Illuminate\Support\Facades\DB;
  *
  * `alert()` — the contracts ending in 2027 or later without the clause, by exposure (annual value ×
  * years in 2027–2033, `ContractExposure`) highest first, ties by id, and the KPIs: at risk of all,
- * the at-risk ones' annual value and exposure. Three queries whatever the portfolio (P13); the
- * ranking is PHP over the at-risk rows, the same arithmetic as the rows.
+ * the at-risk ones' annual value and exposure, and "Encaminhados ao jurídico" — the at-risk ones
+ * sent to a partner (rnc-3 F6b). Each row carries its client's partner consent and the partners it
+ * went to ("Com <parceiro>", R20). Four queries whatever the portfolio (P13); the ranking is PHP over
+ * the at-risk rows, the same arithmetic as the rows.
  *
  * `markClause()` — "Cláusula incluída": sets the clause with who and when and writes one
  * `contrato.clausula` line on the client's timeline through `ClientService::recordEvent`, in one
@@ -30,7 +32,9 @@ class ContractService
         private ClientService $clientService,
     ) {}
 
-    /** @return array{summary: array{at_risk: int, total: int, annual_value_cents: int, exposure_cents: int}, contracts: Collection<int, ClientContract>} */
+    /**
+     * @return array{summary: array{at_risk: int, total: int, annual_value_cents: int, exposure_cents: int, referred: int}, contracts: Collection<int, ClientContract>, referred_to: array<int, list<array{id: int, name: string}>>}
+     */
     public function alert(): array
     {
         $contracts = $this->contractRepository->findContractsAtRisk()
@@ -39,6 +43,7 @@ class ContractService
                 fn (ClientContract $a, ClientContract $b) => $a->id <=> $b->id,
             ])
             ->values();
+        $referredTo = $this->contractRepository->findReferredPartnersByContract($contracts->pluck('id')->map(fn ($id) => (int) $id)->all());
 
         return [
             'summary' => [
@@ -46,8 +51,10 @@ class ContractService
                 'total' => $this->contractRepository->countContracts(),
                 'annual_value_cents' => (int) $contracts->sum('annual_value_cents'),
                 'exposure_cents' => (int) $contracts->sum(fn (ClientContract $contract) => $this->exposureOf($contract)),
+                'referred' => count($referredTo),
             ],
             'contracts' => $contracts->toBase(),
+            'referred_to' => $referredTo,
         ];
     }
 

@@ -221,6 +221,26 @@ describe('GET briefing (A21)', function () {
             ->and($briefing['as_of'])->toBe('2026-11-19T10:00:00-03:00');
     });
 
+    it("adds the Radar's first opportunity type as an action, the same the Radar screen shows first (R25, W81)", function () {
+        briefingClient($this->franco, 'b3', '3000.00');
+        briefingClient($this->franco, 'b4', '5000.00');
+        $reinaldo = User::where('username', 'reinaldo')->firstOrFail();
+        $first = collect($this->actingAs($reinaldo)->getJson('/api/radar')->assertOk()->json('data.types'))->firstWhere('kind', 'oportunidade');
+
+        $actions = briefingOf()['actions'];
+
+        expect($first)->not->toBeNull()
+            ->and($actions)->toBe([[
+                'kind' => 'radar',
+                'params' => ['rule' => $first['rule'], 'title' => $first['title'], 'clients' => $first['clients'], 'range_cents' => $first['range_cents'], 'period' => $first['period']],
+                'to' => '/reinaldo/radar',
+            ]]);
+    });
+
+    it('adds no Radar action on an empty portfolio', function () {
+        expect(briefingOf()['actions'])->toBe([]);
+    });
+
     it('answers in the same number of queries whatever the number of rows (P13)', function () {
         $andrade = briefingPartner($this->franco, 'Andrade Advocacia');
         briefingClient($this->franco, 'b2', '1000.00');

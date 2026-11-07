@@ -1,5 +1,6 @@
 <?php
 
+use App\Modules\Partner\Models\Partner;
 use App\Modules\Portfolio\Enums\ContractKind;
 use App\Modules\Portfolio\Models\Client;
 use App\Modules\Portfolio\Models\ClientContract;
@@ -9,6 +10,7 @@ use Database\Seeders\ContractSeeder;
 use Database\Seeders\FirmSeeder;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Tests\Support\FiscalRows;
 
 /*
@@ -74,13 +76,14 @@ describe('the list (A17)', function () {
 
         expect($row)->toBe([
             'id' => $this->short->id,
-            'client' => ['id' => $this->beta->id, 'name' => 'Beta Serviços Ltda'],
+            'client' => ['id' => $this->beta->id, 'name' => 'Beta Serviços Ltda', 'partner_consent' => null, 'partner_consent_via' => null],
             'kind' => 'distribuicao',
             'annual_value_cents' => 3_000_000,
             'start_year' => 2028,
             'end_year' => 2030,
             'years_exposed' => 3,
             'exposure_cents' => 9_000_000,
+            'referred_to' => [],
         ]);
     });
 
@@ -90,6 +93,7 @@ describe('the list (A17)', function () {
             'total' => 6,
             'annual_value_cents' => 1_000_000 + 2_000_000 + 3_000_000 + 2_000_000,
             'exposure_cents' => 7_000_000 + 8_000_000 + 9_000_000 + 8_000_000,
+            'referred' => 0,
         ]);
     });
 
@@ -114,7 +118,7 @@ describe('the list (A17)', function () {
 describe('an empty alert', function () {
     it('answers no rows and zero KPIs', function () {
         $this->actingAs($this->reinaldo)->getJson('/api/contracts')->assertOk()->assertJsonPath('data', [
-            'summary' => ['at_risk' => 0, 'total' => 0, 'annual_value_cents' => 0, 'exposure_cents' => 0],
+            'summary' => ['at_risk' => 0, 'total' => 0, 'annual_value_cents' => 0, 'exposure_cents' => 0, 'referred' => 0],
             'contracts' => [],
         ]);
     });
@@ -159,6 +163,13 @@ describe('the seed (R29, AM10)', function () {
             ->and($cnpjs->every(fn (string $cnpj) => preg_match('/^999\d{5}9999\d{2}$/', $cnpj) === 1))->toBeTrue();
     });
 
+    it('puts at least 5 at-risk contracts on clients without consent, so the blocked button shows (F6b, R20)', function () {
+        $rows = $this->actingAs($this->reinaldo)->getJson('/api/contracts')->json('data.contracts');
+
+        expect(collect($rows)->filter(fn (array $row) => $row['client']['partner_consent'] !== true)->count())->toBeGreaterThanOrEqual(5)
+            ->and(collect($rows)->filter(fn (array $row) => $row['client']['partner_consent'] === true)->count())->toBeGreaterThanOrEqual(10);
+    });
+
     it('seeds nothing in production', function () {
         ClientContract::withoutGlobalScopes()->delete();
         app()->detectEnvironment(fn () => 'production');
@@ -167,5 +178,53 @@ describe('the seed (R29, AM10)', function () {
         app(ContractSeeder::class)->setContainer(app())->__invoke();
 
         expect(ClientContract::withoutGlobalScopes()->count())->toBe(0);
+    });
+});
+
+describe('consent and the legal referral on the row (F6b, R19, R20)', function () {
+    beforeEach(function () {
+        Mail::fake();
+        $this->lawyer = Partner::withoutGlobalScopes()->create([
+            'firm_id' => FiscalRows::francoId(), 'name' => 'Andrade Tributário (exemplo)', 'specialty' => 'advocacia_tributaria',
+            'email' => 'andrade@parceiro.exemplo', 'active' => true,
+        ]);
+        $this->consented = FiscalRows::client(['name' => 'Gama Consentida Ltda', 'partner_consent' => true, 'partner_consent_at' => CarbonImmutable::parse('2020-03-01T12:00:00Z'), 'partner_consent_via' => 'contrato']);
+        $this->refused = FiscalRows::client(['name' => 'Delta Recusou Ltda', 'partner_consent' => false, 'partner_consent_at' => CarbonImmutable::parse('2020-03-01T12:00:00Z'), 'partner_consent_via' => 'contrato']);
+        $this->sent = alertContract($this->consented, ['annual_value_cents' => 50_000_000]);
+        $this->waiting = alertContract($this->consented, ['kind' => 'locacao', 'annual_value_cents' => 40_000_000]);
+        $this->blocked = alertContract($this->refused, ['annual_value_cents' => 30_000_000]);
+        $this->actingAs($this->reinaldo)->postJson("/api/contracts/{$this->sent->id}/referrals", ['partner_id' => $this->lawyer->id])->assertCreated();
+    });
+
+    it("answers each row's client consent and the partners it was sent to", function () {
+        $rows = collect($this->actingAs($this->reinaldo)->getJson('/api/contracts')->json('data.contracts'))->keyBy('id');
+
+        expect($rows[$this->sent->id]['client'])->toMatchArray(['partner_consent' => true, 'partner_consent_via' => 'contrato'])
+            ->and($rows[$this->sent->id]['referred_to'])->toBe([['id' => $this->lawyer->id, 'name' => 'Andrade Tributário (exemplo)']])
+            ->and($rows[$this->waiting->id]['referred_to'])->toBe([])
+            ->and($rows[$this->blocked->id]['client'])->toMatchArray(['partner_consent' => false]);
+    });
+
+    it('counts "Encaminhados ao jurídico": at-risk contracts with a referral', function () {
+        $this->actingAs($this->reinaldo)->getJson('/api/contracts')->assertJsonPath('data.summary.referred', 1);
+
+        $this->actingAs($this->reinaldo)->postJson("/api/contracts/{$this->sent->id}/clause")->assertOk();
+
+        $this->actingAs($this->reinaldo)->getJson('/api/contracts')->assertJsonPath('data.summary.referred', 0);
+    });
+
+    it('answers in the same number of queries with referrals as without (P13)', function () {
+        $count = function () {
+            DB::flushQueryLog();
+            DB::enableQueryLog();
+            $this->actingAs($this->reinaldo)->getJson('/api/contracts')->assertOk();
+
+            return count(DB::getQueryLog());
+        };
+
+        $few = $count();
+        $this->actingAs($this->reinaldo)->postJson("/api/contracts/{$this->waiting->id}/referrals", ['partner_id' => $this->lawyer->id])->assertCreated();
+
+        expect($count())->toBe($few);
     });
 });

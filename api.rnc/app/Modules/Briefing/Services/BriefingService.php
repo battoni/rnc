@@ -9,11 +9,13 @@ use App\Modules\Booking\Services\BookingCalendar;
 use App\Modules\Briefing\Helpers\ActionPicker;
 use App\Modules\Briefing\Helpers\FeeQuartiles;
 use App\Modules\Briefing\Repositories\BriefingRepository;
+use App\Modules\Diagnostic\Enums\DiagnosticKind;
 use App\Modules\Lead\Enums\LeadChannel;
 use App\Modules\Lead\Enums\LeadStage;
 use App\Modules\Lead\Models\Lead;
 use App\Modules\Partner\Models\Referral;
 use App\Modules\Partner\Services\ReferralSla;
+use App\Modules\Radar\Services\RadarService;
 use Carbon\CarbonImmutable;
 
 /**
@@ -62,6 +64,7 @@ class BriefingService
         private BriefingRepository $briefingRepository,
         private AppointmentRepository $appointmentRepository,
         private ReferralSla $referralSla,
+        private RadarService $radarService,
     ) {}
 
     /** @return Briefing */
@@ -90,7 +93,28 @@ class BriefingService
                 'meetings_today' => $meetings['today'],
                 'proposals' => ['count' => $pipeline['stages'][2]['count'], 'range_cents' => $pipeline['stages'][2]['range_cents']],
                 'partial_leads' => $leads->where('stage', LeadStage::LeadParcial->value)->count(),
+                'radar' => $this->radarOpportunity(),
             ]),
+        ];
+    }
+
+    /**
+     * The Radar's first opportunity type (R25's fifth action, W81): the same row `GET radar` shows
+     * first among the opportunities — its rule, title, clients and range. Null when the portfolio
+     * has none. Radar's fixed cost (clients, one sales aggregate, the pickers' three).
+     *
+     * @return array{rule: string, title: string, clients: int, range_cents: array{0: int, 1: int}, period: string}|null
+     */
+    private function radarOpportunity(): ?array
+    {
+        $first = collect($this->radarService->summary()['types'])->firstWhere('kind', DiagnosticKind::Opportunity->value);
+
+        return $first === null ? null : [
+            'rule' => $first['rule'],
+            'title' => $first['title'],
+            'clients' => $first['clients'],
+            'range_cents' => $first['range_cents'],
+            'period' => $first['period'],
         ];
     }
 

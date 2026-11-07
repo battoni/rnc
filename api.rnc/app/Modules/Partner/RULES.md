@@ -1,12 +1,12 @@
 ---
-version: 1.5.1
+version: 1.6.0
 origin: rnc
-based-on: 1.5.0
+based-on: 1.6.0
 ---
 # RULES — Partner Module
 
 > For AI agents. rnc-1 F6, 07/11/2026; rnc-2 F1 (partner access, the portal's first route), F2
-> (the portal's inbox, the moves along the graph, the SLA), F4 (the ledger).
+> (the portal's inbox, the moves along the graph, the SLA), F4 (the ledger); rnc-3 F6b (the legal referral of a contract).
 
 ## Domain
 
@@ -28,7 +28,9 @@ partner's portal login — `partners.access_*_at` and `partner_access_events` �
 | `GET partners/options` | `referrals.read` | `[{value, label, active}]`, inactive too — the trail's filter keeps the history |
 | `GET leads/{id}/partner-matches` | `leads.read` | `{can_refer, blocked_reason, matches: [{partner, score, covers, referral}]}`, best first |
 | `POST leads/{id}/referrals` | `leads.update` | `{partner_id, message}` → `{referral, event}` (201); 422 `code: consent_required`, 409 `code: already_referred` |
-| `GET referrals?partner_id=&page=&per_page=` | `referrals.read` | the trail, newest first, paginated |
+| `GET referrals?partner_id=&page=&per_page=` | `referrals.read` | the trail, newest first, paginated; a row says its `contract_id` (null but for a contract referral) |
+| `GET contracts/legal-partners` | `contracts.manage` | rnc-3 R20: `[{id, name, specialty}]` — the active `advocacia_tributaria` partners, then `precificacao_controladoria`, each by name; `[]` without them |
+| `POST contracts/{id}/referrals` | `contracts.manage` | rnc-3 R20: `{partner_id}` → the referral (`ReferralResource`, 201); 422 on `partner_id` (inactive, another firm's), 422 `code: partner_not_legal`, 422 `code: consent_required`, 409 `code: already_referred`; 404 `portfolio.contractNotFound` for another firm's or an unknown contract |
 | `POST partners/{id}/access` | `partners.manage` | `{username, email}` → the login with `password`, once (201); 409 `code: partner_access_exists` / `partner_inactive` |
 | `POST partners/{id}/access/password` | `partners.manage` | a new `password`, once; the login's sessions end; 404 `code: partner_access_missing` |
 | `DELETE partners/{id}/access` | `partners.manage` | the login deactivated, its sessions ended → the access as it is now; 404 `partner_access_missing` |
@@ -181,6 +183,36 @@ partner's portal login — `partners.access_*_at` and `partner_access_events` �
   the statement eager-loads the lead's company): the maths is PHP; `LedgerTest` counts them.
 - **Nothing is billed**: both screens say "valor a conferir — sem cobrança automática".
 
+### The legal referral of a contract (rnc-3 F6b, R20, R21, D11, AM11, AM20)
+
+- **Partner's, not Portfolio's**: the referral is a `referrals` row, and Partner already reads
+  Portfolio (`Client`), so `ContractReferralController` lives here and Portfolio only READS
+  `referrals` for its alert — the dependency stays one-way.
+- **Who may receive it**: an active partner of the firm (422 on `partner_id`) whose specialty is
+  `advocacia_tributaria` or `precificacao_controladoria` (`ReferralService::LEGAL_SPECIALTIES`, the
+  demo's, not by rule coverage — rnc-3 W15), else 422 `partner_not_legal`.
+- **Consent**: the client's `partner_consent` must be TRUE (null, never answered, is no — as the
+  Radar batch), else 422 `consent_required`, nothing written, no lead started.
+- **Through the client's one portfolio lead** (Lead's `findOrStartPortfolioLead` with the client's
+  own cadastro profile), its `via contrato` consent copied onto the row; score and covers from
+  `PartnerMatcher`; one `encaminhamento.enviado` line (with `contract_id`); `ReferralSent` with
+  Franco's contact after the commit.
+- **Subject (D11, AM11)**: `contract_id` and `subject_key = contrato:<id>`; every other referral is
+  `subject_key = lead`, and the unique key is `(lead_id, partner_id, subject_key)`. The plain refer's
+  duplicate check, the routing panel's matches and the Radar batch's "already sent" all filter
+  `subject_key = lead` explicitly, so a contract referral and a lead/Radar referral of one client to
+  one partner never block each other; a second send of one contract to one partner is 409.
+- **The message is the demo's (`ctRefer`) with the value banded**: "A <firma> indica a <cliente>: o
+  contrato de <tipo> de <faixa> por ano vai até <fim> sem cláusula de reequilíbrio para a Reforma.
+  Podem revisar e propor o aditivo? A <firma> segue responsável pelo cliente." — the demo printed the
+  exact value; the partner reads the message, so AM20 bands it here too.
+- **The portal's summary (AM20)**: `PortalReferralResource.contract` = `{kind, end_year,
+  sem_clausula, value_range: {min_cents, max_cents|null, label}}` by `ContractValueBand` (bounds R$ 0
+  · 100 mil · 250 mil · 500 mil · 1 mi · 2 mi, lower included); `sem_clausula` follows the contract
+  now (Franco marking the clause turns it false). Never `annual_value_cents`, the client's fee, its
+  other contracts or other referrals — `PortalContractReferralTest` scans the payload. A plain
+  referral answers `contract: null`.
+
 ## Tables read from other modules
 
 `leads`, `lead_consents` (Lead, through `LeadRepository`, `Lead::latestConsent` and the portal's
@@ -189,7 +221,10 @@ referrer's name; a partner's login through `Partner::account` and `CreatePartner
 uniqueness — written only by Auth's `LinkedAccountService`); `firms` (Franco's contact for the
 e-mail and the portal's firm name, through `CurrentFirm` / `BelongsToFirm::firm`; the SLA's
 `business_hours` and a `carteira` referral's phone and mailbox, through `CurrentFirm`; the ledger's
-money model, rate and fee, through `CurrentFirm` — written only by Firm's `FirmSettingsService`). Booking's
+money model, rate and fee, through `CurrentFirm` — written only by Firm's `FirmSettingsService`);
+`clients`, `client_contracts` (Portfolio — the client's consent, name and profile and a contract's
+kind, years, value and clause, through `ContractRepository::findContractWithClientById` and
+`Referral::contract`, rnc-3 F6b; written only by Portfolio). Booking's
 `Holidays` helper (no table) for the SLA's days off.
 
 ## Known Gaps
@@ -209,11 +244,6 @@ clock" — the inbox, the moves and `ReferralSla` now answer on the API.
   the column, so only a hand-edited row meets it.
 - **The local seed's partners are placeholders** (`PartnerSeeder`, local only): production starts
   with an empty registry until Franco names its partners.
-- **A contract referral shows the partner a value RANGE, never the contract's value (rnc-3 AM20,
-  R21; written 07/11/2026 ahead of the code).** Contract referrals (`referrals.contract_id`, the
-  legal picker, `POST contracts/{id}/referrals`) are not built yet: they need rnc-2's client consent
-  and portfolio lead (rnc-2 F9–F10) and land in rnc-3 F6b (W75). When they do, `PortalReferralResource`
-  answers `contract {kind, end_year, sem_clausula, value_range}` — the range a label of fixed bands
-  (e.g. "R$ 500 mil a 1 mi") — and never `annual_value_cents`, the client's fee, its other contracts
-  or its other referrals: the client's prices are confidential to Franco. A portal test asserts the
-  exact value is absent from the payload (A19).
+*Retired 07/11/2026 (rnc-3 F6b):* "A contract referral shows the partner a value RANGE … written ahead
+of the code" — the contract referral is built; the rule now lives in Intentional Decisions → "The
+legal referral of a contract".

@@ -251,6 +251,9 @@ dataset('phase 3 contract routes', [
     'POST contracts/import' => ['POST', '/api/contracts/import'],
     'GET contracts/template' => ['GET', '/api/contracts/template'],
     'POST contracts/{id}/clause' => ['POST', '/api/contracts/{id}/clause'],
+    // F6b — the legal referral (R20).
+    'GET contracts/legal-partners' => ['GET', '/api/contracts/legal-partners'],
+    'POST contracts/{id}/referrals' => ['POST', '/api/contracts/{id}/referrals'],
 ]);
 
 describe('F6 contracts (A25)', function () {
@@ -297,6 +300,11 @@ describe('F6 contracts (A25)', function () {
         $reinaldo = phase3Person('ceo');
 
         $this->actingAs($reinaldo)->postJson("/api/contracts/{$theirs->id}/clause")->assertNotFound();
+        $lawyer = Partner::withoutGlobalScopes()->create([
+            'firm_id' => $this->franco->id, 'name' => 'Andrade (exemplo)', 'specialty' => 'advocacia_tributaria', 'email' => 'andrade@parceiro.exemplo', 'active' => true,
+        ]);
+        $theirClient->forceFill(['partner_consent' => true, 'partner_consent_via' => 'contrato'])->save();
+        $this->actingAs($reinaldo)->postJson("/api/contracts/{$theirs->id}/referrals", ['partner_id' => $lawyer->id])->assertNotFound();
 
         $alert = $this->actingAs($reinaldo)->getJson('/api/contracts')->assertOk()->json('data');
         $csv = UploadedFile::fake()->createWithContent('contratos.csv', "cnpj_cliente;tipo;valor_anual;inicio;fim;clausula_reforma\n44555666000181;locacao;100000;2024;2030;sim\n");

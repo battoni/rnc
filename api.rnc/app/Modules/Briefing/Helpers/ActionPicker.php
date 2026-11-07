@@ -12,11 +12,12 @@ use App\Modules\Partner\Services\ReferralSla;
  *
  * Each action is `{kind, params, to}`: the numbers its sentence needs and the screen it opens. The
  * sentence is the reader's — the SPA's locale and the e-mail's `lang/*\/mail.php` — so the API never
- * writes copy of its own (rnc-3 W82). The Radar's opportunity, R25's fifth, waits for rnc-2's Radar
- * (W81). Pure: the caller hands it the day's figures.
+ * writes copy of its own (rnc-3 W82). The fifth is the Radar's first opportunity type (rnc-3 F6b,
+ * W81): its rule, title, clients and range, opening the Radar. Pure: the caller hands it the day's figures.
  *
  * @phpstan-type Breached array{partner_id: int, partner: string, company: string, hours: float}
- * @phpstan-type Facts array{breached: Breached|null, meetings_today: int, proposals: array{count: int, range_cents: array{0: int, 1: int}|null}, partial_leads: int}
+ * @phpstan-type Radar array{rule: string, title: string, clients: int, range_cents: array{0: int, 1: int}, period: string}
+ * @phpstan-type Facts array{breached: Breached|null, meetings_today: int, proposals: array{count: int, range_cents: array{0: int, 1: int}|null}, partial_leads: int, radar: Radar|null}
  * @phpstan-type Action array{kind: string, params: array<string, mixed>, to: string}
  */
 class ActionPicker
@@ -30,6 +31,8 @@ class ActionPicker
     public const PROPOSALS = 'proposals';
 
     public const PARTIAL_LEADS = 'partial_leads';
+
+    public const RADAR = 'radar';
 
     /**
      * @param  Facts  $facts
@@ -58,6 +61,10 @@ class ActionPicker
 
         if ($facts['partial_leads'] > 0) {
             $actions[] = ['kind' => self::PARTIAL_LEADS, 'params' => ['count' => $facts['partial_leads']], 'to' => '/equipe/pipeline?etapa=lead_parcial'];
+        }
+
+        if ($facts['radar'] !== null) {
+            $actions[] = ['kind' => self::RADAR, 'params' => $facts['radar'], 'to' => '/reinaldo/radar'];
         }
 
         return array_slice($actions, 0, self::MAX);

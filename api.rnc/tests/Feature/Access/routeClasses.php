@@ -120,6 +120,9 @@ return [
     'POST contracts/import' => 'staff',
     'GET contracts/template' => 'staff',
     'POST contracts/{id}/clause' => 'staff',
+    // F6b — the legal referral, `contracts.manage`
+    'GET contracts/legal-partners' => 'staff',
+    'POST contracts/{id}/referrals' => 'staff',
     // STAFF — Phase 3 (rnc-3): F8 Reinaldo's briefing, `briefing.read`
     'GET briefing' => 'staff',
     'POST fiscal/imports' => 'staff',

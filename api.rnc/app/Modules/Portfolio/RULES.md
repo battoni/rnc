@@ -1,11 +1,11 @@
 ---
-version: 1.4.0
+version: 1.5.0
 origin: rnc
-based-on: 1.3.0
+based-on: 1.5.0
 ---
 # RULES — Portfolio Module
 
-> For AI agents. rnc-1 F8, 07/11/2026; rnc-2 F7 (the client's timeline), 07/11/2026; rnc-2 F9 (the client's partner consent), 07/11/2026; rnc-3 F6a (the contract alert), 07/11/2026.
+> For AI agents. rnc-1 F8, 07/11/2026; rnc-2 F7 (the client's timeline), 07/11/2026; rnc-2 F9 (the client's partner consent), 07/11/2026; rnc-3 F6a (the contract alert), 07/11/2026; rnc-3 F6b (consent and the legal referral on the alert), 07/11/2026.
 
 ## Domain
 
@@ -29,7 +29,7 @@ that cross the 2027–2033 transition without a Reforma price clause, by exposur
 | `POST clients/import` | `clients.import` | multipart `file` → `{created, updated, total}`; 422 with `code` (below). The optional 8th column `autoriza_parceiros` (rnc-2 R28): `sim` / `não` in any case, with or without the accent, or empty; anything else a line error `consent_invalid` |
 | `GET clients/import/template` | `clients.import` | `modelo-clientes.csv`: a BOM and the header row, `autoriza_parceiros` last |
 | `GET clients/{id}/events` | `fiscal.read` | the client's timeline, newest first: `[{id, client_id, type, data, at, user: {id, name} \| null}]`; 404 for another firm's or an unknown client. Behind Fiscal's key: the fiscal screens are the only ones that write it so far |
-| `GET contracts` | `contracts.manage` | `{summary: {at_risk, total, annual_value_cents, exposure_cents}, contracts: [{id, client: {id, name}, kind, annual_value_cents, start_year, end_year, years_exposed, exposure_cents}]}` — ending 2027 or later without the clause, exposure highest first, ties by id; unpaginated |
+| `GET contracts` | `contracts.manage` | `{summary: {at_risk, total, annual_value_cents, exposure_cents, referred}, contracts: [{id, client: {id, name, partner_consent, partner_consent_via}, referred_to: [{id, name}], kind, annual_value_cents, start_year, end_year, years_exposed, exposure_cents}]}` — ending 2027 or later without the clause, exposure highest first, ties by id; unpaginated |
 | `POST contracts/import` | `contracts.manage` | multipart `file` (≤ 2 MB, `.csv`/`.txt`, ≤ 5000 lines; 10 a minute, `contracts-import`) → 200 `{created, updated, total, errors: [{line, field, code}], total_errors}`; 422 with `code` for a file refused whole |
 | `GET contracts/template` | `contracts.manage` | `modelo-contratos.csv`: a BOM and the header row |
 | `POST contracts/{id}/clause` | `contracts.manage` | "Cláusula incluída" → `{id, has_reforma_clause, clause_marked_at, clause_marked_by}`; 404 `portfolio.contractNotFound` for another firm's or an unknown contract |
@@ -80,9 +80,13 @@ that cross the 2027–2033 transition without a Reforma price clause, by exposur
 - **Contracts: exposure (rnc-3 R19, AM7, AM17)**, in `ContractExposure`: years =
   `min(end, 2033) − max(start, 2027) + 1`, floor 0 (2030–2033 = 4, 2025–2035 = 7); exposure = annual
   value × years, integer cents. The alert lists `end_year ≥ 2027` without the clause — a contract
-  starting after 2033 is still listed, at exposure 0, last (W80). Three queries (at-risk rows, their
-  clients, the count); the ranking is PHP over the at-risk rows. No consent, partner or "Com
-  <parceiro>" yet: those need rnc-2's client consent and portfolio lead and come with F6b (W75).
+  starting after 2033 is still listed, at exposure 0, last (W80). Four queries (at-risk rows, their
+  clients, the count, their referrals); the ranking is PHP over the at-risk rows. Each row carries
+  its client's `partner_consent` and `partner_consent_via` (the "Encaminhar ao jurídico" gate, R20 —
+  the SPA writes the reason) and `referred_to` — the partners it was sent to, in send order ("Com
+  <parceiro>"); `summary.referred` counts the at-risk contracts with a referral (rnc-3 F6b). The
+  referral itself is Partner's (`POST contracts/{id}/referrals`, Partner RULES): Portfolio only reads
+  `referrals`/`partners`, so the dependency stays Partner → Portfolio.
 - **Contracts: the CSV (rnc-3 R18)** `cnpj_cliente;tipo;valor_anual;inicio;fim;clausula_reforma`, read
   by `CsvReader` (BOM, UTF-8, `;`/`,`, header in any order — the clients CSV's rules; whole-file
   refusals reuse its `import_*` codes and `portfolio.import.*` keys) and `ContractCsvParser`. UNLIKE
@@ -116,6 +120,10 @@ that cross the 2027–2033 transition without a Reforma price clause, by exposur
 
 ## Read by other modules
 
+Partner (rnc-3 F6b) reads a contract with its client through `ContractRepository::findContractWithClientById`
+(the legal referral), and a referral's contract through `Referral::contract` (the portal's summary:
+kind, end year, clause, value — banded); `ContractKind::label()` names the kind in the message.
+
 The Radar (rnc-2 F9) reads the whole portfolio through `ClientRepository::findAllClients`, each
 client's `profile()` and `partner_consent` — read only.
 
@@ -126,7 +134,9 @@ and reads and writes the timeline through `ClientService` (`recordEvent`, `clien
 
 ## Tables read from other modules
 
-`users` (the name of who marked, through `ClientRepository::findUserNamesByIds`; who wrote a
+`referrals`, `partners` (Partner — a contract's legal referrals and the partner's name, through
+`ContractRepository::findReferredPartnersByContract`, rnc-3 F6b; written only by Partner's
+`ReferralService::referContract`); `users` (the name of who marked, through `ClientRepository::findUserNamesByIds`; who wrote a
 timeline line, through `ClientEvent::user`); `firms` (the
 letter's signature and contact, through `CurrentFirm`). Code reused: Diagnostic's `RulesEngine`,
 `DiagnosticProfileDTO` and its `Sector`/`Regime`/`RevenueBand` enums.

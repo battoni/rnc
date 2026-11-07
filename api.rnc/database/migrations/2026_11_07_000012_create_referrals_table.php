@@ -14,6 +14,12 @@ use Illuminate\Support\Facades\Schema;
  * (`UtcDateTime`, AM9); `status_by` is the partner's login (Auth's `users`) with no foreign key —
  * a cross-module id (rnc-1 W25), as in `partner_access_events`. The partner is restricted on
  * delete: the trail must keep it. `(firm_id, closed_at)` serves the ledger's month of closings (F4).
+ *
+ * rnc-3 F6b (R20, D11, folded here — D15): a legal referral of a client contract carries
+ * `contract_id` (Portfolio's `client_contracts` id, no foreign key across modules — rnc-1 W25) and
+ * `subject_key` `contrato:<id>`; every other referral is `subject_key = lead`. The one-per-pair rule
+ * becomes one per lead, partner and subject, so a contract and a Radar referral of one client to one
+ * partner do not collide.
  */
 return new class extends Migration
 {
@@ -38,9 +44,11 @@ return new class extends Migration
             $table->timestamp('meeting_at')->nullable();
             $table->unsignedBigInteger('deal_value_cents')->nullable();
             $table->timestamp('closed_at')->nullable();
+            $table->unsignedBigInteger('contract_id')->nullable()->index();
+            $table->string('subject_key', 40)->default('lead');
             $table->timestamps();
 
-            $table->unique(['lead_id', 'partner_id']);
+            $table->unique(['lead_id', 'partner_id', 'subject_key']);
             $table->index(['firm_id', 'created_at']);
             $table->index(['partner_id', 'status']);
             $table->index(['firm_id', 'closed_at']);

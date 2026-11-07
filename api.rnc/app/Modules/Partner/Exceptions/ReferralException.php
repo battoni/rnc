@@ -20,6 +20,8 @@ class ReferralException extends RuntimeException
 
     public const CODE_PARTNER_NOT_COVERING = 'partner_not_covering';
 
+    public const CODE_PARTNER_NOT_LEGAL = 'partner_not_legal';
+
     private const STATUS_CONFLICT = 409;
 
     private const STATUS_UNPROCESSABLE = 422;
@@ -54,6 +56,12 @@ class ReferralException extends RuntimeException
     public static function partnerNotCovering(): self
     {
         return new self('radar.partnerNotCovering', self::CODE_PARTNER_NOT_COVERING, self::STATUS_UNPROCESSABLE);
+    }
+
+    /** A contract sent to a partner that is neither advocacia tributária nor precificação (rnc-3 R20). */
+    public static function partnerNotLegal(): self
+    {
+        return new self('contracts.partnerNotLegal', self::CODE_PARTNER_NOT_LEGAL, self::STATUS_UNPROCESSABLE);
     }
 
     public function render(): JsonResponse

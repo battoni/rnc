@@ -15,8 +15,11 @@ use Illuminate\Database\Eloquent\Collection;
  */
 class PortalReferralRepository
 {
-    /** What the portal's resource reads of the lead: its company, profile, contact and channel. */
-    private const RELATIONS = ['lead:id,firm_id,company,profile,contact_name,phone,email,channel'];
+    /**
+     * What the portal's resource reads of the lead (its company, profile, contact and channel) and of
+     * a legal referral's contract (rnc-3 R21: kind, end year, clause, value — the value only to band it).
+     */
+    private const RELATIONS = ['lead:id,firm_id,company,profile,contact_name,phone,email,channel', 'contract:id,firm_id,kind,end_year,annual_value_cents,has_reforma_clause'];
 
     public function __construct(private CurrentPartner $currentPartner) {}
 

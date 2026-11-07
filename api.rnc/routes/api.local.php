@@ -24,6 +24,7 @@ use App\Modules\Fiscal\Controllers\ReadinessController;
 use App\Modules\Fiscal\Controllers\SupplierCreditController;
 use App\Modules\Metrics\Controllers\FunnelController;
 use App\Modules\Notification\Controllers\NotificationController;
+use App\Modules\Partner\Controllers\ContractReferralController;
 use App\Modules\Partner\Controllers\LedgerController;
 use App\Modules\Partner\Controllers\PartnerAccessController;
 use App\Modules\Partner\Controllers\PartnerController;
@@ -181,6 +182,10 @@ Route::get('contracts', [ContractController::class, 'index'])->middleware($contr
 Route::post('contracts/import', [ContractController::class, 'import'])->middleware([...$contracts, 'throttle:10,1,contracts-import']);
 Route::get('contracts/template', [ContractController::class, 'template'])->middleware($contracts);
 Route::post('contracts/{id}/clause', [ContractController::class, 'clause'])->whereNumber('id')->middleware($contracts);
+// "Encaminhar ao jurídico" (rnc-3 F6b, R20, D11): the legal partners' picker and one contract's referral
+// to one of them through the client's portfolio lead — Partner's controller, same key.
+Route::get('contracts/legal-partners', [ContractReferralController::class, 'partners'])->middleware($contracts);
+Route::post('contracts/{id}/referrals', [ContractReferralController::class, 'store'])->whereNumber('id')->middleware($contracts);
 // Reinaldo's briefing (rnc-3 F8, R23–R25): the day's leads, meetings, referrals by SLA, the open
 // pipeline's fee range and the three actions, in one read behind `briefing.read` (ceo, operador).
 // The same payload is the 07:00 e-mail (`briefing:send`, routes/console.php).

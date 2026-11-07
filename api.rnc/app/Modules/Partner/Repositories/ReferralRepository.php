@@ -18,19 +18,27 @@ class ReferralRepository
         return Referral::query()->create($attributes);
     }
 
+    /** The lead's own referral to this partner — a contract referral of it is another subject (rnc-3 AM11). */
     public function existsReferralOfLeadToPartner(Lead $lead, int $partnerId): bool
     {
-        return Referral::query()->where('lead_id', $lead->id)->where('partner_id', $partnerId)->exists();
+        return Referral::query()->where('lead_id', $lead->id)->where('partner_id', $partnerId)->where('subject_key', Referral::SUBJECT_LEAD)->exists();
     }
 
-    /** @return Collection<int, Referral> keyed by partner id */
+    /** A legal referral of this contract to this partner (rnc-3 R20): one per pair. */
+    public function existsReferralOfContractToPartner(int $contractId, int $partnerId): bool
+    {
+        return Referral::query()->where('subject_key', Referral::contractSubject($contractId))->where('partner_id', $partnerId)->exists();
+    }
+
+    /** @return Collection<int, Referral> the lead's own referrals (not its contracts'), keyed by partner id */
     public function findReferralsOfLead(Lead $lead): Collection
     {
-        return Referral::query()->where('lead_id', $lead->id)->get()->keyBy('partner_id');
+        return Referral::query()->where('lead_id', $lead->id)->where('subject_key', Referral::SUBJECT_LEAD)->get()->keyBy('partner_id');
     }
 
     /**
-     * The partners each of these leads was already sent to (rnc-2 R27), as lead id → partner ids. One query.
+     * The partners each of these leads was already sent to (rnc-2 R27), as lead id → partner ids —
+     * the leads' own referrals: a contract referral of the same client never counts (rnc-3 AM11). One query.
      *
      * @param  list<int>  $leadIds
      * @return array<int, list<int>>
@@ -43,7 +51,7 @@ class ReferralRepository
 
         $pairs = [];
 
-        foreach (Referral::query()->whereIn('lead_id', $leadIds)->get(['lead_id', 'partner_id']) as $row) {
+        foreach (Referral::query()->whereIn('lead_id', $leadIds)->where('subject_key', Referral::SUBJECT_LEAD)->get(['lead_id', 'partner_id']) as $row) {
             $pairs[(int) $row->lead_id][] = (int) $row->partner_id;
         }
 

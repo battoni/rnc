@@ -22,6 +22,10 @@ use Random\Randomizer;
  * the same on every fresh seed. Runs after `ClientSeeder`, inside `CurrentFirm::runAs`, and writes
  * `firm_id` itself (`DatabaseSeeder` runs without model events). Re-running rewrites the 40 rows to
  * exactly this draw; no clause is marked.
+ *
+ * rnc-3 F6b (R20): this draw puts 5 of the 27 at-risk contracts on clients whose service contract
+ * gives no partner consent (`ClientSeeder`'s ~15 %), so the blocked "Encaminhar ao jurídico" shows on
+ * a fresh seed — `ContractAlertTest` holds it at ≥ 5; a change to either seeder that drops it fails there.
  */
 class ContractSeeder extends Seeder
 {

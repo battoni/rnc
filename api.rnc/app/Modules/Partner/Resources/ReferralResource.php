@@ -31,6 +31,7 @@ class ReferralResource extends JsonResource
             'score' => $this->score,
             'covers' => $this->covers,
             'message' => $this->message,
+            'contract_id' => $this->contract_id,
             'lead' => ['id' => (int) $this->lead_id, 'company' => $this->lead->company],
             'partner' => [
                 'id' => (int) $this->partner_id,

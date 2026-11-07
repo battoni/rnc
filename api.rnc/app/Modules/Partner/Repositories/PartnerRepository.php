@@ -20,6 +20,24 @@ class PartnerRepository
         return Partner::query()->where('active', true)->orderBy('name')->get();
     }
 
+    /**
+     * The active partners of these specialties, in the order the specialties are given, each by name
+     * (rnc-3 R20: advocacia tributária first, then precificação).
+     *
+     * @param  list<string>  $specialties
+     * @return Collection<int, Partner>
+     */
+    public function findActivePartnersBySpecialties(array $specialties): Collection
+    {
+        return Partner::query()
+            ->where('active', true)
+            ->whereIn('specialty', $specialties)
+            ->orderBy('name')
+            ->get()
+            ->sortBy(fn (Partner $partner) => array_search($partner->specialty, $specialties, true))
+            ->values();
+    }
+
     /** @return Collection<int, Partner> by name, inactive too */
     public function findPartnersByName(): Collection
     {

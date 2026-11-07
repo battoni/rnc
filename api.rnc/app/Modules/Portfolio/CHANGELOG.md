@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 
 
+## 1.5.0 — 2026-11-07
+
+### Added
+
+- The alert's consent and legal referrals (rnc-3 F6b, R19, R20): each `GET contracts` row carries `client.partner_consent` / `partner_consent_via` and `referred_to` (`ContractRepository::findReferredPartnersByContract`, one query, a declared read of Partner's `referrals`/`partners`); `summary.referred` ("Encaminhados ao jurídico"); `ContractRepository::findContractWithClientById` and `ContractKind::label()` for Partner's contract referral. Tested by `tests/Feature/Portfolio/ContractAlertTest` (incl. the seed's ≥ 5 at-risk contracts without consent).
+
 ## 1.4.0 — 2026-11-07
 
 ### Added

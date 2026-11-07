@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.1.0 — 2026-11-07
+
+### Added
+
+- R25's fifth action (rnc-3 F6b, W81): `ActionPicker::RADAR` — the Radar's first opportunity type (`{rule, title, clients, range_cents, period}` → `/reinaldo/radar`), from `RadarService::summary` in `BriefingService`; its e-mail sentence `mail.briefing.actions.radar` / `radar_monthly` (pt-BR and en) and button `go.radar`. Tested by `ActionPickerTest`, `BriefingTest` and `tests/Feature/Briefing/BriefingMailActionTest`.
+
 ## 1.0.0 — 2026-11-07
 
 ### Added

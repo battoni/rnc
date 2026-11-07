@@ -1,7 +1,7 @@
 ---
-version: 1.0.0
+version: 1.1.0
 origin: rnc
-based-on: 1.0.0
+based-on: 1.1.0
 ---
 # RULES — Briefing Module
 
@@ -53,7 +53,12 @@ Partner and Portfolio, each through the models' own `BelongsToFirm` scope.
 - The first three that apply, in the demo's order: the longest **breached** SLA → the partner's
   trail (`/reinaldo/trilha?parceiro=<id>`), **today's meetings** → `/equipe/agenda`, the **open
   proposals** with their range → `/equipe/pipeline?etapa=proposta`, the **partial leads** →
-  `/equipe/pipeline?etapa=lead_parcial`. What does not apply is left out.
+  `/equipe/pipeline?etapa=lead_parcial`, then **the Radar's first opportunity type** (rnc-3 F6b,
+  W81) → `/reinaldo/radar`, `params {rule, title, clients, range_cents, period}` — the same row
+  `GET radar` shows first among the opportunities (`RadarService::summary`, a fixed cost: the
+  clients, one sales aggregate, the pickers' three). What does not apply is left out; a portfolio
+  with no opportunity has no Radar action. The rule's `title` is Diagnostic's pt-BR name, so the
+  `en` e-mail quotes it in Portuguese.
 - **The API sends numbers, not sentences** (rnc-3 W82): `params` carry what the sentence needs; the
   SPA's locale (F9) and `lang/*/mail.php` → `briefing.actions.*` write it, so `en` follows.
 
@@ -76,13 +81,15 @@ Partner and Portfolio, each through the models' own `BelongsToFirm` scope.
 - `appointments`, `specialists` (Booking) — through `AppointmentRepository::findAppointmentsBetween`.
 - `referrals`, `partners` (Partner) — the SLA through `ReferralSla::of`.
 - `clients` (Portfolio) — `band`, `monthly_fee`.
+- The Radar (rnc-2) — `RadarService::summary` for the fifth action (it reads `clients` and
+  `nfe_documents` itself).
 - `users`, `roles` (Auth) — the firm's active ceos, for the e-mail.
 
 ## Known Gaps
 
-- **The Radar's action waits for rnc-2** (W81): R25's fifth action ("Radar: N clientes da carteira
-  com …" → `/reinaldo/radar`) needs rnc-2's `RadarService` (rnc-2 F9), not on this branch when F8
-  was built. It goes into `ActionPicker` as the last kind, after `partial_leads`, with its test.
+*Retired 07/11/2026 (rnc-3 F6b):* "The Radar's action waits for rnc-2" — rnc-2's Radar is merged and
+`ActionPicker` has the fifth kind `radar` (W81).
+
 - **The screens the actions open read no filter yet** (W83): `?parceiro=` on the trail and
   `?etapa=` on the pipeline are honoured by F9's screen work, not by F8.
 - **No e-mail opt-out.** Every active ceo gets it on every business day; a preference waits for a

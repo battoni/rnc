@@ -176,6 +176,8 @@ describe('the inbox (R5)', function () {
             'meeting_at' => null,
             'closed_at' => null,
             'contact' => null,
+            // rnc-3 F6b (R21): only a legal referral of a client contract carries its summary.
+            'contract' => null,
         ]);
     });
 });

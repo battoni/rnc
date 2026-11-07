@@ -12,14 +12,20 @@ use App\Modules\Lead\Repositories\LeadRepository;
 use App\Modules\Lead\Services\LeadService;
 use App\Modules\Partner\DTOs\ReferLeadDTO;
 use App\Modules\Partner\DTOs\ReferralMailDTO;
+use App\Modules\Partner\Enums\PartnerSpecialty;
 use App\Modules\Partner\Enums\ReferralStatus;
 use App\Modules\Partner\Exceptions\ReferralException;
+use App\Modules\Partner\Helpers\ContractValueBand;
 use App\Modules\Partner\Mail\ReferralSent;
 use App\Modules\Partner\Models\Partner;
 use App\Modules\Partner\Models\Referral;
 use App\Modules\Partner\Repositories\PartnerRepository;
 use App\Modules\Partner\Repositories\ReferralRepository;
+use App\Modules\Portfolio\Enums\ContractKind;
 use App\Modules\Portfolio\Models\Client;
+use App\Modules\Portfolio\Models\ClientContract;
+use App\Modules\Portfolio\Repositories\ContractRepository;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -45,6 +51,9 @@ class ReferralService
     /** plan Defaults: a Radar batch is the 10 largest clients still to send (rnc-2 R27). */
     public const BATCH_SIZE = 10;
 
+    /** rnc-3 R20: who reviews a contract's price clause — advocacia tributária first, then precificação. */
+    public const LEGAL_SPECIALTIES = [PartnerSpecialty::AdvocaciaTributaria, PartnerSpecialty::PrecificacaoControladoria];
+
     /** The client's "desde" year is read in the firm's city (P4). */
     private const LOCAL_TIMEZONE = 'America/Sao_Paulo';
 
@@ -55,6 +64,7 @@ class ReferralService
         private PartnerRepository $partnerRepository,
         private ReferralRepository $referralRepository,
         private PartnerMatcher $partnerMatcher,
+        private ContractRepository $contractRepository,
     ) {}
 
     /**
@@ -226,6 +236,91 @@ class ReferralService
         return ['sent' => count($referrals), 'skipped_no_consent' => $pick['skipped_no_consent'], 'skipped_already' => $pick['skipped_already']];
     }
 
+    /** @return Collection<int, Partner> "Encaminhar ao jurídico"'s picker (rnc-3 R20): advocacia first, then precificação, by name */
+    public function legalPartners(): Collection
+    {
+        return $this->partnerRepository->findActivePartnersBySpecialties(array_column(self::LEGAL_SPECIALTIES, 'value'));
+    }
+
+    /**
+     * "Encaminhar ao jurídico" (rnc-3 R20, D11): one client contract to one legal partner. The partner
+     * must be active in the firm (422 on `partner_id`) and of a legal specialty (422
+     * `partner_not_legal`); the client must have said yes in its service contract (`partner_consent`
+     * TRUE, else 422 `consent_required` — null, never answered, is no). The referral goes through the
+     * client's one portfolio lead (Lead's `findOrStartPortfolioLead`, its `via contrato` consent
+     * copied), carries `contract_id` and `subject_key = contrato:<id>` and the demo's message with the
+     * value as a range (AM20); one per contract and partner (409 `already_referred`). One timeline
+     * line, then `ReferralSent` with Franco's contact. Null for an unknown or another firm's contract.
+     */
+    public function referContract(int $contractId, int $partnerId, User $by): ?Referral
+    {
+        $contract = $this->contractRepository->findContractWithClientById($contractId);
+
+        if (! $contract) {
+            return null;
+        }
+
+        $partner = $this->partnerRepository->findActivePartnerById($partnerId);
+
+        if (! $partner) {
+            throw ValidationException::withMessages(['partner_id' => [self::PARTNER_UNAVAILABLE]]);
+        }
+
+        if (! in_array($partner->specialtyCase(), self::LEGAL_SPECIALTIES, true)) {
+            throw ReferralException::partnerNotLegal();
+        }
+
+        $client = $contract->client;
+
+        if ($client->partner_consent !== true) {
+            throw ReferralException::consentRequired();
+        }
+
+        if ($this->referralRepository->existsReferralOfContractToPartner($contract->id, $partner->id)) {
+            throw ReferralException::alreadyReferred();
+        }
+
+        try {
+            $referral = DB::transaction(function () use ($contract, $client, $partner, $by) {
+                $lead = $this->leadService->findOrStartPortfolioLead($client, $client->profile());
+                $consent = $lead->latestConsent;
+                $match = $this->partnerMatcher->match($lead, collect([$partner]))[0];
+
+                $row = $this->referralRepository->createReferral([
+                    'lead_id' => $lead->id,
+                    'partner_id' => $partner->id,
+                    'referred_by' => $by->id,
+                    'message' => $this->contractMessage($contract),
+                    'score' => $match['score'],
+                    'covers' => $match['covers'],
+                    'consent_text' => $consent->text,
+                    'consent_version' => $consent->version,
+                    'consent_given_at' => $consent->given_at,
+                    'status' => ReferralStatus::Enviado->value,
+                    'contract_id' => $contract->id,
+                    'subject_key' => Referral::contractSubject($contract->id),
+                ]);
+
+                $this->leadService->recordReferral($lead, [
+                    'referral_id' => $row->id,
+                    'partner_id' => $partner->id,
+                    'partner' => $partner->name,
+                    'specialty' => $partner->specialty,
+                    'score' => $match['score'],
+                    'contract_id' => $contract->id,
+                ], $by);
+
+                return $row->setRelation('lead', $lead);
+            });
+        } catch (UniqueConstraintViolationException) {
+            throw ReferralException::alreadyReferred();
+        }
+
+        Mail::to($partner->email)->queue((new ReferralSent($this->mail($referral->lead, $partner, $referral, $by)))->locale(self::MAIL_LOCALE));
+
+        return $this->referralRepository->loadReferralForTrail($referral);
+    }
+
     /** @return LengthAwarePaginator<int, Referral> the trail (R23), newest first */
     public function trail(?int $partnerId, int $perPage): LengthAwarePaginator
     {
@@ -280,6 +375,24 @@ class ReferralService
             $since,
             $rule->title(),
             ReferralSla::HOURS,
+        );
+    }
+
+    /**
+     * The demo's contract text (`ctRefer`), in pt-BR as the partner reads it — with the annual value
+     * as its band, never the value itself (AM20): the client's prices are Franco's.
+     */
+    private function contractMessage(ClientContract $contract): string
+    {
+        $firm = (string) ($this->currentFirm->get()->name ?? config('rnc.brand.name'));
+
+        return sprintf(
+            'A %1$s indica a %2$s: o contrato de %3$s de %4$s por ano vai até %5$d sem cláusula de reequilíbrio para a Reforma. Podem revisar e propor o aditivo? A %1$s segue responsável pelo cliente.',
+            $firm,
+            $contract->client->name,
+            mb_strtolower(ContractKind::from($contract->kind)->label()),
+            ContractValueBand::of($contract->annual_value_cents)['label'],
+            $contract->end_year,
         );
     }
 

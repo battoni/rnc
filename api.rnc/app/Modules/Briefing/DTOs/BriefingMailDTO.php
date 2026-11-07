@@ -23,6 +23,9 @@ final class BriefingMailDTO
 
     private const CENTS_PER_UNIT = 100;
 
+    /** Radar's `period` of a range held per month (`split-payment`). */
+    private const RADAR_MONTHLY = 'mes';
+
     /** @param  Briefing  $briefing */
     public function __construct(
         public readonly string $firstName,
@@ -54,6 +57,9 @@ final class BriefingMailDTO
             ActionPicker::PROPOSALS => is_array($params['range_cents'])
                 ? trans_choice('mail.briefing.actions.proposals', $params['count'], ['range' => self::range($params['range_cents'])])
                 : trans_choice('mail.briefing.actions.proposals_no_range', $params['count']),
+            ActionPicker::RADAR => trans_choice('mail.briefing.actions.'.($params['period'] === self::RADAR_MONTHLY ? 'radar_monthly' : 'radar'), $params['clients'], [
+                'title' => $params['title'], 'range' => self::range($params['range_cents']),
+            ]),
             default => trans_choice('mail.briefing.actions.'.$action['kind'], $params['count']),
         };
     }

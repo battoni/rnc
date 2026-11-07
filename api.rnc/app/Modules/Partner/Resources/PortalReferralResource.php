@@ -5,6 +5,7 @@ namespace App\Modules\Partner\Resources;
 use App\Modules\Firm\Services\CurrentFirm;
 use App\Modules\Lead\Enums\LeadChannel;
 use App\Modules\Partner\Enums\ReferralStatus;
+use App\Modules\Partner\Helpers\ContractValueBand;
 use App\Modules\Partner\Models\Referral;
 use App\Modules\Partner\Services\ReferralSla;
 use Carbon\CarbonInterface;
@@ -18,6 +19,11 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * that declines never saw a phone); a portfolio client's (`carteira`) way in is Franco's own phone
  * and mailbox. The contract value only once closed, and it is the partner's own number. Never: a
  * range, a note, the timeline, the consent, another referral. Moments in UTC, ISO-8601.
+ *
+ * A legal referral of a client contract (rnc-3 R21, AM20) adds `contract`: its kind, end year,
+ * whether it still lacks the Reforma clause and its annual value as a fixed band
+ * (`ContractValueBand`) — never the exact value, the client's fee, its other contracts or its other
+ * referrals. Every other referral answers `contract: null`.
  *
  * @mixin Referral
  */
@@ -43,6 +49,7 @@ class PortalReferralResource extends JsonResource
             'meeting_at' => $this->moment($this->meeting_at),
             'closed_at' => $this->moment($this->closed_at),
             'contact' => $status->showsContact() ? $this->contact() : null,
+            'contract' => $this->contractSummary(),
             ...($status === ReferralStatus::Fechado ? ['deal_value_cents' => $this->deal_value_cents] : []),
         ];
     }
@@ -57,6 +64,23 @@ class PortalReferralResource extends JsonResource
         }
 
         return ['via' => 'lead', 'name' => $this->lead->contact_name, 'phone' => $this->lead->phone, 'email' => $this->lead->email];
+    }
+
+    /** @return array{kind: string, end_year: int, sem_clausula: bool, value_range: array{min_cents: int, max_cents: int|null, label: string}}|null */
+    private function contractSummary(): ?array
+    {
+        $contract = $this->contract_id === null ? null : $this->contract;
+
+        if ($contract === null) {
+            return null;
+        }
+
+        return [
+            'kind' => $contract->kind,
+            'end_year' => (int) $contract->end_year,
+            'sem_clausula' => ! $contract->has_reforma_clause,
+            'value_range' => ContractValueBand::of((int) $contract->annual_value_cents),
+        ];
     }
 
     private function moment(?CarbonInterface $at): ?string

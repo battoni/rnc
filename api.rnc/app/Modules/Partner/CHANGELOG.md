@@ -2,6 +2,16 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.6.0 — 2026-11-07
+
+### Added
+
+- The legal referral of a client contract (rnc-3 F6b, R20, R21, D11, AM11, AM20; A18, A19): `GET contracts/legal-partners` and `POST contracts/{id}/referrals` (`ContractReferralController`, `ReferContractRequest`/`ReferContractDTO`, `LegalPartnerResource`; `contracts.manage`); `ReferralService::legalPartners` / `referContract` (legal specialty else 422 `partner_not_legal`, client consent else 422 `consent_required`, through `findOrStartPortfolioLead`, the demo's message with the value banded, 409 `already_referred`, `ReferralSent`); `referrals.contract_id` + `subject_key` folded into `create_referrals` with the unique `(lead_id, partner_id, subject_key)`; `Referral::contract`, `SUBJECT_LEAD`, `contractSubject()`; `ReferralException::partnerNotLegal`; `PartnerRepository::findActivePartnersBySpecialties`; `ReferralRepository::existsReferralOfContractToPartner`; `Helpers/ContractValueBand`; `PortalReferralResource.contract` (kind, end year, `sem_clausula`, `value_range`) with the contract eager-loaded; `ReferralResource.contract_id`.
+
+### Changed
+
+- The plain refer's duplicate check, the routing panel's matches and the Radar batch's "already sent" filter `subject_key = lead` (AM11). Tested by `tests/Feature/Partner/ContractReferralTest`, `PortalContractReferralTest`, `tests/Unit/Modules/Partner/ContractValueBandTest`; `PortalReferralsTest` payload gains `contract: null`.
+
 ## 1.5.1 — 2026-11-07
 
 ### Changed

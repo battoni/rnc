@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.20.0 — 2026-11-07
+
+### Changed
+
+- rnc-3 F6b (R20, D11, D15): `create_referrals_table` gains `contract_id` (nullable, indexed, no foreign key — Portfolio's id, W25) and `subject_key` (string 40, default `lead`); the unique pair becomes `(lead_id, partner_id, subject_key)`. `ContractSeeder`'s doc names the 5 at-risk contracts its draw puts on clients without consent (`ContractAlertTest` holds ≥ 5).
+
 ## 1.19.0 — 2026-11-07
 
 ### Added
