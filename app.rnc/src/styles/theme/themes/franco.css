@@ -57,3 +57,15 @@ p,
 .p-paragraph {
   font-family: var(--font-sans);
 }
+
+/*
+ * A label that wraps a checkbox is a sentence, not a field caption (rnc-1 F3): the diagnostic's
+ * consent and its two yes/no questions. battoni-dev draws every `label` in its mono, upper-case
+ * caption, and a consent read in capitals is a wall. This sits outside a layer like the rule it
+ * answers, so a utility class could not have outvoted it.
+ */
+label:has(.p-checkbox) {
+  font-family: var(--font-sans);
+  letter-spacing: normal;
+  text-transform: none;
+}

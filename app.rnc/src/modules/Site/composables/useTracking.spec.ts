@@ -82,6 +82,7 @@ describe('useTracking', () => {
     expect(url).toBe('http://localhost/public/events');
     expect((body as Blob).type).toBe('text/plain;charset=utf-8');
     expect(JSON.parse(await (body as Blob).text())).toEqual({
+      lead_token: null,
       medium: 'cpc',
       path: '/reforma/comercio',
       sector: 'comercio',
@@ -89,6 +90,22 @@ describe('useTracking', () => {
       type: 'visit',
       visitor: localStorage.getItem('rnc:visitor'),
     });
+  });
+
+  it("carries a diagnostic step's lead token, never a lead id (AM2)", async () => {
+    await useTracking().track(TRACKING_EVENT_TYPE.DIAGNOSTIC_CONTACT, 'saude', 'token-of-the-lead');
+
+    const payload = JSON.parse(await sentPayloads()[0]!.text());
+
+    expect(payload.lead_token).toBe('token-of-the-lead');
+    expect(payload.type).toBe('diag.contact');
+    expect(payload).not.toHaveProperty('lead_id');
+  });
+
+  it('hands the diagnostic the same visitor and source the events carry', async () => {
+    const context = useTracking().visitContext();
+
+    expect(context).toEqual({ medium: 'cpc', source: 'pago', visitor: localStorage.getItem('rnc:visitor') });
   });
 
   it('keeps one UUID v4 visitor id across events and visits', async () => {

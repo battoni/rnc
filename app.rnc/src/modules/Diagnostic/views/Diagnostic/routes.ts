@@ -1,7 +1,7 @@
 import type { RouteRecordRaw } from 'vue-router';
-import { SITE_ROUTE_NAMES } from '../../constants';
+import { SITE_ROUTE_NAMES } from '@SiteModule';
 
-/* The CTA's destination (W12): a placeholder until F3's diagnostic takes the path over. */
+/* The diagnostic takes over the site's CTA destination (F2 W12): the same path and route name. */
 const DiagnosticRoutes: RouteRecordRaw[] = [
   {
     path: '/diagnostico',

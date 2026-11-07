@@ -1,5 +1,15 @@
 # Changelog — Site Module
 
+## 1.2.0 — 2026-11-07
+
+### Changed
+
+- `useTracking().track(type, sector, leadToken)` sends a diagnostic step's `lead_token` (AM2), and `visitContext()` exposes the visitor and source (rnc-1 F3).
+
+### Removed
+
+- The `/diagnostico` placeholder view and its `site.diagnostic` keys: the Diagnostic module owns the route now.
+
 ## 1.1.0 — 2026-11-07
 
 ### Added

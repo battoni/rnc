@@ -111,7 +111,7 @@ test.describe('the landing', () => {
     await page.getByTestId('hero-cta').click();
 
     await expect(page).toHaveURL('/diagnostico');
-    await expect(page.getByTestId('diagnostic-placeholder')).toBeVisible();
+    await expect(page.getByTestId('diagnostic')).toBeVisible();
   });
 });
 

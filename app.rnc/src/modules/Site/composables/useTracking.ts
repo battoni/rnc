@@ -1,5 +1,5 @@
 import type { TRACKING_EVENT_TYPE } from '../enums';
-import type { ArrivalContext, TrafficOrigin } from '../interfaces';
+import type { ArrivalContext, TrafficOrigin, VisitContext } from '../interfaces';
 import {
   MEDIUM_MAX_LENGTH,
   PAID_MEDIUMS,
@@ -128,19 +128,31 @@ function resetTrafficOrigin() {
 }
 
 /**
- * Reports the visitor's steps to the funnel (rnc-1 R7, R24): page views, CTA clicks and, from F3,
- * the diagnostic steps. Fire and forget — a lost event never breaks the page.
+ * Reports the visitor's steps to the funnel (rnc-1 R7, R24): page views, CTA clicks and the
+ * diagnostic steps. A step of a diagnostic carries its lead token, which the API turns into the
+ * lead (AM2) — the browser never sends a lead id. Fire and forget: a lost event never breaks the page.
  */
 function useTracking() {
-  // EVENTS
-  function track(type: TRACKING_EVENT_TYPE, sector: string | null = null): Promise<boolean> {
+  // HELPERS
+  /** Who the visitor is and where the visit came from — what the diagnostic's first step sends too. */
+  function visitContext(): VisitContext {
     const { medium, source } = sessionOrigin();
-    const PAYLOAD = { medium, path: window.location.pathname, sector, source, type, visitor: visitorId() };
+
+    return { medium, source, visitor: visitorId() };
+  }
+
+  // EVENTS
+  function track(
+    type: TRACKING_EVENT_TYPE,
+    sector: string | null = null,
+    leadToken: string | null = null
+  ): Promise<boolean> {
+    const PAYLOAD = { ...visitContext(), lead_token: leadToken, path: window.location.pathname, sector, type };
 
     return RecordEventService(PAYLOAD);
   }
 
-  return { track };
+  return { track, visitContext };
 }
 
 export { deriveTrafficOrigin, resetTrafficOrigin, useTracking };

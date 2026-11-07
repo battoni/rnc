@@ -1,0 +1,9 @@
+# Changelog — Diagnostic Module (api)
+
+All notable changes to this unit are documented here. Versioned with SemVer.
+
+## 1.0.0 — 2026-11-07
+
+### Added
+
+- `CnpjLookup` contract + `BrasilApiCnpjLookup` (5 s timeout, 30-day cache, AM10 mapping), `RulesEngine` (the demo's `diagnose()`, `taxMix()`, `splitPaymentRange()`, `formatRange()`), the `DiagnosticRule`, `Sector`, `Regime`, `RevenueBand`, `Tax` enums, and the public routes `POST/PATCH public/diagnostics[/{token}]`, `POST …/{token}/cnpj`, `GET …/{token}/result`, `GET …/{token}/simulation` (rnc-1 F3, R9–R14). Tests: `RulesEngineTest`, `BrasilApiCnpjLookupTest`, `PublicDiagnosticsTest`.

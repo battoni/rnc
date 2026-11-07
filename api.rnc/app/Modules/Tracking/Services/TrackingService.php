@@ -3,6 +3,7 @@
 namespace App\Modules\Tracking\Services;
 
 use App\Modules\Firm\Services\CurrentFirm;
+use App\Modules\Lead\Services\LeadService;
 use App\Modules\Tracking\DTOs\RecordEventDTO;
 use App\Modules\Tracking\Models\TrackingEvent;
 use App\Modules\Tracking\Repositories\TrackingRepository;
@@ -18,6 +19,7 @@ class TrackingService
     public function __construct(
         private CurrentFirm $currentFirm,
         private TrackingRepository $trackingRepository,
+        private LeadService $leadService,
     ) {}
 
     /** Null when the request has no firm to record into. */
@@ -41,9 +43,9 @@ class TrackingService
             'sector' => $dto->sector,
             'source' => $dto->source,
             'medium' => $dto->medium,
-            // From the lead token, never the client (AM2). No token resolves yet: `leads` and its tokens
-            // arrive in F3 (AM3), so `lead_token` is accepted and ignored until then.
-            'lead_id' => null,
+            // From the lead token, never the client (AM2): an unknown, expired or other firm's token
+            // resolves to nothing and the event is still recorded, anonymous.
+            'lead_id' => $dto->lead_token === null ? null : $this->leadService->findLeadByToken($dto->lead_token)?->id,
             'at' => $at,
         ]);
     }

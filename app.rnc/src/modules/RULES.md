@@ -56,6 +56,7 @@ Modules may import from other modules via their root alias. They must **not** re
 | Module            | Alias                    | Domain                                                                      |
 | ----------------- | ------------------------ | --------------------------------------------------------------------------- |
 | `Auth`            | `@AuthModule`            | Authentication, roles, permissions                                          |
+| `Diagnostic`      | `@DiagnosticModule`      | The public Reforma diagnostic at `/diagnostico` (open, `ThePublicLayout`)   |
 | `Home`            | `@HomeModule`            | Back-office landing and the three workspaces (Equipe · Reinaldo · Operador) |
 | `Personalization` | `@PersonalizationModule` | Global UI preferences (dark mode, language, layout) — this browser only     |
 | `Site`            | `@SiteModule`            | Franco's public site (open routes, `ThePublicLayout`)                       |

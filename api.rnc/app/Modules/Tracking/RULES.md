@@ -35,12 +35,14 @@ nothing else (`RecordEventRequest`; the DTO reads `validated()`):
   unique index and reads the winner back.
 - **`events.lead_id` has no foreign key** (AM2, database/RULES.md "A log row's reference"): an event
   never blocks the delete of what it logged. F3 may index-join it to `leads`.
-- **Tables read from other modules:** `sector_pages.slug` (Content), for the `sector` rule.
+- **Tables read from other modules:** `sector_pages.slug` (Content), for the `sector` rule; `leads`
+  (Lead), through `LeadService::findLeadByToken`, to turn a `lead_token` into `lead_id` (F3).
 
 ## Known Gaps
 
 - **A bot can inflate the funnel** (AM2). The throttle stops a loop from one address, not a crowd;
   there is no bot filter, no CAPTCHA and no deduplication of page views.
-- **`lead_token` resolves to nothing yet**: the `leads` table and its tokens arrive in F3 (AM3), and
-  `TrackingService::record` writes `lead_id` as null until then — F3 resolves the token there.
+_Retired 07/11/2026 (F3):_ "`lead_token` resolves to nothing yet" — F3 resolves it: a live token of
+the current firm gives the event its `lead_id`; an unknown, expired or other firm's token records
+the event anonymous.
 - **No retention rule.** Events are kept indefinitely until LGPD retention is decided.

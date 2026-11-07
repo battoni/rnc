@@ -1,0 +1,249 @@
+import { ref } from 'vue';
+import type { DIAGNOSTIC_PATH } from '../enums';
+import type {
+  CnpjCompany,
+  CnpjLookupResult,
+  DiagnosticContactPayload,
+  DiagnosticProfile,
+  DiagnosticResult,
+  DiagnosticSimulation,
+  PublicLead,
+  UpdateDiagnosticPayload,
+} from '../interfaces';
+import type { ApiResponse } from '@Providers';
+import { HTTP_STATUS } from '@Enums';
+import { TRACKING_EVENT_TYPE, useTracking } from '@SiteModule';
+import { CNPJ_LENGTH, EMPTY_PROFILE, LOOKUP_STEP_MS, LOOKUP_STEPS } from '../constants';
+import { DIAGNOSTIC_STEP, LOOKUP_STATUS } from '../enums';
+import {
+  GetDiagnosticResultService,
+  GetDiagnosticSimulationService,
+  LookupCnpjService,
+  StartDiagnosticService,
+  UpdateDiagnosticService,
+} from '../services';
+
+const NON_DIGITS = /\D/g;
+
+/**
+ * The public diagnostic's state and steps (rnc-1 R9–R14). One instance per visit of the page.
+ *
+ * Picking a path starts the lead (a `visitante`, AM13) and keeps its token; every later step is
+ * saved as the visitor leaves it, so a visitor who gives the contact and goes away is a lead parcial
+ * with the step it stopped at (R11). Each funnel step is tracked with the token, never a lead id.
+ */
+function useDiagnostic() {
+  const { track, visitContext } = useTracking();
+
+  const company = ref<CnpjCompany | null>(null);
+  const consentText = ref('');
+  const errorKey = ref<string | null>(null);
+  const isSaving = ref(false);
+  const lookupStatus = ref<LOOKUP_STATUS>(LOOKUP_STATUS.IDLE);
+  const lookupStepIndex = ref(0);
+  const path = ref<DIAGNOSTIC_PATH | null>(null);
+  const profile = ref<DiagnosticProfile>({ ...EMPTY_PROFILE });
+  const result = ref<DiagnosticResult | null>(null);
+  const simulation = ref<DiagnosticSimulation | null>(null);
+  const step = ref<DIAGNOSTIC_STEP>(DIAGNOSTIC_STEP.COMPANY);
+  const token = ref<string | null>(null);
+
+  // HELPERS
+  function fail(key: string) {
+    errorKey.value = key;
+  }
+
+  function save(payload: UpdateDiagnosticPayload): Promise<void> {
+    if (!token.value) return Promise.reject(new Error('diagnostic.errors.notStarted'));
+
+    isSaving.value = true;
+    errorKey.value = null;
+
+    return UpdateDiagnosticService(token.value, payload)
+      .then(() => undefined)
+      .finally(() => (isSaving.value = false));
+  }
+
+  /** The lookup sequence on screen: one registry after the other, whatever the API's speed. */
+  function playLookupSequence(): Promise<void> {
+    lookupStepIndex.value = 0;
+
+    return new Promise((resolve) => {
+      const timer = setInterval(() => {
+        lookupStepIndex.value += 1;
+
+        if (lookupStepIndex.value < LOOKUP_STEPS.length) return;
+
+        clearInterval(timer);
+        resolve();
+      }, LOOKUP_STEP_MS);
+    });
+  }
+
+  function onLookupAnswered({ data }: ApiResponse<CnpjLookupResult>) {
+    company.value = data.company;
+    profile.value = { ...profile.value, ...data.lead.profile };
+    lookupStatus.value = data.company ? LOOKUP_STATUS.FOUND : LOOKUP_STATUS.UNAVAILABLE;
+  }
+
+  function onLookupFailed(error: { response?: { status?: number } }) {
+    const isRefusedCnpj = error.response?.status === HTTP_STATUS.UNPROCESSABLE_ENTITY;
+
+    lookupStatus.value = isRefusedCnpj ? LOOKUP_STATUS.INVALID : LOOKUP_STATUS.UNAVAILABLE;
+  }
+
+  function onStarted({ data }: ApiResponse<PublicLead>) {
+    token.value = data.token ?? null;
+    consentText.value = data.consent.text;
+
+    track(TRACKING_EVENT_TYPE.DIAGNOSTIC_START, profile.value.sector, token.value);
+  }
+
+  // EVENTS
+  /** The sector a sector page's CTA carried (`?setor=`), before the visitor answers anything. */
+  function presetSector(sector: string | null) {
+    profile.value.sector = sector;
+  }
+
+  function choosePath(next: DIAGNOSTIC_PATH) {
+    path.value = next;
+    errorKey.value = null;
+
+    if (token.value || isSaving.value) return;
+
+    const { medium, source, visitor } = visitContext();
+    const PAYLOAD = { medium, path: next, sector: profile.value.sector, source, visitor };
+
+    isSaving.value = true;
+
+    StartDiagnosticService(PAYLOAD)
+      .then(onStarted)
+      .catch(() => fail('diagnostic.errors.unavailable'))
+      .finally(() => (isSaving.value = false));
+  }
+
+  function lookupCnpj(typed: string) {
+    const digits = typed.replace(NON_DIGITS, '');
+
+    company.value = null;
+
+    if (digits.length !== CNPJ_LENGTH || !token.value) {
+      lookupStatus.value = LOOKUP_STATUS.INVALID;
+      return;
+    }
+
+    lookupStatus.value = LOOKUP_STATUS.RUNNING;
+
+    const LOOKUP = LookupCnpjService(token.value, digits);
+
+    Promise.all([LOOKUP, playLookupSequence()])
+      .then(([answer]) => onLookupAnswered(answer))
+      .catch(onLookupFailed);
+  }
+
+  function confirmCompany() {
+    const { regime, sector } = profile.value;
+
+    if (!sector || !regime) {
+      fail('diagnostic.errors.companyStep');
+      return;
+    }
+
+    save({ profile: { regime, sector }, step: DIAGNOSTIC_STEP.CONTACT })
+      .then(() => (step.value = DIAGNOSTIC_STEP.CONTACT))
+      .catch(() => fail('diagnostic.errors.unavailable'));
+  }
+
+  function saveContact(contact: DiagnosticContactPayload) {
+    const hasWayToReach = !!contact.phone || !!contact.email;
+
+    if (!contact.company || !hasWayToReach) {
+      fail('diagnostic.errors.contact');
+      return;
+    }
+
+    save({ contact, step: DIAGNOSTIC_STEP.PROFILE })
+      .then(() => {
+        step.value = DIAGNOSTIC_STEP.PROFILE;
+
+        track(TRACKING_EVENT_TYPE.DIAGNOSTIC_CONTACT, profile.value.sector, token.value);
+      })
+      .catch(() => fail('diagnostic.errors.contactInvalid'));
+  }
+
+  function saveProfile() {
+    const { b2b, regime, sector } = profile.value;
+
+    if (b2b === null || !sector || !regime) {
+      fail('diagnostic.errors.profileStep');
+      return;
+    }
+
+    save({ profile: { b2b, regime, sector }, step: DIAGNOSTIC_STEP.REVENUE })
+      .then(() => (step.value = DIAGNOSTIC_STEP.REVENUE))
+      .catch(() => fail('diagnostic.errors.unavailable'));
+  }
+
+  function finish() {
+    const { band, exporta, incentivos } = profile.value;
+
+    if (!band) {
+      fail('diagnostic.errors.revenueStep');
+      return;
+    }
+
+    save({ profile: { band, exporta, incentivos }, step: DIAGNOSTIC_STEP.RESULT })
+      .then(() => Promise.all([GetDiagnosticResultService(token.value!), GetDiagnosticSimulationService(token.value!)]))
+      .then(([resultAnswer, simulationAnswer]) => {
+        result.value = resultAnswer.data;
+        simulation.value = simulationAnswer.data;
+        step.value = DIAGNOSTIC_STEP.RESULT;
+
+        track(TRACKING_EVENT_TYPE.DIAGNOSTIC_RESULT, profile.value.sector, token.value);
+      })
+      .catch(() => fail('diagnostic.errors.unavailable'));
+  }
+
+  /** "Agendar com um especialista" — the slot picker is F4's; until then a holding step (W20). */
+  function openBooking() {
+    step.value = DIAGNOSTIC_STEP.BOOKING;
+  }
+
+  function restart() {
+    company.value = null;
+    errorKey.value = null;
+    lookupStatus.value = LOOKUP_STATUS.IDLE;
+    path.value = null;
+    profile.value = { ...EMPTY_PROFILE };
+    result.value = null;
+    simulation.value = null;
+    step.value = DIAGNOSTIC_STEP.COMPANY;
+    token.value = null;
+  }
+
+  return {
+    choosePath,
+    company,
+    confirmCompany,
+    consentText,
+    errorKey,
+    finish,
+    isSaving,
+    lookupCnpj,
+    lookupStatus,
+    lookupStepIndex,
+    openBooking,
+    path,
+    presetSector,
+    profile,
+    restart,
+    result,
+    saveContact,
+    saveProfile,
+    simulation,
+    step,
+    token,
+  };
+}
+
+export { useDiagnostic };

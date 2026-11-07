@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.1.0 — 2026-11-07
+
+### Changed
+
+- `TrackingService::record` resolves `lead_id` from `lead_token` through `LeadService` (rnc-1 F3, AM2); unknown, expired or other firm's tokens are ignored. Tests in `PublicEventsTest`.
+
 ## 1.0.0 — 2026-11-07
 
 ### Added

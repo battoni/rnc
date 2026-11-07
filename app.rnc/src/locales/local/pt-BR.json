@@ -189,12 +189,6 @@
       "failedText": "Verifique a conexão e tente de novo.",
       "retry": "Tentar de novo"
     },
-    "diagnostic": {
-      "kicker": "Diagnóstico gratuito",
-      "title": "O diagnóstico abre aqui em breve",
-      "text": "Enquanto isso, a equipe da Franco responde pelo telefone e pelo e-mail no horário de atendimento.",
-      "back": "Voltar para a Reforma"
-    },
     "footer": {
       "tagline": "Contabilidade e consultoria empresarial em São Paulo há 35 anos.",
       "contact": "Contato",
@@ -214,6 +208,153 @@
       "d5": "sexta",
       "d6": "sábado",
       "d7": "domingo"
+    }
+  },
+  "diagnostic": {
+    "kicker": "Diagnóstico gratuito da Reforma",
+    "lede": "Em 5 minutos, as oportunidades e os riscos da Reforma Tributária para a sua empresa, com valores estimados. Comece pelo CNPJ ou responda algumas perguntas.",
+    "titles": {
+      "empresa": "Diagnóstico gratuito da Reforma",
+      "contato": "Para onde enviamos o resultado?",
+      "perfil": "Perfil da empresa",
+      "faturamento": "Faturamento e operação",
+      "resultado": "Seu resultado",
+      "agendar": "Agende com um especialista"
+    },
+    "progress": {
+      "label": "Passo {current} de {total}",
+      "company": "Sua empresa",
+      "profile": "Perfil",
+      "revenue": "Faturamento",
+      "result": "Resultado"
+    },
+    "path": {
+      "cnpjTitle": "Tenho o CNPJ",
+      "cnpjText": "Preenchemos razão social, setor, porte e regime para você.",
+      "quizTitle": "Não tenho o CNPJ",
+      "quizText": "Responda algumas perguntas rápidas sobre a empresa.",
+      "switchToQuiz": "Não tenho o CNPJ: responder o questionário",
+      "switchToCnpj": "Tenho o CNPJ"
+    },
+    "cnpj": {
+      "label": "CNPJ da empresa",
+      "placeholder": "Digite os 14 números",
+      "lookup": "Consultar",
+      "invalid": "Esse CNPJ não confere. Confira os 14 números e tente de novo.",
+      "sequenceTitle": "Consultando Receita · Simples · CNAE",
+      "sources": {
+        "receita": {
+          "name": "Receita Federal (CNPJ)",
+          "what": "razão social, CNAE e porte"
+        },
+        "simples": {
+          "name": "Simples Nacional",
+          "what": "opção pelo regime"
+        },
+        "cnae": {
+          "name": "CNAE",
+          "what": "setor da atividade"
+        }
+      },
+      "lineStatus": {
+        "done": "ok",
+        "running": "consultando…",
+        "waiting": "na fila"
+      },
+      "fallback": "Não conseguimos consultar esse CNPJ agora. Sem problema: o questionário leva o mesmo tempo.",
+      "fallbackAction": "Responder o questionário",
+      "company": "Razão social",
+      "cnae": "CNAE",
+      "sector": "Setor",
+      "porte": "Porte",
+      "regime": "Regime",
+      "unknown": "Não informado",
+      "askedNext": "Escolha abaixo"
+    },
+    "fields": {
+      "sector": "Setor",
+      "regime": "Regime tributário",
+      "b2b": "Quanto das vendas vai para empresas (B2B)",
+      "b2bHint": "Quem compra de empresas no regime regular passa a olhar o crédito que a sua nota gera.",
+      "b2bOption": "{value}%",
+      "band": "Faturamento anual",
+      "incentivos": "Tenho incentivos fiscais de ICMS",
+      "exporta": "Exporto produtos ou serviços"
+    },
+    "sectors": {
+      "comercio": "Comércio",
+      "industria": "Indústria",
+      "servicos": "Serviços",
+      "saude": "Saúde",
+      "educacao": "Educação",
+      "agro": "Agro"
+    },
+    "regimes": {
+      "simples": "Simples Nacional",
+      "presumido": "Lucro Presumido",
+      "real": "Lucro Real",
+      "nao_sei": "Não sei"
+    },
+    "bands": {
+      "b1": "Até R$ 360 mil/ano",
+      "b2": "R$ 360 mil a 4,8 milhões/ano",
+      "b3": "R$ 4,8 a 30 milhões/ano",
+      "b4": "R$ 30 a 300 milhões/ano",
+      "b5": "Acima de R$ 300 milhões/ano"
+    },
+    "contact": {
+      "lede": "Para quem enviamos o resultado? Um especialista pode explicar cada item com você.",
+      "company": "Empresa",
+      "name": "Seu nome",
+      "phone": "WhatsApp ou telefone",
+      "email": "E-mail",
+      "hint": "Basta um dos dois. Seus dados ficam com a Franco e não são compartilhados sem a sua autorização.",
+      "consentOptional": "Opcional: o resultado vem do mesmo jeito."
+    },
+    "actions": {
+      "continue": "Continuar",
+      "confirmCompany": "Está certo, continuar",
+      "seeResult": "Ver meu resultado",
+      "restart": "Refazer o diagnóstico",
+      "back": "Voltar para a Reforma"
+    },
+    "errors": {
+      "unavailable": "Não foi possível salvar agora. Tente de novo em instantes.",
+      "notStarted": "O diagnóstico ainda não começou. Escolha como quer responder.",
+      "companyStep": "Escolha o setor e o regime para continuar.",
+      "contact": "Informe a empresa e um contato: WhatsApp/telefone ou e-mail.",
+      "contactInvalid": "Confira o telefone e o e-mail: um deles não parece válido.",
+      "profileStep": "Escolha o setor, o regime e quanto das vendas vai para empresas.",
+      "revenueStep": "Escolha a faixa de faturamento para ver o resultado."
+    },
+    "result": {
+      "summary": "Encontramos {opportunities} e {risks}",
+      "opportunities": "nenhuma oportunidade | 1 oportunidade | {n} oportunidades",
+      "risks": "nenhum risco | 1 risco | {n} riscos",
+      "profile": "Perfil: {profile}. Valores estimados a partir da faixa de faturamento; não são cálculo fiscal.",
+      "opportunity": "Oportunidade",
+      "risk": "Risco",
+      "locked": "Detalhe liberado na reunião com o especialista",
+      "estimate": "estimativa",
+      "b2bShare": "{value}% B2B"
+    },
+    "simulator": {
+      "title": "Simulador de impacto 2026–2033",
+      "lede": "Como a carga sobre o faturamento muda ano a ano: PIS/Cofins, ICMS e ISS saem, CBS e IBS entram. De {first} em 2026 para {last} em 2033 · estimativa com alíquotas de referência, não é cálculo fiscal.",
+      "chartLabel": "Carga estimada por ano: {years}",
+      "leaving": "(sai)",
+      "coming": "(entra)",
+      "simplesNote": "No Simples Nacional a carga continua dentro do DAS; o gráfico mostra o regime regular, que é a comparação de quem vende para empresas e pensa em sair do DAS para IBS/CBS.",
+      "splitTitle": "Split payment no caixa",
+      "splitText": "IBS e CBS passam a sair no pagamento da venda, antes do vencimento mensal: é capital de giro que a empresa deixa de ter por cerca de um mês."
+    },
+    "schedule": {
+      "title": "Os detalhes de cada item estão com o especialista",
+      "text": "Em 1 hora, online ou na Franco, ele explica a conta por trás de cada valor e o plano de ação. A reunião é gratuita.",
+      "action": "Agendar com um especialista"
+    },
+    "booking": {
+      "text": "A agenda online abre em breve. Enquanto isso, fale com a equipe da Franco pelo telefone ou pelo e-mail e diga que fez o diagnóstico: o seu resultado já está com ela."
     }
   }
 }

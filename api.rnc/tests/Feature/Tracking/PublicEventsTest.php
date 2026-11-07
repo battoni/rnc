@@ -1,6 +1,7 @@
 <?php
 
 use App\Modules\Firm\Models\Firm;
+use App\Modules\Lead\Models\Lead;
 use App\Modules\Tracking\Models\TrackingEvent;
 use App\Modules\Tracking\Models\Visitor;
 use Database\Seeders\FirmSeeder;
@@ -98,6 +99,27 @@ describe('what the client cannot decide', function () {
         $this->postJson('/api/public/events', eventPayload(['lead_token' => Str::random(48)]))->assertCreated();
 
         expect(TrackingEvent::withoutGlobalScopes()->value('lead_id'))->toBeNull();
+    });
+
+    it('resolves the lead from its token, server side (F3)', function () {
+        $token = $this->postJson('/api/public/diagnostics', ['path' => 'quiz', 'source' => 'pago'])->json('data.token');
+
+        $this->postJson('/api/public/events', eventPayload(['type' => 'diag.contact', 'lead_token' => $token]))->assertCreated();
+
+        expect(TrackingEvent::withoutGlobalScopes()->value('lead_id'))->toBe(Lead::withoutGlobalScopes()->sole()->id);
+    });
+
+    it('ignores an expired lead token and one of another firm', function () {
+        Firm::factory()->create(['slug' => 'outra']);
+        $expired = $this->postJson('/api/public/diagnostics', ['path' => 'quiz', 'source' => 'pago'])->json('data.token');
+        $foreign = $this->withHeader('X-Firm', 'outra')->postJson('/api/public/diagnostics', ['path' => 'quiz', 'source' => 'pago'])->json('data.token');
+        $this->travel(31)->days();
+
+        $this->withHeader('X-Firm', 'franco')->postJson('/api/public/events', eventPayload(['lead_token' => $expired]))->assertCreated();
+        $this->travelBack();
+        $this->withHeader('X-Firm', 'franco')->postJson('/api/public/events', eventPayload(['lead_token' => $foreign]))->assertCreated();
+
+        expect(TrackingEvent::withoutGlobalScopes()->pluck('lead_id')->all())->toBe([null, null]);
     });
 
     it('does not store the raw referrer', function () {

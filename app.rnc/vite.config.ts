@@ -154,6 +154,8 @@ export default defineConfig(({ mode }) => {
 
         '@AuthModule': getPath('./src/modules/Auth'),
         '@AuthModule/*': getPath('./src/modules/Auth/*'),
+        '@DiagnosticModule': getPath('./src/modules/Diagnostic'),
+        '@DiagnosticModule/*': getPath('./src/modules/Diagnostic/*'),
         '@HomeModule': getPath('./src/modules/Home'),
         '@HomeModule/*': getPath('./src/modules/Home/*'),
         '@PersonalizationModule': getPath('./src/modules/Personalization'),

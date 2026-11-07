@@ -189,12 +189,6 @@
       "failedText": "Check your connection and try again.",
       "retry": "Try again"
     },
-    "diagnostic": {
-      "kicker": "Free diagnostic",
-      "title": "The diagnostic opens here soon",
-      "text": "Meanwhile, Franco's team answers by phone and e-mail during opening hours.",
-      "back": "Back to the reform"
-    },
     "footer": {
       "tagline": "Accounting and business consulting in São Paulo for 35 years.",
       "contact": "Contact",
@@ -214,6 +208,153 @@
       "d5": "Friday",
       "d6": "Saturday",
       "d7": "Sunday"
+    }
+  },
+  "diagnostic": {
+    "kicker": "Free Reform diagnostic",
+    "lede": "In 5 minutes, the opportunities and risks of the Tax Reform for your company, with estimated values. Start with the CNPJ or answer a few questions.",
+    "titles": {
+      "empresa": "Free Reform diagnostic",
+      "contato": "Where do we send the result?",
+      "perfil": "Company profile",
+      "faturamento": "Revenue and operations",
+      "resultado": "Your result",
+      "agendar": "Book a specialist"
+    },
+    "progress": {
+      "label": "Step {current} of {total}",
+      "company": "Your company",
+      "profile": "Profile",
+      "revenue": "Revenue",
+      "result": "Result"
+    },
+    "path": {
+      "cnpjTitle": "I have the CNPJ",
+      "cnpjText": "We fill in the legal name, sector, size and regime for you.",
+      "quizTitle": "I don't have the CNPJ",
+      "quizText": "Answer a few quick questions about the company.",
+      "switchToQuiz": "No CNPJ: answer the questionnaire",
+      "switchToCnpj": "I have the CNPJ"
+    },
+    "cnpj": {
+      "label": "Company CNPJ",
+      "placeholder": "Type the 14 digits",
+      "lookup": "Look up",
+      "invalid": "This CNPJ does not check out. Check the 14 digits and try again.",
+      "sequenceTitle": "Checking Receita · Simples · CNAE",
+      "sources": {
+        "receita": {
+          "name": "Receita Federal (CNPJ)",
+          "what": "legal name, CNAE and size"
+        },
+        "simples": {
+          "name": "Simples Nacional",
+          "what": "regime option"
+        },
+        "cnae": {
+          "name": "CNAE",
+          "what": "activity sector"
+        }
+      },
+      "lineStatus": {
+        "done": "ok",
+        "running": "checking…",
+        "waiting": "queued"
+      },
+      "fallback": "We could not look this CNPJ up right now. No problem: the questionnaire takes the same time.",
+      "fallbackAction": "Answer the questionnaire",
+      "company": "Legal name",
+      "cnae": "CNAE",
+      "sector": "Sector",
+      "porte": "Size",
+      "regime": "Regime",
+      "unknown": "Not informed",
+      "askedNext": "Choose below"
+    },
+    "fields": {
+      "sector": "Sector",
+      "regime": "Tax regime",
+      "b2b": "How much of the sales goes to companies (B2B)",
+      "b2bHint": "Companies buying in the regular regime start looking at the credit your invoice carries.",
+      "b2bOption": "{value}%",
+      "band": "Annual revenue",
+      "incentivos": "I have ICMS tax incentives",
+      "exporta": "I export goods or services"
+    },
+    "sectors": {
+      "comercio": "Commerce",
+      "industria": "Industry",
+      "servicos": "Services",
+      "saude": "Health",
+      "educacao": "Education",
+      "agro": "Agribusiness"
+    },
+    "regimes": {
+      "simples": "Simples Nacional",
+      "presumido": "Lucro Presumido",
+      "real": "Lucro Real",
+      "nao_sei": "I don't know"
+    },
+    "bands": {
+      "b1": "Up to R$ 360 thousand/year",
+      "b2": "R$ 360 thousand to 4.8 million/year",
+      "b3": "R$ 4.8 to 30 million/year",
+      "b4": "R$ 30 to 300 million/year",
+      "b5": "Over R$ 300 million/year"
+    },
+    "contact": {
+      "lede": "Who do we send the result to? A specialist can go through each item with you.",
+      "company": "Company",
+      "name": "Your name",
+      "phone": "WhatsApp or phone",
+      "email": "E-mail",
+      "hint": "One of the two is enough. Your data stays with Franco and is not shared without your permission.",
+      "consentOptional": "Optional: you get the result either way."
+    },
+    "actions": {
+      "continue": "Continue",
+      "confirmCompany": "That's right, continue",
+      "seeResult": "See my result",
+      "restart": "Start the diagnostic over",
+      "back": "Back to the reform"
+    },
+    "errors": {
+      "unavailable": "Could not save right now. Try again in a moment.",
+      "notStarted": "The diagnostic has not started. Choose how you want to answer.",
+      "companyStep": "Choose the sector and the regime to continue.",
+      "contact": "Give the company and one contact: WhatsApp/phone or e-mail.",
+      "contactInvalid": "Check the phone and the e-mail: one of them does not look valid.",
+      "profileStep": "Choose the sector, the regime and how much of the sales goes to companies.",
+      "revenueStep": "Choose the revenue band to see the result."
+    },
+    "result": {
+      "summary": "We found {opportunities} and {risks}",
+      "opportunities": "no opportunities | 1 opportunity | {n} opportunities",
+      "risks": "no risks | 1 risk | {n} risks",
+      "profile": "Profile: {profile}. Values estimated from the revenue band; not a tax calculation.",
+      "opportunity": "Opportunity",
+      "risk": "Risk",
+      "locked": "Detail unlocked in the meeting with the specialist",
+      "estimate": "estimate",
+      "b2bShare": "{value}% B2B"
+    },
+    "simulator": {
+      "title": "Impact simulator 2026–2033",
+      "lede": "How the burden on revenue changes year by year: PIS/Cofins, ICMS and ISS leave, CBS and IBS come in. From {first} in 2026 to {last} in 2033 · estimate with reference rates, not a tax calculation.",
+      "chartLabel": "Estimated burden per year: {years}",
+      "leaving": "(leaves)",
+      "coming": "(comes in)",
+      "simplesNote": "On the Simples Nacional the burden stays inside the DAS; the chart shows the regular regime, the comparison for companies selling to other companies that consider leaving the DAS for IBS/CBS.",
+      "splitTitle": "Split payment on cash",
+      "splitText": "IBS and CBS leave at the payment of the sale, before the monthly due date: working capital the company goes without for about a month."
+    },
+    "schedule": {
+      "title": "The details of each item are with the specialist",
+      "text": "In 1 hour, online or at Franco, they explain the math behind each value and the action plan. The meeting is free.",
+      "action": "Book a specialist"
+    },
+    "booking": {
+      "text": "Online booking opens soon. Meanwhile, talk to Franco's team by phone or e-mail and say you took the diagnostic: your result is already with them."
     }
   }
 }

@@ -58,6 +58,11 @@ interface TrafficOrigin {
   source: TRAFFIC_SOURCE;
 }
 
+/** The anonymous visitor and the source of the visit, as every event and the diagnostic send them. */
+interface VisitContext extends TrafficOrigin {
+  visitor: string;
+}
+
 /** What the browser knows about how the visitor arrived. */
 interface ArrivalContext {
   host: string;
@@ -81,4 +86,5 @@ export type {
   SeoMeta,
   TrackingEventPayload,
   TrafficOrigin,
+  VisitContext,
 };
