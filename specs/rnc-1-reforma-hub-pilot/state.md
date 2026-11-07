@@ -65,3 +65,4 @@ Started: 2026-11-07
 - W18 F2: AM15 allows site strings in pt-BR only, but `fallbackLocale` is `en` and a visitor with English stored would see raw keys, and Vitest runs in English → every site key exists in both locales; the e2e site spec seeds pt-BR (to reverse: drop the `en` site keys and seed pt-BR in every Site spec).
 - W19 F2: two sector pages listed the 28/10/2026 TCU fact after 2027 (the demo's order) → facts in date order in `SectorPageSeeder` (to reverse: reorder the arrays).
 01:27 F2 done, attempt 1, 6734fc7
+01:28 F3 started, attempt 1
