@@ -1,5 +1,5 @@
 ---
-version: 1.0.0
+version: 1.0.1
 origin: rnc
 ---
 
@@ -40,6 +40,11 @@ the directive, `celer-03` section 1). The styles they switch on are in
   already moving is not motion.
 - **The pointer directives ignore a touch** (`pointerType !== 'mouse'`): "toward the pointer" has
   no meaning under a finger.
+
+- **A directive is imported where it is used, and the spec reads every `.vue` to check it**
+  (`directiveImports.spec.ts`). None is registered globally, so a template with `v-count-up` and no
+  `vCountUp` import only warns and the effect silently never runs (RadarView, rnc-2). A new
+  directive exported from `index.ts` is covered with no edit.
 
 ## Do Not
 

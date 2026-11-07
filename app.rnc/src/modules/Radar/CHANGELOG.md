@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.0.1 — 2026-11-07
+
+### Fixed
+
+- `RadarView` imports `vCountUp` from `@Directives`; without it the count-up never ran (rnc-2).
+
 ## 1.0.0 — 2026-11-07
 
 ### Added
