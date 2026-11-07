@@ -300,7 +300,18 @@ describe('what the partner sees (R6, A5, D3)', function () {
         $firm = Firm::find(inboxFrancoId());
 
         $this->actingAs($this->nexoLogin)->getJson("/api/portal/referrals/{$referral->id}")->assertOk()
-            ->assertJsonPath('data.contact', ['via' => 'firm', 'name' => $firm->name, 'phone' => $firm->phone, 'email' => $firm->mailbox]);
+            ->assertJsonPath('data.contact', ['via' => 'firm', 'name' => $firm->name, 'phone' => '551137325500', 'email' => $firm->mailbox]);
+    });
+
+    it('answers the firm\'s phone with the country code however it is stored (A5)', function () {
+        $referral = inboxReferral($this->nexo, ['channel' => 'carteira', 'contact_name' => null, 'phone' => null, 'email' => null], ['status' => 'aceito']);
+
+        foreach (['11 3732-5500', '(11) 3732-5500', '551137325500', '+55 11 3732-5500'] as $stored) {
+            Firm::find(inboxFrancoId())->update(['phone' => $stored]);
+
+            $this->actingAs($this->nexoLogin)->getJson("/api/portal/referrals/{$referral->id}")
+                ->assertJsonPath('data.contact.phone', '551137325500');
+        }
     });
 
     it('never answers a range, a note, the timeline or another referral (A5)', function () {

@@ -1,7 +1,7 @@
 ---
-version: 1.5.0
+version: 1.5.1
 origin: rnc
-based-on: 1.5.0
+based-on: 1.5.1
 ---
 # RULES — Partner Module
 
@@ -111,7 +111,8 @@ partner's portal login — `partners.access_*_at` and `partner_access_events` �
   regime · porte (never the rest of `profile`), the covered titles, score, message, dates, status,
   SLA. The lead's contact only from the accept on (`ReferralStatus::showsContact` — a declined
   referral never saw a phone); a `carteira` lead (a portfolio client, R27) shows Franco's own name,
-  phone and mailbox instead. `deal_value_cents` only once fechado — the partner's own number. Never
+  phone (answered as digits with the 55, `PhoneNumber::normalize`, like a lead's) and mailbox
+  instead. `deal_value_cents` only once fechado — the partner's own number. Never
   a range, a note, the timeline, the consent or another referral (A5 reads the bodies).
 - **Every move is one `encaminhamento.status` line** (`LeadService::recordReferralStatus`, by the
   partner's login, `{referral_id, partner_id, partner, from, to[, meeting_at][, deal_value_cents]}`)

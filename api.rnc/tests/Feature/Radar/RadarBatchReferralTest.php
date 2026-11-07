@@ -252,7 +252,7 @@ describe('the portfolio lead and the referral (D13, AM10, A21)', function () {
 
         $accepted = $this->actingAs($login)->postJson("/api/portal/referrals/{$big['id']}/transition", ['to' => 'aceito'])->assertOk()->json('data');
 
-        expect($accepted['contact'])->toBe(['via' => 'firm', 'name' => 'Franco Contabilidade', 'phone' => '11 3732-5500', 'email' => 'saf@franco-rnc.com.br']);
+        expect($accepted['contact'])->toBe(['via' => 'firm', 'name' => 'Franco Contabilidade', 'phone' => '551137325500', 'email' => 'saf@franco-rnc.com.br']);
     });
 });
 
