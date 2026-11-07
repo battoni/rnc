@@ -1,5 +1,5 @@
 ---
-version: 1.3.1
+version: 1.3.2
 origin: rnc
 ---
 
@@ -62,6 +62,19 @@ confirmation, and the "Relatório de Impacto" at `/relatorio/:token` (route `DIA
   the answer, the replies one by one) and `motion-typing` (the reception typing while the API
   answers — the one idle loop, still under reduced motion); the log scrolls itself, smoothly unless
   the visitor asked for less motion.
+- **An error belongs to the answer that produced it** (rnc-2 review): the chat shows its own error
+  or the diagnostic's, and answering again clears both (`useDiagnostic.clearError`), so a refused
+  contact is not still said once the turn has moved on. A lookup with no lead (its start failed) is
+  `diagnostic.errors.unavailable` and starts the lead again — never "CNPJ inválido", in the form or
+  the chat; the chat says the CNPJ is wrong only for a lookup that ran.
+- **A company found that is not theirs** offers "Tentar outro CNPJ" and "Usar o questionário", as a
+  CNPJ not found does, and forgets what the lookup filled (company, sector, regime).
+- **A quick reply is logged as its key**, so the transcript re-translates on a language switch; a
+  name the visitor typed (or the company's name offered as a reply) stays as written.
+- **The cursor goes back to the box only at a free-text turn** (CNPJ, company, name, contact): a tap
+  on a quick reply does not open a phone's keyboard.
+- **The log is the live region** (`role="log"`, polite): the error line inside it carries no
+  `role="alert"`, or a screen reader would say it twice.
 
 ## Known Gaps
 

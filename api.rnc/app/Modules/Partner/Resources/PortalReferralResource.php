@@ -2,6 +2,7 @@
 
 namespace App\Modules\Partner\Resources;
 
+use App\Helpers\Brazil\PhoneNumber;
 use App\Modules\Firm\Services\CurrentFirm;
 use App\Modules\Lead\Enums\LeadChannel;
 use App\Modules\Partner\Enums\ReferralStatus;
@@ -17,7 +18,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * sector · regime · porte, the titles of the items its specialty covers, the score, Franco's
  * message, the dates, the status and the SLA. The lead's contact only from the accept on (a partner
  * that declines never saw a phone); a portfolio client's (`carteira`) way in is Franco's own phone
- * and mailbox. The contract value only once closed, and it is the partner's own number. Never: a
+ * (stored as typed, answered as digits with the 55, like a lead's) and mailbox. The contract value only once closed, and it is the partner's own number. Never: a
  * range, a note, the timeline, the consent, another referral. Moments in UTC, ISO-8601.
  *
  * A legal referral of a client contract (rnc-3 R21, AM20) adds `contract`: its kind, end year,
@@ -60,7 +61,7 @@ class PortalReferralResource extends JsonResource
         if ($this->lead->channel === LeadChannel::Carteira->value) {
             $firm = app(CurrentFirm::class)->get();
 
-            return ['via' => 'firm', 'name' => $firm?->name, 'phone' => $firm?->phone, 'email' => $firm?->mailbox];
+            return ['via' => 'firm', 'name' => $firm?->name, 'phone' => PhoneNumber::normalize($firm?->phone), 'email' => $firm?->mailbox];
         }
 
         return ['via' => 'lead', 'name' => $this->lead->contact_name, 'phone' => $this->lead->phone, 'email' => $this->lead->email];

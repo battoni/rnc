@@ -6,6 +6,7 @@ import InputText from 'primevue/inputtext';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { server } from '@/test/msw/server';
 import { renderWithPlugins } from '@/test/render';
+import i18n from '@Libraries/i18n';
 import { useChatReceptionist, useDiagnostic } from '../../../composables';
 import {
   AVAILABILITY_FIXTURE,
@@ -106,7 +107,10 @@ beforeEach(() => {
   );
 });
 
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => {
+  i18n.global.locale.value = 'en';
+  vi.unstubAllGlobals();
+});
 
 describe('MChatReceptionist — the talk (R12, R13)', () => {
   it('opens with the reception\'s greeting and the first question, signed "Recepção Franco"', () => {
@@ -150,23 +154,54 @@ describe('MChatReceptionist — the talk (R12, R13)', () => {
     expect(screen.getAllByTestId('chat-reply')).toHaveLength(6);
   });
 
-  it('takes typed text at an option turn, and answers "Não entendi…" as an alert when it matches nothing (A11)', async () => {
+  it('takes typed text at an option turn, and answers "Não entendi…" in the log when it matches nothing (A11)', async () => {
     renderChat();
 
     await tap('quiz');
     await settled();
     await say('não sei de nada');
 
-    const alert = screen.getByRole('alert');
+    const error = within(screen.getByRole('log')).getByTestId('chat-error');
 
-    expect(alert.textContent).toContain('I did not understand. Choose one of the options below.');
+    expect(error.textContent).toContain('I did not understand. Choose one of the options below.');
+    // The log is already a polite live region: an alert inside it would be announced twice.
+    expect(screen.queryByRole('alert')).toBeNull();
     expect(screen.getByTestId('chat').getAttribute('data-turn')).toBe('sector');
     expect(screen.getAllByTestId('chat-reply')).toHaveLength(6);
 
     await say('saude');
 
-    expect(screen.queryByRole('alert')).toBeNull();
+    expect(screen.queryByTestId('chat-error')).toBeNull();
     expect(screen.getByTestId('chat').getAttribute('data-turn')).toBe('regime');
+  });
+
+  it('puts the cursor back in the box only at a turn that asks for words, not after a quick reply', async () => {
+    renderChat();
+
+    await tap('quiz');
+    await settled();
+    await tap('servicos');
+    await settled();
+
+    expect(document.activeElement).not.toBe(screen.getByTestId('chat-input'));
+
+    await tap('simples');
+    await settled();
+    await waitFor(() => expect(screen.getByTestId('chat').getAttribute('data-turn')).toBe('company'));
+
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByTestId('chat-input')));
+  });
+
+  it('re-translates the quick replies already in the transcript when the language changes', async () => {
+    renderChat();
+
+    await tap('quiz');
+
+    expect(lines()[lines().length - 1]).toBe("I don't have the CNPJ");
+
+    i18n.global.locale.value = 'pt-BR';
+
+    await waitFor(() => expect(lines()[lines().length - 1]).toBe('Não tenho o CNPJ'));
   });
 
   it('keeps the send button off while the box is empty', async () => {

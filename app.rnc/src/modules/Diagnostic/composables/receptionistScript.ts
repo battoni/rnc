@@ -54,9 +54,11 @@ const PATH_REPLIES: ChatReply[] = [
   { label: 'diagnostic.chat.replies.noCnpj', value: DIAGNOSTIC_PATH.QUIZ },
 ];
 
+/** A company found: confirm it, or — not theirs — another CNPJ or the questionnaire, as when none was found. */
 const FOUND_REPLIES: ChatReply[] = [
   { label: 'diagnostic.chat.replies.confirmCompany', value: CHAT_YES },
-  { label: 'diagnostic.chat.replies.notThisCompany', value: CHAT_NO },
+  { label: 'diagnostic.chat.replies.otherCnpj', value: DIAGNOSTIC_PATH.CNPJ },
+  { label: 'diagnostic.chat.replies.useQuiz', value: DIAGNOSTIC_PATH.QUIZ },
 ];
 
 const UNAVAILABLE_REPLIES: ChatReply[] = [
@@ -87,8 +89,10 @@ const PATH_ALIASES: Record<string, string[]> = {
   [DIAGNOSTIC_PATH.QUIZ]: [...NO_WORDS, 'nao tenho', 'questionario', 'perguntas'],
 };
 
-const LOOKUP_ALIASES: Record<string, string[]> = {
-  [DIAGNOSTIC_PATH.CNPJ]: ['cnpj', 'outro', 'outro cnpj', 'tentar'],
+/** The lookup's replies: "sim" confirms a company found, the paths go back to another CNPJ or the quiz. */
+const LOOKUP_REPLY_ALIASES: Record<string, string[]> = {
+  [CHAT_YES]: YES_WORDS,
+  [DIAGNOSTIC_PATH.CNPJ]: ['cnpj', 'outro', 'outro cnpj', 'tentar', 'nao e essa', 'nao e ela', 'outra empresa'],
   [DIAGNOSTIC_PATH.QUIZ]: ['questionario', 'perguntas'],
 };
 
@@ -272,9 +276,7 @@ function matchAnswer(turn: CHAT_TURN, text: string, context: ChatContext): ChatA
 
   if (turn === CHAT_TURN.PATH) return taken(pickReply(typed, replies, context.labels, PATH_ALIASES));
 
-  if (turn === CHAT_TURN.LOOKUP && context.lookupStatus === LOOKUP_STATUS.UNAVAILABLE) {
-    return taken(pickReply(typed, replies, context.labels, LOOKUP_ALIASES));
-  }
+  if (turn === CHAT_TURN.LOOKUP) return taken(pickReply(typed, replies, context.labels, LOOKUP_REPLY_ALIASES));
 
   return taken(pickReply(typed, replies, context.labels));
 }

@@ -12,11 +12,17 @@ All notable changes to this unit are documented here. Versioned with SemVer.
 
 - The plain refer's duplicate check, the routing panel's matches and the Radar batch's "already sent" filter `subject_key = lead` (AM11). Tested by `tests/Feature/Partner/ContractReferralTest`, `PortalContractReferralTest`, `tests/Unit/Modules/Partner/ContractValueBandTest`; `PortalReferralsTest` payload gains `contract: null`.
 
-## 1.5.1 — 2026-11-07
+## 1.5.2 — 2026-11-07
 
 ### Changed
 
 - RULES.md records rnc-3 AM20 ahead of the code: a contract referral shows the partner a value range by fixed bands, never the exact annual value (Known Gaps — contract referrals land in rnc-3 F6b). No code change.
+
+## 1.5.1 — 2026-11-07
+
+### Fixed
+
+- A portfolio (`carteira`) referral's contact phone is Franco's, stored as typed ("11 3732-5500"), and was answered as stored, so the portal rendered "+1137325500". `PortalReferralResource` now answers `PhoneNumber::normalize` (`551137325500`), the form a lead's phone already has. Tested by `PortalReferralsTest`.
 
 ## 1.5.0 — 2026-11-07
 

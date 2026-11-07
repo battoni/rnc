@@ -209,4 +209,18 @@ describe('PortalInboxView', () => {
 
     expect(await screen.findAllByTestId('portal-referral')).toHaveLength(7);
   });
+
+  it('says the login is not a partner, with no retry, when the API refuses with portal.noPartner', async () => {
+    server.use(
+      http.get('http://localhost/portal/me', () => HttpResponse.json({ message: 'portal.noPartner' }, { status: 403 })),
+      http.get('http://localhost/portal/referrals', () =>
+        HttpResponse.json({ message: 'portal.noPartner' }, { status: 403 })
+      )
+    );
+    renderView();
+
+    expect(await screen.findByText('This login is not linked to a partner.')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: /try again/i })).toBeNull();
+    expect(screen.queryByText(/could not load/i)).toBeNull();
+  });
 });

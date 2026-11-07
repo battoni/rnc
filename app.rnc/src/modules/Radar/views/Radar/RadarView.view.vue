@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
 import type { RadarBatchResult, RadarPartnerOption, RadarSummary, RadarTypeRow } from '../../interfaces';
+import { vCountUp } from '@Directives';
 import { useFiscalFormat } from '@FiscalModule';
 import { RADAR_KIND } from '../../enums';
 import { GetRadarService } from '../../services';

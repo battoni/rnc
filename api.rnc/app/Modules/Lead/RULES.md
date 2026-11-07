@@ -1,7 +1,7 @@
 ---
-version: 1.7.0
+version: 1.7.1
 origin: rnc
-based-on: 1.7.0
+based-on: 1.7.1
 ---
 # RULES — Lead Module
 
@@ -68,6 +68,8 @@ them and writes the team's notes — through this module's service.
   the measured B2B share when D9 applies) — refreshed on every later batch — and, once, the client's
   consent as a `lead_consents` row `via contrato`, `ConsentTerms::CONTRACT_TEXT`, `given_at` the
   client's `partner_consent_at`. The caller checks the client's consent first; this method trusts it.
+  The create is `createOrFirst` (a savepoint): a racing batch that committed the lead after this
+  one's read is reused — refreshed, its consent copied if it has none — instead of failing the batch.
 - **The visitor is kept by UUID** (`visitor_uuid`), not a foreign key to Tracking's `visitors`: the
   diagnostic may start before the visit's beacon lands, and the two meet on (firm, uuid).
 - **Children carry no firm column** (`lead_consents`, `lead_events`): they belong to their lead.

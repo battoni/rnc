@@ -1,5 +1,5 @@
 ---
-version: 1.1.0
+version: 1.1.1
 origin: rnc
 ---
 # RULES — Metrics Module
@@ -25,7 +25,13 @@ The team (`equipe`) gets 403 — tested in `tests/Feature/Metrics/FunnelTest.php
 
 - **A cohort, not totals.** A visitor counts at a step only when it reached every step before it
   inside the window, so each step is ≤ the one before by construction (the demo clamped totals
-  instead). A CTA beacon with no page view, or a diagnostic begun without the CTA, does not count.
+  instead). A CTA beacon with no page view does not count.
+- **A diagnostic started proves the CTA** (W126): the CTA's only destination is `/diagnostico`, and
+  the page is also opened straight from a shared link, a bookmark or with the CTA's beacon lost — a
+  visitor that started the diagnostic counts at "clique CTA" too.
+  _Retired 07/11/2026 (rnc-2 QA):_ "a diagnostic begun without the CTA does not count" — it hid every
+  lead that came by a link: three diagnostics of the QA left "Por canal" and "Contatos" unchanged
+  while "Visitas" rose.
 - **The unit is the visitor** with a `visit` in the window, counted once however many beacons it sent.
 - **A step is a beacon or its lead's line.** `diag.start`/`diag.contact`/`diag.result`/`booking`
   (R7), or the matching line of the visitor's lead (`diagnostico.inicio`, `contato.capturado` — the

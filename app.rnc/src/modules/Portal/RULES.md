@@ -42,6 +42,11 @@ is `PortalStatementView` — the partner's month (`GET portal/statement`). API: 
 - **The API decides who the partner is** (`GET portal/me`, from the session's `partner_id`), never a
   route param: there is no partner id in any portal URL.
 - **Willy/APW never appear** (`src/test/noPartnerNetworkNames.spec.ts` names this module).
+- **A login that is not a partner gets a statement, not an error** (W127): the operator holds
+  `portal.access` too, and `GET portal/*` answers it 403 `portal.noPartner`. The inbox reads that
+  403 as `portal.noPartner` ("Este acesso não está ligado a um parceiro.", no retry) instead of the
+  generic load failure. Not a route guard: `attachAuthGuard` only reads `meta.permission`, and a
+  second rule there would pull the user store into the route files (the cycle its header warns of).
 - **The counts come from the list** (W22): the inbox is unpaginated (a partner holds a few dozen
   referrals), so the KPIs and "Próximas reuniões" are computed here; the API sends no `meta`.
 - **The API decides the SLA and the contact.** `MSlaChip` only speaks `sla.state`/`sla.hours`

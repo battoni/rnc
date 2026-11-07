@@ -8,6 +8,12 @@ All notable changes to this unit are documented here. Versioned with SemVer.
 
 - A contract referral's summary on `MPortalReferralCard` (rnc-3 F7, R21, AM20): kind, end year, "sem cláusula da Reforma" and the annual value as the API's band ("R$ 1 mi – R$ 2 mi por ano", "a partir de" on the top band) — never the exact value; `PortalReferral.contract` (`PortalContractSummary`). Tested by `MPortalReferralCard.spec.ts` and `e2e/contracts/contracts.spec.ts`.
 
+## 1.2.1 — 2026-11-07
+
+### Fixed
+
+- A staff login (the operator holds `portal.access`) opening `/parceiro` saw "Não foi possível carregar os seus encaminhamentos" with a retry that could never work: the 403 `portal.noPartner` is now read and answered "Este acesso não está ligado a um parceiro.". A firm phone arrives as E.164 from the API and shows as "+55 (11) 3732-5500", dialled as `tel:+551137325500`. Tested by `PortalInboxView.view.integration.spec.ts` and `MPortalReferralCard.spec.ts`.
+
 ## 1.2.0 — 2026-11-07
 
 ### Added

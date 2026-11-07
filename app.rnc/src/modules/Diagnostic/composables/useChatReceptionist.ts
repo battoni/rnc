@@ -14,6 +14,9 @@ const DONE_STEPS: DIAGNOSTIC_STEP[] = [DIAGNOSTIC_STEP.RESULT, DIAGNOSTIC_STEP.B
 /** `useDiagnostic`'s words for a contact the API refused (an invalid phone or e-mail). */
 const CONTACT_REFUSED = 'diagnostic.errors.contactInvalid';
 
+/** The form's words for a CNPJ that does not check out. */
+const CNPJ_REFUSED = 'diagnostic.cnpj.invalid';
+
 const TURN_STEP = Object.fromEntries(CHAT_TURNS.map((entry) => [entry.turn, entry.step])) as Record<
   CHAT_TURN,
   DIAGNOSTIC_STEP
@@ -75,6 +78,13 @@ function useChatReceptionist(diagnostic: UseDiagnostic, isActive: Ref<boolean>) 
     log.value.push({ id: nextId++, speaker: CHAT_SPEAKER.VISITOR, text });
   }
 
+  /** A quick reply is kept as its key, so the transcript follows a language switch; a name stays as typed. */
+  function hearReply(reply: ChatReply) {
+    if (reply.text !== undefined) return hear(reply.text);
+
+    log.value.push({ id: nextId++, key: reply.label ?? '', params: reply.params ?? {}, speaker: CHAT_SPEAKER.VISITOR });
+  }
+
   /** The line on screen goes into the transcript before the visitor's answer to it. */
   function logLiveLine() {
     if (shownError.value) say(shownError.value);
@@ -126,9 +136,12 @@ function useChatReceptionist(diagnostic: UseDiagnostic, isActive: Ref<boolean>) 
         turn.value = value === DIAGNOSTIC_PATH.CNPJ ? CHAT_TURN.CNPJ : CHAT_TURN.SECTOR;
         return;
       case CHAT_TURN.CNPJ:
-        turn.value = CHAT_TURN.LOOKUP;
         diagnostic.lookupCnpj(value);
-        onLookupStatus(diagnostic.lookupStatus.value);
+
+        // Without a lead (its start failed) the diagnostic says it is unavailable and the turn stays.
+        if (diagnostic.lookupStatus.value === LOOKUP_STATUS.INVALID) errorKey.value = CNPJ_REFUSED;
+        else if (diagnostic.token.value) turn.value = CHAT_TURN.LOOKUP;
+
         return;
       case CHAT_TURN.LOOKUP:
         return applyLookup(value);
@@ -178,9 +191,12 @@ function useChatReceptionist(diagnostic: UseDiagnostic, isActive: Ref<boolean>) 
     }
   }
 
-  /** "Sim, está certo" saves step 1 (or asks the regime the registry did not give); the others go back. */
+  /**
+   * "Sim, está certo" saves step 1 (or asks the regime the registry did not give). "Tentar outro CNPJ"
+   * and "Usar o questionário" go back — after a company that was found, forgetting what it filled.
+   */
   function applyLookup(value: string) {
-    const { company, contact, profile } = diagnostic;
+    const { company, contact, lookupStatus, profile } = diagnostic;
 
     if (value === CHAT_YES) {
       if (company.value?.regime) diagnostic.confirmCompany();
@@ -189,15 +205,15 @@ function useChatReceptionist(diagnostic: UseDiagnostic, isActive: Ref<boolean>) 
       return;
     }
 
-    if (value === DIAGNOSTIC_PATH.CNPJ) {
-      turn.value = CHAT_TURN.CNPJ;
-      return;
-    }
-
-    if (value !== DIAGNOSTIC_PATH.QUIZ) {
+    if (lookupStatus.value === LOOKUP_STATUS.FOUND) {
       company.value = null;
       contact.value.company = '';
       profile.value = { ...profile.value, regime: null, sector: null };
+    }
+
+    if (value === DIAGNOSTIC_PATH.CNPJ) {
+      turn.value = CHAT_TURN.CNPJ;
+      return;
     }
 
     diagnostic.choosePath(DIAGNOSTIC_PATH.QUIZ);
@@ -212,8 +228,9 @@ function useChatReceptionist(diagnostic: UseDiagnostic, isActive: Ref<boolean>) 
     const answered = turn.value;
 
     logLiveLine();
-    hear(reply.text ?? t(reply.label ?? '', reply.params ?? {}));
+    hearReply(reply);
     errorKey.value = null;
+    diagnostic.clearError();
     typed.value = '';
     apply(answered, reply.value);
   }
@@ -231,6 +248,7 @@ function useChatReceptionist(diagnostic: UseDiagnostic, isActive: Ref<boolean>) 
     hear(text);
     typed.value = '';
     errorKey.value = read.errorKey;
+    diagnostic.clearError();
 
     if (read.value !== null) apply(answered, read.value);
   }
@@ -266,7 +284,7 @@ function useChatReceptionist(diagnostic: UseDiagnostic, isActive: Ref<boolean>) 
     if (turn.value !== CHAT_TURN.LOOKUP || status !== LOOKUP_STATUS.INVALID) return;
 
     turn.value = CHAT_TURN.CNPJ;
-    errorKey.value = 'diagnostic.cnpj.invalid';
+    errorKey.value = CNPJ_REFUSED;
   }
 
   /** The API refused the contact the chat gathered: back to the turn that asked for it. */

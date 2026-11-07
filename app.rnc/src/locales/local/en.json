@@ -474,7 +474,6 @@
         "hasCnpj": "I have the CNPJ",
         "noCnpj": "I don't have the CNPJ",
         "confirmCompany": "Yes, that's right",
-        "notThisCompany": "That's not the company",
         "useQuiz": "Use the questionnaire",
         "otherCnpj": "Try another CNPJ",
         "authorize": "I authorise",

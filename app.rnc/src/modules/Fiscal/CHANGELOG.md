@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.0.1 — 2026-11-07
+
+### Changed
+
+- `RULES.md` states the formatting rule (rnc-2 review S4): counts and percentages in the UI language, as the rest of the app; money (BRL) and moments (São Paulo) always pt-BR. No code change.
+
 ## 1.0.0 — 2026-11-07
 
 ### Added

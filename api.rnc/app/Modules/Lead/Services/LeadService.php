@@ -339,7 +339,7 @@ class LeadService
             return $lead->latestConsent ? $lead : $this->copyContractConsent($lead, $client, $now);
         }
 
-        $lead = $this->leadRepository->createLead([
+        $lead = $this->leadRepository->createOrFindPortfolioLead([
             ...$attributes,
             'token' => Str::random(self::TOKEN_LENGTH),
             'token_expires_at' => $now,
@@ -349,6 +349,16 @@ class LeadService
             'source' => TrafficSource::Direct->value,
             'client_id' => $client->id,
         ]);
+
+        if (! $lead->wasRecentlyCreated) {
+            // A racing batch created it after the read above: refresh it as an existing lead.
+            $this->leadRepository->updateLead($lead, $attributes);
+            $lead->load('latestConsent');
+
+            if ($lead->latestConsent) {
+                return $lead;
+            }
+        }
 
         return $this->copyContractConsent($lead, $client, $now);
     }

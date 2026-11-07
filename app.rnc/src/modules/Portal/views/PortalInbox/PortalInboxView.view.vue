@@ -18,6 +18,7 @@ import { GetPortalMeService, GetPortalReferralsService } from '../../services';
  */
 const PORTAL_TIME_ZONE = 'America/Sao_Paulo';
 const MOTION_STAGGER_CAP = 6;
+const HTTP_FORBIDDEN = 403;
 
 const { t } = useI18n();
 
@@ -25,6 +26,7 @@ const dealFor = ref<PortalReferral | null>(null);
 const dialogVisible = ref(false);
 const hasFailed = ref(false);
 const isLoading = ref(true);
+const isNotPartner = ref(false);
 const me = ref<PortalMe | null>(null);
 const meetingFor = ref<PortalReferral | null>(null);
 const referrals = ref<PortalReferral[]>([]);
@@ -55,10 +57,14 @@ onMounted(onOpen);
 function load() {
   isLoading.value = true;
   hasFailed.value = false;
+  isNotPartner.value = false;
 
   GetPortalReferralsService()
     .then((response) => (referrals.value = response.data))
-    .catch(() => (hasFailed.value = true))
+    .catch((error: { response?: { status?: number } }) => {
+      if (error.response?.status === HTTP_FORBIDDEN) isNotPartner.value = true;
+      else hasFailed.value = true;
+    })
     .finally(() => (isLoading.value = false));
 }
 
@@ -158,6 +164,15 @@ function onFormSuccess(moved: PortalReferral) {
       <Skeleton height="5rem" />
 
       <Skeleton height="10rem" />
+    </div>
+
+    <div
+      v-else-if="isNotPartner"
+      class="bg-panel shadow-lift flex flex-col items-center gap-4 rounded-lg p-8 text-center"
+      data-testid="portal-no-partner"
+      role="alert"
+    >
+      <p class="text-body">{{ $t('portal.noPartner') }}</p>
     </div>
 
     <div

@@ -1,5 +1,4 @@
 import { ref } from 'vue';
-import type { DIAGNOSTIC_PATH } from '../enums';
 import type {
   BookingConfirmation,
   CnpjCompany,
@@ -16,7 +15,7 @@ import type { ApiResponse } from '@Providers';
 import { HTTP_STATUS } from '@Enums';
 import { TRACKING_EVENT_TYPE, useTracking } from '@SiteModule';
 import { CNPJ_LENGTH, EMPTY_CONTACT, EMPTY_PROFILE, LOOKUP_STEP_MS, LOOKUP_STEPS } from '../constants';
-import { DIAGNOSTIC_CHANNEL, DIAGNOSTIC_STEP, LOOKUP_STATUS } from '../enums';
+import { DIAGNOSTIC_CHANNEL, DIAGNOSTIC_PATH, DIAGNOSTIC_STEP, LOOKUP_STATUS } from '../enums';
 import {
   GetDiagnosticResultService,
   GetDiagnosticSimulationService,
@@ -117,6 +116,19 @@ function useDiagnostic() {
     lookupStatus.value = isRefusedCnpj ? LOOKUP_STATUS.INVALID : LOOKUP_STATUS.UNAVAILABLE;
   }
 
+  /** Starts the lead (a `visitante`, AM13) for the path; a failure is said and the next try starts it again. */
+  function startLead(next: DIAGNOSTIC_PATH) {
+    const { medium, source, visitor } = visitContext();
+    const PAYLOAD = { channel: channel.value, medium, path: next, sector: profile.value.sector, source, visitor };
+
+    isSaving.value = true;
+
+    StartDiagnosticService(PAYLOAD)
+      .then(onStarted)
+      .catch(() => fail('diagnostic.errors.unavailable'))
+      .finally(() => (isSaving.value = false));
+  }
+
   function onStarted({ data }: ApiResponse<PublicLead>) {
     token.value = data.token ?? null;
     consentText.value = data.consent.text;
@@ -136,15 +148,12 @@ function useDiagnostic() {
 
     if (token.value || isSaving.value) return;
 
-    const { medium, source, visitor } = visitContext();
-    const PAYLOAD = { channel: channel.value, medium, path: next, sector: profile.value.sector, source, visitor };
+    startLead(next);
+  }
 
-    isSaving.value = true;
-
-    StartDiagnosticService(PAYLOAD)
-      .then(onStarted)
-      .catch(() => fail('diagnostic.errors.unavailable'))
-      .finally(() => (isSaving.value = false));
+  /** The error said for the last answer goes once the visitor answers again (the chat's next turn). */
+  function clearError() {
+    errorKey.value = null;
   }
 
   /** Form or chat, as the visitor shows it — sent with the start; once the lead exists it stays. */
@@ -159,8 +168,19 @@ function useDiagnostic() {
 
     company.value = null;
 
-    if (digits.length !== CNPJ_LENGTH || !token.value) {
+    if (digits.length !== CNPJ_LENGTH) {
       lookupStatus.value = LOOKUP_STATUS.INVALID;
+      return;
+    }
+
+    // The start failed, so there is no lead to look the CNPJ up for: not the CNPJ's fault. Say so and
+    // start it again, so the visitor's next try can go through.
+    if (!token.value) {
+      lookupStatus.value = LOOKUP_STATUS.IDLE;
+      fail('diagnostic.errors.unavailable');
+
+      if (!isSaving.value) startLead(DIAGNOSTIC_PATH.CNPJ);
+
       return;
     }
 
@@ -271,6 +291,7 @@ function useDiagnostic() {
     booking,
     channel,
     choosePath,
+    clearError,
     company,
     confirmBooking,
     confirmCompany,

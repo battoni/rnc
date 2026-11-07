@@ -32,15 +32,19 @@ function channelRows(User $person): array
 }
 
 /** A visitor walking the public diagnostic through the API, as the site does, up to `$until`. */
-function channelWalk(string $channel, string $until): void
+function channelWalk(string $channel, string $until, bool $throughCta = true): void
 {
     $visitor = (string) Str::uuid();
     $beacon = fn (string $type, ?string $token = null) => test()->postJson('/api/public/events', array_filter([
-        'visitor' => $visitor, 'type' => $type, 'path' => $type === 'visit' ? '/' : '/diagnostico', 'source' => 'organico', 'lead_token' => $token,
+        'visitor' => $visitor, 'type' => $type, 'path' => $type === 'visit' && $throughCta ? '/' : '/diagnostico', 'source' => 'organico', 'lead_token' => $token,
     ]))->assertCreated();
 
     $beacon('visit');
-    $beacon('cta');
+
+    if ($throughCta) {
+        $beacon('cta');
+    }
+
     $token = test()->postJson('/api/public/diagnostics', ['path' => 'quiz', 'visitor' => $visitor, 'source' => 'organico', 'channel' => $channel])->assertCreated()->json('data.token');
 
     foreach (['diag.start', 'diag.contact', 'diag.result', 'booking'] as $type) {
@@ -89,6 +93,22 @@ describe('the funnel by channel (R14, A12)', function () {
 
         expect($rows['formulario'])->toMatchArray(['inicio' => 2, 'contato' => 1, 'resultado' => 1, 'agendou' => 0])
             ->and($rows['chat'])->toMatchArray(['inicio' => 1, 'contato' => 1, 'resultado' => 0]);
+    });
+
+    it('counts a walk that opened /diagnostico straight, with no CTA click, from início on', function () {
+        // the QA of 07/11: three diagnostics entered by the link, São Paulo afternoon, the funnel read minutes later
+        CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-11-07 15:19', 'America/Sao_Paulo'));
+        channelWalk('chat', 'diag.result', throughCta: false);
+        channelWalk('chat', 'diag.start', throughCta: false);
+        channelWalk('formulario', 'diag.result', throughCta: false);
+        CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-11-07 15:25', 'America/Sao_Paulo'));
+
+        $funnel = $this->actingAs($this->ceo)->getJson('/api/metrics/funnel?days=7')->assertOk()->json('data');
+        $rows = collect($funnel['by_channel'])->keyBy('channel');
+
+        expect($rows['chat'])->toMatchArray(['inicio' => 2, 'contato' => 1, 'resultado' => 1])
+            ->and($rows['formulario'])->toMatchArray(['inicio' => 1, 'contato' => 1, 'resultado' => 1])
+            ->and(array_column($funnel['steps'], 'count', 'key'))->toMatchArray(['visitas' => 3, 'cta' => 3, 'inicio' => 3, 'contato' => 2, 'resultado' => 2]);
     });
 
     it('keeps the two rows within the funnel\'s own início', function () {

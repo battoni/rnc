@@ -50,6 +50,18 @@ class LeadRepository
     }
 
     /** The `carteira` lead of a portfolio client (rnc-2 R27), with its consent, in the current firm. */
+    /**
+     * Creates a client's `carteira` lead — or, when a racing batch committed it first (the unique
+     * firm + client), returns that one (`wasRecentlyCreated` false). The insert runs in a savepoint,
+     * so the caller's transaction survives the collision.
+     *
+     * @param  array<string, mixed>  $attributes  with `client_id`
+     */
+    public function createOrFindPortfolioLead(array $attributes): Lead
+    {
+        return Lead::query()->createOrFirst(['client_id' => $attributes['client_id']], $attributes);
+    }
+
     public function findPortfolioLeadOfClient(int $clientId): ?Lead
     {
         return Lead::query()->with('latestConsent')->where('client_id', $clientId)->first();

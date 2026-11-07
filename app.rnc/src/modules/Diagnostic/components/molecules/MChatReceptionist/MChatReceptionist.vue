@@ -14,7 +14,9 @@ import { CHAT_SPEAKER } from '../../../enums';
  * Motion (theme RULES, Motion): each line rises on mount (`motion-bubble`), the reception's question
  * lands a stagger after the visitor's answer, the replies follow one by one; while the API answers
  * the reception "types" (`motion-typing`, the one idle loop, still under reduced motion). The log
- * scrolls itself to the newest line — smoothly, unless the visitor asked for less motion.
+ * scrolls itself to the newest line — smoothly, unless the visitor asked for less motion. The log is
+ * the live region (`role="log"`, polite): an error line in it is not an alert too, or a screen reader
+ * says it twice.
  */
 const props = defineProps<{
   chat: UseChatReceptionist;
@@ -62,13 +64,16 @@ function onSimulator() {
   emit('onSimulator');
 }
 
-/** The newest line in view; the cursor back in the box once the visitor is talking. */
+/**
+ * The newest line in view; the cursor back in the box once the visitor is talking — only at a turn
+ * that asks for words, so a tap on a quick reply does not open a phone's keyboard.
+ */
 function onTranscriptChange() {
   const behavior = prefersReducedMotionHelper() ? 'auto' : 'smooth';
 
   logEl.value?.scrollTo?.({ behavior, top: logEl.value.scrollHeight });
 
-  if (!hasAnswered.value || isBusy.value) return;
+  if (!hasAnswered.value || isBusy.value || !prompt.value?.isFreeText) return;
 
   nextTick(() => inputEl.value?.$el?.focus?.({ preventScroll: true }));
 }
@@ -117,7 +122,6 @@ function onTranscriptChange() {
           'motion-bubble flex max-w-[85%] flex-col gap-1 self-start rounded-xl rounded-bl-md px-4 py-3 text-sm leading-relaxed',
           errorKey ? 'border-danger-200 bg-danger-50 text-danger-800 border' : 'bg-panel-muted text-body',
         ]"
-        :role="errorKey ? 'alert' : undefined"
         :style="{ '--reveal-index': 2 }"
       >
         <span :class="['text-xs font-semibold', errorKey ? 'text-danger-800' : 'text-muted']">

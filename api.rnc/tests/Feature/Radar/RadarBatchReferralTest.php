@@ -7,6 +7,7 @@ use App\Modules\Firm\Models\Firm;
 use App\Modules\Lead\Helpers\ConsentTerms;
 use App\Modules\Lead\Models\Lead;
 use App\Modules\Lead\Models\LeadEvent;
+use App\Modules\Lead\Repositories\LeadRepository;
 use App\Modules\Partner\Mail\ReferralSent;
 use App\Modules\Partner\Models\Partner;
 use App\Modules\Partner\Models\Referral;
@@ -153,6 +154,18 @@ describe('the batch (R27, A21)', function () {
             ->and(Lead::withoutGlobalScopes()->where('client_id', $this->big->id)->count())->toBe(1)
             ->and(Referral::withoutGlobalScopes()->whereHas('lead', fn ($lead) => $lead->withoutGlobalScopes()->where('client_id', $this->big->id))->count())->toBe(2);
     });
+
+    it('reuses the lead a racing batch created after this one looked (the unique firm + client)', function () {
+        // Another batch committed this client's `carteira` lead after this one read "none".
+        $raced = Lead::factory()->create(['firm_id' => FiscalRows::francoId(), 'stage' => 'cliente', 'channel' => 'carteira', 'client_id' => $this->big->id]);
+        $this->partialMock(LeadRepository::class, fn ($mock) => $mock->shouldReceive('findPortfolioLeadOfClient')->andReturnNull());
+
+        expect($this->actingAs($this->ceo)->postJson('/api/radar/referrals', ['rule' => 'contratos', 'partner_id' => $this->margem->id])->assertOk()->json('data.sent'))->toBe(10)
+            ->and(Lead::withoutGlobalScopes()->where('client_id', $this->big->id)->sole()->id)->toBe($raced->id)
+            ->and($raced->consents()->sole()->via)->toBe('contrato')
+            ->and(Referral::withoutGlobalScopes()->where('lead_id', $raced->id)->sole()->partner_id)->toBe($this->margem->id);
+        Mail::assertQueuedCount(10);
+    });
 });
 
 describe('the portfolio lead and the referral (D13, AM10, A21)', function () {
@@ -239,7 +252,7 @@ describe('the portfolio lead and the referral (D13, AM10, A21)', function () {
 
         $accepted = $this->actingAs($login)->postJson("/api/portal/referrals/{$big['id']}/transition", ['to' => 'aceito'])->assertOk()->json('data');
 
-        expect($accepted['contact'])->toBe(['via' => 'firm', 'name' => 'Franco Contabilidade', 'phone' => '11 3732-5500', 'email' => 'saf@franco-rnc.com.br']);
+        expect($accepted['contact'])->toBe(['via' => 'firm', 'name' => 'Franco Contabilidade', 'phone' => '551137325500', 'email' => 'saf@franco-rnc.com.br']);
     });
 });
 

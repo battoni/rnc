@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.7.1 — 2026-11-07
+
+### Fixed
+
+- `findOrStartPortfolioLead` no longer fails a Radar batch when a racing batch created the client's `carteira` lead after its read: `LeadRepository::createOrFindPortfolioLead` creates through `createOrFirst` (savepoint) on the unique (firm, client) and returns the existing lead, which is refreshed and given the contract consent if it lacks one (rnc-2 branch review A1). Tested by `tests/Feature/Radar/RadarBatchReferralTest` (the racing batch).
+
 ## 1.7.0 — 2026-11-07
 
 ### Added

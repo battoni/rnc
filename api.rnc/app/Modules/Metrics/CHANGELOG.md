@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.1.1 — 2026-11-07
+
+### Fixed
+
+- A diagnostic opened straight at `/diagnostico` (a link, a bookmark, a lost CTA beacon) stopped the visitor at "visitas", so its lead was in no step after it nor in "Por canal" (rnc-2 QA). A diagnostic started now counts as the CTA's click (W126).
+
 ## 1.1.0 — 2026-11-07
 
 ### Added

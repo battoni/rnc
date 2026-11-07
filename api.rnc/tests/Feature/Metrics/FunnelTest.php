@@ -142,14 +142,20 @@ describe('the steps (R24)', function () {
     });
 
     it('never counts a step for a visitor who skipped the one before (a cohort funnel)', function () {
-        // a CTA beacon without a page view, a diagnostic started without the CTA, a booking without a result
+        // a CTA beacon without a page view, a contact without the diagnostic's start, a booking without a result
         metricsVisitor($this->franco, ['cta', 'diag.start'], CarbonImmutable::now()->subDay());
-        metricsVisitor($this->franco, ['visit', 'diag.start', 'diag.contact'], CarbonImmutable::now()->subDay());
+        metricsVisitor($this->franco, ['visit', 'cta', 'diag.contact'], CarbonImmutable::now()->subDay());
         metricsVisitor($this->franco, ['visit', 'cta', 'diag.start', 'diag.contact', 'booking'], CarbonImmutable::now()->subDay());
 
         expect(stepCounts(funnelOf($this->ceo, 7)))->toBe([
-            'visitas' => 2, 'cta' => 1, 'inicio' => 1, 'contato' => 1, 'resultado' => 0, 'agendou' => 0, 'cliente' => 0,
+            'visitas' => 2, 'cta' => 2, 'inicio' => 1, 'contato' => 1, 'resultado' => 0, 'agendou' => 0, 'cliente' => 0,
         ]);
+    });
+
+    it('counts a diagnostic opened straight from a link as the CTA\'s click (W126)', function () {
+        metricsVisitor($this->franco, ['visit', 'diag.start', 'diag.contact'], CarbonImmutable::now()->subDay(), ['path' => '/diagnostico']);
+
+        expect(stepCounts(funnelOf($this->ceo, 7)))->toMatchArray(['visitas' => 1, 'cta' => 1, 'inicio' => 1, 'contato' => 1, 'resultado' => 0]);
     });
 
     it('keeps every step at most the one before on a mixed crowd', function () {

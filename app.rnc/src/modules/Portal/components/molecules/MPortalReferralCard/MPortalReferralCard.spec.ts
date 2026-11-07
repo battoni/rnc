@@ -144,6 +144,19 @@ describe('MPortalReferralCard', () => {
     expect(screen.getByTestId('referral-contact').textContent).toContain('Through Franco Contabilidade');
   });
 
+  it("shows the firm's phone as a Brazilian number and dials it once, with a single +55", () => {
+    renderCard(
+      referralAt(REFERRAL_STATUS.ACEITO, {
+        contact: { email: 'contato@franco.exemplo', name: 'Franco Contabilidade', phone: '551137325500', via: 'firm' },
+      })
+    );
+
+    const link = screen.getByRole('link', { name: /3732-5500/ });
+
+    expect(link.textContent).toContain('(11) 3732-5500');
+    expect(link.getAttribute('href')).toBe('tel:+551137325500');
+  });
+
   it('accepts through the API and hands the inbox the referral it answered', async () => {
     const { emitted } = renderCard(NEW_REFERRAL_FIXTURE);
 
