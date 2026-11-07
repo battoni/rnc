@@ -1,5 +1,5 @@
 ---
-version: 1.12.0
+version: 1.13.0
 origin: pendulum
 based-on: 1.8.2
 ---
@@ -59,6 +59,7 @@ e2e/
   ideas/             ← the Ideas board and an opened idea, at phone width
   channel/           ← the RNC channel: the operator's advance, Reinaldo's read-only screen (rnc-3)
   assistant/         ← the Reforma assistant: an answer with its source, the hand-off (rnc-3)
+  contracts/         ← the contract alert: legal referral, consent, clause, import; the portal's band (rnc-3)
   static/            ← what the app serves, not what a person does (robots.txt)
 ```
 

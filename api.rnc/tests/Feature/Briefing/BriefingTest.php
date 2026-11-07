@@ -265,4 +265,19 @@ describe('GET briefing (A21)', function () {
 
         expect($queries())->toBe($few);
     });
+
+    it("reads the Radar's first opportunity without the batch pickers it never shows (F7: ~100 ms → ~20 ms on the seed)", function () {
+        briefingClient($this->franco, 'b3', '3000.00');
+        briefingPartner($this->franco, 'Margem Certa');
+        DB::flushQueryLog();
+        DB::enableQueryLog();
+        briefingOf();
+        $sql = array_column(DB::getQueryLog(), 'query');
+        DB::disableQueryLog();
+
+        // The Radar's own reads are the clients and their sales; the pickers' partners and their
+        // portfolio referrals (`portfolioBatchOptions`) are the Radar screen's, not the briefing's.
+        expect(array_values(array_filter($sql, fn (string $query) => str_contains($query, 'from "partners" where "active"'))))->toBe([])
+            ->and(count($sql))->toBe(12); // 14 before F7: the active partners and their portfolio referrals
+    });
 });

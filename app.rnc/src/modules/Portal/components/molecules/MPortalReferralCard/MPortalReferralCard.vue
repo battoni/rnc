@@ -17,6 +17,11 @@ import { TransitionReferralService } from '../../../services';
  * own call; the two that need input — the meeting, the contract value — are asked of the inbox,
  * which opens their form. A refusal is the API's message in a warn toast (celer-07, row action),
  * and an `invalid_transition` also asks the inbox to read the list again: the card was stale.
+ *
+ * A legal referral of a client contract (rnc-3 R21, AM20) adds its summary: the kind, the end year,
+ * "sem cláusula da Reforma" while it still lacks it, and the annual value as the API's band, drawn
+ * short ("R$ 1 mi – R$ 2 mi por ano", "a partir de R$ 2 mi" on the top band) — never a value the
+ * API did not send, and the API never sends the exact one.
  */
 interface MoveError {
   response?: { data?: { code?: string; errors?: Record<string, string[]>; message?: string } };
@@ -43,6 +48,7 @@ const props = defineProps<{
 
 const TOAST_LIFE_MS = 4000;
 const PORTAL_TIME_ZONE = 'America/Sao_Paulo';
+const CENTS_PER_REAL = 100;
 
 const ACTIONS: Record<REFERRAL_STATUS, { isPrimary: boolean; to: REFERRAL_STATUS }[]> = {
   [REFERRAL_STATUS.ENVIADO]: [
@@ -64,6 +70,19 @@ const toast = useToast();
 const movingTo = ref<REFERRAL_STATUS | null>(null);
 
 const contact = computed(() => props.referral.contact);
+
+const contractRange = computed(() => {
+  const range = props.referral.contract?.value_range;
+
+  if (!range) return '';
+
+  return range.max_cents === null
+    ? t('portal.referral.contract.rangeFrom', { min: formatShortReal(range.min_cents) })
+    : t('portal.referral.contract.range', {
+        max: formatShortReal(range.max_cents),
+        min: formatShortReal(range.min_cents),
+      });
+});
 
 const actions = computed<CardAction[]>(() =>
   (ACTIONS[props.referral.status] ?? []).map((action) => ({
@@ -97,6 +116,15 @@ const standing = computed(() => {
 });
 
 // HELPERS
+function formatShortReal(cents: number): string {
+  return new Intl.NumberFormat('pt-BR', {
+    currency: 'BRL',
+    maximumFractionDigits: 1,
+    notation: 'compact',
+    style: 'currency',
+  }).format(cents / CENTS_PER_REAL);
+}
+
 function formatMoment(iso: string, withTime: boolean): string {
   return new Intl.DateTimeFormat('pt-BR', {
     day: '2-digit',
@@ -181,6 +209,41 @@ function onRefused(failure: MoveError) {
         {{ $t('portal.referral.received', { when: receivedOn() }) }}
       </span>
     </div>
+
+    <section
+      v-if="props.referral.contract"
+      class="bg-panel-muted flex flex-col gap-1.5 rounded-md p-3"
+      data-testid="referral-contract"
+      :aria-label="$t('portal.referral.contract.label')"
+    >
+      <span class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+        <strong class="text-heading font-semibold">
+          {{ $t(`portal.referral.contract.kinds.${props.referral.contract.kind}`) }}
+        </strong>
+
+        <span class="text-body tabular-nums">
+          {{ $t('portal.referral.contract.until', { year: props.referral.contract.end_year }) }}
+        </span>
+
+        <span
+          v-if="props.referral.contract.sem_clausula"
+          class="bg-warn-50 text-warn-900 rounded-sm px-2 py-0.5 text-xs font-semibold"
+        >
+          {{ $t('portal.referral.contract.noClause') }}
+        </span>
+      </span>
+
+      <span
+        class="text-heading text-sm font-semibold tabular-nums"
+        data-testid="referral-contract-range"
+        :data-max="props.referral.contract.value_range.max_cents ?? ''"
+        :data-min="props.referral.contract.value_range.min_cents"
+      >
+        {{ contractRange }}
+      </span>
+
+      <span class="text-muted text-xs">{{ $t('portal.referral.contract.rangeNote') }}</span>
+    </section>
 
     <dl
       v-if="contact"

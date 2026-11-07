@@ -82,7 +82,7 @@ describe('useLocalNavItems', () => {
     expect(knowledgeFor(false, ['assistant.ask'])).toEqual([]);
   });
 
-  it("puts the metrics, the partner registry, the trail, the network ledger, the repricing, the RNC channel, the XML import and the Radar in Reinaldo's group, each behind its own key (AM8)", () => {
+  it("puts the metrics, the partner registry, the trail, the network ledger, the repricing, the RNC channel, the XML import, the Radar and the contract alert in Reinaldo's group, each behind its own key (AM8)", () => {
     const ceo = useLocalNavItems().value[1];
 
     expect(ceo?.children?.map((child) => [child.routeName, child.permission])).toEqual([
@@ -97,6 +97,8 @@ describe('useLocalNavItems', () => {
       ['nfe-imports', 'fiscal.import'],
       // rnc-2 F10 (R24–R27): "Radar da carteira" — `radar.manage` (ceo, D14).
       ['portfolio-radar', 'radar.manage'],
+      // rnc-3 F7 (R18–R22): "Alerta de contratos" — `contracts.manage` (ceo).
+      ['contract-alert', 'contracts.manage'],
     ]);
   });
 

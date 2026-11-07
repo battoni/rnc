@@ -21,11 +21,25 @@ interface PortalReferralContact {
 }
 
 /** A referral as its partner sees it (`PortalReferralResource`, R6) — never a range, a note or the timeline. */
+/**
+ * A legal referral's contract as its partner sees it (rnc-3 R21, AM20, `PortalReferralResource`):
+ * the kind (api `ContractKind` slug), the end year, whether it still lacks the Reforma clause and
+ * the annual value as a fixed band — `max_cents` null on the top band. Never the exact value.
+ */
+interface PortalContractSummary {
+  end_year: number;
+  kind: string;
+  sem_clausula: boolean;
+  value_range: { label: string; max_cents: number | null; min_cents: number };
+}
+
 interface PortalReferral {
   closed_at: string | null;
   company: string | null;
   contact: PortalReferralContact | null;
   contacted_at: string | null;
+  /** Only a legal referral of a client contract carries it (rnc-3 F6b); every other is `null`. */
+  contract: PortalContractSummary | null;
   covers: string[];
   /** Present only once `fechado` (W24). */
   deal_value_cents?: number;
@@ -74,6 +88,7 @@ interface PortalStatement {
 }
 
 export type {
+  PortalContractSummary,
   PortalMe,
   PortalReferral,
   PortalReferralContact,

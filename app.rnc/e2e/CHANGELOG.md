@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.13.0 — 2026-11-07
+
+### Added
+
+- `contracts/contracts.spec.ts` (rnc-3 F7, R18–R22, A20; R21): Reinaldo sends the most exposed contract to Andrade and the row says "Com Andrade", a client without consent keeps the button disabled with its reason, "Cláusula incluída" asked on the row takes it off the list even below the fold at 390, the import names the lines it left out; the partner's portal shows the contract with its value band; 390 and 1440 with no sideways scroll or console error; the state words at 4.5:1 in light and dark.
+
 ## 1.12.0 — 2026-11-07
 
 ### Added

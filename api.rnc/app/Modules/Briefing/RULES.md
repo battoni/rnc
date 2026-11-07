@@ -1,11 +1,11 @@
 ---
-version: 1.1.0
+version: 1.2.0
 origin: rnc
-based-on: 1.1.0
+based-on: 1.2.0
 ---
 # RULES — Briefing Module
 
-> For AI agents. rnc-3 F8, 07/11/2026.
+> For AI agents. rnc-3 F8, 07/11/2026; F7 (the Radar action's cost), 07/11/2026.
 
 ## Domain
 
@@ -55,8 +55,9 @@ Partner and Portfolio, each through the models' own `BelongsToFirm` scope.
   proposals** with their range → `/equipe/pipeline?etapa=proposta`, the **partial leads** →
   `/equipe/pipeline?etapa=lead_parcial`, then **the Radar's first opportunity type** (rnc-3 F6b,
   W81) → `/reinaldo/radar`, `params {rule, title, clients, range_cents, period}` — the same row
-  `GET radar` shows first among the opportunities (`RadarService::summary`, a fixed cost: the
-  clients, one sales aggregate, the pickers' three). What does not apply is left out; a portfolio
+  `GET radar` shows first among the opportunities (`RadarService::firstOpportunity`, a fixed cost:
+  the clients and one sales aggregate — not `summary()`, whose ranking and partner pickers took
+  ~80 ms of every briefing for rows it never shows, W100). What does not apply is left out; a portfolio
   with no opportunity has no Radar action. The rule's `title` is Diagnostic's pt-BR name, so the
   `en` e-mail quotes it in Portuguese.
 - **The API sends numbers, not sentences** (rnc-3 W82): `params` carry what the sentence needs; the
@@ -81,7 +82,7 @@ Partner and Portfolio, each through the models' own `BelongsToFirm` scope.
 - `appointments`, `specialists` (Booking) — through `AppointmentRepository::findAppointmentsBetween`.
 - `referrals`, `partners` (Partner) — the SLA through `ReferralSla::of`.
 - `clients` (Portfolio) — `band`, `monthly_fee`.
-- The Radar (rnc-2) — `RadarService::summary` for the fifth action (it reads `clients` and
+- The Radar (rnc-2) — `RadarService::firstOpportunity` for the fifth action (it reads `clients` and
   `nfe_documents` itself).
 - `users`, `roles` (Auth) — the firm's active ceos, for the e-mail.
 

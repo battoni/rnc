@@ -6,7 +6,12 @@ import type { PortalReferral } from '../../../interfaces';
 import { server } from '@/test/msw/server';
 import { renderWithPlugins } from '@/test/render';
 import { REFERRAL_STATUS } from '../../../enums';
-import { ACCEPTED_REFERRAL_FIXTURE, NEW_REFERRAL_FIXTURE, referralAt } from '../../../test/fixtures';
+import {
+  ACCEPTED_REFERRAL_FIXTURE,
+  CONTRACT_REFERRAL_FIXTURE,
+  NEW_REFERRAL_FIXTURE,
+  referralAt,
+} from '../../../test/fixtures';
 import MSlaChip from '../MSlaChip/MSlaChip.vue';
 import MPortalReferralCard from './MPortalReferralCard.vue';
 
@@ -74,6 +79,43 @@ describe('MPortalReferralCard', () => {
     expect(card.textContent).toContain('81% fit');
     expect(screen.getByTestId('referral-message').textContent).toContain('A Franco indica');
     expect(screen.getByTestId('sla-chip').dataset.sla).toBe('ok');
+  });
+
+  it("rnc-3 R21: shows a contract referral's summary — kind, end year, no clause and the value band, never the exact value", () => {
+    renderCard(CONTRACT_REFERRAL_FIXTURE);
+
+    const summary = screen.getByTestId('referral-contract');
+
+    expect(summary.textContent).toContain('Distribution contract');
+    expect(summary.textContent).toContain('until 2033');
+    expect(summary.textContent).toContain('without the Reforma clause');
+    expect(screen.getByTestId('referral-contract-range').getAttribute('data-min')).toBe('100000000');
+    expect(screen.getByTestId('referral-contract-range').getAttribute('data-max')).toBe('200000000');
+    expect(screen.getByTestId('referral-contract-range').textContent?.replace(/\s+/g, ' ')).toContain(
+      'R$ 1 mi – R$ 2 mi a year'
+    );
+    expect(summary.textContent).not.toMatch(/\d{3}\.\d{3},\d{2}/);
+  });
+
+  it('rnc-3 R21: reads the top band as "from", and a plain referral shows no contract', () => {
+    const { unmount } = renderCard({
+      ...CONTRACT_REFERRAL_FIXTURE,
+      contract: {
+        ...CONTRACT_REFERRAL_FIXTURE.contract!,
+        sem_clausula: false,
+        value_range: { label: 'acima de R$ 2 mi', max_cents: null, min_cents: 200_000_000 },
+      },
+    });
+
+    expect(screen.getByTestId('referral-contract-range').textContent?.replace(/\s+/g, ' ')).toContain(
+      'from R$ 2 mi a year'
+    );
+    expect(screen.getByTestId('referral-contract').textContent).not.toContain('without the Reforma clause');
+    unmount();
+
+    renderCard(NEW_REFERRAL_FIXTURE);
+
+    expect(screen.queryByTestId('referral-contract')).toBeNull();
   });
 
   it("hides the lead's contact before the accept and shows it after (A5)", () => {

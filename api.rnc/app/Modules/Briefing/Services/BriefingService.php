@@ -9,7 +9,6 @@ use App\Modules\Booking\Services\BookingCalendar;
 use App\Modules\Briefing\Helpers\ActionPicker;
 use App\Modules\Briefing\Helpers\FeeQuartiles;
 use App\Modules\Briefing\Repositories\BriefingRepository;
-use App\Modules\Diagnostic\Enums\DiagnosticKind;
 use App\Modules\Lead\Enums\LeadChannel;
 use App\Modules\Lead\Enums\LeadStage;
 use App\Modules\Lead\Models\Lead;
@@ -101,13 +100,13 @@ class BriefingService
     /**
      * The Radar's first opportunity type (R25's fifth action, W81): the same row `GET radar` shows
      * first among the opportunities — its rule, title, clients and range. Null when the portfolio
-     * has none. Radar's fixed cost (clients, one sales aggregate, the pickers' three).
+     * has none. Radar's fixed cost: the clients and one sales aggregate (`firstOpportunity`, W100).
      *
      * @return array{rule: string, title: string, clients: int, range_cents: array{0: int, 1: int}, period: string}|null
      */
     private function radarOpportunity(): ?array
     {
-        $first = collect($this->radarService->summary()['types'])->firstWhere('kind', DiagnosticKind::Opportunity->value);
+        $first = $this->radarService->firstOpportunity();
 
         return $first === null ? null : [
             'rule' => $first['rule'],

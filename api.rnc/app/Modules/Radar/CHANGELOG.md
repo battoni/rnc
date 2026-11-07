@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.2.0 — 2026-11-07
+
+### Added
+
+- `RadarService::firstOpportunity()` (rnc-3 F7, W100): the Radar's first opportunity row without the clients' ranking and the partner pickers, for Reinaldo's briefing. Tested by `tests/Feature/Briefing/BriefingTest.php`.
+
 ## 1.1.0 — 2026-11-07
 
 ### Added

@@ -51,7 +51,8 @@
     "readiness": "Prontidão da NF-e",
     "suppliers": "Crédito de fornecedores",
     "invoices": "Notas fiscais",
-    "radar": "Radar da carteira"
+    "radar": "Radar da carteira",
+    "contracts": "Alerta de contratos"
   },
   "rolesAndPermissions": {
     "groups": {
@@ -1128,7 +1129,22 @@
       "covers": "No diagnóstico, para a sua especialidade",
       "meetingAt": "Reunião {when}",
       "closedLine": "Contrato de {value} no 1º ano · fechado em {date}",
-      "declinedLine": "Recusado em {date}. A {firm} pode indicar outro parceiro."
+      "declinedLine": "Recusado em {date}. A {firm} pode indicar outro parceiro.",
+      "contract": {
+        "label": "Contrato do cliente",
+        "kinds": {
+          "fornecimento": "Contrato de fornecimento",
+          "prestacao_servicos": "Contrato de prestação de serviços",
+          "locacao": "Contrato de locação",
+          "distribuicao": "Contrato de distribuição",
+          "manutencao": "Contrato de manutenção"
+        },
+        "until": "até {year}",
+        "noClause": "sem cláusula da Reforma",
+        "range": "{min} – {max} por ano",
+        "rangeFrom": "a partir de {min} por ano",
+        "rangeNote": "Faixa de valor, não o valor do contrato."
+      }
     },
     "sla": {
       "ok": "Primeiro contato: {hours} de {target}h úteis",
@@ -1680,5 +1696,99 @@
     },
     "sentToast": "{count} cliente da carteira encaminhado para {partner}. A Franco segue dona de todos. | {count} clientes da carteira encaminhados para {partner}. A Franco segue dona de todos.",
     "nothingToast": "Todos os clientes de “{title}” já foram encaminhados para {partner}."
+  },
+  "contracts": {
+    "title": "Alerta de contratos",
+    "heading": "Contratos que atravessam 2027–2033 sem cláusula de preço para a Reforma",
+    "lede": "Os contratos dos clientes que a Franco guarda, do mais exposto ao menos. Os que vencem em 2026 ou já têm a cláusula ficam de fora.",
+    "note": "Reforma Tributária (EC 132/2023 e LC 214/2025): a troca de PIS, Cofins, ICMS e ISS por CBS e IBS acontece de 2027 a 2033, e contrato longo que atravessa a transição precisa de cláusula de reequilíbrio de preço. Fonte: gov.br/fazenda, lida em 05/11/2026.",
+    "loadFailed": "Não deu para carregar os contratos.",
+    "retry": "Tentar de novo",
+    "partnerNotLegal": "Este parceiro não é da área jurídica nem de precificação: escolha outro.",
+    "sentToast": "Contrato da {client} encaminhado para {partner}.",
+    "clauseToast": "Cláusula registrada no contrato da {client}.",
+    "kinds": {
+      "fornecimento": "Fornecimento",
+      "prestacao_servicos": "Prestação de serviços",
+      "locacao": "Locação",
+      "distribuicao": "Distribuição",
+      "manutencao": "Manutenção"
+    },
+    "kpis": {
+      "label": "Resumo dos contratos",
+      "atRisk": "Sem cláusula da Reforma",
+      "atRiskValue": "{count} de {total}",
+      "value": "Valor anual dos contratos",
+      "exposure": "Valor × anos expostos",
+      "referred": "Encaminhados ao jurídico"
+    },
+    "list": {
+      "title": "Contratos a revisar",
+      "lede": "Cada faixa marca os anos de 2027 a 2033 em que o contrato ainda vale. A barra compara a exposição com a do contrato mais exposto.",
+      "empty": "Nenhum contrato atravessa a transição sem cláusula."
+    },
+    "row": {
+      "line": "{kind} · desde {start} · {value}/ano · até {end}",
+      "years": "Exposto de {from} a {to}",
+      "notExposed": "Fora da transição de 2027 a 2033",
+      "exposure": "Valor × anos expostos",
+      "yearsExposed": "{count} ano exposto | {count} anos expostos",
+      "partnerLabel": "Parceiro jurídico para o contrato da {client}",
+      "refer": "Encaminhar ao jurídico",
+      "sent": "Com {partners}",
+      "noPartner": "Sem parceiro jurídico na rede.",
+      "consentRefused": "Cliente sem autorização no contrato de serviços para ser apresentado a parceiros.",
+      "consentMissing": "Sem autorização registrada: o cliente nunca respondeu, no contrato de serviços, se aceita ser apresentado a parceiros.",
+      "clause": "Cláusula incluída",
+      "clauseConfirm": "Registrar que o contrato da {client} já tem a cláusula da Reforma? Ele sai da lista, e a marca não se desfaz por aqui.",
+      "clauseYes": "Registrar cláusula",
+      "cancel": "Cancelar",
+      "failed": "Não deu para encaminhar. Tente de novo.",
+      "clauseFailed": "Não deu para registrar a cláusula. Tente de novo.",
+      "consentRequired": "O cliente não autorizou ser apresentado a parceiros: o contrato não foi encaminhado.",
+      "alreadyReferred": "Este contrato acabou de ser encaminhado a este parceiro. A lista foi atualizada."
+    },
+    "import": {
+      "action": "Importar CSV",
+      "title": "Importar contratos",
+      "lede": "Uma linha por contrato, em UTF-8, separada por ponto e vírgula ou vírgula. O mesmo cliente, tipo, início e fim atualiza o contrato. Linhas com erro ficam de fora e as outras entram.",
+      "columns": "Colunas do arquivo",
+      "accepted": "cnpj_cliente: um cliente da carteira · tipo: fornecimento, prestação de serviços, locação, distribuição ou manutenção · valor_anual em reais, como 1.200.000,00 · inicio e fim: anos, como 2025 · clausula_reforma: sim, não ou vazio",
+      "template": "Baixar modelo",
+      "file": "Arquivo CSV",
+      "fileRequired": "Escolha um arquivo CSV.",
+      "submit": "Importar",
+      "close": "Fechar",
+      "cancel": "Cancelar",
+      "success": "{total} contratos importados: {created} novos e {updated} atualizados.",
+      "partial": "{stored} contratos gravados: {created} novos e {updated} atualizados. Estas linhas ficaram de fora:",
+      "line": "Linha {line}",
+      "more": "E mais {count} linha com problema. | E mais {count} linhas com problema.",
+      "templateFailed": "Não foi possível baixar o modelo agora.",
+      "codes": {
+        "import_encoding": "O arquivo não está em UTF-8. No Excel, salve como “CSV UTF-8”.",
+        "import_header": "O cabeçalho não é o do modelo. Faltam as colunas: {missing}.",
+        "import_empty": "O arquivo não tem nenhuma linha de contrato.",
+        "import_too_many": "O arquivo passa de {limit} linhas: divida em partes.",
+        "unexpected": "Não foi possível importar agora. Tente de novo."
+      },
+      "lineCodes": {
+        "client_unknown": "nenhum cliente da Franco tem este CNPJ",
+        "kind_invalid": "tipo de contrato desconhecido",
+        "value_invalid": "valor anual inválido (de R$ 0,01 a R$ 1 bilhão)",
+        "year_invalid": "ano fora de 2000–2100",
+        "end_before_start": "termina antes do início",
+        "clause_invalid": "cláusula diferente de sim ou não",
+        "columns": "faltam colunas nesta linha"
+      },
+      "fields": {
+        "cnpj_cliente": "CNPJ do cliente",
+        "tipo": "Tipo",
+        "valor_anual": "Valor anual",
+        "inicio": "Início",
+        "fim": "Fim",
+        "clausula_reforma": "Cláusula da Reforma"
+      }
+    }
   }
 }

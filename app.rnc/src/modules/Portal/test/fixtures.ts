@@ -13,6 +13,7 @@ const NEW_REFERRAL_FIXTURE: PortalReferral = {
   company: 'Consultoria Prisma Ltda',
   contact: null,
   contacted_at: null,
+  contract: null,
   covers: ['Novo layout da NF-e', 'ERP pronto para 2027'],
   id: 31,
   meeting_at: null,
@@ -38,6 +39,25 @@ const ACCEPTED_REFERRAL_FIXTURE: PortalReferral = {
   contact: { ...LEAD_CONTACT },
   status: REFERRAL_STATUS.ACEITO,
   status_at: '2026-11-16T13:00:00+00:00',
+};
+
+/**
+ * A legal referral of a client contract (rnc-3 R21, AM20): the contract's kind, end year, that it
+ * still lacks the Reforma clause and its annual value as a band — never the exact value.
+ */
+const CONTRACT_REFERRAL_FIXTURE: PortalReferral = {
+  ...NEW_REFERRAL_FIXTURE,
+  company: 'Centro Médico Bandeira Ltda',
+  contract: {
+    end_year: 2033,
+    kind: 'distribuicao',
+    sem_clausula: true,
+    value_range: { label: 'R$ 1 mi a R$ 2 mi', max_cents: 200_000_000, min_cents: 100_000_000 },
+  },
+  covers: [],
+  id: 41,
+  message:
+    'A Franco Contabilidade indica a Centro Médico Bandeira Ltda: o contrato de distribuição de R$ 1 mi a R$ 2 mi por ano vai até 2033 sem cláusula de reequilíbrio para a Reforma.',
 };
 
 /** Builds a referral at `status` — the card's actions depend on nothing else. */
@@ -115,6 +135,7 @@ const SUBSCRIPTION_STATEMENT_FIXTURE: PortalStatement = {
 export {
   ACCEPTED_REFERRAL_FIXTURE,
   COMMISSION_STATEMENT_FIXTURE,
+  CONTRACT_REFERRAL_FIXTURE,
   NEW_REFERRAL_FIXTURE,
   PORTAL_ME_FIXTURE,
   referralAt,

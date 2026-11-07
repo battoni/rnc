@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.2.0 — 2026-11-07
+
+### Changed
+
+- The Radar action (rnc-3 F7, W100) reads `RadarService::firstOpportunity` instead of the whole `summary()`: the same row, without the clients' ranking and the partner pickers — 12 queries instead of 14 on `BriefingTest`'s fixture, and `GET briefing` on the seed ~100 ms → ~35 ms (live, 8013). Tested by `tests/Feature/Briefing/BriefingTest.php` ("reads the Radar's first opportunity without the batch pickers", and the existing equality with `GET radar`'s first opportunity).
+
 ## 1.1.0 — 2026-11-07
 
 ### Added

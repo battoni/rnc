@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.3.0 — 2026-11-07
+
+### Added
+
+- A contract referral's summary on `MPortalReferralCard` (rnc-3 F7, R21, AM20): kind, end year, "sem cláusula da Reforma" and the annual value as the API's band ("R$ 1 mi – R$ 2 mi por ano", "a partir de" on the top band) — never the exact value; `PortalReferral.contract` (`PortalContractSummary`). Tested by `MPortalReferralCard.spec.ts` and `e2e/contracts/contracts.spec.ts`.
+
 ## 1.2.0 — 2026-11-07
 
 ### Added

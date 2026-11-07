@@ -1,5 +1,5 @@
 ---
-version: 1.2.0
+version: 1.3.0
 origin: rnc
 ---
 
@@ -56,6 +56,12 @@ is `PortalStatementView` — the partner's month (`GET portal/statement`). API: 
 - **The meeting is a native date-time field** (W29): the partner types its own clock's time and the
   API receives the instant (`toISOString`); PrimeVue's `DatePicker` with a time is a picker jsdom
   and Playwright cannot type into reliably. The value is `InputNumber` in reais, sent as cents.
+- **A contract referral shows its contract as a band** (rnc-3 R21, AM20): `contract` (null on any
+  other referral) is drawn as the kind ("Contrato de distribuição"), "até <ano>", "sem cláusula da
+  Reforma" while it lacks it, and the API's `value_range` short ("R$ 1 mi – R$ 2 mi por ano", "a
+  partir de R$ 2 mi por ano" on the top band, `max_cents` null) with "Faixa de valor, não o valor do
+  contrato." The card formats the band's bounds; it never has, and never shows, the exact value or
+  anything else of the client (the API's allow-list, api Partner RULES).
 - **Motion, sparingly**: the greeting, the KPI tiles and the cards enter with `.motion-enter`, the
   stagger capped at six cards; nothing moves after a move — the card just changes.
 

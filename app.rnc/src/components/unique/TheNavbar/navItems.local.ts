@@ -4,6 +4,7 @@ import type { NavItem } from './interfaces';
 import { ASSISTANT_PERMISSIONS, ASSISTANT_ROUTE_NAMES } from '@AssistantModule';
 import { BRANDS_PERMISSIONS, BRANDS_ROUTE_NAMES } from '@BrandsModule';
 import { CHANNEL_PERMISSIONS, CHANNEL_ROUTE_NAMES } from '@ChannelModule';
+import { CONTRACTS_PERMISSIONS, CONTRACTS_ROUTE_NAMES } from '@ContractsModule';
 import { FISCAL_PERMISSIONS, FISCAL_ROUTE_NAMES } from '@FiscalModule';
 import { WORKSPACES } from '@HomeModule';
 import { METRICS_PERMISSIONS, METRICS_ROUTE_NAMES } from '@MetricsModule';
@@ -60,8 +61,8 @@ import { useUserStore } from '@UserModule';
  * screens (rnc-2 F8); the operator's carries the bootstrap's own administration screens; Reinaldo's
  * has the metrics (F7), the network (F6), its ledger (rnc-2 F4), the fee repricing (F8), the XML
  * import (rnc-2 F8) and the portfolio Radar (rnc-2 F10); rnc-3 puts the Reforma assistant in the
- * team's (F5), the RNC channel in his and the operator's (F3b) and the brands console in the
- * operator's (F2). Route names are the owners' (celer-05), never an import of their screens.
+ * team's (F5), the RNC channel in his and the operator's (F3b), the contract alert in his (F7) and
+ * the brands console in the operator's (F2). Route names are the owners' (celer-05), never an import of their screens.
  */
 const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
   team: [
@@ -148,6 +149,13 @@ const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
       label: 'navigation.radar',
       permission: RADAR_PERMISSIONS.manage,
       routeName: RADAR_ROUTE_NAMES.radar,
+    },
+    // rnc-3 F7: the contract alert (R18–R22).
+    {
+      icon: 'pi pi-file-edit',
+      label: 'navigation.contracts',
+      permission: CONTRACTS_PERMISSIONS.manage,
+      routeName: CONTRACTS_ROUTE_NAMES.alert,
     },
   ],
   operator: [

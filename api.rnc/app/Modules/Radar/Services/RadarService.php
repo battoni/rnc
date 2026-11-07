@@ -86,6 +86,33 @@ class RadarService
     }
 
     /**
+     * The row `summary()` puts first among the opportunities, for Reinaldo's briefing (rnc-3 R25,
+     * W98): the same items, rule rows and order, without what only the Radar screen shows — each
+     * row's clients ranked and its partners' next batch (two queries and most of the CPU: on the
+     * seed's 500 clients the briefing went from ~100 ms to ~20 ms, W100). Null on a portfolio with
+     * no opportunity. `BriefingTest` holds it equal to `GET radar`'s first opportunity.
+     *
+     * @return TypeRow|null
+     */
+    public function firstOpportunity(): ?array
+    {
+        $items = $this->items($this->clientRepository->findAllClients()->all(), $this->evidenceBuilder->salesByClient());
+        $types = [];
+
+        foreach (self::groupByRule($items) as $value => $ruleItems) {
+            $rule = DiagnosticRule::from($value);
+
+            if ($rule->kind() === DiagnosticKind::Opportunity) {
+                $types[] = self::typeRow($rule, $ruleItems, []);
+            }
+        }
+
+        usort($types, self::compareTypes(...));
+
+        return $types[0] ?? null;
+    }
+
+    /**
      * One rule type with its clients, biggest range first (ties by id), each with its range, its
      * proof (R25) and up to three access keys when the proof is the XMLs.
      *

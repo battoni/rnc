@@ -51,7 +51,8 @@
     "readiness": "Invoice readiness",
     "suppliers": "Supplier credit",
     "invoices": "Invoices",
-    "radar": "Portfolio radar"
+    "radar": "Portfolio radar",
+    "contracts": "Contract alert"
   },
   "rolesAndPermissions": {
     "groups": {
@@ -1128,7 +1129,22 @@
       "covers": "In the diagnostic, for your specialty",
       "meetingAt": "Meeting {when}",
       "closedLine": "Contract of {value} in the 1st year · closed on {date}",
-      "declinedLine": "Declined on {date}. {firm} may refer another partner."
+      "declinedLine": "Declined on {date}. {firm} may refer another partner.",
+      "contract": {
+        "label": "Client contract",
+        "kinds": {
+          "fornecimento": "Supply contract",
+          "prestacao_servicos": "Services contract",
+          "locacao": "Lease contract",
+          "distribuicao": "Distribution contract",
+          "manutencao": "Maintenance contract"
+        },
+        "until": "until {year}",
+        "noClause": "without the Reforma clause",
+        "range": "{min} – {max} a year",
+        "rangeFrom": "from {min} a year",
+        "rangeNote": "A value band, not the contract's value."
+      }
     },
     "sla": {
       "ok": "First contact: {hours} of {target} business hours",
@@ -1680,5 +1696,99 @@
     },
     "sentToast": "{count} portfolio client sent to {partner}. Franco keeps every one. | {count} portfolio clients sent to {partner}. Franco keeps every one.",
     "nothingToast": "Every client of “{title}” was already sent to {partner}."
+  },
+  "contracts": {
+    "title": "Contract alert",
+    "heading": "Contracts that cross 2027–2033 without a price clause for the Reforma",
+    "lede": "The clients' contracts Franco keeps, most exposed first. Those ending in 2026 or already with the clause are left out.",
+    "note": "Tax reform (EC 132/2023 and LC 214/2025): PIS, Cofins, ICMS and ISS give way to CBS and IBS from 2027 to 2033, and a long contract that crosses the transition needs a price rebalancing clause. Source: gov.br/fazenda, read on 05/11/2026.",
+    "loadFailed": "Could not load the contracts.",
+    "retry": "Try again",
+    "partnerNotLegal": "This partner is neither in tax law nor in pricing: choose another.",
+    "sentToast": "{client}'s contract sent to {partner}.",
+    "clauseToast": "Clause recorded on {client}'s contract.",
+    "kinds": {
+      "fornecimento": "Supply",
+      "prestacao_servicos": "Services",
+      "locacao": "Lease",
+      "distribuicao": "Distribution",
+      "manutencao": "Maintenance"
+    },
+    "kpis": {
+      "label": "Contracts summary",
+      "atRisk": "Without the Reforma clause",
+      "atRiskValue": "{count} of {total}",
+      "value": "Contracts' annual value",
+      "exposure": "Value × years exposed",
+      "referred": "Sent to legal"
+    },
+    "list": {
+      "title": "Contracts to review",
+      "lede": "Each strip marks the years from 2027 to 2033 in which the contract still runs. The bar compares its exposure with the most exposed contract's.",
+      "empty": "No contract crosses the transition without a clause."
+    },
+    "row": {
+      "line": "{kind} · since {start} · {value}/year · until {end}",
+      "years": "Exposed from {from} to {to}",
+      "notExposed": "Outside the 2027 to 2033 transition",
+      "exposure": "Value × years exposed",
+      "yearsExposed": "{count} year exposed | {count} years exposed",
+      "partnerLabel": "Legal partner for {client}'s contract",
+      "refer": "Send to legal",
+      "sent": "With {partners}",
+      "noPartner": "No legal partner in the network.",
+      "consentRefused": "Client without consent in the services contract to be introduced to partners.",
+      "consentMissing": "No consent recorded: the client never answered, in the services contract, whether it agrees to be introduced to partners.",
+      "clause": "Clause included",
+      "clauseConfirm": "Record that {client}'s contract already has the Reforma clause? It leaves the list, and the mark cannot be undone here.",
+      "clauseYes": "Record clause",
+      "cancel": "Cancel",
+      "failed": "Could not send it. Try again.",
+      "clauseFailed": "Could not record the clause. Try again.",
+      "consentRequired": "The client has not agreed to be introduced to partners: the contract was not sent.",
+      "alreadyReferred": "This contract was just sent to this partner. The list was refreshed."
+    },
+    "import": {
+      "action": "Import CSV",
+      "title": "Import contracts",
+      "lede": "One line per contract, in UTF-8, separated by semicolons or commas. The same client, kind, start and end updates the contract. Lines with an error are left out and the others go in.",
+      "columns": "File columns",
+      "accepted": "cnpj_cliente: a client of the portfolio · tipo: fornecimento, prestação de serviços, locação, distribuição or manutenção · valor_anual in reais, like 1.200.000,00 · inicio and fim: years, like 2025 · clausula_reforma: sim, não or empty",
+      "template": "Download template",
+      "file": "CSV file",
+      "fileRequired": "Choose a CSV file.",
+      "submit": "Import",
+      "close": "Close",
+      "cancel": "Cancel",
+      "success": "{total} contracts imported: {created} new and {updated} updated.",
+      "partial": "{stored} contracts stored: {created} new and {updated} updated. These lines were left out:",
+      "line": "Line {line}",
+      "more": "And {count} more line with a problem. | And {count} more lines with a problem.",
+      "templateFailed": "Could not download the template now.",
+      "codes": {
+        "import_encoding": "The file is not UTF-8. In Excel, save it as “CSV UTF-8”.",
+        "import_header": "The header is not the template's. Missing columns: {missing}.",
+        "import_empty": "The file has no contract line.",
+        "import_too_many": "The file has more than {limit} lines: split it.",
+        "unexpected": "Could not import now. Try again."
+      },
+      "lineCodes": {
+        "client_unknown": "no client of the firm has this CNPJ",
+        "kind_invalid": "unknown contract kind",
+        "value_invalid": "invalid annual value (R$ 0,01 to R$ 1 billion)",
+        "year_invalid": "year outside 2000–2100",
+        "end_before_start": "ends before the start",
+        "clause_invalid": "clause other than sim or não",
+        "columns": "columns missing on this line"
+      },
+      "fields": {
+        "cnpj_cliente": "Client CNPJ",
+        "tipo": "Kind",
+        "valor_anual": "Annual value",
+        "inicio": "Start",
+        "fim": "End",
+        "clausula_reforma": "Reforma clause"
+      }
+    }
   }
 }

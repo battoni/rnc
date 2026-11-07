@@ -1,11 +1,11 @@
 ---
-version: 1.1.0
+version: 1.2.0
 origin: rnc
-based-on: 1.1.0
+based-on: 1.2.0
 ---
 # RULES — Radar Module
 
-> For AI agents. rnc-2 F9, 07/11/2026 (the Radar API); F10 (the row's partner picker and the batch referral).
+> For AI agents. rnc-2 F9, 07/11/2026 (the Radar API); F10 (the row's partner picker and the batch referral); rnc-3 F7 (`firstOpportunity` for the briefing).
 
 ## Domain
 
@@ -56,6 +56,11 @@ reads Portfolio's `clients` and Fiscal's `nfe_documents`, and uses Fiscal's `Spl
   client + the pickers' three (partners, portfolio leads, their referrals — F10); `GET
   radar/types/{rule}` adds one keys query for the listed clients. `RadarSummaryTest` counts the
   queries for 4 and 24 clients (≤ 8 and ≤ 9), `RadarBatchReferralTest` once leads and referrals exist. Measured on the seed: `state.md` → F9.
+- **`firstOpportunity()` is the briefing's** (rnc-3 F7, W100): the row `summary()` puts first among
+  the opportunities, built from the same items, rule rows and `compareTypes` order, but without each
+  row's clients ranked and without the pickers (`partners: []`) — two queries less, and the ranking's
+  comparator, which reads Eloquent attributes ~25 000 times on 500 clients, never runs. A change to
+  `summary()`'s order is a change here too; `BriefingTest` holds the two equal.
 
 ## Tables read from other modules
 
