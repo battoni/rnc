@@ -115,6 +115,11 @@ return [
     // STAFF — Phase 3 (rnc-3): F5 the questions' inbox and the answer, `assistant.ask` + the service
     'GET assistant/questions' => 'staff',
     'POST assistant/questions/{id}/answer' => 'staff',
+    // STAFF — Phase 3 (rnc-3): F6 the contract alert, `contracts.manage`
+    'GET contracts' => 'staff',
+    'POST contracts/import' => 'staff',
+    'GET contracts/template' => 'staff',
+    'POST contracts/{id}/clause' => 'staff',
     'POST fiscal/imports' => 'staff',
     'GET fiscal/imports' => 'staff',
     'GET fiscal/readiness' => 'staff',

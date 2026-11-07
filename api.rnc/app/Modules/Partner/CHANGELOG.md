@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.4.2 — 2026-11-07
+
+### Changed
+
+- RULES.md records rnc-3 AM20 ahead of the code: a contract referral shows the partner a value range by fixed bands, never the exact annual value (Known Gaps — contract referrals land in rnc-3 F6b). No code change.
+
 ## 1.4.1 — 2026-11-07
 
 ### Changed

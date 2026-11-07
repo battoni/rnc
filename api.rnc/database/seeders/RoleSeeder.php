@@ -32,7 +32,8 @@ use Illuminate\Database\Seeder;
  * Reinaldo `channel.read` — the RNC board read-only, without the platform's price (R9, AM15);
  * `channel.manage` stays the operator's. F4 gives the team and Reinaldo `assistant.ask` (ask the
  * Reforma assistant) and Reinaldo `assistant.manage` (write and retire notes, the gaps); reviewing a
- * note is a specialist's, by `users.is_specialist`, not a key (AM4).
+ * note is a specialist's, by `users.is_specialist`, not a key (AM4). F6 gives Reinaldo
+ * `contracts.manage` (the contract alert, its import and "Cláusula incluída"); the team has none.
  *
  * Re-running the seeder rewrites the four matrices to exactly this table. A key added to a role
  * is a line here, and `SeededRolesTest` states the result.
@@ -59,6 +60,7 @@ class RoleSeeder extends Seeder
         'channel.read',
         'assistant.manage',
         'fiscal.import',
+        'contracts.manage',
     ];
 
     public const PARCEIRO_KEYS = [

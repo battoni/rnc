@@ -1,11 +1,11 @@
 ---
-version: 1.2.0
+version: 1.3.0
 origin: rnc
-based-on: 1.2.0
+based-on: 1.3.0
 ---
 # RULES — Portfolio Module
 
-> For AI agents. rnc-1 F8, 07/11/2026; rnc-2 F7 (the client's timeline), 07/11/2026.
+> For AI agents. rnc-1 F8, 07/11/2026; rnc-2 F7 (the client's timeline), 07/11/2026; rnc-3 F6a (the contract alert), 07/11/2026.
 
 ## Domain
 
@@ -14,7 +14,9 @@ serves, imported from a CSV (or seeded locally), each quoted by the same rules e
 public diagnostic — how much new work the Reforma brings to that client, as a suggested new monthly
 fee — with the letter that proposes it and the batch mark. It owns `clients` and, from rnc-2 F7,
 `client_events` — a client's timeline (D12): the team's "Registrar aviso" (`nfe.aviso`) and "Propor
-revisão" (`fornecedores.revisao`), each with who and when.
+revisão" (`fornecedores.revisao`), each with who and when. From rnc-3 F6a it owns
+`client_contracts` — the clients' contracts and Reinaldo's contract alert (R17–R19, R22): the ones
+that cross the 2027–2033 transition without a Reforma price clause, by exposure.
 
 ## The routes (`routes/api.local.php`)
 
@@ -27,6 +29,10 @@ revisão" (`fornecedores.revisao`), each with who and when.
 | `POST clients/import` | `clients.import` | multipart `file` → `{created, updated, total}`; 422 with `code` (below) |
 | `GET clients/import/template` | `clients.import` | `modelo-clientes.csv`: a BOM and the header row |
 | `GET clients/{id}/events` | `fiscal.read` | the client's timeline, newest first: `[{id, client_id, type, data, at, user: {id, name} \| null}]`; 404 for another firm's or an unknown client. Behind Fiscal's key: the fiscal screens are the only ones that write it so far |
+| `GET contracts` | `contracts.manage` | `{summary: {at_risk, total, annual_value_cents, exposure_cents}, contracts: [{id, client: {id, name}, kind, annual_value_cents, start_year, end_year, years_exposed, exposure_cents}]}` — ending 2027 or later without the clause, exposure highest first, ties by id; unpaginated |
+| `POST contracts/import` | `contracts.manage` | multipart `file` (≤ 2 MB, `.csv`/`.txt`, ≤ 5000 lines; 10 a minute, `contracts-import`) → 200 `{created, updated, total, errors: [{line, field, code}], total_errors}`; 422 with `code` for a file refused whole |
+| `GET contracts/template` | `contracts.manage` | `modelo-contratos.csv`: a BOM and the header row |
+| `POST contracts/{id}/clause` | `contracts.manage` | "Cláusula incluída" → `{id, has_reforma_clause, clause_marked_at, clause_marked_by}`; 404 `portfolio.contractNotFound` for another firm's or an unknown contract |
 
 ## Intentional Decisions
 
@@ -70,7 +76,33 @@ revisão" (`fornecedores.revisao`), each with who and when.
   `creating` event, silenced under `WithoutModelEvents`) and `at` in UTC — passed already in UTC,
   because a class cast read back on the created model is the value SET, zone kept. `type` is a
   `ClientEventType` value, a plain string column (AM11). A line is never edited or deleted; the same
-  line may be written twice (a second notice is a second warning).
+  line may be written twice (a second notice is a second warning). The contract alert's "Cláusula incluída" writes `contrato.clausula` the same way.
+- **Contracts: exposure (rnc-3 R19, AM7, AM17)**, in `ContractExposure`: years =
+  `min(end, 2033) − max(start, 2027) + 1`, floor 0 (2030–2033 = 4, 2025–2035 = 7); exposure = annual
+  value × years, integer cents. The alert lists `end_year ≥ 2027` without the clause — a contract
+  starting after 2033 is still listed, at exposure 0, last (W80). Three queries (at-risk rows, their
+  clients, the count); the ranking is PHP over the at-risk rows. No consent, partner or "Com
+  <parceiro>" yet: those need rnc-2's client consent and portfolio lead and come with F6b (W75).
+- **Contracts: the CSV (rnc-3 R18)** `cnpj_cliente;tipo;valor_anual;inicio;fim;clausula_reforma`, read
+  by `CsvReader` (BOM, UTF-8, `;`/`,`, header in any order — the clients CSV's rules; whole-file
+  refusals reuse its `import_*` codes and `portfolio.import.*` keys) and `ContractCsvParser`. UNLIKE
+  the clients CSV, lines are independent: good lines are written (one transaction), bad lines
+  reported — `client_unknown` (no client OF THIS FIRM has the CNPJ; check digits not required),
+  `kind_invalid`, `value_invalid`, `year_invalid` (2000–2100), `end_before_start`, `clause_invalid`,
+  `columns`; at most 100 listed, `total_errors` counts all. Kind by slug or label, any case and accent;
+  value `100000`, `1.200.000,00`, `R$ 80.000,50`, `95000.00` read as text into cents (never a float),
+  1 cent to R$ 1 bi; clause `sim`/`não` any case and accent, or empty.
+- **Contracts: the key and the clause (R18, AM16, W77)**: one row per `(firm, client, kind, start,
+  end)`; the same key updates the value. Empty clause = "não" on a new row, keep what is stored on
+  an update. A contract marked through "Cláusula incluída" (`clause_marked_at`) keeps its clause
+  whatever a re-import says, "não" included — the mark is the record that the clause was signed.
+- **Contracts: "Cláusula incluída" (R22, W79)** sets the clause, `clause_marked_at` (UTC) and
+  `clause_marked_by`, and writes one `contrato.clausula` line (`{contract_id, kind, end_year}`) through
+  `recordEvent`, in one transaction on the locked row. Marking a marked contract answers it as it is
+  and writes nothing. There is no unmark (Known Gap).
+- **Contracts: no formula can come back out**: nothing of a CSV cell is stored as text — a client id,
+  a kind slug, cents, years and a boolean. The template is a constant header. Any later export of
+  contracts or clients must still prefix a cell starting `=`, `+`, `-`, `@`, tab or CR with `'`.
 
 ## Read by other modules
 
@@ -93,3 +125,9 @@ letter's signature and contact, through `CurrentFirm`). Code reused: Diagnostic'
 - **The letter is not sent**: it is a printable page; e-mailing it to the client is a later phase.
 - **No client screen beyond repricing**: no edit or delete of a client in the back office; the CSV
   is the way in.
+- **No unmark of a contract clause**: a mistaken "Cláusula incluída" is fixed in the database;
+  a re-import cannot undo it on purpose (AM16).
+- **Two imports racing on the same new contract key**: the second insert meets the unique index
+  and fails (500) — unlikely with one Reinaldo and 10 imports a minute per user.
+- **`ClientCsvParser` still reads the CSV with its own copy** of `CsvReader`'s rules; it moves onto
+  `CsvReader` after rnc-2's consent column lands in it (W76), to spare that merge a conflict.

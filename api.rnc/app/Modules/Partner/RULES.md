@@ -1,5 +1,5 @@
 ---
-version: 1.4.1
+version: 1.4.2
 origin: rnc
 ---
 # RULES — Partner Module
@@ -179,3 +179,11 @@ clock" — the inbox, the moves and `ReferralSla` now answer on the API.
   the column, so only a hand-edited row meets it.
 - **The local seed's partners are placeholders** (`PartnerSeeder`, local only): production starts
   with an empty registry until Franco names its partners.
+- **A contract referral shows the partner a value RANGE, never the contract's value (rnc-3 AM20,
+  R21; written 07/11/2026 ahead of the code).** Contract referrals (`referrals.contract_id`, the
+  legal picker, `POST contracts/{id}/referrals`) are not built yet: they need rnc-2's client consent
+  and portfolio lead (rnc-2 F9–F10) and land in rnc-3 F6b (W75). When they do, `PortalReferralResource`
+  answers `contract {kind, end_year, sem_clausula, value_range}` — the range a label of fixed bands
+  (e.g. "R$ 500 mil a 1 mi") — and never `annual_value_cents`, the client's fee, its other contracts
+  or its other referrals: the client's prices are confidential to Franco. A portal test asserts the
+  exact value is absent from the payload (A19).

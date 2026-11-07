@@ -198,6 +198,7 @@ in the spec header.
   bell rings and her answer rings Patrícia's.
 
 **F6 Contracts API** (R17–R22 API side · proves A16, A17, A18, A19; A20's Pest half; A25 rows) — **needs rnc-2 finished (P0)**
+- *Split while building (07/11, owner away — state.md W75):* rnc-2 had merged only through its F7 when F6 was due, so F6 is built in two: **F6a** (built) — contracts table, exposure, CSV import, alert list and KPIs, "Cláusula incluída", seed, A16, A17, A20's Pest half, A25 contract rows; **F6b** (after rnc-2's F9 consent and F10 `findOrStartPortfolioLead` merge) — `GET contracts/legal-partners`, `POST contracts/{id}/referrals`, `referrals.contract_id`/`subject_key`, the alert rows' consent and "Com <parceiro>", the "Encaminhados ao jurídico" KPI, `PortalReferralResource`'s contract summary with the value range (AM20), the seed's ≥ 5 at-risk contracts without consent, A18, A19. F7 waits for F6b.
 - Portfolio (changed): new `create_client_contracts_table` (firm_id, client_id, kind string,
   annual_value_cents, start_year, end_year, has_reforma_clause, clause_marked_at, clause_marked_by,
   unique (firm_id, client_id, kind, start_year, end_year)), `Enums/ContractKind.php`,

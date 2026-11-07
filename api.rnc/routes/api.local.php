@@ -32,6 +32,7 @@ use App\Modules\Pipeline\Controllers\AgendaController;
 use App\Modules\Pipeline\Controllers\PipelineLeadController;
 use App\Modules\Portfolio\Controllers\ClientEventController;
 use App\Modules\Portfolio\Controllers\ClientImportController;
+use App\Modules\Portfolio\Controllers\ContractController;
 use App\Modules\Portfolio\Controllers\RepricingController;
 use App\Modules\Tracking\Controllers\PublicEventController;
 use Illuminate\Support\Facades\Route;
@@ -169,6 +170,15 @@ Route::post('assistant/notes', [NoteController::class, 'store'])->middleware($as
 Route::patch('assistant/notes/{id}', [NoteController::class, 'update'])->middleware($assistantAsk);
 Route::post('assistant/notes/{id}/review', [NoteController::class, 'review'])->middleware($assistantAsk);
 Route::post('assistant/notes/{id}/retire', [NoteController::class, 'retire'])->middleware($assistantManage);
+// The contract alert (rnc-3 F6, R17–R19, R22, D10): the clients' contracts that cross 2027–2033
+// without the Reforma clause, their CSV import (lines independent, 10 a minute on its own limiter)
+// and template, and "Cláusula incluída" — behind `contracts.manage` (ceo, operador). Another firm's
+// contract is a 404.
+$contracts = ['auth', 'permission:contracts.manage'];
+Route::get('contracts', [ContractController::class, 'index'])->middleware($contracts);
+Route::post('contracts/import', [ContractController::class, 'import'])->middleware([...$contracts, 'throttle:10,1,contracts-import']);
+Route::get('contracts/template', [ContractController::class, 'template'])->middleware($contracts);
+Route::post('contracts/{id}/clause', [ContractController::class, 'clause'])->whereNumber('id')->middleware($contracts);
 // NF-e import (rnc-2 F6a–F6b, R15–R17, D14): one XML or a ZIP, and the firm's batches, behind
 // `fiscal.import` (ceo, operador); the upload 10 a minute on its own limiter. The raw files stay on
 // the private disk; no route serves them (A15).

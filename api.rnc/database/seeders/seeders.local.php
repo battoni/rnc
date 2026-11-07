@@ -4,6 +4,7 @@ use Database\Seeders\AssistantNoteSeeder;
 use Database\Seeders\BrandSeeder;
 use Database\Seeders\ChannelSeeder;
 use Database\Seeders\ClientSeeder;
+use Database\Seeders\ContractSeeder;
 use Database\Seeders\LocalUsersSeeder;
 use Database\Seeders\MetricsSeeder;
 use Database\Seeders\NfeSeeder;
@@ -56,6 +57,10 @@ $this->call(MetricsSeeder::class);
 // Reinaldo's portfolio to reprice (rnc-1 F8): 500 invented clients with plainly invented CNPJs —
 // local only (refuses production).
 $this->call(ClientSeeder::class);
+
+// The contract alert (rnc-3 F6): the demo's 40 contracts on those invented clients, about 30 % with
+// the Reforma clause — local only (refuses production), after the portfolio it reads.
+$this->call(ContractSeeder::class);
 
 // Franco's RNC channel (rnc-3 F3a): the demo's six "(exemplo)" member firms, three active, on the
 // default fee and share — local only (refuses production).

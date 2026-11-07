@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.16.0 — 2026-11-07
+
+### Added
+
+- rnc-3 F6a: the `client_contracts` table (sequence `300007`; unique per firm, client, kind, start and end; `clause_marked_by` an id without a foreign key — W25); `ContractSeeder` (local only, after `ClientSeeder`) seeds the demo's 40 contracts on `ClientSeeder`'s invented clients only (AM10), deterministic (Mt19937 seeded 2033), about 30 % with the clause, none marked; `RoleSeeder` grants Reinaldo `contracts.manage`.
+
 ## 1.15.0 — 2026-11-07
 
 ### Added

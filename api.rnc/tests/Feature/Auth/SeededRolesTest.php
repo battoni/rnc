@@ -61,13 +61,14 @@ describe('the seeded roles', function () {
         ]);
     });
 
-    it('give Reinaldo the team keys plus the network, the numbers, the repricing, the channel and the knowledge base', function () {
+    it('give Reinaldo the team keys plus the network, the numbers, the repricing, the channel, the knowledge base and the contract alert', function () {
         expect(seededRoleKeys('ceo'))->toBe([
             'agenda.read',
             'assistant.ask',
             'assistant.manage',
             'channel.read',
             'clients.import',
+            'contracts.manage',
             'fiscal.import',
             'fiscal.read',
             'home.read',
@@ -94,7 +95,7 @@ describe('the seeded roles', function () {
 
     it("keep Phase 3's keys with the operator until their own phase grants them (rnc-3 R28)", function () {
         $phase3 = ['brands.manage', 'channel.read', 'channel.manage', 'assistant.ask', 'assistant.manage', 'contracts.manage', 'briefing.read'];
-        $granted = ['ceo' => ['assistant.ask', 'assistant.manage', 'channel.read'], 'equipe' => ['assistant.ask'], 'parceiro' => []];
+        $granted = ['ceo' => ['assistant.ask', 'assistant.manage', 'channel.read', 'contracts.manage'], 'equipe' => ['assistant.ask'], 'parceiro' => []];
 
         expect(seededRoleKeys('operador'))->toContain(...$phase3);
 
@@ -111,6 +112,11 @@ describe('the seeded roles', function () {
     it('keep the channel\'s writes and its price with the operator: Reinaldo reads it (rnc-3 F3a, R9)', function () {
         expect(seededRoleKeys('ceo'))->toContain('channel.read')->not->toContain('channel.manage')
             ->and(seededRoleKeys('equipe'))->not->toContain('channel.read');
+    });
+
+    it('give Reinaldo the contract alert and keep it from the team (rnc-3 F6, R18)', function () {
+        expect(seededRoleKeys('ceo'))->toContain('contracts.manage')
+            ->and(seededRoleKeys('equipe'))->not->toContain('contracts.manage');
     });
 
     it('keep the staff directory and the permission matrix with the operator', function () {

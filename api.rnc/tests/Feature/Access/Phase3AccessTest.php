@@ -8,10 +8,13 @@ use App\Modules\Channel\Models\ChannelFirm;
 use App\Modules\Firm\Models\Firm;
 use App\Modules\Firm\Models\FirmBrand;
 use App\Modules\Partner\Models\Partner;
+use App\Modules\Portfolio\Models\Client;
+use App\Modules\Portfolio\Models\ClientContract;
 use Database\Seeders\BrandSeeder;
 use Database\Seeders\ChannelSeeder;
 use Database\Seeders\FirmSeeder;
 use Database\Seeders\RoleSeeder;
+use Illuminate\Http\UploadedFile;
 
 /*
  * A25 (rnc-3 R28; plan P10, AM14): Phase 3's routes, phase by phase — who is refused (a partner
@@ -238,5 +241,71 @@ describe('F5 questions (A25)', function () {
 
         expect($ids->all())->toBe([$this->question->id])
             ->and(AssistantQuestion::withoutGlobalScopes()->findOrFail($theirs->id)->status)->toBe('aberta');
+    });
+});
+
+/** F6 — the contract alert (`contracts.manage`, ceo + operador: R18, R28). */
+dataset('phase 3 contract routes', [
+    'GET contracts' => ['GET', '/api/contracts'],
+    'POST contracts/import' => ['POST', '/api/contracts/import'],
+    'GET contracts/template' => ['GET', '/api/contracts/template'],
+    'POST contracts/{id}/clause' => ['POST', '/api/contracts/{id}/clause'],
+]);
+
+describe('F6 contracts (A25)', function () {
+    beforeEach(function () {
+        $client = Client::withoutGlobalScopes()->create([
+            'firm_id' => $this->franco->id, 'name' => 'Acme Ltda', 'cnpj' => '11222333000181', 'sector' => 'comercio',
+            'regime' => 'presumido', 'band' => 'b3', 'b2b_share' => 70, 'monthly_fee' => 3000,
+        ]);
+        $this->contract = ClientContract::withoutGlobalScopes()->create([
+            'firm_id' => $this->franco->id, 'client_id' => $client->id, 'kind' => 'locacao',
+            'annual_value_cents' => 50_000_000, 'start_year' => 2024, 'end_year' => 2031, 'has_reforma_clause' => false,
+        ]);
+    });
+
+    it('refuses a partner with 403', function (string $method, string $uri) {
+        $this->actingAs(phase3Partner())->json($method, str_replace('{id}', (string) $this->contract->id, $uri))->assertForbidden();
+    })->with('phase 3 contract routes');
+
+    it('refuses the team with 403', function (string $method, string $uri) {
+        $this->actingAs(phase3Person('equipe'))->json($method, str_replace('{id}', (string) $this->contract->id, $uri))->assertForbidden();
+    })->with('phase 3 contract routes');
+
+    it('asks a guest to sign in', function (string $method, string $uri) {
+        $this->json($method, str_replace('{id}', (string) $this->contract->id, $uri))->assertUnauthorized();
+    })->with('phase 3 contract routes');
+
+    it('lets Reinaldo read the alert and mark a clause', function () {
+        $reinaldo = phase3Person('ceo');
+
+        $this->actingAs($reinaldo)->getJson('/api/contracts')->assertOk()->assertJsonPath('data.summary.at_risk', 1);
+        $this->actingAs($reinaldo)->postJson("/api/contracts/{$this->contract->id}/clause")->assertOk();
+    });
+
+    it("answers 404 on firm B's contract, lists none of firm B's and never imports onto firm B's client", function () {
+        $firmB = Firm::factory()->create(['slug' => 'firma-b']);
+        $theirClient = Client::withoutGlobalScopes()->create([
+            'firm_id' => $firmB->id, 'name' => 'Cliente da Firma B', 'cnpj' => '44555666000181', 'sector' => 'comercio',
+            'regime' => 'real', 'band' => 'b4', 'b2b_share' => 50, 'monthly_fee' => 5000,
+        ]);
+        $theirs = ClientContract::withoutGlobalScopes()->create([
+            'firm_id' => $firmB->id, 'client_id' => $theirClient->id, 'kind' => 'fornecimento',
+            'annual_value_cents' => 90_000_000, 'start_year' => 2024, 'end_year' => 2033, 'has_reforma_clause' => false,
+        ]);
+        $reinaldo = phase3Person('ceo');
+
+        $this->actingAs($reinaldo)->postJson("/api/contracts/{$theirs->id}/clause")->assertNotFound();
+
+        $alert = $this->actingAs($reinaldo)->getJson('/api/contracts')->assertOk()->json('data');
+        $csv = UploadedFile::fake()->createWithContent('contratos.csv', "cnpj_cliente;tipo;valor_anual;inicio;fim;clausula_reforma\n44555666000181;locacao;100000;2024;2030;sim\n");
+        $this->actingAs($reinaldo)->post('/api/contracts/import', ['file' => $csv], ['Accept' => 'application/json'])
+            ->assertOk()
+            ->assertJsonPath('data.errors.0.code', 'client_unknown');
+
+        expect(array_column($alert['contracts'], 'id'))->toBe([$this->contract->id])
+            ->and($alert['summary']['total'])->toBe(1)
+            ->and(ClientContract::withoutGlobalScopes()->findOrFail($theirs->id)->has_reforma_clause)->toBeFalse()
+            ->and(ClientContract::withoutGlobalScopes()->where('client_id', $theirClient->id)->count())->toBe(1);
     });
 });
