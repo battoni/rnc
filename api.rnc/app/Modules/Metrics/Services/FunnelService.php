@@ -14,7 +14,8 @@ use Carbon\CarbonImmutable;
  * The funnel of the last 7 or 30 days (rnc-1 R24, A4) — a cohort: a visitor counts at a step only
  * when it reached every step before it inside the window, so a step is never above the one before
  * (the demo clamped totals; this follows the people). A visitor is the unit to the end: its lead's
- * timeline lines stand in for a lost beacon, and `cliente` is its lead moved there by the team.
+ * timeline lines stand in for a lost beacon, and `cliente` is its lead moved there by the team. A
+ * diagnostic started counts as the CTA's click too: the page is reached by a link as well (W126).
  *
  * The visitor's source is its first touch (W15); its sector page is the page of its first visit in
  * the window when that is `/reforma/<slug>`; its channel is the one its lead started in (rnc-2 R14).
@@ -152,6 +153,10 @@ class FunnelService
                 $reached[$byLine[$line['type']]][$visitorId] = true;
             }
         }
+
+        // The CTA only leads to /diagnostico: a visitor that started the diagnostic got there, by the
+        // CTA or by a shared link straight to the page, so its start proves the click (W126).
+        $reached[FunnelStep::Cta->value] = ($reached[FunnelStep::Cta->value] ?? []) + ($reached[FunnelStep::Inicio->value] ?? []);
 
         return $reached;
     }
