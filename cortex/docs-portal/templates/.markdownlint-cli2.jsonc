@@ -1,0 +1,15 @@
+{
+  // Markdownlint config tuned for a VitePress site.
+  "config": {
+    "default": true,
+    "MD013": false, // line length — prose lines are not wrapped at 80
+    "MD033": false, // inline HTML — Vue data components in Markdown are intentional
+    "MD041": false, // first-line heading — home page uses frontmatter layout
+    "MD024": { "siblings_only": true }, // allow same heading text in different sections
+    "MD036": false, // bold labels inside ::: dev blocks are intentional
+    "MD059": false, // descriptive link text
+    "MD060": false // table column alignment — hand-written tables aren't padded
+  },
+  "globs": ["**/*.md"],
+  "ignores": ["node_modules", ".vitepress/dist", ".vitepress/cache"]
+}

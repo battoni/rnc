@@ -1,0 +1,19 @@
+/* Shared styling for the data tables and callouts used across the reference. */
+
+.endpoint-table table,
+.view-nav-map table,
+.schema-book table {
+  font-size: 13px;
+}
+
+.endpoint-table td,
+.view-nav-map td {
+  vertical-align: top;
+}
+
+/* A soft "developer detail" frame so dev-only blocks read as an aside. */
+html.mode-dev .dev-only {
+  border-left: 3px solid var(--vp-c-brand-3);
+  padding-left: 14px;
+  margin: 16px 0;
+}

@@ -1,0 +1,93 @@
+# Changelog — Database (factories, seeders, migrations)
+
+All notable changes to this unit are documented here. Versioned with SemVer.
+This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
+
+## 1.6.0 — 2026-09-22
+
+### Added
+
+- `ManagerSeeder` merges `Auth/Helpers/user-exclusions.local.php` into the keys it withholds from
+  the member role (`getLocalUserExclusions()`), the same LOCAL seam as the Manager list. From
+  largatudoevai.
+
+## 1.5.0 — 2026-09-22
+
+### Changed
+
+- The seeded `user` role no longer holds `tips.read`. It opened the Dicas management screen to every
+  self-registered member — archived tips and each tip's history, with the name of the staff member
+  who edited it and the reason they wrote down. The tips themselves render through `tips/active`,
+  which asks for no key, so a member loses nothing they use (owner's decision, 2026-09-22; raised by
+  the independent audit of PR #39). `SeedShapeTest` and `SeededRolesTest` assert it; both seen red
+  with the exclusion removed.
+
+## 1.4.0 — 2026-09-20
+
+### Changed
+
+- The seeded `user` role no longer holds `users.read` or `users.reset_password` (ARC-15). The first
+  returned every account's name, e-mail and phone to anybody who signed themselves up, and the
+  documentation portal read that same key as "this person is staff", so a member walked into the
+  internal docs (LP-DOCS-01). A member has no account but their own to recover, which is the second.
+  `SeedShapeTest` asserts both are absent.
+
+## 1.3.1 — 2026-09-17
+
+### Fixed
+
+- `SuperAdminSeeder` writes the plaintext `config('seeding.superadmin_password')` and lets the `hashed` cast hash it, as this unit's rule already said; it pre-hashed with `Hash::make`. Covered by `tests/Feature/SeededPasswordTest.php` — the stored column is still a hash that verifies, and an arch test keeps `Hash` out of `Database\Seeders` (red before the change) (from chapaja-342).
+
+### Documented
+
+- The idempotency bullet names `firstOrCreate`, which every seeder uses, instead of `updateOrCreate`, which none does.
+- Demo data runs on demand, never in `seeders.local.php` — the Seeders section contradicted its own demo-data bullet (from largatudoevai-068).
+
+## 1.3.0 — 2026-09-16
+
+### Added
+
+- `ManagerSeeder` merges `Auth/Helpers/manager-exclusions.local.php` (LOCAL) into the keys it withholds from the Manager, so a project denies a key without editing the synced seeder. The core exclusion (`design.read`) stays in the seeder. Covered by `tests/Feature/Auth/ManagerLocalExclusionsTest.php` (from largatudoevai-016).
+
+### Fixed
+
+- `RULES.md` "Do Not" said to read secrets with `env()` and a default, contradicting the Seeders section, which requires `config('seeding.*')`. It now points at `config/seeding.php` and says why the old line was wrong (lifeshifter review).
+
+## 1.2.0 — 2026-09-14
+
+### Added
+
+- `RULES.md`: demo seeders run on demand, idempotent by a natural key, recalculating what they derive (from largatudoevai and lifeshifter); a state with a moment is a timestamp (from lifeshifter); a log row's reference carries no foreign key (from largatudoevai).
+
+### Changed
+
+- `ManagerSeeder` withholds `design.read` from the manager and the member roles. The administrator receives it with every other key through `RoleSeeder`. Those pages were gated on the administrator's role before, so the move to a permission hands them to nobody new.
+
+- RULES: a permission for a screen that is not open to people yet stays out of the seeded role lists (from lifeshifter).
+- `tests/Feature/SeedShapeTest.php` states the seeded install exactly — three profiles, three accounts, the administrator holding every key — and `tests/Feature/Auth/SeededRolesTest.php` lists the member's and the manager's keys one by one, so a change to a seeded list is a decision made in the test and not a side effect of a recovery command (from lifeshifter).
+
+### Fixed
+
+- `ManagerSeeder` describes the manager as every feature except the design gallery; it said "all features" after `design.read` left the list.
+
+## 1.1.0 — 2026-09-14
+
+### Added
+- `SEEDER_PWD` — one variable for every seeded password except the superadmin's (from chapaja).
+- `config/seeding.php` — seeders and the factory read both passwords through config; `env()` returned null under a cached config.
+
+### Changed
+- `users.role_id` is declared in `create_users_table`; `roles` moved to `0000_00_00_000000` and the `add_role_id_foreign_to_users_table` ALTER is gone.
+- `UserFactory` always makes ACTIVE users, with the plaintext `SEEDER_PWD`.
+- `ManagerSeeder` withholds `permissions.read` / `permissions.update` from the member role.
+
+### Removed
+- The `test@example.com` account `DatabaseSeeder` created on every environment.
+
+### Fixed
+- `RULES.md` claimed the factory assigns `Role::factory()` and a bcrypt literal; neither was true.
+
+## 1.0.0 — 2026-05-30
+
+### Added
+- Initial documented baseline.

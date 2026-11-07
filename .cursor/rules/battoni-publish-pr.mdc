@@ -1,0 +1,115 @@
+---
+description: Push the current branch and create a draft pull request on GitHub using the output from `/battoni-create-pr`. Invoke with /battoni-publish-pr.
+alwaysApply: false
+---
+# Publish PR
+
+Push the current branch and create a draft pull request on GitHub using the output from `/battoni-create-pr`.
+
+---
+
+## Step 1 — Pre-flight checks
+
+Run the following in parallel:
+
+- `git status` — confirm working tree is clean (all changes committed)
+- `git log main...HEAD --oneline` — confirm there are commits to push
+- `git branch --show-current` — get the current branch name
+
+If the working tree is dirty, **stop** and tell the user to commit first (or run `/battoni-commit`).
+
+If there are no commits ahead of main, **stop** and tell the user there is nothing to publish.
+
+## Step 2 — Run `/battoni-create-pr`
+
+Execute the full `/battoni-create-pr` command flow to generate the PR title and description. Read `.claude/commands/battoni-create-pr.md` and follow it. Use the developer-approved output directly — `/battoni-create-pr` does not save a file.
+
+## Step 3 — Push the branch
+
+```bash
+git push -u origin HEAD
+```
+
+If the push fails (e.g. no remote, auth issue), **stop** and report the error.
+
+## Step 4 — Create (or update) the draft PR
+
+First write the description from Step 2 to a temp file so no quoting/escaping mangles a multi-line body:
+
+```bash
+cat > /tmp/pr-body.md <<'EOF'
+# PR description here
+...
+EOF
+```
+
+**Re-run safety — update, don't duplicate.** Check whether this branch already has an open PR:
+
+```bash
+gh pr list --head "$(git branch --show-current)" --state open --json number --jq '.[0].number'
+```
+
+- **If a PR number comes back**, update its body via the REST API (see the `gh pr edit` caveat below) instead of creating a second PR:
+
+  ```bash
+  gh api -X PATCH "repos/{owner}/{repo}/pulls/<number>" -F body=@/tmp/pr-body.md
+  ```
+
+- **If none exists**, create a **draft** PR against the base branch, body from the file. The base is
+  `development` when it exists on the remote, otherwise `main`:
+
+  ```bash
+  BASE=$(git ls-remote --exit-code --heads origin development >/dev/null 2>&1 && echo development || echo main)
+  ```
+
+
+  ```bash
+  gh pr create --draft --base "$BASE" --reviewer battoni \
+    --title "<title>" --body-file /tmp/pr-body.md
+  ```
+
+**Caveats (hard-won — do not skip):**
+
+- **Never edit the PR body with `gh pr edit --body`.** On repos with Projects (classic) enabled it queries `projectCards`, which GitHub's API now rejects, and the whole call fails. Update the body via `gh api -X PATCH .../pulls/<number> -F body=@<file>`. Same for labels — use `gh api .../issues/<number>/labels`, not `gh pr edit`.
+- **Never use `gh -C <dir>`** — `gh` ignores/errors on it. Run from the repo root (this is a monorepo; you already are).
+- **If `gh` rejects the reviewer because they authored the PR**, drop `--reviewer` and proceed — do not fail the run over a self-review.
+
+Projects that work on `development` keep it as the base. A project with only `main` (boanerges since
+its first PRs) opens against `main`; say which base was used in the report. Never fall back from
+`development` to `main` when `development` exists but the push or `gh` call failed: stop and report.
+
+## Step 5 — Set Vercel preview alias
+
+Derive the deployment slug from the branch name:
+
+1. Lowercase the branch name
+2. Replace `/` and `.` with empty string (e.g. `TASK-4.5` → `task-45`, `feature/login-flow` → `featurelogin-flow`)
+
+Then run:
+
+```bash
+vercel alias set rnc-git-<slug>-battonis-projects.vercel.app <slug>.preview.battoni.dev
+```
+
+If the alias command fails (e.g. deployment not ready yet), report the error but do not block — the PR is already created.
+
+## Step 6 — Report
+
+Output:
+
+- The PR URL
+- The branch name and the base used (`development` or `main`)
+- Number of commits included
+- The reviewer requested (`battoni`)
+- The preview URL (`<slug>.preview.battoni.dev`)
+- Reminder of the final manual step: review the PR one last time on GitHub, leave a `Reviewed 🏁` comment, then mark it **Ready for review**.
+
+---
+
+## Rules
+
+- NEVER force push (`--force`, `--force-with-lease`) unless the user explicitly asks
+- NEVER push to `main` or `master` directly
+- Always create the PR as a **draft** — the user marks it ready after testing
+- If `gh` is not installed or not authenticated, **stop** and tell the user
+- Do not modify any files — this command is read-only + git operations only

@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "hooks": {
+    "preToolUse": [
+      {
+        "command": ".cursor/hooks/pre-edit-rules.sh",
+        "matcher": "Edit|Write"
+      }
+    ]
+  }
+}

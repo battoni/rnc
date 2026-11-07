@@ -1,0 +1,1405 @@
+{
+  "generatedFrom": "rnc",
+  "unitCount": 97,
+  "features": [
+    {
+      "name": "Auth",
+      "sides": [
+        "api",
+        "app"
+      ],
+      "unitCount": 28,
+      "lastChangedAt": "2026-09-22",
+      "units": [
+        {
+          "path": "api.rnc/app/Modules/Auth",
+          "feature": "Auth",
+          "side": "api",
+          "version": "2.9.0",
+          "origin": "rnc",
+          "basedOn": "2.9.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-22"
+        },
+        {
+          "path": "api.rnc/app/Modules/Auth/Controllers",
+          "feature": "Auth",
+          "side": "api",
+          "version": "2.3.0",
+          "origin": "rnc",
+          "basedOn": "2.3.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "api.rnc/app/Modules/Auth/DTOs",
+          "feature": "Auth",
+          "side": "api",
+          "version": "1.3.0",
+          "origin": "rnc",
+          "basedOn": "1.3.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "api.rnc/app/Modules/Auth/Repositories",
+          "feature": "Auth",
+          "side": "api",
+          "version": "2.2.0",
+          "origin": "rnc",
+          "basedOn": "2.2.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "api.rnc/app/Modules/Auth/Requests",
+          "feature": "Auth",
+          "side": "api",
+          "version": "1.5.1",
+          "origin": "rnc",
+          "basedOn": "1.5.1",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-21"
+        },
+        {
+          "path": "api.rnc/app/Modules/Auth/Resources",
+          "feature": "Auth",
+          "side": "api",
+          "version": "2.0.0",
+          "origin": "rnc",
+          "basedOn": "2.0.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-16"
+        },
+        {
+          "path": "api.rnc/app/Modules/Auth/Services",
+          "feature": "Auth",
+          "side": "api",
+          "version": "2.5.0",
+          "origin": "rnc",
+          "basedOn": "2.5.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-21"
+        },
+        {
+          "path": "app.rnc/src/modules/Auth",
+          "feature": "Auth",
+          "side": "app",
+          "version": "2.1.2",
+          "origin": "rnc",
+          "basedOn": "2.1.2",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/modules/Auth/components/molecules/MAddEditProfileForm",
+          "feature": "Auth",
+          "side": "app",
+          "version": "1.1.0",
+          "origin": "rnc",
+          "basedOn": "1.1.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/modules/Auth/components/molecules/MLoginCode",
+          "feature": "Auth",
+          "side": "app",
+          "version": "1.3.2",
+          "origin": "rnc",
+          "basedOn": "1.3.2",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/modules/Auth/components/molecules/MLoginEmail",
+          "feature": "Auth",
+          "side": "app",
+          "version": "1.1.1",
+          "origin": "rnc",
+          "basedOn": "1.1.1",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/modules/Auth/components/molecules/MLoginForm",
+          "feature": "Auth",
+          "side": "app",
+          "version": "1.3.1",
+          "origin": "rnc",
+          "basedOn": "1.3.1",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-16"
+        },
+        {
+          "path": "app.rnc/src/modules/Auth/components/molecules/MLoginPasswordCredentials",
+          "feature": "Auth",
+          "side": "app",
+          "version": "1.2.1",
+          "origin": "rnc",
+          "basedOn": "1.2.1",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-14"
+        },
+        {
+          "path": "app.rnc/src/modules/Auth/components/molecules/MLoginPhone",
+          "feature": "Auth",
+          "side": "app",
+          "version": "2.0.0",
+          "origin": "rnc",
+          "basedOn": "2.0.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-16"
+        },
+        {
+          "path": "app.rnc/src/modules/Auth/components/molecules/MLoginPhoneCode",
+          "feature": "Auth",
+          "side": "app",
+          "version": "1.1.0",
+          "origin": "rnc",
+          "basedOn": "1.1.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-16"
+        },
+        {
+          "path": "app.rnc/src/modules/Auth/components/molecules/MLoginUsernamePassword",
+          "feature": "Auth",
+          "side": "app",
+          "version": "1.4.1",
+          "origin": "rnc",
+          "basedOn": "1.4.1",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-14"
+        },
+        {
+          "path": "app.rnc/src/modules/Auth/components/molecules/MPermissionPanel",
+          "feature": "Auth",
+          "side": "app",
+          "version": "1.2.1",
+          "origin": "rnc",
+          "basedOn": "1.2.1",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/modules/Auth/components/molecules/MPermissionToolbar",
+          "feature": "Auth",
+          "side": "app",
+          "version": "2.1.0",
+          "origin": "rnc",
+          "basedOn": "2.1.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/modules/Auth/components/molecules/MRolesAndPermissionsSkeleton",
+          "feature": "Auth",
+          "side": "app",
+          "version": "1.0.0",
+          "origin": "rnc",
+          "basedOn": "1.0.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-05-30"
+        },
+        {
+          "path": "app.rnc/src/modules/Auth/components/molecules/MSignUpUser",
+          "feature": "Auth",
+          "side": "app",
+          "version": "1.5.0",
+          "origin": "rnc",
+          "basedOn": "1.5.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-16"
+        },
+        {
+          "path": "app.rnc/src/modules/Auth/components/molecules/MSupportForgotPassword",
+          "feature": "Auth",
+          "side": "app",
+          "version": "1.0.1",
+          "origin": "rnc",
+          "basedOn": "1.0.1",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/modules/Auth/layouts",
+          "feature": "Auth",
+          "side": "app",
+          "version": "1.2.1",
+          "origin": "rnc",
+          "basedOn": "1.2.1",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/modules/Auth/views/ForgotPassword",
+          "feature": "Auth",
+          "side": "app",
+          "version": "1.1.2",
+          "origin": "rnc",
+          "basedOn": "1.1.2",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-16"
+        },
+        {
+          "path": "app.rnc/src/modules/Auth/views/Login",
+          "feature": "Auth",
+          "side": "app",
+          "version": "1.1.0",
+          "origin": "rnc",
+          "basedOn": "1.1.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-16"
+        },
+        {
+          "path": "app.rnc/src/modules/Auth/views/RolesAndPermissions",
+          "feature": "Auth",
+          "side": "app",
+          "version": "2.2.0",
+          "origin": "rnc",
+          "basedOn": "2.2.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-21"
+        },
+        {
+          "path": "app.rnc/src/modules/Auth/views/SignUp",
+          "feature": "Auth",
+          "side": "app",
+          "version": "1.0.1",
+          "origin": "rnc",
+          "basedOn": "1.0.1",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/modules/Auth/views/Terms",
+          "feature": "Auth",
+          "side": "app",
+          "version": "1.0.2",
+          "origin": "rnc",
+          "basedOn": "1.0.2",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-16"
+        },
+        {
+          "path": "app.rnc/src/modules/Auth/views/VerifyEmail",
+          "feature": "Auth",
+          "side": "app",
+          "version": "1.3.1",
+          "origin": "rnc",
+          "basedOn": "1.3.1",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        }
+      ]
+    },
+    {
+      "name": "Home",
+      "sides": [
+        "app"
+      ],
+      "unitCount": 2,
+      "lastChangedAt": "2026-09-09",
+      "units": [
+        {
+          "path": "app.rnc/src/modules/Home",
+          "feature": "Home",
+          "side": "app",
+          "version": "2.0.0",
+          "origin": "rnc",
+          "basedOn": "2.0.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-09"
+        },
+        {
+          "path": "app.rnc/src/modules/Home/views/Home",
+          "feature": "Home",
+          "side": "app",
+          "version": "1.0.0",
+          "origin": "rnc",
+          "basedOn": "1.0.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-05-30"
+        }
+      ]
+    },
+    {
+      "name": "Idea",
+      "sides": [
+        "api",
+        "app"
+      ],
+      "unitCount": 5,
+      "lastChangedAt": "2026-09-17",
+      "units": [
+        {
+          "path": "api.rnc/app/Modules/Idea",
+          "feature": "Idea",
+          "side": "api",
+          "version": "2.1.0",
+          "origin": "rnc",
+          "basedOn": "2.1.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/modules/Idea",
+          "feature": "Idea",
+          "side": "app",
+          "version": "2.1.0",
+          "origin": "rnc",
+          "basedOn": "2.1.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/modules/Idea/components/molecules/MNewsArticle",
+          "feature": "Idea",
+          "side": "app",
+          "version": "1.3.4",
+          "origin": "rnc",
+          "basedOn": "1.3.4",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/modules/Idea/components/molecules/MNewsCard",
+          "feature": "Idea",
+          "side": "app",
+          "version": "1.1.4",
+          "origin": "rnc",
+          "basedOn": "1.1.4",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/modules/Idea/components/molecules/MNewsForm",
+          "feature": "Idea",
+          "side": "app",
+          "version": "2.0.1",
+          "origin": "rnc",
+          "basedOn": "2.0.1",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        }
+      ]
+    },
+    {
+      "name": "Personalization",
+      "sides": [
+        "app"
+      ],
+      "unitCount": 3,
+      "lastChangedAt": "2026-09-17",
+      "units": [
+        {
+          "path": "app.rnc/src/modules/Personalization",
+          "feature": "Personalization",
+          "side": "app",
+          "version": "1.0.0",
+          "origin": "rnc",
+          "basedOn": "1.0.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/modules/Personalization/components/molecules/MPersonalizationVisualCard",
+          "feature": "Personalization",
+          "side": "app",
+          "version": "1.1.2",
+          "origin": "rnc",
+          "basedOn": "1.1.2",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/modules/Personalization/views/Personalization",
+          "feature": "Personalization",
+          "side": "app",
+          "version": "1.1.0",
+          "origin": "rnc",
+          "basedOn": "1.1.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        }
+      ]
+    },
+    {
+      "name": "Showcase",
+      "sides": [
+        "app"
+      ],
+      "unitCount": 5,
+      "lastChangedAt": "2026-09-17",
+      "units": [
+        {
+          "path": "app.rnc/src/modules/Showcase",
+          "feature": "Showcase",
+          "side": "app",
+          "version": "1.0.0",
+          "origin": "rnc",
+          "basedOn": "1.0.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/modules/Showcase/views/Brand",
+          "feature": "Showcase",
+          "side": "app",
+          "version": "1.1.2",
+          "origin": "rnc",
+          "basedOn": "1.1.2",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/modules/Showcase/views/Components",
+          "feature": "Showcase",
+          "side": "app",
+          "version": "1.3.2",
+          "origin": "rnc",
+          "basedOn": "1.3.2",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/modules/Showcase/views/Features",
+          "feature": "Showcase",
+          "side": "app",
+          "version": "1.1.2",
+          "origin": "rnc",
+          "basedOn": "1.1.2",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-16"
+        },
+        {
+          "path": "app.rnc/src/modules/Showcase/views/Showcase",
+          "feature": "Showcase",
+          "side": "app",
+          "version": "1.2.3",
+          "origin": "rnc",
+          "basedOn": "1.2.3",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        }
+      ]
+    },
+    {
+      "name": "Tip",
+      "sides": [
+        "api",
+        "app"
+      ],
+      "unitCount": 3,
+      "lastChangedAt": "2026-09-17",
+      "units": [
+        {
+          "path": "api.rnc/app/Modules/Tip",
+          "feature": "Tip",
+          "side": "api",
+          "version": "1.1.0",
+          "origin": "rnc",
+          "basedOn": "1.1.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/components/atoms/ATip",
+          "feature": "Tip",
+          "side": "app",
+          "version": "2.0.2",
+          "origin": "rnc",
+          "basedOn": "2.0.2",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/modules/Tip",
+          "feature": "Tip",
+          "side": "app",
+          "version": "1.3.0",
+          "origin": "rnc",
+          "basedOn": "1.3.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "sides": [
+        "app"
+      ],
+      "unitCount": 3,
+      "lastChangedAt": "2026-09-18",
+      "units": [
+        {
+          "path": "app.rnc/src/modules/User",
+          "feature": "User",
+          "side": "app",
+          "version": "2.1.0",
+          "origin": "rnc",
+          "basedOn": "2.1.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/modules/User/components/molecules/MAddEditUserForm",
+          "feature": "User",
+          "side": "app",
+          "version": "1.4.1",
+          "origin": "rnc",
+          "basedOn": "1.4.1",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/modules/User/views/Users",
+          "feature": "User",
+          "side": "app",
+          "version": "2.3.1",
+          "origin": "rnc",
+          "basedOn": "2.3.1",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-18"
+        }
+      ]
+    },
+    {
+      "name": "base",
+      "sides": [
+        "api",
+        "app"
+      ],
+      "unitCount": 48,
+      "lastChangedAt": "2026-09-22",
+      "units": [
+        {
+          "path": "api.rnc/app/Helpers",
+          "feature": "base",
+          "side": "api",
+          "version": "1.3.2",
+          "origin": "rnc",
+          "basedOn": "1.3.2",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-22"
+        },
+        {
+          "path": "api.rnc/app/Models",
+          "feature": "base",
+          "side": "api",
+          "version": "1.1.1",
+          "origin": "rnc",
+          "basedOn": "1.1.1",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-15"
+        },
+        {
+          "path": "app.rnc/src",
+          "feature": "base",
+          "side": "app",
+          "version": "1.3.1",
+          "origin": "rnc",
+          "basedOn": "1.3.1",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-22"
+        },
+        {
+          "path": "app.rnc/src/components",
+          "feature": "base",
+          "side": "app",
+          "version": "1.2.1",
+          "origin": "rnc",
+          "basedOn": "1.2.1",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/components/atoms/ABrandMark",
+          "feature": "base",
+          "side": "app",
+          "version": "1.0.0",
+          "origin": "rnc",
+          "basedOn": "1.0.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-06-13"
+        },
+        {
+          "path": "app.rnc/src/components/atoms/ABrandPattern",
+          "feature": "base",
+          "side": "app",
+          "version": "1.0.0",
+          "origin": "rnc",
+          "basedOn": "1.0.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-06-13"
+        },
+        {
+          "path": "app.rnc/src/components/atoms/ABrandSignature",
+          "feature": "base",
+          "side": "app",
+          "version": "1.0.2",
+          "origin": "rnc",
+          "basedOn": "1.0.2",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-16"
+        },
+        {
+          "path": "app.rnc/src/components/atoms/AEmptyState",
+          "feature": "base",
+          "side": "app",
+          "version": "1.1.2",
+          "origin": "rnc",
+          "basedOn": "1.1.2",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-16"
+        },
+        {
+          "path": "app.rnc/src/components/atoms/AFormError",
+          "feature": "base",
+          "side": "app",
+          "version": "1.1.1",
+          "origin": "rnc",
+          "basedOn": "1.1.1",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/components/atoms/ALogo",
+          "feature": "base",
+          "side": "app",
+          "version": "1.2.0",
+          "origin": "rnc",
+          "basedOn": "1.2.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-06"
+        },
+        {
+          "path": "app.rnc/src/components/atoms/AMenuButton",
+          "feature": "base",
+          "side": "app",
+          "version": "1.0.0",
+          "origin": "rnc",
+          "basedOn": "1.0.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-08-27"
+        },
+        {
+          "path": "app.rnc/src/components/atoms/ANavDot",
+          "feature": "base",
+          "side": "app",
+          "version": "1.0.0",
+          "origin": "rnc",
+          "basedOn": "1.0.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/components/atoms/APageHeaderAction",
+          "feature": "base",
+          "side": "app",
+          "version": "1.0.3",
+          "origin": "rnc",
+          "basedOn": "1.0.3",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/components/molecules/brazil/MAddressFields",
+          "feature": "base",
+          "side": "app",
+          "version": "1.0.1",
+          "origin": "rnc",
+          "basedOn": "1.0.1",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/components/molecules/brazil/MLocalityFields",
+          "feature": "base",
+          "side": "app",
+          "version": "1.0.1",
+          "origin": "rnc",
+          "basedOn": "1.0.1",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/components/molecules/MConfirmPopup",
+          "feature": "base",
+          "side": "app",
+          "version": "1.1.1",
+          "origin": "rnc",
+          "basedOn": "1.1.1",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/components/molecules/MDefaultModal",
+          "feature": "base",
+          "side": "app",
+          "version": "1.1.2",
+          "origin": "rnc",
+          "basedOn": "1.1.2",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/components/molecules/MImageUpload",
+          "feature": "base",
+          "side": "app",
+          "version": "1.0.2",
+          "origin": "rnc",
+          "basedOn": "1.0.2",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/components/molecules/MMainDialog",
+          "feature": "base",
+          "side": "app",
+          "version": "1.2.3",
+          "origin": "rnc",
+          "basedOn": "1.2.3",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/components/molecules/MOrderBy",
+          "feature": "base",
+          "side": "app",
+          "version": "1.1.0",
+          "origin": "rnc",
+          "basedOn": "1.1.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-05-30"
+        },
+        {
+          "path": "app.rnc/src/components/molecules/MSearch",
+          "feature": "base",
+          "side": "app",
+          "version": "1.1.0",
+          "origin": "rnc",
+          "basedOn": "1.1.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-05-30"
+        },
+        {
+          "path": "app.rnc/src/components/molecules/MWalletCard",
+          "feature": "base",
+          "side": "app",
+          "version": "1.1.2",
+          "origin": "rnc",
+          "basedOn": "1.1.2",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/components/organisms/OListAccentStrip",
+          "feature": "base",
+          "side": "app",
+          "version": "1.3.2",
+          "origin": "rnc",
+          "basedOn": "1.3.2",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-21"
+        },
+        {
+          "path": "app.rnc/src/components/organisms/OListCardGrid",
+          "feature": "base",
+          "side": "app",
+          "version": "1.4.1",
+          "origin": "rnc",
+          "basedOn": "1.4.1",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-21"
+        },
+        {
+          "path": "app.rnc/src/components/organisms/OListDivided",
+          "feature": "base",
+          "side": "app",
+          "version": "1.7.0",
+          "origin": "rnc",
+          "basedOn": "1.7.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-21"
+        },
+        {
+          "path": "app.rnc/src/components/organisms/OListFeed",
+          "feature": "base",
+          "side": "app",
+          "version": "1.3.3",
+          "origin": "rnc",
+          "basedOn": "1.3.3",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-21"
+        },
+        {
+          "path": "app.rnc/src/components/organisms/OListStatement",
+          "feature": "base",
+          "side": "app",
+          "version": "1.3.3",
+          "origin": "rnc",
+          "basedOn": "1.3.3",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-21"
+        },
+        {
+          "path": "app.rnc/src/components/organisms/OPaginator",
+          "feature": "base",
+          "side": "app",
+          "version": "1.1.0",
+          "origin": "rnc",
+          "basedOn": "1.1.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/components/organisms/OTabView",
+          "feature": "base",
+          "side": "app",
+          "version": "1.2.0",
+          "origin": "rnc",
+          "basedOn": "1.2.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-15"
+        },
+        {
+          "path": "app.rnc/src/components/organisms/OWalletTransactions",
+          "feature": "base",
+          "side": "app",
+          "version": "1.1.1",
+          "origin": "rnc",
+          "basedOn": "1.1.1",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/components/unique/TheFilters",
+          "feature": "base",
+          "side": "app",
+          "version": "1.0.1",
+          "origin": "rnc",
+          "basedOn": "1.0.1",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/components/unique/TheNavbar",
+          "feature": "base",
+          "side": "app",
+          "version": "1.6.3",
+          "origin": "rnc",
+          "basedOn": "1.6.3",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/components/unique/TheNavbar/components/organisms/ONavbarDesktop",
+          "feature": "base",
+          "side": "app",
+          "version": "1.4.1",
+          "origin": "rnc",
+          "basedOn": "1.4.1",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/components/unique/TheNavbar/components/organisms/ONavbarDrawer",
+          "feature": "base",
+          "side": "app",
+          "version": "1.3.1",
+          "origin": "rnc",
+          "basedOn": "1.3.1",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/components/unique/TheNavbar/components/organisms/ONavbarMobile",
+          "feature": "base",
+          "side": "app",
+          "version": "1.4.3",
+          "origin": "rnc",
+          "basedOn": "1.4.3",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/components/unique/ThePageHeader",
+          "feature": "base",
+          "side": "app",
+          "version": "1.1.3",
+          "origin": "rnc",
+          "basedOn": "1.1.3",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/components/unique/TheRouteGuard",
+          "feature": "base",
+          "side": "app",
+          "version": "1.2.1",
+          "origin": "rnc",
+          "basedOn": "1.2.1",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/composables",
+          "feature": "base",
+          "side": "app",
+          "version": "1.6.0",
+          "origin": "rnc",
+          "basedOn": "1.6.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/helpers",
+          "feature": "base",
+          "side": "app",
+          "version": "1.12.0",
+          "origin": "rnc",
+          "basedOn": "1.12.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-21"
+        },
+        {
+          "path": "app.rnc/src/layouts/TheCenteredLayout",
+          "feature": "base",
+          "side": "app",
+          "version": "1.1.1",
+          "origin": "rnc",
+          "basedOn": "1.1.1",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/layouts/TheLayout",
+          "feature": "base",
+          "side": "app",
+          "version": "1.3.3",
+          "origin": "rnc",
+          "basedOn": "1.3.3",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-15"
+        },
+        {
+          "path": "app.rnc/src/locales",
+          "feature": "base",
+          "side": "app",
+          "version": "1.11.0",
+          "origin": "rnc",
+          "basedOn": "1.11.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-21"
+        },
+        {
+          "path": "app.rnc/src/modules",
+          "feature": "base",
+          "side": "app",
+          "version": "1.1.2",
+          "origin": "rnc",
+          "basedOn": "1.1.2",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-16"
+        },
+        {
+          "path": "app.rnc/src/plugins/ClickGuard",
+          "feature": "base",
+          "side": "app",
+          "version": "1.0.1",
+          "origin": "rnc",
+          "basedOn": "1.0.1",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/services",
+          "feature": "base",
+          "side": "app",
+          "version": "1.0.1",
+          "origin": "rnc",
+          "basedOn": "1.0.1",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-16"
+        },
+        {
+          "path": "app.rnc/src/stores",
+          "feature": "base",
+          "side": "app",
+          "version": "1.5.0",
+          "origin": "rnc",
+          "basedOn": "1.5.0",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-17"
+        },
+        {
+          "path": "app.rnc/src/styles/theme",
+          "feature": "base",
+          "side": "app",
+          "version": "2.5.1",
+          "origin": "rnc",
+          "basedOn": "2.5.1",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-22"
+        },
+        {
+          "path": "app.rnc/src/views/NotFound",
+          "feature": "base",
+          "side": "app",
+          "version": "1.0.3",
+          "origin": "rnc",
+          "basedOn": "1.0.3",
+          "mirrorsChangelog": true,
+          "updatedAt": "2026-09-16"
+        }
+      ]
+    }
+  ],
+  "toolingCount": 57,
+  "tooling": [
+    {
+      "group": "skill",
+      "name": "arcus-external-integrations",
+      "description": "Conventions for talking to an external provider from api.rnc",
+      "path": ".claude/skills/arcus-external-integrations"
+    },
+    {
+      "group": "skill",
+      "name": "arcus-laravel-best-practices",
+      "description": "Apply this skill whenever writing, reviewing, or refactoring Laravel PHP code in api.rnc/",
+      "path": ".claude/skills/arcus-laravel-best-practices"
+    },
+    {
+      "group": "skill",
+      "name": "arcus-pest-testing",
+      "description": "Use this skill for Pest PHP testing in Laravel projects only",
+      "path": ".claude/skills/arcus-pest-testing"
+    },
+    {
+      "group": "skill",
+      "name": "arcus-tailwindcss",
+      "description": "Always invoke when the user's message includes 'tailwind' in any form",
+      "path": ".claude/skills/arcus-tailwindcss"
+    },
+    {
+      "group": "skill",
+      "name": "celer-advanced-patterns",
+      "description": "Advanced Vue 3 patterns for app.rnc",
+      "path": ".claude/skills/celer-advanced-patterns"
+    },
+    {
+      "group": "skill",
+      "name": "celer-testing",
+      "description": "Use this skill for Vitest unit/integration tests and Playwright e2e tests in the app.rnc Vue 3 project",
+      "path": ".claude/skills/celer-testing"
+    },
+    {
+      "group": "skill",
+      "name": "cortex-backport",
+      "description": "Bring a feature that was built in a downstream project back into rnc, so it becomes part of the bootstrap and can then flow to everyone",
+      "path": ".claude/skills/cortex-backport"
+    },
+    {
+      "group": "skill",
+      "name": "cortex-sync",
+      "description": "Metadata and propagation discipline for rnc-derived repos",
+      "path": ".claude/skills/cortex-sync"
+    },
+    {
+      "group": "skill",
+      "name": "docs-portal",
+      "description": "Build a user- AND developer-friendly documentation portal (VitePress) with a User/Developer depth switcher, for a rnc-derived project",
+      "path": ".claude/skills/docs-portal"
+    },
+    {
+      "group": "skill",
+      "name": "landing-page",
+      "description": "Build a new high-performance marketing landing page, or review an existing one, for a Battoni client/product",
+      "path": ".claude/skills/landing-page"
+    },
+    {
+      "group": "skill",
+      "name": "midnight-oil",
+      "description": "Run a multi-phase implementation plan autonomously and unattended (overnight), building → reviewing → testing in Chrome → committing phase by phase, and surviving a mid-run API/connection crash so the loop never silently stalls",
+      "path": ".claude/skills/midnight-oil"
+    },
+    {
+      "group": "skill",
+      "name": "phase-review",
+      "description": "Critically review a build plan, a built phase's implementation, or a downstream plan's consistency after an upstream phase shipped",
+      "path": ".claude/skills/phase-review"
+    },
+    {
+      "group": "agent",
+      "name": "battoni-reader",
+      "description": "Cheap, read-only fetcher (Haiku)",
+      "path": ".claude/agents/battoni-reader.md"
+    },
+    {
+      "group": "agent",
+      "name": "code-reviewer",
+      "description": "Specialized read-only code review agent",
+      "path": ".claude/agents/code-reviewer.md"
+    },
+    {
+      "group": "agent",
+      "name": "security-auditor",
+      "description": "Security-focused audit agent",
+      "path": ".claude/agents/security-auditor.md"
+    },
+    {
+      "group": "command",
+      "name": "battoni-agent-handoff",
+      "description": "Agent Handoff",
+      "path": ".claude/commands/battoni-agent-handoff.md"
+    },
+    {
+      "group": "command",
+      "name": "battoni-commit",
+      "description": "Commit",
+      "path": ".claude/commands/battoni-commit.md"
+    },
+    {
+      "group": "command",
+      "name": "battoni-create-pr",
+      "description": "Create PR",
+      "path": ".claude/commands/battoni-create-pr.md"
+    },
+    {
+      "group": "command",
+      "name": "battoni-explain-rnc",
+      "description": "Explain rnc",
+      "path": ".claude/commands/battoni-explain-rnc.md"
+    },
+    {
+      "group": "command",
+      "name": "battoni-generate-api-rules",
+      "description": "Generate API RULES.md",
+      "path": ".claude/commands/battoni-generate-api-rules.md"
+    },
+    {
+      "group": "command",
+      "name": "battoni-generate-component-rules",
+      "description": "Generate Component RULES.md",
+      "path": ".claude/commands/battoni-generate-component-rules.md"
+    },
+    {
+      "group": "command",
+      "name": "battoni-grill-me",
+      "description": "Grill Me",
+      "path": ".claude/commands/battoni-grill-me.md"
+    },
+    {
+      "group": "command",
+      "name": "battoni-improve",
+      "description": "Improve (turn an AI mistake into a rule → PR)",
+      "path": ".claude/commands/battoni-improve.md"
+    },
+    {
+      "group": "command",
+      "name": "battoni-intent",
+      "description": "Intent",
+      "path": ".claude/commands/battoni-intent.md"
+    },
+    {
+      "group": "command",
+      "name": "battoni-plan",
+      "description": "Plan",
+      "path": ".claude/commands/battoni-plan.md"
+    },
+    {
+      "group": "command",
+      "name": "battoni-pre-commit",
+      "description": "Pre-commit",
+      "path": ".claude/commands/battoni-pre-commit.md"
+    },
+    {
+      "group": "command",
+      "name": "battoni-publish-pr",
+      "description": "Publish PR",
+      "path": ".claude/commands/battoni-publish-pr.md"
+    },
+    {
+      "group": "command",
+      "name": "battoni-review-arcus-code",
+      "description": "Review Arcus Code",
+      "path": ".claude/commands/battoni-review-arcus-code.md"
+    },
+    {
+      "group": "command",
+      "name": "battoni-review-design-conventions",
+      "description": "Review Design Conventions",
+      "path": ".claude/commands/battoni-review-design-conventions.md"
+    },
+    {
+      "group": "command",
+      "name": "battoni-review-vue-conventions",
+      "description": "Review Vue Conventions",
+      "path": ".claude/commands/battoni-review-vue-conventions.md"
+    },
+    {
+      "group": "command",
+      "name": "battoni-rules-sync",
+      "description": "Rules Sync (unit RULES.md freshness gate)",
+      "path": ".claude/commands/battoni-rules-sync.md"
+    },
+    {
+      "group": "command",
+      "name": "battoni-run",
+      "description": "Run",
+      "path": ".claude/commands/battoni-run.md"
+    },
+    {
+      "group": "command",
+      "name": "battoni-setup-project",
+      "description": "Setup Project",
+      "path": ".claude/commands/battoni-setup-project.md"
+    },
+    {
+      "group": "command",
+      "name": "battoni-spec",
+      "description": "Spec",
+      "path": ".claude/commands/battoni-spec.md"
+    },
+    {
+      "group": "command",
+      "name": "battoni-start-session",
+      "description": "Start Session",
+      "path": ".claude/commands/battoni-start-session.md"
+    },
+    {
+      "group": "command",
+      "name": "battoni-verify",
+      "description": "Verify",
+      "path": ".claude/commands/battoni-verify.md"
+    },
+    {
+      "group": "rule",
+      "name": "arcus-api-architecture",
+      "description": "API Architecture Rules",
+      "path": ".claude/rules/arcus-api-architecture.md"
+    },
+    {
+      "group": "rule",
+      "name": "celer-01-vue-checklist",
+      "description": "Vue/TS Mandatory Checklist",
+      "path": ".claude/rules/celer-01-vue-checklist.md"
+    },
+    {
+      "group": "rule",
+      "name": "celer-02-vue-imports",
+      "description": "Import Ordering (CRITICAL)",
+      "path": ".claude/rules/celer-02-vue-imports.md"
+    },
+    {
+      "group": "rule",
+      "name": "celer-03-vue-script",
+      "description": "Vue API",
+      "path": ".claude/rules/celer-03-vue-script.md"
+    },
+    {
+      "group": "rule",
+      "name": "celer-04-vue-template",
+      "description": "i18n in Templates",
+      "path": ".claude/rules/celer-04-vue-template.md"
+    },
+    {
+      "group": "rule",
+      "name": "celer-05-module-conventions",
+      "description": "Module Structure (CRITICAL)",
+      "path": ".claude/rules/celer-05-module-conventions.md"
+    },
+    {
+      "group": "rule",
+      "name": "celer-06-design-system",
+      "description": "Design System Rules",
+      "path": ".claude/rules/celer-06-design-system.md"
+    },
+    {
+      "group": "rule",
+      "name": "celer-07-view-patterns",
+      "description": "View Patterns",
+      "path": ".claude/rules/celer-07-view-patterns.md"
+    },
+    {
+      "group": "rule",
+      "name": "celer-08-rules-auto-injection",
+      "description": "RULES.md Auto-Injection",
+      "path": ".claude/rules/celer-08-rules-auto-injection.md"
+    },
+    {
+      "group": "rule",
+      "name": "celer-09-brand-mark-contract",
+      "description": "The brand mark",
+      "path": ".claude/rules/celer-09-brand-mark-contract.md"
+    },
+    {
+      "group": "rule",
+      "name": "shared-conventions",
+      "description": "Shared Conventions",
+      "path": ".claude/rules/shared-conventions.md"
+    },
+    {
+      "group": "hook",
+      "name": "post-edit",
+      "description": "Runs the appropriate formatter after Claude edits a file",
+      "path": ".claude/hooks/post-edit.sh"
+    },
+    {
+      "group": "hook",
+      "name": "pre-bash-guard",
+      "description": "Blocks dangerous bash operations before they run",
+      "path": ".claude/hooks/pre-bash-guard.sh"
+    },
+    {
+      "group": "hook",
+      "name": "pre-edit-rules",
+      "description": "Claude Code",
+      "path": ".claude/hooks/pre-edit-rules.sh"
+    },
+    {
+      "group": "cortex",
+      "name": "cortex/docs-portal",
+      "description": "Docs Portal — Method & Scaffold",
+      "path": "cortex/docs-portal"
+    },
+    {
+      "group": "cortex",
+      "name": "cortex/hooks",
+      "description": null,
+      "path": "cortex/hooks"
+    },
+    {
+      "group": "cortex",
+      "name": "cortex/logo",
+      "description": null,
+      "path": "cortex/logo"
+    },
+    {
+      "group": "cortex",
+      "name": "cortex/plans",
+      "description": null,
+      "path": "cortex/plans"
+    },
+    {
+      "group": "cortex",
+      "name": "cortex/playbooks",
+      "description": "Overnight build — playbook for an autonomous multi-hour build with parallel agents",
+      "path": "cortex/playbooks"
+    },
+    {
+      "group": "cortex",
+      "name": "cortex/qa",
+      "description": "Manual QA checklist — template",
+      "path": "cortex/qa"
+    },
+    {
+      "group": "cortex",
+      "name": "cortex/sync",
+      "description": "rnc → Projects Sync — Design",
+      "path": "cortex/sync"
+    }
+  ]
+}

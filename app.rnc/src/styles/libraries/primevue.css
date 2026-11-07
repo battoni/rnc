@@ -1,0 +1,31 @@
+@import 'primeicons/primeicons.css';
+
+/* Sidenav blends into the body — no panel; the page (and any theme atmosphere)
+ * flows through it. Chrome recedes, content cards stay raised. */
+.the-sidenav.p-card {
+  background: transparent;
+}
+
+/* No global `.p-badge` rule. One lived here and painted EVERY badge lime with a literal white label
+ * (1.51:1): its `:not([data-pc-section*='success'])` guards never matched, because PrimeVue 4 does not
+ * put the severity in `data-pc-section`. The preset owns the badge (`libraries/primevue/theme.ts`). */
+
+/* DataTable: neutral borders (PrimeVue Aura can emit dark defaults that beat Tailwind utilities) */
+.p-datatable-table thead tr > th,
+.p-datatable-thead > tr > th {
+  border-color: var(--color-line) !important;
+  border-bottom-color: var(--color-line-strong) !important;
+}
+
+.p-datatable-tbody > tr > td {
+  border-color: var(--color-line) !important;
+}
+
+.p-datatable-header {
+  border-color: var(--color-line) !important;
+  border-bottom-color: var(--color-line-strong) !important;
+}
+
+/* The `celer-button-*` classes live in `components/button.css` and nowhere else. They were
+ * duplicated here, verbatim and with `!important`: two `!important` copies of one label colour
+ * means a fix to one is silently outvoted by the other, decided by import order. */

@@ -1,0 +1,76 @@
+# Intent
+
+> Stage 1 of the feature flow. Turn the owner's idea into `intent.md` (the request, no solution)
+> and `facts.md` (the research, written by a Sonnet subagent). Ends with the owner approving one
+> page, then `/clear`.
+>
+> **Usage:** `/battoni-intent <the idea in a sentence> [context…] [away]` — `away` chains into
+> `/battoni-spec` and `/battoni-plan` in this session (`.claude/feature-flow.md`, "Two modes").
+> Reference: `.claude/feature-flow.md` (tracks, IDs, the file formats). Read its sections
+> "Three tracks", "Task IDs", "intent.md" and "facts.md" — not the whole file.
+
+## Rules
+
+- **Ask, don't invent.** The scope is in the owner's head. Questions come before any long research.
+- **The owner picks, never types:** every question goes through `AskUserQuestion`, recommended
+  option first — `.claude/feature-flow.md`, rule 3.
+- **Read-only on the product.** This command writes only `intent.md`, `facts.md` and the first `state.md`.
+- **No personal data** in either file: field names, never values; examples are invented.
+- English in the files (owner, 02/11/2026); the owner's own words quoted as said. Chat in the
+  owner's language.
+
+## Step 0 — Track and ID
+
+1. Decide the track from the idea (trivial · small · feature). If it is not clearly a feature, say
+   which track you would use and why, in one line, and ask. Trivial → stop and just do it, no ID.
+2. Small or feature → take the next ID (reference, "Task IDs"). Slug in English, 2–4 words,
+   kebab-case. **Claim it at once:** create the branch (`fix/<id>-<slug>` or
+   `feature/<id>-<slug>`) from `main` and switch to it.
+3. Small → stop here: the five-line intent goes into the PR body and the work goes on with
+   `/battoni-grill-me` in plan mode. No folder.
+4. Feature → create `specs/<id>-<slug>/`. It is versioned: invented examples only, never a real
+   record.
+
+## Step 1 — Ask (one round, `AskUserQuestion`)
+
+Only what the idea did not say and only the owner knows. Offer your best guesses from the idea as
+the options; the owner's own words go in "Other". Ask for files as a plain line, not an option:
+
+- the problem in their words, and a number if there is one ("380px of 800");
+- who is affected (roles, the mobile bar, other systems);
+- how it is done today (forms, spreadsheets, messages — ask for the files; private ones stay out of git);
+- constraints that hold whatever the solution;
+- what is out of scope.
+
+Product choices (who does what, output format, minimum now vs complete later) are **not** asked
+here: they become decisions in `/battoni-spec`. Tell the owner so.
+
+Do not continue without: the idea in a sentence, who uses it, and how it is done today.
+
+## Step 2 — Research, in a subagent (in parallel with Step 1 when possible)
+
+Spawn one `general-purpose` agent with `model: sonnet`. It reads what the main session must not
+hold: the neighbouring code (route → view → components), the i18n labels, permissions and roles,
+the documents the owner sent (PDF field names via `pypdf`, never values), and how other Battoni
+projects solved the same thing when the owner named them. It returns **only the finished
+`facts.md` content** in the reference format, every fact with its source, plus a list of what
+could not be read. Give it the folder path and the questions it must answer; not your hypothesis.
+
+Write what it returns to `facts.md`. Do not re-read the sources yourself unless a fact looks wrong.
+
+## Step 3 — Write intent.md
+
+Fill the reference template from the owner's answers. Problem, outcome, affected, constraints,
+out of scope, open questions. **No solution**: no screen layout, no endpoint, no component.
+Open questions that are product choices are listed here and resolved in the spec.
+
+Write the first `state.md` (`Stage: intent`, Next = `/battoni-spec <id>`) and commit the three
+files on the branch: `<id>: Add the intent`.
+
+## Step 4 — Approve and hand off
+
+Show the owner the intent (it fits one screen) and ask for approval with `AskUserQuestion` (approve / change
+something), together with anything `facts.md` contradicted in their answers. On approval set `Status: approved <date>`.
+
+End with one line: the folder path and the next command — `/clear`, then `/battoni-spec <id>`.
+With `away`: no `/clear`; go straight on to `/battoni-spec <id> away`.

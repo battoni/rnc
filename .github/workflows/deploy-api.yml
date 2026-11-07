@@ -1,0 +1,141 @@
+name: Deploy API
+
+# Publishes api.rnc to the droplet on every push to main. The front does not appear here: app.rnc
+# is a Vercel project with Git integration and deploys itself when main moves.
+#
+# Deliberately NOT part of ci.yml: that file is a cortex-sync MERGE artifact and propagates to
+# every derived project, and this one is about a server only rnc has. Both this workflow
+# and api.rnc/deploy.sh are LOCAL in the sync manifest, and that is a safety rule rather than
+# tidiness — the script rebuilds the database from scratch, which is right for a bootstrap that
+# keeps no data and would be a data-loss incident in a project that has shipped.
+#
+# It runs Pest ITSELF rather than waiting on the CI workflow. What makes the API safe to
+# publish is the API suite; the app's Playwright run takes far longer on a two-core runner and
+# has no bearing on whether this deploy should happen. Gating on it would mean a frontend flake
+# blocks a backend fix — and a fix that waits half an hour is a fix nobody triggers.
+#
+# Every push runs it, with no path filter, because the goal is a server that always matches
+# main. The deploy is idempotent and takes about a minute.
+
+on:
+  push:
+    branches: [main]
+  # A manual run is accepted from main only. The dispatch form offers every branch, and a run
+  # from feature/x would test feature/x and then publish a different tree — so both jobs below
+  # refuse any other ref instead of trusting whoever picked it. (The Production environment has
+  # no deployment-branch policy; this guard is the only one, and it lives in the file.)
+  workflow_dispatch:
+
+# One deploy at a time, and never cancel one midway: the script would be interrupted between
+# `composer install` and the cache rebuild, which is the worst moment to stop.
+concurrency:
+  group: deploy-api
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: api.rnc — Pest
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api.rnc
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_sqlite, sqlite3, mbstring, dom, bcmath
+          coverage: none
+
+      - name: Copy environment file
+        run: cp .env.example .env
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Generate application key
+        run: php artisan key:generate
+
+      - name: Test (Pest)
+        run: php artisan test
+
+  deploy:
+    name: api.rnc — droplet
+    needs: test
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    environment: Production
+    steps:
+      - name: Authorise the SSH session
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          # The host key comes from a secret recorded once, NOT from asking the host now.
+          # `ssh-keyscan` used to write this file on every run, which meant the workflow
+          # trusted whatever answered on that address — the comment said "pinning the host
+          # key" and pinned nothing (CI-03). Record it with
+          #   ssh-keyscan -H <host>
+          # read the output, and store it as the DEPLOY_KNOWN_HOSTS secret.
+          if [ -z "${DEPLOY_KNOWN_HOSTS:-}" ]; then
+            echo "DEPLOY_KNOWN_HOSTS is not set. Record the host key with 'ssh-keyscan -H <host>'," >&2
+            echo "check it, and store it as that secret. Refusing to deploy without a pinned key." >&2
+            exit 1
+          fi
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Run the deploy script on the server
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          # The commit the `test` job above approved — the server publishes THIS, not whatever
+          # main points at by now. A push that lands while this run is testing waits its turn
+          # (the concurrency group) and is published by its own run, after its own Pest.
+          DEPLOY_SHA: ${{ github.sha }}
+        # Piped as a script rather than a one-line command: it needs to compute the repository
+        # root on the server, and quoting that through two shells is how mistakes get in.
+        run: |
+          ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o StrictHostKeyChecking=yes \
+            -o UserKnownHostsFile="$HOME/.ssh/known_hosts" \
+            "$DEPLOY_USER@$DEPLOY_HOST" bash -s -- "$DEPLOY_PATH" "$DEPLOY_SHA" <<'REMOTE'
+          set -euo pipefail
+          cd "$1"
+
+          # DEPLOY_PATH is the MONOREPO root — /var/www/rnc — not the API subfolder.
+          # api.lifeshifter points at the subfolder instead and its workflow has to walk up
+          # one level to find the repository; naming the root outright means git runs where
+          # git belongs and the API is addressed as a path within it.
+          #
+          # Git refuses to work in a repository owned by another user, which is what the
+          # deploy account sees here, and the refusal is the right default — it is how you
+          # avoid running someone else's hooks. This repository is ours and the account is
+          # ours, so the exception is declared here, in the workflow, rather than left as a
+          # manual step on a server that the next server will not have.
+          git config --global --add safe.directory "$PWD"
+
+          # Main stays checked out (a deploy by hand still finds a branch), moved to the approved
+          # commit. api.rnc/deploy.sh fetches again, so it is told the same commit: it refuses one
+          # that is not on main and would otherwise reset to main's tip.
+          git fetch --quiet origin main
+          git checkout --quiet main
+          git merge-base --is-ancestor "$2" origin/main
+          git reset --hard --quiet "$2"
+
+          DEPLOY_SHA="$2" bash api.rnc/deploy.sh
+          REMOTE
+
+      - name: Confirm the API answers from outside
+        run: |
+          STATUS=$(curl --silent --show-error --max-time 20 -o /dev/null -w '%{http_code}' https://api.rnc.battoni.dev/up)
+          echo "GET /up -> $STATUS"
+          test "$STATUS" = "200"

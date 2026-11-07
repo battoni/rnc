@@ -1,0 +1,151 @@
+---
+description: app.rnc view layout patterns — TheLayout, dialogs, form molecules, list CRUD
+globs: app.rnc/**/*.vue, app.rnc/**/*.ts
+alwaysApply: false
+---
+# View Patterns
+
+Reference implementation: `app.rnc/src/modules/User/views/Users/UsersView.view.vue` and its `RULES.md` — a server-paginated `OListDivided` with `OPaginator`, add/edit dialog and confirm popups.
+
+These patterns apply to authenticated list/detail views in app.rnc. Auth flows (`Login`, `SignUp`, etc.) use `TheCenteredLayout` instead — do not force this structure there.
+
+## Page structure
+
+```vue
+<TheLayout>
+  <template #pageHeader>
+    <ThePageHeader icon="pi pi-user" title="users.title">
+      <template v-if="!dialogVisible" #actions>
+        <!-- CTA buttons -->
+      </template>
+    </ThePageHeader>
+  </template>
+
+  <!-- filters, grids, main content -->
+
+  <aside class="contents">
+    <!-- ConfirmPopup + MMainDialog only -->
+  </aside>
+</TheLayout>
+```
+
+- **`TheLayout` + `#pageHeader` + `ThePageHeader`** — never put page headers in the default slot (see `TheLayout/RULES.md`).
+- **`<aside class="contents">` at the end** — holds all overlays; keeps dialog mask scoping with `MMainDialog`'s `appendTo="self"`.
+  The `contents` class is not optional. The overlays draw nothing in flow, but a box here is still a
+  flex child of `TheLayout`'s content column, whose `gap-8` reserves 32px under the page for it — a
+  dead band, and 32px taken from anything sized to fill the height. An organism with an `<aside>`
+  beside its root has the same problem wherever it is placed.
+- **Hide header actions while a dialog is open**: `v-if="!dialogVisible"` on `#actions`.
+
+## MMainDialog (create/edit)
+
+- **Always `MMainDialog`** — never raw PrimeVue `<Dialog>`.
+- **`isFooterless`** for create/edit flows — the form molecule owns submit/cancel (sticky footer via `form="…-form"`).
+- **`title` is an i18n key** — `MMainDialog` calls `$t()` internally; never pass a pre-translated string.
+- **`:key` on the form molecule**: `:key="editingEntity?.id ?? 'new'"` — mandatory so PrimeVue Forms resets between create and edit.
+
+See `MMainDialog/RULES.md` for mask scoping, animation, and scroll-lock contracts.
+
+## Form molecule contract
+
+Extract inline forms to `MAddEdit{Entity}Form` under the module's `components/molecules/`.
+
+| Responsibility | Owner |
+| --- | --- |
+| Form fields, Yup validation, API call | Form molecule |
+| Dialog visibility, list state | Parent view |
+| Submit/cancel buttons (footerless dialog) | Form molecule |
+
+- **Prop**: entity prop (`user`, `profile`, etc.) — `null`/`undefined` = create, object = edit.
+- **Emits**: `@onClose` and `@onSuccess(entity)` where `entity` is the API response body.
+- **Do not** refetch the full list from inside the molecule — parent updates local refs.
+
+## Managed lists: paginated on the server
+
+A list that can grow is a page, not the table. The API answers `ApiResponse::paginated` and the view
+uses `usePaginatedList` (`@Composables`) + `<OPaginator>` — never hand-rolled page state, never
+PrimeVue `<Paginator>` directly.
+
+- **Sort, filter and search go back to page 1** (`page.value = 1; load()`).
+- **Row-level actions that open a confirm popup go in `OListDivided`'s `#actions` slot**, not in
+  `canArchive`/`canDelete`: the popup needs the clicked element as its anchor, and the built-in
+  buttons emit only the item. Render per `variant` (`inline` icon, `menu` labeled).
+
+## List mutations (granular)
+
+Use the entity returned by the API — no full refetch when the response includes the saved record.
+
+- **Create**: `prependItem(entity)` — it counts the row and returns to page 1 when needed.
+- **Create while a filter or search is applied**: reload page 1 (`page.value = 1; load()`) instead
+  of prepending. The new row was not in the search, and a row above the matches reads as a broken
+  search. "Applied" is what the last request SENT, not what the person picked and has not searched
+  yet (`UsersView`'s `appliedSearch`).
+- **Update**: replace by ID in `items` (the count does not change).
+- **Delete**: `removeItem(id)` — it decrements the total and steps back from a page it emptied.
+- **Archive**: replace by ID using the API response.
+- **Never write `items.value = [...]` to add or remove a row** on a paginated list: the pager keeps
+  offering a page that no longer exists.
+
+## Permissions
+
+Define `canCreate`, `canRead`, `canUpdate`, `canDelete`, etc. as computed properties from `userStore.hasPermission('resource.action')` in the view — not inside card/list child components.
+
+**A missing permission hides the part that needs it; it never becomes a grant.** When a step, a tab
+or a panel depends on a key the person does not hold, leave it out — do not mount the component —
+and never add the permission to a role "so the screen stops looking broken". The screen that
+vanished is the permission working.
+
+## Destructive actions
+
+- **`useConfirm()` + `<ConfirmPopup>`** with distinct `group` values per action type.
+- **Never `<ConfirmDialog>`** for row-level archive/delete.
+- Views may inline `confirm.require({ ... })` with custom `acceptProps`/`rejectProps` (see `UsersView.view.vue`) instead of `MConfirmPopup` when action-specific styling is needed.
+- **A destructive action that needs input is a form, not a popup.** When cancelling asks for a
+  reason, or a choice (refund or not), it is a form molecule in `MMainDialog`, under the same contract as `MAddEdit{Entity}Form` —
+  a `ConfirmPopup` holds no fields, and a popup with inputs squeezed in is a screen no test can
+  drive. The popup stays for the plain yes/no (largatudoevai's `MCancelReservationForm`).
+
+## A load that failed is not an empty list
+
+"Nobody has written anything yet" and "we could not reach the server" ask opposite things of the
+reader, so they are different screens: the empty state says what to do next, the failure says the
+list did not load and offers **Try again**. Rendering the empty state after a failed request tells
+the person their data is gone. A `404` for the thing being opened is "does not exist"; any other
+failure — network, 5xx — is "did not load".
+
+And a refresh that follows a save is **returned**, not fired and forgotten: a toast that says "saved"
+while the list beside it silently fails to refresh is a screen that lies.
+
+## Polling
+
+- **One poller per screen, and the view owns it.** The view starts it, stops it on unmount and passes
+  what it learns down. A molecule that polls is a molecule that polls twice when a screen shows two
+  of it, and keeps polling after the view that needed it is gone.
+- **A poller has two ceilings: time and consecutive failures.** It stops after a fixed total duration
+  (a payment that has not settled in ten minutes will not settle by being asked every three seconds)
+  and after N failures in a row (an API that is down is not helped by a request every few seconds
+  from every open tab). Reaching either says so on screen, with a way to check again — never a
+  spinner that turns forever. A success resets the failure count; only a run of them stops it.
+- **It pauses when the screen is hidden and resumes when it is seen again.** On
+  `visibilitychange` to hidden, stop; back to visible — or when the person reopens the screen —
+  check once right away and start again with fresh ceilings. A background tab is not someone waiting.
+
+## Refusals from the API (422)
+
+A 422 is the API refusing on a rule, and it names the rule with an i18n key (`errors.<field>[0]`).
+It is information, not a failure:
+
+- **In a form**: show the translated key inline, where the problem is, and raise no toast — a generic
+  "something went wrong" on top contradicts the specific message.
+- **From a row action**: a `warn` toast with `translateError(key)` and no "refresh and contact the
+  admin" detail. Only what is NOT a 422 is the red error toast.
+
+## Do not
+
+- Put `MMainDialog` or `ConfirmPopup` outside `<aside>` — in a VIEW. The exception is a molecule used
+  on a full page rather than in a list (a wizard step, a picker that creates inline): it may own its
+  `MMainDialog`, the way `OListDivided` owns its detail dialog. The `<aside>` rule exists for mask
+  scoping over a list, and a full-page flow has no list for the mask to scope. Say so in the
+  molecule's `RULES.md`.
+- Inline a form inside `MMainDialog` — extract to `MAddEdit{Entity}Form`.
+- Refetch the entire list after a single create/update/delete when the API returns the entity.

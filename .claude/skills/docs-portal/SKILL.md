@@ -1,0 +1,131 @@
+---
+name: docs-portal
+description: "Build a user- AND developer-friendly documentation portal (VitePress) with a User/Developer depth switcher, for a rnc-derived project. Load when asked to create or extend product/system documentation, a 'docs site', a client handoff doc, a docs.* sub-project, or when you need the ::: user / ::: dev pattern, codebase extractors (endpoints/schema/views → JSON), the user-documentation PDF export (/export-pdf), or the staff-only Vercel Edge gate. Reference builds: docs.trainingbeta and docs.impressao."
+license: MIT
+metadata:
+  author: rnc
+---
+
+# Docs Portal — Dual-Audience VitePress Documentation
+
+> **Scope:** building a documentation portal for any rnc-derived project (an
+> api.rnc API + app.rnc SPA pair, or similar). The portal serves **two audiences from one
+> set of pages** via a User/Developer switch: plain-language guidance for the product
+> owner/end user, and schema/endpoint/architecture depth for the next developer.
+>
+> Reference implementations to mirror: `docs.trainingbeta` and `docs.impressao`.
+> Copyable scaffold + full method live in `cortex/docs-portal/` — this skill is the
+> **trigger + rules + workflow**, not a copy of those files.
+
+## When this applies
+
+Load this skill when the task is to:
+
+- Create a **new docs site** for a project (typically a sibling `docs.<project>/` folder).
+- Add or restructure pages in an **existing** docs portal built on this pattern.
+- Work with the **User/Developer switcher** (`::: user` / `::: dev` containers, the
+  `ModeToggle`, the `mode-user`/`mode-dev` html class).
+- Build or refresh the **codebase extractors** (routes → endpoints, migrations → schema,
+  Vue routes → views) and their data components.
+- Set up the **staff-only access gate** (Vercel Edge middleware → `/auth/me`).
+
+If the project is **app.rnc/api.rnc code itself** (not its docs), this is the wrong skill —
+use the app.rnc/api.rnc rules and skills instead.
+
+## The non-negotiables (rules)
+
+1. **One set of pages, two depths.** Never fork "user docs" and "dev docs" into separate
+   pages or separate sites. Write the page once for the user; wrap developer-only detail
+   in `::: dev … :::` and user-only asides in `::: user … :::`. The same URL serves both.
+
+2. **Content always stays in the DOM.** The switcher is **pure CSS** (`html.mode-dev
+   .dev-only { display:none }`) driven by a class on `<html>`. Never `v-if` the dev/user
+   content out — keeping it in the DOM preserves local search and SEO. The class is set
+   **before first paint** by the anti-FOUC boot script in `config.mts`; do not remove it.
+
+3. **User voice first.** The default mode is **User**. Default-visible prose must read in
+   plain language with no jargon — step-by-step, "the screens you'll use", warm and direct.
+   Technical reasoning, schemas, endpoints, and trade-offs go inside `::: dev` blocks.
+
+4. **Generated reference is generated.** Endpoint/schema/view tables come from the
+   extractors (`npm run docs:extract`) into `.vitepress/data/*.json` and render via the
+   data components (`<EndpointTable>`, `<SchemaBook>`, `<ViewNavMap>`, `<EntityDiagram>`,
+   `<ReachabilityMap>`). **Never hand-write** an endpoint or schema table — or an ER diagram —
+   that an extractor can produce: it will rot. Hand-write only prose and the diagrams no data
+   describes. What a phase specifies but has not built goes in `scripts/planned-seeds.mjs`, which
+   the real extraction overwrites once it exists. CI freshness is `npm run docs:extract:check`.
+
+5. **One unified sidebar.** The same sidebar shows on every page so no one gets lost
+   between audiences. Group it: a "★ For you" / owner section first (for client handoffs),
+   then Guide → Concepts → Operations → Developer reference (the dev section `collapsed:
+   true`). It lives in `.vitepress/sidebar.ts`, not inline in `config.mts`, because the PDF
+   export reads it too.
+
+6. **Diagrams over walls of text.** Use Mermaid (`vitepress-plugin-mermaid`) for hierarchy,
+   flow, and relationships. A diagram in default view + a `::: dev` note on the
+   implementation beats a long paragraph.
+
+7. **The gate fails closed.** If you wire the staff gate, a non-200 from `/auth/me`, a
+   non-staff user, or an unreachable API all redirect to login. Never serve on uncertainty.
+   The gate logic lives in the pure, unit-tested `middleware/auth-gate.mjs`.
+
+8. **Match the reference voice and structure.** Before writing pages, skim
+   `docs.trainingbeta`/`docs.impressao` for tone and section shape. Stay consistent.
+
+9. **The PDF export is the sidebar, minus the developer reference — never a hand list.**
+   `/export-pdf` (the `PDF` link in the nav) prints every sidebar page outside
+   `DEVELOPER_ONLY_PREFIXES` (`/reference/`) into one document with a cover, version
+   (package.json's), contents and an out-of-date notice; the browser's print dialog makes the
+   PDF. The page list is derived from `.vitepress/sidebar.ts` in `theme/pdf/userDocPages.ts`.
+   Each page is re-rendered with its developer content removed (`::: dev`, `<DevOnly>`) and its
+   data components and mermaid replaced by a pointer to the portal. Two lists must still be
+   kept by hand, and `npm test` (`theme/pdf/pdf-export.test.ts`) fails when either drifts:
+   - **A new data component** registered in `theme/index.ts` goes into
+     `PDF_INTERACTIVE_COMPONENTS` (`theme/pdf/prepareMarkdownForPdf.ts`).
+   - **A new developer-only folder** goes into `DEVELOPER_ONLY_PREFIXES` AND into the
+     `import.meta.glob` exclusions in `PdfExportPage.vue` (Vite takes only literal globs).
+   Bump `package.json`'s `version` when user pages change in a material way, so a printed copy
+   can be told apart. The page's copy is one `COPY` object in `PdfExportPage.vue`; a portal in
+   another language translates that object.
+
+## Workflow
+
+### A. Standing up a new portal
+
+1. **Read the method:** `cortex/docs-portal/GUIDE.md` (architecture, content map, voice,
+   extractor + gate recipes).
+2. **Copy the scaffold** from `cortex/docs-portal/templates/` into the new `docs.<project>/`
+   and replace the `{{PLACEHOLDERS}}` (see the placeholder table in GUIDE.md — slug, title,
+   tagline, API host, sibling dir names, brand color).
+3. **Adapt the extractors** to the target codebase: edit `scripts/lib/modules.mjs` (the
+   module maps + table→module ownership) and the sibling paths at the top of each
+   `scripts/extract-*.mjs`. Run `npm run docs:extract` and sanity-check the JSON.
+   In `endpoints.json`, `permission` joins the layers that all apply with ` + ` (group
+   middleware + route middleware); a comma inside one layer means *any of* — see GUIDE.md §5.
+4. **Write the content** following the content map and the `::: user` / `::: dev` split.
+   Start from the home page and the highest-value pages (overview, getting-started).
+5. **Wire the gate** (optional) per GUIDE.md: set the Vercel env, link from the app's
+   staff nav. Run `npm test` for the gate logic.
+6. **Verify:** `npm run docs:dev`, toggle User/Developer on a page that has both blocks,
+   confirm no FOUC and that search finds dev-only text. Open `/export-pdf`, check that the
+   contents list matches the sidebar and that no dev-only text shows, then save a PDF once.
+   `npm test` (gate, extractors, PDF export) and `npm run lint`. `npm test` fails until every
+   sidebar link has its page, and that failure is intended.
+
+### B. Extending an existing portal
+
+- Place the page in the right sidebar group and add it to `.vitepress/sidebar.ts`. It is in
+  the next PDF export automatically (unless it is under `/reference/`).
+- Write user prose by default; push detail into `::: dev`. Reuse the data components for
+  any endpoint/schema/view table — don't hand-roll one.
+- If you reference new routes/tables/views, re-run `npm run docs:extract` and commit the
+  refreshed JSON.
+- **Write the intent by hand, beside the extracted reference.** A `concepts/<flow>.md` that walks
+  the whole flow in prose (and a diagram) is what the generated tables cannot say: why the steps are
+  in that order, what each screen is for. Extracted pages say what exists; concept pages say why.
+
+## Pointers (depth — do not duplicate here)
+
+- **Full method + content map + voice guide:** `cortex/docs-portal/GUIDE.md`
+- **Copyable scaffold:** `cortex/docs-portal/templates/`
+- **Living references:** `docs.trainingbeta/`, `docs.impressao/`

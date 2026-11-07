@@ -1,0 +1,155 @@
+---
+title: /battoni-commit
+outline: deep
+---
+
+::: info Generated page
+This page is generated from `.claude/commands/battoni-commit.md` — run it with `/battoni-commit`. **Edit the source command, not this page.**
+:::
+
+# Commit
+
+Stage and commit all current changes using conventional commits, grouped by concern, ordered bottom-up.
+
+---
+
+## Step 1 — Read the changes
+
+Run the following in parallel:
+
+- `git status` — list all tracked/untracked changed files
+- `git diff` — see unstaged changes
+- `git diff --cached` — see staged changes
+- `git log --oneline -10` — recent commits for style reference
+- `git branch --show-current` — the branch you are about to commit onto
+
+**Base-branch check.** If the current branch is `main` or `master`, pause and confirm with the user before committing. Bootstrap/cortex maintenance lands on `main` intentionally, but feature work should branch first (`feature/…`, `fix/…`). Only skip this confirmation when the user has already directed you to commit on the base branch this turn.
+
+## Step 2 — Classify each file
+
+For every changed file, assign:
+
+- **Sub-project** — `api.rnc`, `app.rnc`, `cortex`, or root
+- **Module** — the domain module (e.g. `Auth`, `User`, `Home`)
+- **Layer** — the architectural layer, used for ordering:
+
+| Priority | Layer (bottom-up) |
+| --- | --- |
+| 1 | Enums, interfaces, types, constants |
+| 2 | Migrations, models |
+| 3 | DTOs |
+| 4 | Repositories |
+| 5 | Services |
+| 6 | Requests, controllers, resources |
+| 7 | Atoms |
+| 8 | Molecules |
+| 9 | Organisms |
+| 10 | Templates, pages |
+| 11 | Tests |
+| 12 | Locale files, config, tooling |
+
+## Step 3 — Group into commits
+
+Group files that belong to the same logical concern. A concern is one of:
+
+- A new model + migration + factory
+- A service + its repository
+- A controller + its request + DTO
+- A component + its barrel export
+- A test file + fixtures it needs
+- Locale updates
+- Config / tooling changes
+
+**Rules:**
+
+- Each commit touches **one concern** — never mix unrelated modules
+- If a file bridges two concerns (e.g. a service calling both a new repo and a new model), include it in the commit where it is the primary change — not duplicated
+- Barrel files (index.ts re-exports) go with the file they export
+- When a single concern spans more sub-projects than one (e.g. API endpoint + frontend consumer), prefer separate commits per sub-project unless they are trivially small
+
+## Step 4 — Order the commits
+
+Sort the commit groups **bottom-up** using the layer priority table. Lower-numbered layers commit first.
+
+Within the same layer, sort alphabetically by module name.
+
+## Step 5 — Write commit messages
+
+Use **conventional commits** format:
+
+```
+type(Scope): imperative description
+```
+
+### Type
+
+| Type | When |
+| --- | --- |
+| `feat` | New functionality |
+| `fix` | Bug fix |
+| `refactor` | Code change with no behaviour change |
+| `chore` | Tooling, deps, config |
+| `test` | Adding or updating tests only |
+| `docs` | Documentation only |
+| `style` | Formatting, linting fixes (no logic change) |
+
+### Scope
+
+- Use the **module name** in PascalCase: `Auth`, `User`, `Home`
+- For cross-module changes, use the sub-project: `api.rnc`, `app.rnc`, `cortex`
+- For root-level changes: omit scope or use `monorepo`
+
+### Subject line
+
+- Imperative mood: `Add`, `Fix`, `Remove` — not `Added`, `Fixed`
+- Under 72 characters
+- No period at the end
+- Describes the *what*, not the *how*
+
+### Examples
+
+```
+feat(Auth): add LoginCredentialsDTO for the login flow
+refactor(Auth): extract user lookup to UserRepository
+fix(User): resolve role mapping in permission keys
+test(Auth): add permission service unit tests
+chore(app.rnc): sort locale files
+```
+
+## Step 6 — Present the plan
+
+Output the commit plan as a numbered list:
+
+```
+1. feat(Auth): add LoginCredentialsDTO for the login flow
+   - api.rnc/app/Modules/Auth/DTOs/LoginCredentialsDTO.php
+
+2. refactor(Auth): extract user lookup to UserRepository
+   - api.rnc/app/Modules/Auth/Repositories/UserRepository.php
+   - api.rnc/app/Modules/Auth/Repositories/RoleRepository.php
+```
+
+**Do not commit yet.** Wait for approval.
+
+## Step 7 — Execute (after approval)
+
+For each commit in order:
+
+1. `git add <files>`
+2. `git commit -m "<message>"`
+3. Verify with `git status` that no files were missed
+
+After all commits, run `git log --oneline -<N>` (where N = number of commits made) to confirm the result.
+
+---
+
+## Rules
+
+- NEVER add an AI authorship signature — no `Co-Authored-By: Claude ...` trailer, no "Generated with Claude Code" line. Commits read as the developer's own work.
+- NEVER update git config
+- NEVER use `--amend` unless the user explicitly asks
+- NEVER push — that is a separate command (`/battoni-publish-pr`)
+- If a pre-commit hook modifies files, stage the modifications and amend the commit (only this case)
+- If a commit fails due to a hook, fix the issue and create a NEW commit — do not amend
+- Do not commit files that contain secrets (`.env`, credentials, tokens)
+- Do not create empty commits

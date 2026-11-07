@@ -1,0 +1,464 @@
+/**
+ * ============================================================
+ * THEME: battoni-dev  —  the Guilherme Battoni house style
+ *
+ * Atmospheric, rounded, glowing. Brand green #C0E021, Space Grotesk display +
+ * Sometype Mono voice. Deep #0a0a09 base, lime radial glows, a corner-bracket
+ * overlay, soft rounded surfaces, lime→limehi (#e3ff5e) gradients and glow
+ * halos on interaction. Chrome (sidenav, dialog) blends with the body; content
+ * (cards, inputs) is raised. Supports light + dark — full atmosphere in dark,
+ * subtle in light.
+ *
+ * Sections: 1 fonts · 2 brand ramps · 3 state palettes · 4 role tokens (light)
+ * · 5 role tokens (dark, deep) · 6 atmosphere & geometry · 7 identity (voice,
+ * motifs, glows, gradients, showcase flourishes). All in this one file.
+ * ============================================================
+ */
+
+@theme {
+  /* ===================================
+   * 1. FONT FAMILIES
+   * =================================== */
+  --font-sans: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --font-mono:
+    'Sometype Mono', ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Monaco, 'Courier New', monospace;
+
+  /* ===================================
+   * 2. BRAND PALETTE RAMPS
+   * =================================== */
+
+  /* PRIMARY — Brand action color · Main: #C0E021 (500) */
+  --color-primary-50: #faffe3;
+  --color-primary-100: #f5ffc2;
+  --color-primary-200: #efffa1;
+  --color-primary-300: #eaff80;
+  --color-primary-400: #e3ff5e;
+  --color-primary-500: #c0e021; /* MAIN */
+  --color-primary-600: #b5d41f;
+  --color-primary-700: #aac71d;
+  --color-primary-800: #95ad1a;
+  --color-primary-900: #7f9416;
+  --color-primary-950: #697a12;
+
+  /* INK — Dark text / headings · Main: #141413 (900) */
+  --color-ink-50: #c7c7bd;
+  --color-ink-100: #babab1;
+  --color-ink-200: #adada5;
+  --color-ink-300: #a1a199;
+  --color-ink-400: #94948c;
+  --color-ink-500: #878780;
+  --color-ink-600: #7a7a74;
+  --color-ink-700: #6e6e68;
+  --color-ink-800: #61615c;
+  --color-ink-900: #141413; /* MAIN */
+  --color-ink-950: #000000;
+
+  /* SURFACE — Neutral backgrounds, borders, secondary text · Main: #888B8D (500) */
+  --color-surface-50: #f3f4f3;
+  --color-surface-100: #dde2e6;
+  --color-surface-200: #d1d6d9;
+  --color-surface-300: #c5c9cc;
+  --color-surface-400: #b8bdbf;
+  --color-surface-500: #888b8d; /* MAIN */
+  --color-surface-600: #7b7e80;
+  --color-surface-700: #6f7173;
+  --color-surface-800: #565859;
+  --color-surface-900: #3d3f40;
+  --color-surface-950: #252626;
+
+  /* ===================================
+   * 3. SEMANTIC STATE PALETTES
+   * Brand-agnostic — stay the same across themes.
+   * =================================== */
+
+  /* SUCCESS */
+  --color-success-50: #f0fdf4;
+  --color-success-100: #dcfce7;
+  --color-success-200: #bbf7d0;
+  --color-success-300: #86efac;
+  --color-success-400: #4ade80;
+  --color-success-500: #22c55e; /* MAIN */
+  --color-success-600: #16a34a;
+  --color-success-700: #15803d;
+  --color-success-800: #166534;
+  --color-success-900: #14532d;
+  --color-success-950: #052e16;
+
+  /* INFO */
+  --color-info-50: #eff6ff;
+  --color-info-100: #dbeafe;
+  --color-info-200: #bfdbfe;
+  --color-info-300: #93c5fd;
+  --color-info-400: #60a5fa;
+  --color-info-500: #3b82f6; /* MAIN */
+  --color-info-600: #2563eb;
+  --color-info-700: #1d4ed8;
+  --color-info-800: #1e40af;
+  --color-info-900: #1e3a8a;
+  --color-info-950: #172554;
+
+  /* WARN */
+  --color-warn-50: #fffbeb;
+  --color-warn-100: #fef3c7;
+  --color-warn-200: #fde68a;
+  --color-warn-300: #fcd34d;
+  --color-warn-400: #fbbf24;
+  --color-warn-500: #f59e0b; /* MAIN */
+  --color-warn-600: #d97706;
+  --color-warn-700: #b45309;
+  --color-warn-800: #92400e;
+  --color-warn-900: #78350f;
+  --color-warn-950: #451a03;
+
+  /* DANGER */
+  --color-danger-50: #fef2f2;
+  --color-danger-100: #fee2e2;
+  --color-danger-200: #fecaca;
+  --color-danger-300: #fca5a5;
+  --color-danger-400: #f87171;
+  --color-danger-500: #ef4444; /* MAIN */
+  --color-danger-600: #dc2626;
+  --color-danger-700: #b91c1c;
+  --color-danger-800: #991b1b;
+  --color-danger-900: #7f1d1d;
+  --color-danger-950: #450a0a;
+
+  /* HELP */
+  --color-help-50: #faf5ff;
+  --color-help-100: #f3e8ff;
+  --color-help-200: #e9d5ff;
+  --color-help-300: #d8b4fe;
+  --color-help-400: #c084fc;
+  --color-help-500: #a855f7; /* MAIN */
+  --color-help-600: #9333ea;
+  --color-help-700: #7e22ce;
+  --color-help-800: #6b21a8;
+  --color-help-900: #581c87;
+  --color-help-950: #3b0764;
+
+  /* CONTRAST */
+  --color-contrast-50: #fafafa;
+  --color-contrast-100: #f5f5f5;
+  --color-contrast-200: #e5e5e5;
+  --color-contrast-300: #d4d4d4;
+  --color-contrast-400: #a3a3a3;
+  --color-contrast-500: #737373; /* MAIN */
+  --color-contrast-600: #525252;
+  --color-contrast-700: #404040;
+  --color-contrast-800: #262626;
+  --color-contrast-900: #171717;
+  --color-contrast-950: #0a0a0a;
+
+  /* ===================================
+   * 4. ROLE TOKENS — LIGHT (default)
+   * =================================== */
+
+  /* Surfaces */
+  --color-canvas: #ffffff;
+  --color-panel: var(--color-surface-50);
+  --color-panel-muted: var(--color-surface-100);
+
+  /* Text tiers */
+  --color-heading: var(--color-ink-900);
+  --color-body: var(--color-ink-900);
+  /* Measured on canvas · panel · panel-muted. `muted` carries every sentence that is not body
+     copy, so it clears 4.5:1 on all three: 800 gives 7.15 · 6.49 · 5.48 (600 gave 4.09 · 3.71 ·
+     3.13, and 700 still misses the panel at 4.44). `subtle` never carries a sentence — icons and
+     marks only — so its floor is WCAG 1.4.11's 3:1: 600 gives 4.09 · 3.71 · 3.13 (400 gave 1.90 ·
+     1.72 · 1.45, a hint nobody could read). */
+  --color-muted: var(--color-surface-800);
+  --color-subtle: var(--color-surface-600);
+
+  /* Lines */
+  --color-line: var(--color-surface-200);
+  --color-line-strong: var(--color-surface-300);
+
+  /* What sits ON a filled primary surface — a button label, an icon, a badge's text.
+   *
+   * Measured, not chosen: on `--color-primary-500` (#c0e021) the project ink gives 12.22:1 and
+   * white gives 1.51:1. A button label is normal text, so the floor is 4.5:1 — white does not
+   * merely look worse here, it fails. Same value in dark, because the lime does not change: the
+   * fill is the brand's, not the scheme's.
+   *
+   * Declared HERE, and that is the whole change. It was already resolving —
+   * `tailwindcss-primeui` maps `--color-primary-contrast` to `--p-primary-contrast-color`, so
+   * `text-primary-contrast` answered from the PrimeVue preset, in pure black. Two sources of
+   * truth for one decision, and the losing one was the theme file: the single place this project
+   * documents as where a brand is defined. A new brand would have set its accent here, watched
+   * every filled label ignore it, and had no error anywhere to explain why. The three children
+   * that hit this each declared it in their own theme; the bootstrap never did. */
+  --color-primary-contrast: var(--color-ink-900);
+
+  /* ===================================
+   * 6. ATMOSPHERE & GEOMETRY — the bold, glowing identity
+   *
+   * Rounded surfaces, lime glows and lime→limehi gradients. Drives every Tailwind
+   * rounded/shadow utility AND the PrimeVue preset, so the whole feel lives here
+   * in the theme file.
+   * =================================== */
+
+  /* Brighter lime (the "limehi" highlight) + glow + gradient tokens */
+  --color-highlight: var(--color-primary-400); /* #e3ff5e */
+  --glow: color-mix(in srgb, var(--color-primary-500) 45%, transparent);
+  --glow-soft: color-mix(in srgb, var(--color-primary-500) 16%, transparent);
+  --grad-lime: linear-gradient(95deg, var(--color-primary-500), var(--color-highlight));
+
+  /* Page atmosphere — subtle in light */
+  --atmo-1: color-mix(in srgb, var(--color-primary-500) 6%, transparent);
+  --atmo-2: color-mix(in srgb, var(--color-primary-500) 4%, transparent);
+  --atmo-overlay: 0.035;
+
+  /* Rounded & soft */
+  --radius-xs: 3px;
+  --radius-sm: 5px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  --shadow-sm: 0 1px 2px 0 rgb(10 10 9 / 0.06);
+  --shadow-md: 0 6px 16px -4px rgb(10 10 9 / 0.1);
+  --shadow-lg: 0 14px 32px -8px rgb(10 10 9 / 0.14);
+  --shadow-xl: 0 24px 48px -12px rgb(10 10 9 / 0.18);
+
+  /* Shared relief vocabulary. Every theme MUST define these — a component asking for
+     `shadow-lift` cannot know which theme is active, and an undefined `var()` resolves to
+     nothing rather than failing. battoni-dev is not a neumorphic theme, so here they resolve
+     to its own ambient drop shadows; a theme with a different light model redefines them and
+     every raised surface follows without a single component changing. */
+  --relief-edge-top: inset 0 1px 0 rgb(255 255 255 / 0.5);
+  --relief-lift: var(--shadow-md);
+  --relief-lift-lg: var(--shadow-lg);
+  --relief-sink: inset 0 1px 3px rgb(10 10 9 / 0.1);
+}
+
+/* ===================================
+ * 5. ROLE TOKENS — DARK overrides (deep & atmospheric — the doggo base)
+ * =================================== */
+[data-theme='dark'] {
+  --color-canvas: #0a0a09; /* deeper than #141413 — true atmosphere */
+  --color-panel: #141413;
+  --color-panel-muted: #1b1b18;
+
+  --color-heading: #d9d9d6; /* chalk */
+  --color-body: #d9d9d6;
+  /* Already inside both floors, so unchanged: muted 5.78 · 5.38 · 5.03, subtle 3.90 · 3.63 · 3.40. */
+  --color-muted: #888b8d; /* fog */
+  --color-subtle: #6f6f64;
+
+  --color-line: #2a2a25;
+  --color-line-strong: #3a3a33;
+
+  /* Unchanged in dark, and that is the point: the fill is the brand's lime in both schemes, so
+     what reads on it is the same ink. A theme whose primary ramp DOES lighten in dark redefines
+     this here — that is what the token is for. */
+  --color-primary-contrast: var(--color-ink-900);
+
+  /* Stronger atmosphere in the dark */
+  --atmo-1: color-mix(in srgb, var(--color-primary-500) 11%, transparent);
+  --atmo-2: color-mix(in srgb, var(--color-primary-500) 6%, transparent);
+  --atmo-overlay: 0.05;
+
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-md: 0 6px 16px -4px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 14px 32px -8px rgb(0 0 0 / 0.5);
+
+  /* `--relief-lift` follows `--shadow-*` on its own; these two do not, because an inset is a
+     light source rather than a drop shadow. A 50% white top edge is a value of the LIGHT
+     scheme — on a dark panel it reads as a hairline of glare. */
+  --relief-edge-top: inset 0 1px 0 rgb(255 255 255 / 0.05);
+  --relief-sink: inset 0 1px 3px rgb(0 0 0 / 0.45);
+  --shadow-xl: 0 24px 48px -12px rgb(0 0 0 / 0.6);
+}
+
+/* ===================================
+ * 7. IDENTITY — the bold battoni "tells" (unlayered → wins over PrimeVue + utilities)
+ * =================================== */
+
+/* — Technical voice — */
+/* House style: prose in the mono face. A choice of THIS theme, not of the bootstrap — the preset and
+   the reset give every theme sans prose, and a theme that wants otherwise says so here. */
+p,
+.p-text,
+.p-paragraph {
+  font-family: var(--font-mono);
+}
+
+.p-tag,
+.p-badge {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.p-datatable-thead > tr > th,
+.p-datatable-column-title {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+label {
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+[data-page-title]::before {
+  color: var(--color-primary-500);
+  content: '>_ ';
+  font-family: var(--font-mono);
+  font-weight: 500;
+}
+
+/*
+ * — Page atmosphere: lime radial glows + faint corner-bracket overlay —
+ *
+ * Published as `--canvas-*` rather than painted straight onto `body`, because `body` is not the
+ * only thing that is the canvas. Anything pinned over the page that calls itself `bg-canvas` —
+ * the mobile navigation's backdrop, a view's bottom action band — was painting the FLAT token
+ * over this, and a hard-edged black rectangle appeared exactly where the atmosphere stopped.
+ *
+ * The `--atmo-*` values above stay private to this theme. These three are the contract, and a
+ * theme that sets none of them gets a flat canvas everywhere, correctly. See
+ * `styles/components/canvas-atmosphere.css`.
+ */
+:root {
+  --canvas-atmosphere:
+    radial-gradient(1100px 600px at 88% -8%, var(--atmo-1), transparent 58%),
+    radial-gradient(820px 520px at -6% 104%, var(--atmo-2), transparent 55%);
+  --canvas-overlay: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='46' height='46'%3E%3Cg fill='none' stroke='%23c0e021' stroke-width='2'%3E%3Cpath d='M6 15V6h9'/%3E%3Cpath d='M40 31v9h-9'/%3E%3C/g%3E%3C/svg%3E");
+  --canvas-overlay-opacity: var(--atmo-overlay);
+}
+
+body {
+  background-image: var(--canvas-atmosphere);
+  background-attachment: fixed;
+}
+
+body::before {
+  background-image: var(--canvas-overlay);
+  content: '';
+  inset: 0;
+  opacity: var(--canvas-overlay-opacity);
+  pointer-events: none;
+  position: fixed;
+  z-index: 0;
+}
+
+/* — Signature green: a glowing bar on the active navigation item — */
+.router-link-exact-active {
+  box-shadow:
+    inset 3px 0 0 0 var(--color-primary-500),
+    -2px 0 14px -3px var(--glow);
+}
+
+/* — Glow halos on interaction — */
+.p-inputtext:focus,
+.p-textarea:focus,
+.p-select.p-focus,
+.p-multiselect.p-focus,
+.p-password:focus-within .p-inputtext {
+  box-shadow: 0 0 0 3px var(--glow-soft);
+}
+
+.p-checkbox-checked .p-checkbox-box {
+  box-shadow: 0 0 0 4px var(--glow-soft);
+}
+
+.p-toggleswitch-checked .p-toggleswitch-slider {
+  box-shadow: 0 0 12px -1px var(--glow);
+}
+
+/* — Gradient + brighter green on active indicators — */
+.p-tablist-active-bar {
+  background-image: var(--grad-lime);
+  box-shadow: 0 0 8px -1px var(--glow);
+}
+
+/* — Corner brackets (kept) — */
+.brand-corners {
+  position: relative;
+}
+
+.brand-corners::before,
+.brand-corners::after {
+  border-color: var(--color-primary-500);
+  border-style: solid;
+  border-width: 0;
+  content: '';
+  height: 12px;
+  pointer-events: none;
+  position: absolute;
+  width: 12px;
+}
+
+.brand-corners::before {
+  border-left-width: 2px;
+  border-top-width: 2px;
+  left: -1px;
+  top: -1px;
+}
+
+.brand-corners::after {
+  border-bottom-width: 2px;
+  border-right-width: 2px;
+  bottom: -1px;
+  right: -1px;
+}
+
+/* — Motion: blinking status dot (for the showcase + status indicators) — */
+.brand-pulse {
+  animation: brand-blink 1.6s ease-in-out infinite;
+}
+
+@keyframes brand-blink {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/* — Signature showcase pieces: gradient progress, glowing timeline node,
+ *   glossary term. Inert under other themes (markup keeps a solid-green base). — */
+.brand-track {
+  background-image: var(--grad-lime);
+  box-shadow: 0 0 8px -1px var(--glow);
+}
+
+.brand-node {
+  box-shadow: 0 0 0 4px var(--glow-soft);
+}
+
+.brand-term {
+  border-bottom: 1px dotted var(--color-primary-500);
+  color: var(--color-primary-600);
+  cursor: help;
+  font: inherit;
+}
+
+.brand-term::after {
+  color: var(--color-primary-500);
+  content: '?';
+  font-size: 0.62em;
+  margin-left: 1px;
+  vertical-align: super;
+}
+
+[data-theme='dark'] .brand-term {
+  color: var(--color-highlight);
+}
+
+.brand-gloss {
+  background: var(--glow-soft);
+  border-left: 2px solid var(--color-primary-500);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  font-size: 0.78rem;
+  line-height: 1.6;
+  padding: 0.6rem 0.75rem;
+}
+
+.brand-gloss b {
+  color: var(--color-heading);
+  font-weight: 500;
+}

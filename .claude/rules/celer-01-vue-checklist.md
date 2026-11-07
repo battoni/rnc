@@ -1,0 +1,311 @@
+---
+description: MANDATORY checklist – run before/after every Vue/TS edit in app.rnc
+paths:
+  - "app.rnc/**/*.vue"
+  - "app.rnc/**/*.ts"
+---
+# Vue/TS Mandatory Checklist
+
+**Canonical rule set:** `.claude/rules/celer-*` (files `01`–`09`; folder summaries in `.cursor/rules/celer-folder-*`).
+
+**Before writing ANY Vue/TS code in this project:**
+
+1. **RULES.md auto-injection**: On Edit/Write, the pre-edit hook injects all `RULES.md` files from the edited file's folder up to `src/` (see `celer-08-rules-auto-injection`). **Closer files override parents.**
+2. Check for a `RULES.md` in the folder of the file being edited **and in every parent folder up to `src/`** when planning or reading without an edit hook.
+3. Read this checklist and verify each item before finishing.
+
+Details for each rule live in the sibling files `02-vue-imports`, `03-vue-script`, `04-vue-template`, `05-module-conventions`. Do not duplicate rule content here.
+
+> **[ESLint]** = auto-enforced by ESLint + Prettier on save (`npm run lint`). These run automatically in the editor. Focus your manual review on the items WITHOUT this tag.
+
+## Script
+
+- [ ] **Imports**: Order + no component imports (02-vue-imports) **[ESLint]**
+- [ ] **Module imports**: Always import from root alias (`@AuthModule`) — never any sub-path (`@AuthModule/...`) (02-vue-imports) **[ESLint]**
+- [ ] **Module structure**: layered dirs + flat `enums/constants/interfaces/types.ts` + `index.ts` barrel re-exporting the public surface; missing symbol → add to barrel, never deep-import (05-module-conventions)
+- [ ] **Imports**: `import type` for type-only imports **[ESLint]**
+- [ ] **Stores before composables**: Stores (`use*Store()`) first ASC, blank line, then composables ASC — never mixed (03-vue-script)
+- [ ] **Reactivity order**: Non-reactive → defineModel → refs → computed; **computed:** all one-line ASC with **no blank lines between** one-liners, then multi-line ASC; **blank line between one-line block and multi-line block** (03-vue-script)
+- [ ] **Watchers**: One-liners only (03-vue-script)
+- [ ] **Lifecycle**: One-liners only (03-vue-script)
+- [ ] **Methods**: Function declarations, grouped // HELPERS and // EVENTS (03-vue-script)
+- [ ] **Variables**: No abbreviations – no f, i, u, a, b, idx, ft in callbacks/anywhere (03-vue-script)
+- [ ] **Callback shadowing**: In `.filter((form) => ...)` inside a function that already has `form` as param, use `formItem` to avoid shadowing (03-vue-script)
+- [ ] **No else**: Ban `else`/wrapper `if`, not terminal ternaries after guards (03-vue-script) **[ESLint]**
+- [ ] **No else in callbacks**: Same for `.then()`, `forEach`, etc. Early return, never `} else {` (03-vue-script) **[ESLint]**
+- [ ] **Early returns**: Not wrappers (03-vue-script)
+- [ ] **One-liner catch**: `.catch(() => (x.value = null))` not `.catch(() => { x.value = null; })` (03-vue-script)
+- [ ] **Conditions**: Extract multi-operand if to semantic const (03-vue-script)
+- [ ] **Blank lines**: Between distinct instructions (03-vue-script)
+- [ ] **API**: Batch payload; no loop of calls; extract to const payload (03-vue-script)
+- [ ] **Backend owns**: Slug, uniqueness (03-vue-script)
+- [ ] **Unused code**: Remove (03-vue-script)
+- [ ] **State**: Single source; no defineModel + props duplicate (03-vue-script)
+- [ ] **Interfaces**: Proper types; no inline as X & {...} (03-vue-script)
+- [ ] **Catch**: Never empty; handle or toast (03-vue-script) **[ESLint]**
+- [ ] **Async**: Chained .then / .catch / .finally (03-vue-script)
+- [ ] **Mutations**: Granular updates using API response (03-vue-script)
+- [ ] **Enum naming**: UPPER_CASE (03-vue-script) **[ESLint]**
+- [ ] **Constant value casing**: UPPER_SNAKE for non-reactive const values (payload/config/default objects, option lists); camelCase for reactive (`ref`/`computed`/`reactive`) + params (03-vue-script)
+
+## Template
+
+- [ ] **i18n**: Templates use `$t()`, never `t()`; import `useI18n`/`t` only when the **script** needs it (04-vue-template) **[ESLint]**
+- [ ] **Siblings**: Blank line between children when parent has 2+ (04-vue-template)
+- [ ] **Tags**: Explicit closing; self-closing with /> (04-vue-template)
+- [ ] **Multiline tags**: Closing `>` on its own line, content on next indented line, closing tag on its own line — never `>content</tag\n>` (04-vue-template)
+- [ ] **Tailwind classes**: Sorted by prettier-plugin-tailwindcss — run Prettier, never manually order **[Prettier]** (04-vue-template)
+- [ ] **Unified class binding**: When an element has BOTH static `class` and bound `:class`, unify into a single `:class` array — static string first, dynamic parts after (04-vue-template)
+- [ ] **v-for**: v-for first; `:key` is UNIQUE — sorts with static attrs (group 6), after `class` ('c' < 'k'), before bound attrs (04-vue-template)
+- [ ] **Attributes**: Groups ordered + alphabetical within each group **[ESLint]** — `key`/`:key` (UNIQUE) and static attrs are group 6, bound attrs (`:` prefix, except `:key`) are group 7 (04-vue-template)
+- [ ] **Same-name shorthand**: `:href="href"` → `:href` — auto-fixed by ESLint (`vue/v-bind-style`) **[ESLint]** (04-vue-template)
+
+- [ ] **Event names**: on{Action} pattern (03-vue-script)
+
+## Touch targets
+
+- [ ] **A hand-written `<button>` carries `touch-target`** — the automatic growth only covers
+      `.p-button-sm` (06-design-system)
+- [ ] **`gap-3` (12px) minimum between adjacent controls**, and never less where one of them is
+      destructive — hit areas overlap and the later sibling wins (06-design-system)
+
+## Brand mark
+
+- [ ] **A logo takes `variant`, and motion props only if it is inline SVG** — never an animated
+      `<img>` (09-brand-mark-contract)
+- [ ] **`pulse` is a value the call site binds, never an event** — no routing knowledge in the atom
+      (09-brand-mark-contract)
+- [ ] **Reduced motion is absence, not shortening**: the resting mark must be a complete, correct
+      mark on its own (09-brand-mark-contract)
+- [ ] **`aria-label` is the PRODUCT's name**, never a person's (09-brand-mark-contract)
+
+## Colors
+
+- [ ] **Role tokens for structure**: Use `bg-canvas`/`bg-panel`/`bg-panel-muted`, `text-heading`/`text-body`/`text-muted`, `text-subtle` (icons only), `border-line`/`border-line-strong` — these flip light↔dark. **Never** raw `surface-*`/`ink-*` shades in components (they don't flip) (06-design-system)
+- [ ] **Brand action**: `primary-*` for actions/highlights/focus
+- [ ] **State tokens**: `success-*`, `info-*`, `warn-*`, `danger-*`, `help-*`, `contrast-*` for status/validation/badges
+- [ ] **No built-in Tailwind palettes**: Never use `sky`, `emerald`, `amber`, `red`, `green`, `neutral`, `yellow`, `slate`, `gray` — always use project tokens
+- [ ] **No hardcoded colors**: never `bg-white`/`text-black` or hex in `.vue` — use role tokens (`bg-canvas`) / `var(--color-*)`
+- [ ] **No `dark:` variants needed**: role tokens flip automatically; reserve `dark:` for genuine one-offs
+
+## Design System
+
+Details in `06-design-system`. Do not duplicate rules here.
+
+- [ ] **Label style**: `text-sm text-muted mb-2 block` — no deviations (06-design-system)
+- [ ] **Label error state**: add `text-danger-700`, keep same structure (06-design-system)
+- [ ] **Text roles**: titles `text-heading`, body `text-body`, labels/hints/timestamps `text-muted`; `text-subtle` never carries a sentence — icons and marks only (06-design-system)
+- [ ] **Field block**: wrapper `flex flex-col gap-2`, form rhythm `gap-4` (06-design-system)
+- [ ] **Radius**: use scale only — `rounded-sm/md/lg/xl`; no arbitrary `rounded-[Npx]` (06-design-system)
+- [ ] **Buttons**: prefer `severity` prop over custom color classes (06-design-system)
+- [ ] **Dialogs**: always use `MMainDialog`, never raw `<Dialog>` (06-design-system)
+
+## View Patterns
+
+Details in `07-view-patterns`. Do not duplicate rules here.
+
+- [ ] **Page structure**: `TheLayout` + `ThePageHeader` + `<aside>` (07-view-patterns)
+- [ ] **Actions hidden when dialog open**: `v-if="!dialogVisible"` on `#actions` slot (07-view-patterns)
+- [ ] **Dialogs in `<aside>`**: all `MMainDialog` and `ConfirmPopup` inside `<aside>`, never inline (07-view-patterns)
+- [ ] **`isFooterless` always set** on `MMainDialog` for create/edit flows (07-view-patterns)
+- [ ] **Title is i18n key**: never pass pre-translated strings to `MMainDialog` title (07-view-patterns)
+- [ ] **`:key` on form molecule**: `editingEntity?.id ?? 'new'` — mandatory for state reset (07-view-patterns)
+- [ ] **Form molecule contract**: owns form + API call, emits `@onClose` + `@onSuccess(entity)` (07-view-patterns)
+- [ ] **Granular list update**: use API response to add/replace in local ref — no full refetch (07-view-patterns)
+- [ ] **Permission guards**: `canRead`, `canCreate`, `canUpdate`, `canDelete` computed from `userStore.hasPermission` (07-view-patterns)
+- [ ] **Destructive actions**: `useConfirm()` + `<ConfirmPopup>` — never `<ConfirmDialog>` for row actions (07-view-patterns)
+
+---
+
+## Quick Ref – Common Mistakes
+
+| Mistake | Fix |
+| ------- | --- |
+| `{{ t('key') }}` or `:label="t('key')"` in a template | `$t('key')` — templates use the global `$t()`; keep `t()` for `<script>` only |
+| `import { X } from '@AuthModule/services'` or any `from '@AuthModule/...'` | `import { X } from '@AuthModule'` (add barrel export if missing) |
+| `>content</tag\n>` (multiline tag) | `>\n  content\n</tag>` — closing `>` on own line, content indented, closing tag on own line |
+| `class="text-sm mb-2 ..."` (wrong Tailwind order) | Run Prettier — prettier-plugin-tailwindcss sorts automatically |
+| `if (data) { x(); }` | `if (!data) return; x();` |
+| `if (a) { ... } else { ... }` | `if (a) { ... return; } ...` |
+| Rewriting `return !x ? false : y` to two lines after guards | Keep the terminal ternary unless it is nested/long/unclear |
+| `.catch(() => { x = null; })` | `.catch(() => (x = null))` |
+| `<Skeleton/><Skeleton/>` | `<Skeleton/>` + blank line + `<Skeleton/>` |
+| `icon` before `class` on Button | `class`, `icon`, `severity`, `size` (group 6 alphabetical: c < i < s) |
+| `:loading` before `:label` on `<Button>` | Bound attrs sort ASC: `:label` ('la') before `:loading` ('lo') |
+| `:resolver` before `:initialValues` on `<Form>` | Bound attrs sort ASC: `:initialValues` ('i') before `:resolver` ('r') |
+| `:group` before `:class` on `<ConfirmPopup>` | Bound attrs sort ASC: `:class` ('c') before `:group` ('g') |
+| `key` or `:key` after bound attrs (`:invalid`, etc.) | `key`/`:key` is UNIQUE → group 6 (static), comes before any bound attr in group 7 |
+| `:class` before static `pt:body` / `pt:header` | Static `pt:*="..."` first, then `:class` (group 6 vs 7) |
+| `(form) =>` when `form` is outer param | `(formItem) =>` |
+| `useUserStore()` and `useRouter()` on consecutive lines | Stores block first (ASC), blank line, composables block (ASC) |
+| `class="..."` + `:class="{ ... }"` on the same element | Single `:class="['...', { ... }]"` array |
+| `bg-surface-50` / `bg-white` for a card | `bg-panel` — role token that flips for dark |
+| `text-ink-700` / `text-surface-600` for a heading/label | `text-heading` / `text-muted` — role tokens that flip |
+| `text-subtle` on a hint, timestamp or subtitle | `text-muted` — `subtle` is for icons and marks, never text |
+| `bg-lime-100` or `bg-gray-50` in a component | `bg-primary-100` (accent) / `bg-panel` (surface) |
+| `bg-emerald-100 text-emerald-700` for a success state | `bg-success-100 text-success-700` — use project semantic palette |
+| `text-red-500` for a validation error icon | `text-danger-500` — `danger` is the project's error color |
+| Inline form inside `MMainDialog` | Extract to `MAddEdit{Entity}Form` molecule |
+| Missing `:key` on form molecule | `:key="editingEntity?.id ?? 'new'"` — always required |
+| Pre-translated string in `MMainDialog` `title` | Pass the i18n key — `MMainDialog` calls `$t()` internally |
+| `<Dialog>` used directly | Always `MMainDialog` |
+| Action button visible while dialog is open | `v-if="!dialogVisible"` on `#actions` slot |
+| `MMainDialog` or `ConfirmPopup` outside `<aside>` | Move inside `<aside>` block at the end of the template |
+| Full list refetch after create/update/delete | Use API response for granular add/replace/remove |
+
+---
+
+## Bad / Good Examples
+
+Worked comparisons for the items developers trip on most. Full rules live in `02`–`07`.
+
+### Import order + no component imports
+
+👎🏼 **BAD**
+
+```vue
+<script setup lang="ts">
+import { MUserForm } from '../MUserForm';
+import { useUserStore } from '@UserModule';
+import { ref } from 'vue';
+import type { User } from '@UserModule';
+</script>
+```
+
+👍🏼 **GOOD**
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue';
+import type { User } from '@UserModule';
+import { useUserStore } from '@UserModule';
+// MUserForm is auto-imported — no import line, just use it in the template
+</script>
+```
+
+### Stores before composables
+
+👎🏼 **BAD**
+
+```typescript
+const { push } = useRouter();
+const { setUser } = useUserStore();
+const toast = useToast();
+```
+
+👍🏼 **GOOD**
+
+```typescript
+const { setUser } = useUserStore();
+
+const toast = useToast();
+const { push } = useRouter();
+```
+
+### Computed: one-line block, then multi-line block
+
+👎🏼 **BAD**
+
+```typescript
+const isEditMode = computed(() => !!props.user);
+const permissionOptions = computed(() =>
+  groups.map((group) => ({ label: group.name, value: group.id })),
+);
+const canSave = computed(() => isEditMode.value && form.valid);
+```
+
+👍🏼 **GOOD**
+
+```typescript
+const canSave = computed(() => isEditMode.value && form.valid);
+const isEditMode = computed(() => !!props.user);
+
+const permissionOptions = computed(() =>
+  groups.map((group) => ({ label: group.name, value: group.id })),
+);
+```
+
+### Watchers and methods
+
+👎🏼 **BAD**
+
+```typescript
+watch(count, (value) => {
+  total.value = value * 2;
+});
+
+const onSubmit = (payload) => saveUser(payload);
+```
+
+👍🏼 **GOOD**
+
+```typescript
+watch(count, onCountChange);
+
+// EVENTS
+function onCountChange(value: number) {
+  total.value = value * 2;
+}
+
+function onSubmit(payload: UserPayload) {
+  saveUser(payload);
+}
+```
+
+### No else — early return
+
+👎🏼 **BAD**
+
+```typescript
+if (user) {
+  setUser(user);
+} else {
+  redirectToLogin();
+}
+```
+
+👍🏼 **GOOD**
+
+```typescript
+if (!user) {
+  redirectToLogin();
+  return;
+}
+
+setUser(user);
+```
+
+### Template attribute order + unified class binding
+
+👎🏼 **BAD**
+
+```vue
+<Button
+  :key="user.id"
+  v-for="user in users"
+  :loading="saving"
+  icon="pi pi-check"
+  class="mt-1"
+  :label="user.name"
+/>
+
+<span
+  class="rounded-sm p-2"
+  :class="{ 'bg-primary-100': active }"
+/>
+```
+
+👍🏼 **GOOD**
+
+```vue
+<Button
+  v-for="user in users"
+  class="mt-1"
+  icon="pi pi-check"
+  :key="user.id"
+  :label="user.name"
+  :loading="saving"
+/>
+
+<span :class="['rounded-sm p-2', { 'bg-primary-100': active }]" />
+```

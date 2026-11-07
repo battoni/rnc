@@ -1,0 +1,102 @@
+# -----------------------------------------------------------------------------
+# MANUAL DEPLOY NOTES (REAL SERVER) — the self-hosted alternative to Vercel
+# -----------------------------------------------------------------------------
+# app.rnc publishes on Vercel by default (vercel.json, DEPLOY.md). A product hosted on its own
+# server serves the same build with this vhost instead. It is a static SPA: nginx serves the
+# Vite build and nothing else — there is no PHP here; the API has its own vhost (api.rnc/.nginx).
+#
+# 1) Build on the server (dist/ is gitignored, so it must be produced there):
+#    cd /var/www/rnc/app.rnc
+#    npm ci && npm run build
+#
+# 2) Copy this vhost file to nginx:
+#    sudo cp /var/www/rnc/app.rnc/.nginx /etc/nginx/sites-available/app.rnc.example.com
+#
+# 3) Enable site (safe for multi-site servers):
+#    sudo ln -s /etc/nginx/sites-available/app.rnc.example.com /etc/nginx/sites-enabled/app.rnc.example.com
+#    sudo nginx -t
+#    sudo systemctl reload nginx
+#
+# 4) Multi-site checklist:
+#    - Keep one file per domain in /etc/nginx/sites-available
+#    - Ensure each site has unique server_name, root, access_log and error_log
+#    - Avoid duplicate server_name across enabled files
+#    - Confirm only one default_server per listen port (if used)
+#
+# 5) DNS checklist (required before Certbot):
+#    - Point the subdomain A record at the server:
+#      app.rnc.example.com -> <server IP>
+#    - Verify before requesting a certificate:
+#      dig +short app.rnc.example.com
+#
+# 6) HTTPS/SSL with Certbot (Let's Encrypt):
+#    sudo apt update
+#    sudo apt install -y certbot python3-certbot-nginx
+#    sudo certbot --nginx -d app.rnc.example.com
+#    sudo certbot renew --dry-run
+#
+# 7) The API must accept this origin: add the app's host to the API's SANCTUM_STATEFUL_DOMAINS,
+#    CORS_ALLOWED_ORIGINS and SESSION_DOMAIN, or login fails with a 419 or a CORS error — neither
+#    of which names the cause.
+# -----------------------------------------------------------------------------
+
+server {
+    server_name app.rnc.example.com;
+
+    # The Vite build output, not the project root.
+    root /var/www/rnc/app.rnc/dist;
+    index index.html;
+
+    charset utf-8;
+
+    access_log /var/log/nginx/celer-access.log;
+    error_log  /var/log/nginx/celer-error.log;
+
+    # Everything here is behind a login — keep it out of search indexes and AI training sets.
+    # `index.html` carries the same directive as a meta tag; this covers what nginx serves
+    # without HTML to put a tag in. `always` extends it to error responses.
+    add_header X-Robots-Tag "noindex, nofollow, noarchive, nosnippet, noimageindex" always;
+
+    # SPA history fallback: an unknown path is a Vue route, not a missing file. Without it, F5 on
+    # any deep route is nginx's 404.
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # REPEATING X-Robots-Tag below is not redundancy. In nginx an `add_header` inside a location
+    # DISCARDS every `add_header` inherited from the server block, so a location that sets
+    # Cache-Control and not this would ship its responses indexable.
+
+    # Vite writes content-hashed filenames, so a new build is a new URL — cache them hard.
+    location /assets/ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        add_header X-Robots-Tag "noindex, nofollow, noarchive, nosnippet, noimageindex" always;
+    }
+
+    # index.html must NOT be cached, or a deploy goes unnoticed until the cache expires.
+    location = /index.html {
+        expires -1;
+        add_header Cache-Control "no-store";
+        add_header X-Robots-Tag "noindex, nofollow, noarchive, nosnippet, noimageindex" always;
+    }
+
+    location ~ /\.(?!well-known).* {
+        deny all;
+    }
+
+    # --- STAGING ONLY: shut the door, do not just ask ---------------------------------------
+    # robots.txt and X-Robots-Tag are requests. Basic auth is safe on THIS host because a person
+    # loads it in a browser.
+    #
+    #   sudo apt install -y apache2-utils
+    #   sudo htpasswd -c /etc/nginx/.htpasswd-app.rnc staging
+    #
+    # Then uncomment:
+    # auth_basic           "staging";
+    # auth_basic_user_file /etc/nginx/.htpasswd-app.rnc;
+    #
+    # Do NOT copy this to the API vhost: a browser does not attach basic-auth credentials to a
+    # cross-origin XHR, so every call from this app would 401. api.rnc/.nginx uses an IP allowlist.
+    # ---------------------------------------------------------------------------------------
+}

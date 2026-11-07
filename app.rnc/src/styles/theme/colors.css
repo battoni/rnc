@@ -1,0 +1,19 @@
+/**
+ * ============================================================
+ * ACTIVE THEME SELECTOR
+ *
+ * The active theme is chosen in ONE place: the VITE_ACTIVE_THEME env var.
+ * It resolves to a file in themes/ via the `@ActiveTheme` Vite alias, and the
+ * ACTIVE_THEME constant (src/constants/theme.constant.ts) reads the same var.
+ *
+ *   .env →  VITE_ACTIVE_THEME=battoni-dev   (must match a themes/<name>.css file)
+ *
+ * To start a new theme: @import a sibling theme and override its brand, or copy
+ * themes/_template.css when the role tokens change (RULES.md, "Adding a theme").
+ * Then set the env var to its name. Restart dev (Vite caches the @import graph). Nothing else
+ * changes — PrimeVue preset, Tailwind utilities, role tokens and light/dark all
+ * follow automatically.
+ * ============================================================
+ */
+
+@import '@ActiveTheme';

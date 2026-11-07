@@ -1,0 +1,156 @@
+# Cortex sync manifest — how each path propagates from rnc to downstream projects.
+#
+# Columns (tab-separated):  MODE <TAB> PATH-OR-GLOB
+#
+# MODE:
+#   OVERWRITE  — never edited downstream; the transform writes straight to the project
+#                worktree (the AI-tooling layer: rules, commands, hooks, cortex knowledge).
+#   MERGE      — editable downstream; the transform lands on the `rnc-upstream` vendor
+#                branch and git 3-way-merges into main (all sub-project code + tests + config).
+#   LOCAL      — the project owns it; sync NEVER touches it (identity, brand, roster).
+#   SKIP       — never synced at all (sync metadata, local-only files).
+#   RETIRED    — a path rnc renamed or removed. Never tracked here; downstream the sync reports
+#                every file that still matches, and deletes them with --prune-retired.
+#
+# Matching: FIRST MATCH WINS — list specific LOCAL/SKIP/OVERWRITE exceptions ABOVE the broad
+# catch-alls. A path matches if it equals the entry, the entry ends with '/' and is a path
+# prefix, or the entry contains '*' (fnmatch glob; '*' spans '/'). Every tracked file MUST
+# resolve to a mode — there is NO implicit default; the final `*` catch-all guarantees it.
+# Validate coverage with:  python3 cortex/sync/sync.py --audit
+#
+# Classification scans git-tracked files only — build artifacts (node_modules/, vendor/,
+# dist/, playwright-report/, test-results/) are gitignored and never seen.
+
+# ---- RETIRED: renamed or removed upstream; must not live on downstream ----
+# The command generation before the `battoni-` prefix. Projects bootstrapped before the rename kept
+# both generations, because the sync writes what rnc has and never deletes what it dropped.
+RETIRED	.claude/commands/commit.md
+RETIRED	.claude/commands/create-pr.md
+RETIRED	.claude/commands/explain-rnc.md
+RETIRED	.claude/commands/generateApiRules.md
+RETIRED	.claude/commands/generateComponentRules.md
+RETIRED	.claude/commands/pre-commit.md
+RETIRED	.claude/commands/publish-pr.md
+RETIRED	.claude/commands/reviewArcusCode.md
+RETIRED	.claude/commands/reviewDesignConventions.md
+RETIRED	.claude/commands/reviewVueConventions.md
+RETIRED	.claude/commands/setup-project.md
+RETIRED	.claude/commands/start-session.md
+RETIRED	.cursor/rules/commit.mdc
+RETIRED	.cursor/rules/create-pr.mdc
+RETIRED	.cursor/rules/explain-rnc.mdc
+RETIRED	.cursor/rules/generate-api-rules.mdc
+RETIRED	.cursor/rules/generate-component-rules.mdc
+RETIRED	.cursor/rules/pre-commit.mdc
+RETIRED	.cursor/rules/publish-pr.mdc
+RETIRED	.cursor/rules/reviewArcusCode.mdc
+RETIRED	.cursor/rules/reviewDesignConventions.mdc
+RETIRED	.cursor/rules/reviewVueConventions.mdc
+RETIRED	.cursor/rules/setup-project.mdc
+RETIRED	.cursor/rules/start-session.mdc
+# Laravel Boost's generated copies of the root arcus-* skills: two versions of one skill, and the
+# copy loaded only in a session opened inside api.rnc/. boost.json no longer targets claude_code.
+RETIRED	api.rnc/.claude/skills/
+
+# ---- SKIP: never synced (sync metadata, local-only) ----
+SKIP	.claude/settings.local.json
+SKIP	.cortex-version
+SKIP	.cortex-sync.conf
+SKIP	.cortex-loss-report.txt
+
+# rnc's own documentation portal (built from the docs-portal skill). It documents
+# THIS monorepo, so it must never propagate. manifest.tsv is itself specialized on sync,
+# so this becomes `SKIP docs.<project>/` downstream — protecting each project's own docs.
+SKIP	docs.rnc/
+
+# rnc's OWN public landing site (the battoni.dev brand instance + landing-page reference
+# template). It is brand content for THIS repo — it must never propagate verbatim into a client
+# project (the rnc->project word-map does not rewrite the literal `battoni.dev` path). Each
+# project bootstraps its own `public.<project>`. Specialized on sync to `SKIP public.<project>/`.
+SKIP	public.rnc/
+
+# ---- LOCAL: project identity / brand / roster — never overwritten ----
+# Core/local extension points: every *.local.* file (routes.local.ts, navItems.local.ts,
+# api.local.php, LocalSeeder.php via *.local naming, locales/local/*) is the project-owned
+# half of a synced core file. Projects register their feature wiring here so a sync can NEVER
+# revert it — the structural fix for the silent-revert class of bug. rnc ships these as
+# empty stubs (MERGE would defeat the purpose, so they are LOCAL even in rnc).
+# Feature folders (.claude/feature-flow.md): the intent, spec, plan and state of THIS project's work.
+LOCAL	specs/
+# The project's brand chain at the repo root, written by the `battoni-new-brand` skill (the
+# survey, SYSTEM.md, design-system/). It is identity: a `MERGE *` keeps it safe only while
+# rnc ships no `brand/` of its own, and the first one it shipped would merge into every child.
+LOCAL	brand/
+LOCAL	*.local.ts
+LOCAL	*.local.vue
+LOCAL	*.local.php
+LOCAL	*.local.json
+LOCAL	Makefile.local
+LOCAL	*/locales/local/*
+
+# Dependency lock files: each project regenerates its own (npm/composer install) and
+# pins its own versions — rnc must never overwrite or merge them.
+LOCAL	*composer.lock
+LOCAL	*package-lock.json
+LOCAL	*pnpm-lock.yaml
+LOCAL	*yarn.lock
+
+# Deploy: the workflow and the script that publishes an API to a server.
+#
+# LOCAL and it is a SAFETY rule, not tidiness. A deploy names a host, a path and an SSH
+# account that belong to exactly one project — and rnc's script runs
+# `migrate:fresh --seed`, which is correct for a bootstrap that keeps no data and would
+# DESTROY the database of a child that has shipped. lifeshifter has had real user data
+# since 2026-08-31. As MERGE this file would arrive there as a conflict somebody resolves
+# at 6pm, and the resolution would be a dropped production database.
+#
+# Each project writes its own, from its own premises. What travels is the shape, by
+# reading rnc's — never the file.
+LOCAL	*/deploy.sh
+LOCAL	.github/workflows/deploy-*.yml
+
+LOCAL	CLAUDE.md
+LOCAL	README.md
+LOCAL	.claude/settings.json
+# Retired (2026-11-04): "the session command lists THIS repo's sub-projects, so each project owns
+# its copy" — LOCAL froze every child's copy (four still said "read all five files" with nine
+# rules shipped), and `/battoni-start-session <id>`, the build step of the feature flow, could
+# never reach them. The command now reads the sub-projects from the root CLAUDE.md's table,
+# which IS local, and travels with the rest of .claude/ as OVERWRITE.
+LOCAL	.cursor/rules/project-context.mdc
+LOCAL	.cursor/rules/celer-folder-theme.mdc
+LOCAL	cortex/README.md
+LOCAL	cortex/logo/
+
+# A project's PLANS are the project's. `cortex/` is OVERWRITE, which is right for the knowledge
+# the bootstrap owns and catastrophic for a phase tracker: largatudoevai's README lists nine real
+# phases and their PRs, and a sync would replace it with the empty template shipped here. The
+# tracker's SHAPE travels — it is written down in the file — but its contents never do.
+LOCAL	cortex/plans/
+
+# Visual identity / brand — each project keeps its own; rnc must NEVER overwrite it.
+# colors.css is the declared "brand contract"; logo + favicons + the page title are identity.
+LOCAL	app.rnc/src/styles/theme/colors.css
+LOCAL	app.rnc/src/components/atoms/ALogo/
+LOCAL	app.rnc/src/assets/logo/
+LOCAL	app.rnc/public/favicon/
+LOCAL	app.rnc/index.html
+# Brand-mark atoms + the brand style-guide view ARE identity (the mark, pattern, signature,
+# and showcase). Project-owned so a client's brand never reverts to rnc's — and rnc's
+# brand never ships into a client (keeps --brand-audit clean).
+LOCAL	app.rnc/src/components/atoms/ABrandMark/
+LOCAL	app.rnc/src/components/atoms/ABrandPattern/
+LOCAL	app.rnc/src/components/atoms/ABrandSignature/
+LOCAL	app.rnc/src/modules/Showcase/views/Brand/
+
+# ---- OVERWRITE: AI-tooling layer — safe to overwrite (not edited downstream) ----
+OVERWRITE	.claude/
+OVERWRITE	.cursor/
+OVERWRITE	cortex/
+
+# ---- MERGE: everything else — all sub-project code, tests, config, root tooling ----
+# Covers app.rnc, api.rnc, codelumen, liquen, vitrum + Makefile, .github/ (CI), .gitignore,
+# .nvmrc, .vscode/, CLAUDE.local.md.example. Conservative by design: MERGE never silently
+# overwrites — it surfaces a git conflict only where BOTH sides changed the same lines.
+# Retune specific brand/identity files up to LOCAL as churn reveals them.
+MERGE	*

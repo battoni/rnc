@@ -1,0 +1,46 @@
+# Personal Claude Overrides
+
+<!-- Copy this file to CLAUDE.local.md (gitignored) and uncomment what applies to you.
+     This file layers on top of CLAUDE.md — use it for personal preferences and local environment details. -->
+
+## Local environment
+
+<!-- Uncomment and fill in your local URLs and DB details.
+     Claude uses these to give accurate commands and links during your session.
+
+My local api.rnc URL: http://api.rnc.test
+My local app.rnc URL: http://localhost:5173
+My local DB host: 127.0.0.1:3306
+My local DB name: api.rnc
+-->
+
+## Response style
+
+<!-- Uncomment to adjust how Claude communicates with you.
+
+I prefer concise responses without trailing summaries — I can read the diff.
+When reviewing code, show the corrected version alongside the violation, not just the rule name.
+When I ask a question without showing a file, answer directly — don't ask me to confirm first.
+-->
+
+## Role and experience
+
+<!-- Uncomment to help Claude calibrate explanations to your background.
+
+I'm a senior full-stack developer. Skip beginner-level explanations.
+I know Laravel and Vue well. When introducing a new pattern, explain the why, not the what.
+-->
+
+## Workflow preferences
+
+<!-- Uncomment to shape how Claude approaches tasks.
+
+When fixing a bug, show me the root cause before the fix.
+Don't suggest refactors outside the scope of the task unless they're blocking correctness.
+When creating a new feature, ask me which sub-project it belongs to before writing any code.
+-->
+
+## Personal permissions
+
+<!-- Bash allowlist entries belong in .claude/settings.local.json, not here.
+     See .claude/settings.local.json for the format. -->

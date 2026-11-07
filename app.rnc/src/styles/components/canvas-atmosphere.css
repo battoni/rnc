@@ -1,0 +1,45 @@
+/*
+ * A pinned surface that IS the canvas, rather than a flat rectangle the colour of the canvas.
+ *
+ * `bg-canvas` gives an element the canvas COLOUR. That is the whole canvas only in a theme with
+ * no atmosphere. A theme that paints glows or a texture on `body` leaves anything wearing plain
+ * `bg-canvas` looking like a hole punched in the page — which is exactly how this was found: the
+ * mobile navigation's backdrop, `fixed` across the bottom at z-40, drew a hard-edged black band
+ * under the bar where the corner-bracket pattern stopped dead.
+ *
+ * Any element pinned over the page that means "the canvas continues here" wears this alongside
+ * `bg-canvas`. It reproduces the two atmosphere layers the theme publishes:
+ *
+ *   --canvas-atmosphere        background-image layers (glows, gradients)   default: none
+ *   --canvas-overlay           a repeating tile drawn over them             default: none
+ *   --canvas-overlay-opacity   how faint that tile is                       default: 0
+ *
+ * Every default is "paint nothing", so a theme that publishes none of them keeps the flat canvas
+ * it already had. Nothing here knows what the current theme's atmosphere looks like.
+ *
+ * `background-attachment: fixed` is what makes it line up. Both layers are anchored to the
+ * VIEWPORT on `body` — the glows through the same `background-attachment`, the tile through
+ * `body::before` being `position: fixed; inset: 0`. Anchoring these to the viewport too means the
+ * gradient falls at the same place and the tile lands on the same grid, so the seam disappears
+ * instead of merely becoming less obvious. Painting them from the element's own box would tile
+ * from its top-left corner and put a visible break at its edge.
+ */
+.canvas-atmosphere {
+  background-attachment: fixed;
+  background-image: var(--canvas-atmosphere, none);
+}
+
+/*
+ * The tile is a second layer at its own opacity, so it cannot be folded into the rule above.
+ * `absolute` inside a `fixed` or `relative` parent; a static parent would let it escape to the
+ * page box, so the surfaces that wear this are positioned already.
+ */
+.canvas-atmosphere::after {
+  background-attachment: fixed;
+  background-image: var(--canvas-overlay, none);
+  content: '';
+  inset: 0;
+  opacity: var(--canvas-overlay-opacity, 0);
+  pointer-events: none;
+  position: absolute;
+}

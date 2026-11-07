@@ -1,0 +1,49 @@
+<script setup lang="ts">
+import { computed, useId } from 'vue';
+
+const props = withDefaults(
+  defineProps<{
+    rotate?: number;
+    tile?: number;
+  }>(),
+  {
+    rotate: 0,
+    tile: 150,
+  }
+);
+
+const patternId = useId();
+
+const tileHeight = computed(() => props.tile * 1.18);
+</script>
+
+<template>
+  <svg
+    aria-hidden="true"
+    class="pointer-events-none h-full w-full"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <defs>
+      <pattern
+        :id="patternId"
+        patternUnits="userSpaceOnUse"
+        :height="tileHeight"
+        :patternTransform="`rotate(${rotate})`"
+        :width="tile"
+      >
+        <path
+          d="M38.73,24.46h-5.11c-0.56-0.01-1.01-0.46-1.01-1.02l0,0v-6.11l0,0c0-0.56,0.46-1.02,1.02-1.02v0h5.1c1.13,0,2.04-0.91,2.04-2.04V8.15c0-4.5-3.65-8.15-8.15-8.15H10.19C9.07,0,8.15,0.91,8.15,2.04v5.1c0,0.56-0.46,1.01-1.01,1.01h-5.1C0.91,8.15,0,9.07,0,10.19v34.65c0,2.25,1.82,4.08,4.08,4.08h26.5c1.13,0,2.04-0.91,2.04-2.04v-5.1h0c0-0.56,0.46-1.02,1.02-1.02h5.1c1.13,0,2.04-0.91,2.04-2.04V26.5C40.76,25.37,39.85,24.46,38.73,24.46z M31.59,40.76L31.59,40.76l-22.42,0c-0.56,0-1.02-0.46-1.02-1.02h0V9.26h0c0-0.03,0-0.05,0-0.08c0-0.56,0.46-1.02,1.02-1.02c0.03,0,0.06,0,0.08,0V8.15h22.34c0.56,0,1.02,0.46,1.02,1.02v6.12c0,0.56-0.46,1.01-1.02,1.01H17.33c-0.56,0-1.02,0.46-1.02,1.02v14.27c0,0.56,0.46,1.02,1.02,1.02h6.11c0.56,0,1.02-0.46,1.02-1.02v-6.11c0-0.56,0.46-1.02,1.02-1.02h6.11c0.56,0,1.02,0.46,1.02,1.02v14.27C32.61,40.31,32.16,40.76,31.59,40.76z"
+          fill="currentColor"
+          transform="translate(40 46)"
+        />
+      </pattern>
+    </defs>
+
+    <rect
+      height="100%"
+      width="100%"
+      :fill="`url(#${patternId})`"
+    />
+  </svg>
+</template>

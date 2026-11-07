@@ -1,0 +1,51 @@
+# api.rnc — the private API of a product built on the rnc bootstrap.
+#
+# Nothing here is public: no response is meant to be indexed, quoted, or used as
+# training data. Responses also carry X-Robots-Tag (see PreventIndexing middleware).
+#
+# robots.txt is a request, not a control. It stops well-behaved crawlers only —
+# the actual protection is authentication. Keep both.
+
+# Every crawler, every path.
+User-agent: *
+Content-Signal: search=no, ai-input=no, ai-train=no
+Disallow: /
+
+# Listed individually as well: several AI operators honour only their own token and
+# treat the wildcard above as not addressed to them.
+#
+# `Content-Signal` is repeated in this group on purpose, and it is not redundant with
+# `Disallow`. Three of the tokens below — Claude-User, ChatGPT-User, Perplexity-User —
+# are USER-TRIGGERED fetches, which their operators document as not bound by robots.txt
+# exclusion: somebody pasted a link and the agent goes to read it. For those, this line
+# is the only statement that reaches them at all.
+
+User-agent: AI2Bot              # Allen Institute
+User-agent: Amazonbot           # Amazon
+User-agent: anthropic-ai        # Anthropic (legacy token)
+User-agent: Applebot-Extended   # Apple Intelligence training
+User-agent: Bytespider          # ByteDance
+User-agent: CCBot               # Common Crawl — feeds most training sets
+User-agent: ChatGPT-User        # OpenAI, user-triggered fetch
+User-agent: Claude-SearchBot    # Anthropic search index
+User-agent: Claude-User         # Anthropic, user-triggered fetch
+User-agent: ClaudeBot           # Anthropic crawler
+User-agent: cohere-ai           # Cohere
+User-agent: Diffbot             # Diffbot
+User-agent: DuckAssistBot       # DuckDuckGo AI
+User-agent: FacebookBot         # Meta language models
+User-agent: FirecrawlAgent      # Firecrawl
+User-agent: Google-Extended     # Gemini / Vertex training (separate from Googlebot)
+User-agent: GPTBot              # OpenAI training crawler
+User-agent: ImagesiftBot        # Imagesift
+User-agent: meta-externalagent  # Meta AI crawler
+User-agent: OAI-SearchBot       # OpenAI search index
+User-agent: Omgilibot           # Webz.io
+User-agent: PanguBot            # Huawei
+User-agent: Perplexity-User     # Perplexity, user-triggered fetch
+User-agent: PerplexityBot       # Perplexity crawler
+User-agent: Timpibot            # Timpi
+User-agent: Webzio-Extended     # Webz.io AI
+User-agent: YouBot              # You.com
+Content-Signal: search=no, ai-input=no, ai-train=no
+Disallow: /

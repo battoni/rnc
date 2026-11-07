@@ -1,0 +1,284 @@
+---
+description: Design system rules – typography, spacing, radius, component patterns for app.rnc
+paths:
+  - "app.rnc/**/*.vue"
+  - "app.rnc/**/*.ts"
+---
+# Design System Rules
+
+This file is self-contained: every rule it enforces is stated here. If the project keeps `codelumen/`,
+`codelumen/design-system.md` is the long form with examples; this file does not depend on it.
+
+**Retired:** "Canonical source: `codelumen/design-system.md`". A project may delete `codelumen/`, and
+this file is synced as OVERWRITE, so a rule that deferred to it deferred to nothing.
+
+---
+
+## Color tokens & scheme (CRITICAL)
+
+app.rnc is **light/dark themed**. Components must use semantic tokens that flip per scheme — never raw brand ramps. Full reference: `app.rnc/src/styles/theme/RULES.md`.
+
+- **Structure → role tokens** (these flip light↔dark automatically):
+
+  | Token | Use for |
+  | --- | --- |
+  | `bg-canvas` | page background |
+  | `bg-panel` | cards, panels, raised surfaces |
+  | `bg-panel-muted` | hover / subtle fills |
+  | `text-heading` | titles, strong headings |
+  | `text-body` | default body text |
+  | `text-muted` | labels, secondary text, hints, placeholders |
+  | `text-subtle` | icons and marks — never text |
+  | `border-line`, `divide-line` | default borders / dividers |
+  | `border-line-strong` | emphasized borders |
+
+- **Meaning → state palettes:** `success` / `info` / `warn` / `danger` / `help` / `contrast` (e.g. `text-danger-700`, `bg-success-100`).
+- **Brand action → `primary-*`.**
+
+❌ **NEVER** use raw `surface-*` / `ink-*` shades, `bg-white` / `text-black`, hex literals, or Tailwind built-in palettes (`gray`, `sky`, `emerald`, `red`, `slate`, …) — none of these flip for dark mode.
+
+✅ You almost never need `dark:` variants — role tokens handle the flip. Reserve `dark:` for genuine one-offs.
+
+---
+
+## Typography (CRITICAL)
+
+### Form labels
+
+Standard label:
+```vue
+<label class="mb-2 block text-sm text-muted" for="fieldId">
+  {{ $t('key') }}
+</label>
+```
+
+Error state — same structure, add color class:
+```vue
+<label :class="['mb-2 block text-sm', fieldError ? 'text-danger-700' : 'text-muted']" for="fieldId">
+```
+
+❌ **NEVER:** `font-medium` or a different tier on a standard label — `text-muted` is the label color.
+
+### Nothing renders below 12px
+
+`text-xs` is the floor. When a label does not fit, the layout pays — in height, in a wrapped line, in
+a scroll — and the type does not shrink. A dense grid that cannot hold a 14px name in its smallest
+cell is a grid whose cell is too small.
+
+### Text role mapping
+
+| Role | Class |
+| --- | --- |
+| Page/dialog titles, strong headings | `text-heading` |
+| Default body text | `text-body` |
+| Form labels, secondary labels | `text-muted` |
+| Supporting/hint text, timestamps, subtitles, placeholders | `text-muted` |
+| Icons, chevrons, decorative marks (no text) | `text-subtle` |
+| Error text | `text-danger-700` |
+
+### `subtle` never carries a sentence (CRITICAL)
+
+**Text someone must read is `text-muted` or stronger — however small or secondary it is.**
+`text-subtle` is for icons and marks. The two tiers have different floors, measured on canvas, panel
+and panel-muted in both schemes: `muted` clears **4.5:1** (normal text), `subtle` clears **3:1**
+(WCAG 1.4.11, an icon a person has to find). The measurements and the test live in
+`app.rnc/src/styles/theme/RULES.md` and `e2e/theme/contrast.spec.ts`.
+
+❌ **NEVER:** `<small class="text-subtle text-xs">{{ $t('form.hint') }}</small>`
+
+✅ **ALWAYS:** `<small class="text-muted text-xs">{{ $t('form.hint') }}</small>` — and
+`<i class="pi pi-chevron-down text-subtle" />` for the icon beside it.
+
+**Retired:** "Muted/supporting/hint text: `text-muted` to `text-subtle`". It let a sentence pick the
+faint tier, and 57 did — `subtle` measured 1.72:1 on a panel, the one tier nobody could read.
+
+---
+
+## Spacing (CRITICAL)
+
+### Field block pattern
+
+Always wrap a label + input pair like this:
+
+```vue
+<div class="flex flex-col gap-2">
+  <label class="mb-2 block text-sm text-muted" for="id">...</label>
+  <InputText id="id" ... />
+</div>
+```
+
+- Field wrapper: `flex flex-col gap-2`
+- Label bottom margin: `mb-2`
+- Form vertical rhythm (between field blocks): `gap-4`
+
+❌ **NEVER:** ad-hoc `mt-4`, `mb-6`, `py-3` on individual fields — use the gap on the parent form wrapper.
+
+---
+
+## Radius
+
+Use only values from the project radius scale. Do not introduce arbitrary radius values.
+
+**Source of truth: `--radius-*` in the active theme.** The values below are `battoni-dev`'s; another
+theme sets its own. What does not change with the brand is the ROLE of each step.
+
+| Token | `battoni-dev` | Tailwind class | Use for |
+| --- | --- | --- | --- |
+| `none` | `0` | `rounded-none` | — |
+| `xs` | `3px` | `rounded-xs` | Chips, tags, swatches |
+| `sm` | `5px` | `rounded-sm` | Small controls, inline pills |
+| `md` | `8px` | `rounded-md` | Form fields, buttons |
+| `lg` | `12px` | `rounded-lg` | Cards, panels, lists |
+| `xl` | `16px` | `rounded-xl` | Modals, large full-bleed containers |
+
+❌ **NEVER:** `rounded-[6px]`, `rounded-[8px]`, `rounded-2xl`, `rounded-full` unless intentionally pill-shaped.
+
+---
+
+## Buttons (CRITICAL)
+
+Prefer PrimeVue `severity` over custom color classes. PrimeVue's token system already handles background, border, hover, and active states for all severities — in both light and dark.
+
+✅ **ALWAYS:**
+```vue
+<Button severity="primary" label="Save" />
+<Button severity="secondary" label="Cancel" />
+<Button severity="danger" label="Delete" />
+```
+
+❌ **NEVER:** add `bg-*`, `border-*`, `text-*` color classes to a `<Button>` to achieve a semantic intent that a severity already covers:
+```vue
+<!-- Wrong — severity="danger" does this for you -->
+<Button class="bg-danger-500 text-white border-danger-500" label="Delete" />
+```
+
+Exception: layout-only classes (`w-full`, `mt-2`, `shadow-none`) are fine alongside severity.
+
+### The label on a filled button (CRITICAL)
+
+**A filled button's label colour is the preset's decision, never the call site's.** It is measured
+against that button's own fill — rest, hover AND active — and the floor is 4.5:1, because a button
+label is normal text. The numbers live in `styles/theme/RULES.md` ("What sits ON a fill").
+
+- **The brand fill takes `--color-primary-contrast`** — `text-primary-contrast` in a template. Never
+  a raw `text-ink-*` or `text-white` on a `bg-primary-*` fill: which one reads is a property of the
+  active brand, and a component cannot know it.
+- **`severity` already carries the right label** in both schemes. Setting `severity` and then
+  "correcting" the text colour with a class means one of the two is wrong.
+- **If a filled button reads badly, fix the preset** (`libraries/primevue/theme.ts`), not the one
+  button in front of you. A per-component colour class is how a system-wide rule dies.
+
+❌ **NEVER:**
+
+```vue
+<button :class="isSelected ? 'bg-primary-500 text-ink-950' : '…'">
+<Button class="text-white" severity="warn" :label="$t('…')" />
+```
+
+✅ **ALWAYS:**
+
+```vue
+<button :class="isSelected ? 'bg-primary-500 text-primary-contrast' : '…'">
+<Button severity="warn" :label="$t('…')" />
+```
+
+---
+
+## Breakpoints: name them, never write one inline
+
+`--breakpoint-3xl: 120rem` is declared in `@theme`, and any breakpoint added later goes there too.
+
+**Never reach for `min-[1920px]:` instead.** An arbitrary min-width variant is emitted BEFORE the
+named ones, so at 2000px a `2xl:` rule comes later in the sheet and wins — the grid renders four
+columns while the class list promises five, and nothing reports a conflict: no error, no warning,
+no failing check. Measured in this project's own build, the arbitrary variant lands ~5KB earlier
+in the emitted CSS than the named one.
+
+The only way to catch it is to widen a window past the breakpoint and count, which is why this is
+a rule and not a preference.
+
+---
+
+## Touch targets (CRITICAL)
+
+**On a touch screen every interactive control has a hit area of at least 44×44px, and adjacent
+controls sit at least 12px apart.**
+
+The size a control is DRAWN at is a density decision and stays as it is — `size="small"` is a
+legitimate choice and this product uses it deliberately, on screens read at a desk as much as
+held in a hand. What must not stay small is the area a thumb has to land on.
+
+- **The hit area is handled for you.** `styles/components/touch-target.css` grows `.p-button-sm`
+  by 6px on every side under `@media (pointer: coarse)`, with a transparent pseudo-element, and
+  the default-size controls — `.p-button`, `.p-select`, `.p-multiselect`, which includes a dialog's
+  close button — by 2px past their border, which takes their 40–42px to 44. Nothing you write
+  needs to know about it, and a mouse — which is precise — is left alone.
+- **It lives in app CSS, not in the PrimeVue preset**, and that is not a preference: the preset's
+  `global.css` block does not honour an `@media` rule, so the declarations were served to the
+  browser and never applied.
+- **A hand-written control is not covered.** Give it the `touch-target` class, which opts into
+  the same treatment. It works on a `<button>` and on an `<a>` — the mobile bar's links are `<a>`
+  and were 38×34 until they asked.
+- **`touch-target` works on a PrimeVue icon-only button too.** The growth is a `::before`, which
+  PrimeVue's button styles never use, so the button keeps the size it is drawn at (40×42 measured
+  with and without the class at 390). Where the drawn box itself should be 44px — the phone's main
+  navigation control — grow the real box instead: `min-h-11 min-w-11`.
+
+  _Retired:_ "Never put `touch-target` on a PrimeVue icon-only button." The growth used to take
+  over `::after`, which is PrimeVue's own spacer on an icon-only button, and that collapsed the
+  mobile bar's menu button to 12×12. `touch-target.css` moved the growth to `::before`, so the
+  collapse cannot happen and the ban protected nothing.
+- **`gap-3` (12px) minimum between adjacent controls, and it is not cosmetic.** Two buttons 4px
+  apart end up with hit areas that OVERLAP by 8px, and the later sibling wins the overlap — so
+  aiming at the pencil lands on the bin beside it. That is worse than a small pencil, and it is
+  why this is a rule rather than a preference. It matters most where one of the pair is
+  destructive: the confirm popup's footer gap is set to 12px in the preset for exactly this, since
+  PrimeVue renders reject first and accept second.
+
+For the record, because the "44px" number gets quoted without its source: **WCAG 2.2 AA asks for
+24×24**, and this app clears that everywhere. 44 is Apple's guideline and WCAG AAA. This is an
+ergonomics rule, not a compliance one.
+
+**A label counts as part of its control's target.** A 16px checkbox with a `<label for>` beside it
+is not a 16px target — it is as wide as the label. Measure the target, not the element.
+
+---
+
+## Narrow screens: shrink, never hide the label
+
+**When a row does not fit on a phone, take space from type size and padding before taking a
+word away.** One size down keeps the component's own shape and every label readable; hiding the
+label under a breakpoint leaves someone with a bare `+` or an unlabelled icon to interpret. Where
+the label is long, a shorter word is still a word — "+ Record" rather than "+".
+
+**Measure in the language people use.** Translated labels are longer than English ones — a
+Portuguese tab label can need 124px where the English one needs 90 — so a layout that fits in
+English can clip in production. A narrow-screen check that only ran in English has not run.
+
+---
+
+## Component patterns
+
+### Card chrome
+
+Standard metric/info card:
+- Background: `bg-panel`
+- Relief: `shadow-lift` — a card is a raised surface; its shape comes from light, not from an outline
+- Border: none around the surface. A border that SEPARATES content — a divider, a grid rule, a
+  data-carrying accent such as a coloured `border-l-4` — stays a border. A data mark never takes relief.
+- Radius: `rounded-lg`; `rounded-xl` is for a modal or a full-bleed container
+- An opaque child pinned to the top of a lifted card (a sticky header, a toolbar) paints over the
+  lit top edge — give that child `shadow-edge-top`
+
+The flat card (`border border-line-strong shadow-none`) is retired: the theme's relief vocabulary
+replaced it (`styles/theme/RULES.md`).
+
+### DataTable chrome
+
+Do not set border colors on DataTable cells via Tailwind — these are enforced globally in `primevue.css`. Only use Tailwind classes for layout (padding, height, overflow).
+
+### Dialogs / modals
+
+Title: `text-heading text-xl font-semibold text-center`
+
+Use `MMainDialog` for all dialogs — do not use PrimeVue `<Dialog>` directly.

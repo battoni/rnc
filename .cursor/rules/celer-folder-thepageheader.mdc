@@ -1,0 +1,20 @@
+---
+description: ThePageHeader folder rules — app.rnc/src/components/unique/ThePageHeader/
+globs: app.rnc/src/components/unique/ThePageHeader/**
+alwaysApply: false
+---
+# ThePageHeader — Folder Rules
+
+> Pre-edit hook injects the full `RULES.md` chain. Canonical source: `app.rnc/src/components/unique/ThePageHeader/RULES.md`.
+
+## Contract
+
+- `title` is an **i18n key** — resolved with `$t(title)` internally; never pass translated strings
+- `icon` is a PrimeIcon class string (e.g. `'pi pi-home'`)
+- Hamburger is **`hidden md:flex lg:hidden`** (tablet only) — toggles `uiStore.toggleSidenav()` directly
+- `#actions` slot for right-side CTAs — use `v-if="!dialogVisible"` when a dialog is open
+
+## Do not
+
+- Add `@hamburgerClick` emit — store toggle is the contract
+- Change hamburger breakpoints without product reason

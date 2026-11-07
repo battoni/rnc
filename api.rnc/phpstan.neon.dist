@@ -1,0 +1,14 @@
+# Starter PHPStan / larastan config for api.rnc. Copy to phpstan.neon to customise.
+# larastan is already in composer.json's require-dev. Run `make check-api` for the whole app
+# (what CI and `make pre-commit` run) or `make phpstan-api.rnc` for the changed files only.
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: 5
+
+    paths:
+        - app
+
+    # Analyse only what the changed-files scripts pass in; the paths above scope
+    # a full `phpstan analyse` run. Raise the level once the baseline is clean.

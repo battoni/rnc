@@ -1,0 +1,57 @@
+---
+description: Bringing a feature from a downstream project back into rnc — one-way sync, rewrite paths but refuse words, and the seam checklist a module needs beyond its own directory
+globs: cortex/sync/BACKPORT.md, cortex/sync/**/*
+alwaysApply: false
+---
+
+# Back-port — a project's work returning to the bootstrap
+
+> **Read `cortex/sync/BACKPORT.md` first.** It carries the method, the seam checklist and the
+> numbers from the first real back-port. This file is the trigger and the rules that must not be
+> re-derived; it is deliberately not a copy of that document.
+
+## The three things to get right
+
+**1. The sync runs one way, and there is no `git cherry-pick` here.** The repositories share no
+history — the bootstrap clones, deletes `.git` and starts over, so the parent's root commit does
+not exist in any project. "Manual cherry-pick" in the older docs is a figure of speech. Porting
+means copying files and rewriting them.
+
+**2. Rewrite paths. REFUSE to rewrite words.** `api.<project>/` and `app.<project>/` are shaped
+like paths and unwind mechanically. The bare project name does not: in one project's `src` it
+appears 219 times and only 3 are paths. Rewriting it blindly corrupts 216 places to fix 3. Every
+remaining occurrence goes into a refusal report and is decided by a person, one at a time.
+
+**Every path that moves content runs the refusal scan** — including a JSON merge of locale files,
+which is exactly how product vocabulary slipped through on the first port.
+
+**3. The module is not self-contained.** Its directory is a fraction of what it needs — thirteen
+seams the first time, and finding them by red test cost most of the day. Run the pre-flight BEFORE
+copying, tests included:
+
+```bash
+python3 cortex/sync/backport_preflight.py <project> <module path> [<path> ...]
+```
+
+It exits 1 on anything the destination lacks, and it sees the three that break no test: a slot the
+destination does not declare, an organism the origin mounts in a layout, and the global test
+personas. What it does not see is in `BACKPORT.md` — read that before trusting a clean run.
+
+## Two rules about the destination
+
+**Everything back-ported is bootstrap.** Wiring goes to the CORE files — `routes/api.php`,
+`libraries/router/routes.ts`, `PermissionGroupsHelper`, `TheNavbar.vue`,
+`locales/{en,pt-BR}.json`. The `.local.*` files in rnc stay empty: they are the projects'
+extension point, not the bootstrap's.
+
+**A defect the port reveals in rnc is a result, not an interruption.** Fix it there and write
+it down. The first port surfaced two, both invisible until a module exercised the parent in a way
+its own tests never had.
+
+## Do not
+
+- Do not port and generalise in one motion. Get it moved and green, then generalise and green
+  again — otherwise you are debugging "it moved" and "it changed" at once.
+- Do not carry an `add_*_to_*_table` migration. In rnc the table is new, so the `create_*`
+  is its only description; fold the ALTERs in and drop any data backfill.
+- Do not leave the product's vocabulary in the tests. They carry more of it than the code does.

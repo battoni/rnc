@@ -1,0 +1,28 @@
+{
+  "name": "codelumen",
+  "version": "1.0.0",
+  "description": "Battoni Dev code conventions",
+  "scripts": {
+    "docs:gen": "node scripts/generate-rules.mjs",
+    "predocs:dev": "npm run docs:gen",
+    "docs:dev": "vitepress dev",
+    "predocs:build": "npm run docs:gen",
+    "docs:build": "vitepress build",
+    "docs:preview": "vitepress preview"
+  },
+  "dependencies": {
+    "@vercel/edge": "^1.2.2",
+    "jose": "^5.9.6",
+    "vitepress": "^1.6.4",
+    "vue": "^3.5.33"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "mermaid": "^11.15.0",
+    "vitepress-plugin-mermaid": "^2.0.17"
+  },
+  "overrides": {
+    "esbuild": "^0.25.12",
+    "vite": "^6.4.3"
+  }
+}

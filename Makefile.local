@@ -1,0 +1,6 @@
+# Project-owned make targets (LOCAL) — the cortex sync NEVER touches this file.
+# Add your own targets or overrides here; they survive every rnc update.
+#
+# Example:
+#   seed-demo:
+#   	cd api.myproject && php artisan db:seed --class=DemoSeeder

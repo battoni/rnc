@@ -1,0 +1,93 @@
+# -----------------------------------------------------------------------------
+# MANUAL DEPLOY NOTES (REAL SERVER)
+# -----------------------------------------------------------------------------
+# 1) Copy this vhost file to nginx:
+#    sudo cp /var/www/rnc/api.rnc/.nginx /etc/nginx/sites-available/api.rnc.example.com
+#
+# 2) Enable site (safe for multi-site servers):
+#    sudo ln -s /etc/nginx/sites-available/api.rnc.example.com /etc/nginx/sites-enabled/api.rnc.example.com
+#    sudo nginx -t
+#    sudo systemctl reload nginx
+#
+# 3) Multi-site checklist:
+#    - Keep one file per domain in /etc/nginx/sites-available
+#    - Ensure each site has unique server_name, root, access_log and error_log
+#    - Avoid duplicate server_name across enabled files
+#    - Confirm only one default_server per listen port (if used)
+#
+# 4) DNS checklist (required before Certbot):
+#    - If you only have an IP, create an A record:
+#      api.rnc.example.com -> 138.197.6.208
+#    - For multiple projects on same server, point each subdomain A record to same IP:
+#      app.rnc.example.com -> 138.197.6.208
+#    - Get server public IP (for validation):
+#      curl -4 ifconfig.me
+#    - Wait for propagation, then verify:
+#      dig +short api.rnc.example.com
+#      nslookup api.rnc.example.com
+#
+# 5) HTTPS/SSL with Certbot (Let's Encrypt):
+#    sudo apt update
+#    sudo apt install -y certbot python3-certbot-nginx
+#    sudo certbot --nginx -d api.rnc.example.com
+#    sudo certbot renew --dry-run
+# -----------------------------------------------------------------------------
+
+server {
+    server_name api.rnc.example.com;
+
+    root /var/www/rnc/api.rnc/public;
+    index index.php;
+
+    charset utf-8;
+
+    access_log /var/log/nginx/arcus-access.log;
+    error_log  /var/log/nginx/arcus-error.log;
+
+    # Private API — keep it out of search indexes and AI training sets.
+    #
+    # `PreventIndexing` already stamps this on every response that reaches Laravel, and that is
+    # the majority. It is not all of them: a 502 when PHP-FPM is down, a static file under
+    # `public/`, and nginx's own error pages never enter the application, so they went out
+    # uncapped. `always` is what extends the header to error responses — without it nginx adds
+    # it only on 2xx/3xx, which is exactly the set that was already covered.
+    #
+    # Two layers on purpose: robots.txt ASKS and this INSTRUCTS. Neither is access control —
+    # that is authentication. See `public/robots.txt`, which also names the AI agents that
+    # honour only their own token.
+    add_header X-Robots-Tag "noindex, nofollow, noarchive, nosnippet, noimageindex" always;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/run/php/php8.4-fpm.sock;
+    }
+
+    location ~ /\.(?!well-known).* {
+        deny all;
+    }
+
+    # --- STAGING ONLY: shut the door, do not just ask --------------------------------------
+    # robots.txt and X-Robots-Tag are requests. A scraper that ignores them is unaffected, and
+    # staging usually holds production-shaped data behind nothing at all.
+    #
+    # Use an IP allowlist, NOT basic auth. A browser does not attach basic-auth credentials to
+    # a cross-origin XHR, so every call from the app would 401 — and the breakage looks nothing
+    # like the cause.
+    #
+    # Uncomment and list the addresses that may reach staging:
+    # allow 203.0.113.10;   # office
+    # allow 198.51.100.7;   # your home IP — curl -4 ifconfig.me
+    # deny  all;
+    #
+    # Keep the health check reachable, or locking staging by IP takes the monitoring with it
+    # and a silent alarm reads as "everything is fine":
+    # location = /up {
+    #     allow all;
+    #     try_files $uri /index.php?$query_string;
+    # }
+    # ---------------------------------------------------------------------------------------
+}

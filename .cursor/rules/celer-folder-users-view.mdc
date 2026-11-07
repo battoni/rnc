@@ -1,0 +1,25 @@
+---
+description: UsersView folder rules — app.rnc/src/modules/User/views/Users/
+globs: app.rnc/src/modules/User/views/Users/**
+alwaysApply: false
+---
+# UsersView — Folder Rules
+
+> Pre-edit hook injects the full `RULES.md` chain. Canonical source: `app.rnc/src/modules/User/views/Users/RULES.md`.
+
+Reference implementation for list + dialog CRUD in app.rnc. Follow `celer-07-view-patterns.mdc`.
+
+## Intentional decisions
+
+- **`allUsersForSearch` vs `users`** — search ref holds full list; `users` is filtered subset
+- **`onDialogSuccess`** — granular add/replace by ID; no full refetch
+- **Archive/delete** — raw `ConfirmPopup` with groups `'archive'` / `'delete'` (not `MConfirmPopup`)
+- **Inline skeleton grid** — intentional; no separate skeleton component
+- **`canCreate` / `canRead`** — permission guards in the view, not in `MUserCard`
+- **`MMainDialog`** keyed on `editingUser?.id ?? 'new'`
+
+## Do not
+
+- Merge archive/delete confirm groups
+- Add a dedicated skeleton component unless reused elsewhere
+- Full list refetch after create/update/delete

@@ -1,0 +1,52 @@
+{
+  "api.rnc": [
+    {
+      "text": "API Architecture",
+      "link": "/rules/api.rnc/api-architecture"
+    }
+  ],
+  "app.rnc": [
+    {
+      "text": "Vue Checklist",
+      "link": "/rules/app.rnc/01-vue-checklist"
+    },
+    {
+      "text": "Vue Imports",
+      "link": "/rules/app.rnc/02-vue-imports"
+    },
+    {
+      "text": "Vue Script",
+      "link": "/rules/app.rnc/03-vue-script"
+    },
+    {
+      "text": "Vue Template",
+      "link": "/rules/app.rnc/04-vue-template"
+    },
+    {
+      "text": "Module Conventions",
+      "link": "/rules/app.rnc/05-module-conventions"
+    },
+    {
+      "text": "Design System",
+      "link": "/rules/app.rnc/06-design-system"
+    },
+    {
+      "text": "View Patterns",
+      "link": "/rules/app.rnc/07-view-patterns"
+    },
+    {
+      "text": "Rules Auto Injection",
+      "link": "/rules/app.rnc/08-rules-auto-injection"
+    },
+    {
+      "text": "Brand Mark Contract",
+      "link": "/rules/app.rnc/09-brand-mark-contract"
+    }
+  ],
+  "shared": [
+    {
+      "text": "Conventions",
+      "link": "/rules/shared/conventions"
+    }
+  ]
+}

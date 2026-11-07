@@ -1,0 +1,179 @@
+/**
+ * ============================================================
+ * THEME TEMPLATE — copy me to add a theme that changes the role tokens
+ *
+ * Only changing colours, faces or radius? Do not copy this — @import a sibling
+ * theme and override its brand instead (../RULES.md, "Adding a theme").
+ *
+ * Steps:
+ *   1. Copy this file to themes/<your-theme>.css
+ *   2. Fill the PRIMARY / INK / SURFACE ramps with your brand scales (50→950).
+ *      Tip: generate 11-step ramps around your main hex (set as the 500, or 900 for ink).
+ *   3. Adjust fonts if the brand differs (and add @font-face in ../fonts.css +
+ *      WOFF2 files in public/fonts/).
+ *   4. (Usually no change needed) tune the role-token mappings / dark overrides.
+ *   5. Measure --color-muted (4.5:1) and --color-subtle (3:1) on canvas, panel and
+ *      panel-muted, in both schemes. The steps suggested below are a start, not a result.
+ *   6. Set VITE_ACTIVE_THEME=<your-theme> in .env — colors.css is never edited by hand.
+ *
+ * Components never change — they consume role tokens (canvas/panel/heading/…)
+ * and the state palettes (success/info/warn/danger/help/contrast), not raw ramps.
+ *
+ * Keep the SEMANTIC STATE PALETTES identical across themes unless the brand
+ * explicitly requires different state colors.
+ * ============================================================
+ */
+
+@theme {
+  /* 1. FONT FAMILIES */
+  --font-sans: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Sometype Mono', ui-monospace, monospace;
+
+  /* 2. BRAND PALETTE RAMPS — replace all hexes */
+
+  /* PRIMARY — brand action color (Main = 500) */
+  --color-primary-50: #__;
+  --color-primary-100: #__;
+  --color-primary-200: #__;
+  --color-primary-300: #__;
+  --color-primary-400: #__;
+  --color-primary-500: #__; /* MAIN */
+  --color-primary-600: #__;
+  --color-primary-700: #__;
+  --color-primary-800: #__;
+  --color-primary-900: #__;
+  --color-primary-950: #__;
+
+  /* INK — dark text / headings (Main = 900) */
+  --color-ink-50: #__;
+  --color-ink-100: #__;
+  --color-ink-200: #__;
+  --color-ink-300: #__;
+  --color-ink-400: #__;
+  --color-ink-500: #__;
+  --color-ink-600: #__;
+  --color-ink-700: #__;
+  --color-ink-800: #__;
+  --color-ink-900: #__; /* MAIN */
+  --color-ink-950: #__;
+
+  /* SURFACE — neutral bg / borders / secondary text (Main = 500) */
+  --color-surface-50: #__;
+  --color-surface-100: #__;
+  --color-surface-200: #__;
+  --color-surface-300: #__;
+  --color-surface-400: #__;
+  --color-surface-500: #__; /* MAIN */
+  --color-surface-600: #__;
+  --color-surface-700: #__;
+  --color-surface-800: #__;
+  --color-surface-900: #__;
+  --color-surface-950: #__;
+
+  /* 3. SEMANTIC STATE PALETTES — copy verbatim from themes/battoni-dev.css
+   *    (success / info / warn / danger / help / contrast, 50→950).
+   *    Change only if the brand mandates different state colors. */
+
+  /* 4. ROLE TOKENS — LIGHT (defaults map onto the ramps above; usually unchanged) */
+  --color-canvas: #ffffff;
+  --color-panel: var(--color-surface-50);
+  --color-panel-muted: var(--color-surface-100);
+  --color-heading: var(--color-ink-900);
+  --color-body: var(--color-ink-900);
+  /* muted carries every hint, label and placeholder: 4.5:1 on canvas, panel AND panel-muted.
+     On battoni-dev's ramp 700 missed the panel (4.44) and 800 was the first step that cleared all
+     three. subtle is for icons and marks, never text: 3:1 on the same three grounds. */
+  --color-muted: var(--color-surface-800);
+  --color-subtle: var(--color-surface-600);
+  --color-line: var(--color-surface-200);
+  --color-line-strong: var(--color-surface-300);
+
+  /* REQUIRED. What sits ON a filled primary surface — button labels, icons, badge text. Measure
+     it against YOUR primary-500: a label is normal text, so the floor is 4.5:1, and picking by
+     eye is how a dark label ends up on a dark fill. */
+  --color-primary-contrast: #ffffff;
+
+  /* 4b. RELIEF — REQUIRED. A component asking for `shadow-lift` cannot know which theme is
+   *     active, and an undefined `var()` resolves to nothing instead of failing, so a theme that
+   *     omits these ships an app whose raised surfaces are silently flat. Copy the four
+   *     `--shadow-*` steps from themes/battoni-dev.css alongside them, or point these at your
+   *     own light model. */
+  --shadow-sm: 0 1px 2px 0 rgb(10 10 9 / 0.06);
+  --shadow-md: 0 6px 16px -4px rgb(10 10 9 / 0.1);
+  --shadow-lg: 0 14px 32px -8px rgb(10 10 9 / 0.14);
+  --shadow-xl: 0 24px 48px -12px rgb(10 10 9 / 0.18);
+
+  --relief-edge-top: inset 0 1px 0 rgb(255 255 255 / 0.5);
+  --relief-lift: var(--shadow-md);
+  --relief-lift-lg: var(--shadow-lg);
+  --relief-sink: inset 0 1px 3px rgb(10 10 9 / 0.1);
+}
+
+/* 5. ROLE TOKENS — DARK overrides (usually unchanged) */
+[data-theme='dark'] {
+  --color-canvas: var(--color-ink-900);
+  --color-panel: var(--color-surface-950);
+  --color-panel-muted: var(--color-surface-900);
+  --color-heading: var(--color-surface-50);
+  --color-body: var(--color-surface-100);
+  --color-muted: var(--color-surface-400); /* 4.5:1 on the three dark grounds — measure it */
+  --color-subtle: var(--color-surface-500); /* 3:1, icons and marks only */
+  --color-line: var(--color-surface-800);
+  --color-line-strong: var(--color-surface-700);
+  /* Optional: the brand as a WORD on a dark ground (the focused float label). Declare a lighter
+     step when primary-500 is under 4.5:1 on the dark panel; omitted, the preset uses primary-500. */
+  /* --color-primary-text: var(--color-primary-400); */
+
+  /* 5b. RELIEF — DARK. `--relief-lift` follows `--shadow-*` on its own; the two insets do not,
+   *     because an inset is a light source rather than a drop shadow, and a 50% white top edge
+   *     is a value of the light scheme. */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-md: 0 6px 16px -4px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 14px 32px -8px rgb(0 0 0 / 0.5);
+  --shadow-xl: 0 24px 48px -12px rgb(0 0 0 / 0.6);
+
+  --relief-edge-top: inset 0 1px 0 rgb(255 255 255 / 0.05);
+  --relief-sink: inset 0 1px 3px rgb(0 0 0 / 0.45);
+}
+
+/*
+ * 6. PAGE ATMOSPHERE — optional, and a contract when used
+ *
+ * A theme may paint more than a flat colour behind the page: glows, a gradient, a texture. Set
+ * these three and `body` is not the only surface that gets it — anything pinned over the page
+ * that means "the canvas continues here" wears `.canvas-atmosphere` and reproduces the same
+ * layers, viewport-anchored so they line up seamlessly.
+ *
+ *   --canvas-atmosphere        background-image layers behind the page      default: none
+ *   --canvas-overlay           a repeating tile drawn over them             default: none
+ *   --canvas-overlay-opacity   how faint that tile is                       default: 0
+ *
+ * LEAVE THEM UNSET for a flat theme — that is the correct answer, not a missing one, and every
+ * surface stays the plain `--color-canvas` it already was.
+ *
+ * If you DO set them, paint `body` through them rather than writing the layers there directly.
+ * A theme that hard-codes its atmosphere onto `body` alone leaves every pinned `bg-canvas`
+ * surface punching a flat hole in it — a hard-edged band under the mobile navigation is how that
+ * was found. See `styles/components/canvas-atmosphere.css`.
+ *
+ *   :root {
+ *     --canvas-atmosphere: radial-gradient(...), radial-gradient(...);
+ *     --canvas-overlay: url("data:image/svg+xml,...");
+ *     --canvas-overlay-opacity: 0.035;
+ *   }
+ *
+ *   body {
+ *     background-image: var(--canvas-atmosphere);
+ *     background-attachment: fixed;
+ *   }
+ *
+ *   body::before {
+ *     background-image: var(--canvas-overlay);
+ *     content: '';
+ *     inset: 0;
+ *     opacity: var(--canvas-overlay-opacity);
+ *     pointer-events: none;
+ *     position: fixed;
+ *     z-index: 0;
+ *   }
+ */

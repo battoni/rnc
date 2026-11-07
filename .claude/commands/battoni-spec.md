@@ -1,0 +1,104 @@
+# Spec
+
+> Stage 2 of the feature flow. From `intent.md` + `facts.md`, write `spec.md` — requirements,
+> acceptance criteria and decisions — grill the owner until no decision is open, and, when the
+> feature has a screen, build the final visual proposal (settled decisions + working demo). Ends
+> with a closed spec and, if there is a screen, an approved and frozen proposal. Then `/clear`.
+>
+> **Usage:** `/battoni-spec <id>` — e.g. `/battoni-spec rnc-2`. Can be re-run: it resumes
+> from the spec's current state. `away` (`/battoni-spec <id> away`) chains into `/battoni-plan`
+> in this session (`.claude/feature-flow.md`, "Two modes").
+> Reference: `.claude/feature-flow.md`, sections "spec.md" and "proposal.html".
+> Replaces, for the feature track, the decisions of `/battoni-new-proposal`, `/battoni-grill-me`
+> and the `plans/decisoes/<date>-<slug>-*.md` files.
+
+## Rules
+
+- **Read only** `specs/<id>-*/intent.md`, `facts.md` and, if it exists, `spec.md`. Load
+  the project rules for the sub-projects the feature touches (`/battoni-start-session` Step 2) and
+  the folder `RULES.md` of the units it touches. **Never open `proposal.html`.**
+- **Every question through `AskUserQuestion`** (`.claude/feature-flow.md`, rule 3): recommended
+  option first, marked "(recommended)", one line on what each option implies; "Other" is the
+  tool's own last option for a typed answer.
+- `intent.md` must say `Status: approved`; otherwise stop and go back to `/battoni-intent <id>`.
+- `spec.md` is the only place a decision is recorded. IDs never renumber; a reopened decision is
+  fixed in place with the old choice struck through.
+
+## Step 1 — Draft
+
+Write `spec.md` from the template:
+
+- **R#** — one sentence each, what the system does. Cite the D# behind it.
+- **A#** — every R and every intent constraint gets at least one acceptance criterion in
+  "given / when / then" form, observable from outside, with the test layer that will prove it
+  (`→ Pest`, `→ Vitest`, `→ Playwright`). A criterion nobody can test is rewritten until it can be.
+- **D#** — every open product choice, each with 2–4 options, the recommended one, and why the
+  decision exists (the fact from `facts.md` that raised it).
+- **Constraints, met by** — each intent constraint → the R#/A# that guarantees it.
+
+Status: `decisions open (n)` (n = the D# without a choice).
+
+## Step 2 — Grill (scaled to risk), every decision in chat
+
+Every D# is decided here, product first, then technical: one concern per question, in rounds of up
+to four (one `AskUserQuestion` call each), recommended option first. The page never carries a
+choice to make (owner, 04/11/2026).
+
+**Seeing before deciding — the early proposal.** When a product D# is easier to see than to
+describe (a layout, where a button sits, what a state looks like), add the option **"Show me
+first (early proposal)"** to that question, or offer it when the owner asks to see. On that pick:
+load `battoni-new-proposal` with `early` and the D# to show; it builds `proposal.html` from the
+current `spec.md` with a **variant switcher** per open D# (plain buttons, no animation). Give the
+owner the clickable absolute path, then ask the same question again. An `AskUserQuestion` option
+`preview` (an ASCII sketch) is enough for small things; the early proposal is for a real screen.
+Write the header line `Proposal: specs/<id>-<slug>/proposal.html (early)`.
+
+Grill depth, after the product D#:
+
+- **Always:** the exact units affected, the definition of done, the genuine unknowns.
+- **Medium risk, add:** the data and contract shape (payload, props/emits, store), reuse vs new,
+  loading/empty/error/permission states, validation.
+- **High risk, add:** architecture options with a recommendation, failure modes, migrations on the
+  production database (`arcus-api-architecture` §3, and the project's own `CLAUDE.md` once it has
+  launched: never edit a published `create_*`, change it with an `add_*_to_*` migration), performance, security
+  and permissions, rollout.
+
+Each answer is written into its D# with the reason (an observation in "Other" is a possible new
+fact: it can reopen a decision with a revised recommendation) and applied everywhere in the spec
+(R#, A#), not just the D# line. Escalate the depth if a simple feature reveals hidden complexity.
+Stop only when you can defend every decision.
+
+**Fixes inside a feature:** reproduce first — a numbered UI reproduction from a normal user's view,
+the root cause, and an `A#` that fails today.
+
+*Retired 04/11/2026: decision cards on the page with a copied choices line
+(`<id> D3=b · obs …`), v1/v2/v3 versions and animated clips.* The owner answered in chat anyway;
+the cards and clips made every version cost more (the spec stage of boanerges-1 spent US$ 3.29 of
+5.68 building the page) and helped nobody decide.
+
+## Step 3 — Final proposal (only when the feature has a screen)
+
+With every D# closed, load `battoni-new-proposal` with `final`. It builds `proposal.html` from
+`spec.md` through a Sonnet author: a **Settled decisions** section (one card per product D#: the
+choice and one line of why) and then the **full working demo**, with the chosen options only.
+The page stays local: give the owner its clickable absolute path; publish nothing. Write the
+header line `Proposal: specs/<id>-<slug>/proposal.html (approved <dd/mm/yyyy>)` and the
+`## Screens` section from the list the skill returns. Publish only when the owner asks ("publish
+the proposal"): the skill's publish step, which appends the link to the `Proposal:` line. From
+here the page is frozen; the Chrome QA compares against the local file.
+
+## Step 4 — Close
+
+- Every D# has a choice; Status `closed <date>`; `state.md` goes to `Stage: spec`. Commit the
+  spec, the state and the proposal: `<id>: Add the spec`. With a screen, the final proposal of
+  Step 3 is built before this commit; if the owner asks for a change after seeing it, it is a D#
+  reopened in place, then the final is rebuilt (if it was published, ask whether to republish).
+- A decision that outlives the feature (architecture, hosting) is also written to
+  `plans/decisoes/`, one file, append-only.
+- Show the owner the R# and A# lists (not the whole spec) and ask with `AskUserQuestion` whether
+  anything is missing.
+
+End with one line: the spec path, the proposal's absolute path if any (and its published link, if
+it has one), and the next command —
+`/clear`, then `/battoni-plan <id>`. With `away`: no `/clear`, unless the context passed ~150k;
+go straight on to `/battoni-plan <id> away`.

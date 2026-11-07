@@ -1,0 +1,32 @@
+{
+  "name": "docs.{{SLUG}}",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "{{DESCRIPTION}}",
+  "scripts": {
+    "docs:extract": "node scripts/extract.mjs",
+    "docs:extract:check": "node scripts/extract.mjs --check",
+    "docs:dev": "npm run docs:extract && vitepress dev",
+    "docs:build": "npm run docs:extract && vitepress build",
+    "docs:preview": "vitepress preview",
+    "test": "node --experimental-strip-types --test \"middleware/**/*.test.mjs\" \"scripts/**/*.test.mjs\" \".vitepress/theme/**/*.test.ts\"",
+    "lint": "markdownlint-cli2 \"**/*.md\" \"!node_modules\" \"!.vitepress/dist\" \"!.vitepress/cache\""
+  },
+  "devDependencies": {
+    "markdown-it": "^14.3.2",
+    "markdown-it-container": "^4.0.0",
+    "markdownlint-cli2": "^0.23.2",
+    "vitepress": "^1.6.4",
+    "vue": "^3.5.35"
+  },
+  "dependencies": {
+    "@vercel/edge": "^1.3.1",
+    "mermaid": "^11.17.2",
+    "primeicons": "^7.0.0",
+    "vitepress-plugin-mermaid": "^2.0.17"
+  },
+  "overrides": {
+    "smol-toml": "^1.8.0"
+  }
+}

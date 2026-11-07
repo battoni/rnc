@@ -1,0 +1,65 @@
+/*
+ * Firefox, and Chrome/Edge 121+ — thumb, then track.
+ *
+ * `scrollbar-color` takes TWO colours. It was written with one, which is an invalid declaration: the
+ * browser dropped it and painted its own default. And a browser that reads these two properties
+ * stops reading the `::-webkit-scrollbar` rules below, so neither half of this file reached Chrome or
+ * Firefox. The track is the canvas, not a line: a line-coloured track was a band that belongs to no
+ * surface of the design (largatudoevai). `e2e/theme/scrollbar.spec.ts` reads the computed value.
+ */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line-strong) var(--color-canvas);
+}
+
+/* Safari, which does not read `scrollbar-color` — the same thumb on the same track. */
+*::-webkit-scrollbar {
+  @apply h-2 w-2;
+}
+*::-webkit-scrollbar-track {
+  border-radius: 5px;
+  background-color: var(--color-canvas);
+}
+
+*::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  @apply bg-line-strong;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  @apply bg-subtle;
+}
+
+*::-webkit-scrollbar-thumb:active {
+  @apply bg-primary-400;
+}
+
+/*
+ * Brand scrollbar — a thumb in the brand colour on a transparent track, for the app's own scroll
+ * surfaces: the rail and the drawer (`ONavbarDesktop`, `ONavbarDrawer`).
+ *
+ * Both used this class and nothing defined it, so they got the default above. Same treatment
+ * `MMainDialog` applies to its content, lifted here so every such area reads as one family instead
+ * of each component inventing its own (lifeshifter).
+ */
+.scrollbar-brand {
+  scrollbar-color: var(--color-primary-700) transparent;
+  scrollbar-width: thin;
+}
+
+.scrollbar-brand::-webkit-scrollbar {
+  @apply h-1.5 w-1.5;
+}
+
+.scrollbar-brand::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-brand::-webkit-scrollbar-thumb {
+  background-color: var(--color-primary-700);
+  border-radius: 3px;
+}
+
+.scrollbar-brand::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-primary-800);
+}

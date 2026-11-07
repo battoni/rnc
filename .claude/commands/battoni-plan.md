@@ -1,0 +1,72 @@
+# Plan
+
+> Stage 3 of the feature flow. Split a closed spec into phases that each fit one session, have a
+> clean-context reviewer compare the plan with the spec, and get the owner's approval. Writes
+> `plan.md` and the first `state.md`. Then `/clear`.
+>
+> **Usage:** `/battoni-plan <id> [away]` — runs in **plan mode**; nothing is built here. `away`
+> prepares the plan for `/battoni-run` (`.claude/feature-flow.md`, "Two modes").
+> Reference: `.claude/feature-flow.md`, sections "plan.md" and "state.md".
+
+## Step 0 — Load
+
+- Read `specs/<id>-*/intent.md` and `spec.md`. **Never `proposal.html`.**
+- Intent must be `approved` and spec status `closed`. Open decisions → stop and send the owner back to `/battoni-spec <id>`.
+- Load the rules of the sub-projects the spec touches (`/battoni-start-session` Step 2) and the
+  folder `RULES.md` chain of every unit it names. Read code only by slice (`grep -n`, then
+  `sed -n`) where a phase needs a real path or signature.
+
+## Step 1 — Phases
+
+Write the plan with the reference template. For each phase:
+
+- **files** — each file marked new or changed, and any `RULES.md` + `CHANGELOG.md` to add or bump;
+- **tests first** — the tests that are written and seen failing before the code;
+- **proves** — the `A#` this phase makes green. Every A# is proved by exactly one phase;
+- **done when** — a check that can be run.
+
+Bottom-up order (api before app; inside each, the order in the reference). A phase fits one session:
+if it touches more than ~10 files or two sub-projects with UI, split it. **Context budget:** a
+phase should end under ~150k of context. One that writes a new component, its view wiring and its
+tests together will pass 200k (F4 of boanerges-1 reached 206k, the only phase above it): split it
+into the component with its own tests, then the view. Name the convention rules
+that matter in each phase concretely (`MAddEdit{Entity}Form` in `MMainDialog`, granular list
+updates, `canX` computeds, the api.rnc request flow, migrations as `arcus-api-architecture` §3 says for this project — folded into `create_*`
+before launch, `add_*_to_*` on a published table after).
+
+## Step 2 — Clean-context review
+
+Plan mode allows writing only its own plan file, so the draft lives there. Spawn one
+`general-purpose` agent with `model: sonnet` (read-only work, allowed in plan mode). Give it only
+the paths of `spec.md` and of the plan-mode plan file, and this task: "List every R#, A# and constraint the
+plan does not cover, every phase that proves no A#, and every phase too big for one session. Cite
+the IDs. Do not suggest features." No conversation, no hypothesis.
+
+Check each finding against the spec yourself; fix the plan for the real ones and note the rejected
+ones in one line each.
+
+**High-risk feature — a second, Fable review.** When the spec touches a published table on the
+production database, permissions or who sees what, or an architecture choice, also spawn the
+`fable-reviewer` agent (user level) with the paths of `spec.md` and the plan file and the same
+task, plus: "and every failure mode, migration risk or permission gap the plan leaves open". A gap
+is cheapest to fix before any code exists. It needs the owner's permission (or `#fable` in the
+session); without it, say the review was skipped. Not for other features: the one Fable review is
+in `/battoni-verify`.
+
+## Step 3 — Approve
+
+Present the plan with `ExitPlanMode`. On approval:
+
+- save it to `plan.md` in the feature folder (never only in `~/.claude/plans/`, which no other
+  machine sees), with `Approved: <owner>, <date>`;
+- rewrite `state.md`: `Stage: plan`, nothing done, Next = F1 and the command, no pitfalls yet;
+- commit both on the feature branch: `<id>: Add the plan`.
+
+End with one line: the next command — `/clear`, then `/battoni-start-session <id>` once per phase
+(or `/loop /battoni-run <id>` to build them with nobody there).
+
+**With `away`, before approval.** Add to the Step 2 reviewer's task: "and every question a phase
+would have to stop and ask the owner". Grill those with the owner (`AskUserQuestion`, as many
+rounds as it takes) and write each answer into the phase it belongs to, so the build meets none.
+Then ask the three `## Away run` settings listed in `/battoni-run`, Step 0.2, and write the block into `state.md`
+with the plan. End with: `/loop /battoni-run <id>`.

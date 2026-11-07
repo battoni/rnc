@@ -1,0 +1,48 @@
+/* Tag — default (no severity): light primary background, dark ink text */
+.p-tag[data-p=''] {
+  background-color: var(--color-primary-50) !important;
+  color: var(--color-ink-900) !important;
+}
+
+/* A pale tint takes a fixed dark word (theme RULES): the ramp's own 950. `primary-700` read 1.83:1
+   on `primary-100` in `battoni-dev`; 950 reads 4.54. Neither side flips, so dark is the same pair. */
+.p-tag.celer-tag-soft-primary {
+  background-color: var(--color-primary-100) !important;
+  color: var(--color-primary-950) !important;
+}
+
+.p-tag.celer-tag-soft-success {
+  background-color: var(--color-success-100) !important;
+  color: var(--color-success-700) !important;
+}
+
+.p-tag.celer-tag-soft-info {
+  background-color: var(--color-info-100) !important;
+  color: var(--color-info-700) !important;
+}
+
+.p-tag.celer-tag-soft-warn {
+  background-color: var(--color-warn-100) !important;
+  color: var(--color-warn-700) !important;
+}
+
+.p-tag.celer-tag-soft-danger {
+  background-color: var(--color-danger-100) !important;
+  color: var(--color-danger-700) !important;
+}
+
+/* Categorical, not a state: a type, a role, an internal label. It must not borrow success/warn/
+   danger, or the reader takes a category for a verdict. */
+.p-tag.celer-tag-soft-contrast {
+  background-color: var(--color-contrast-100) !important;
+  color: var(--color-contrast-700) !important;
+}
+
+/* A brand FILL takes what the theme says reads on its fill, never a fixed ink: `ink-900` read on
+   battoni-dev's lime and measured 3.33:1 on maresia's teal (largatudoevai), where the theme's answer
+   is white (5.07:1). `--color-primary-contrast` is measured on `primary-500`; on this darker step a
+   white label only gains, and battoni-dev's ink (its contrast token) is what this tag already wore. */
+.p-tag.celer-tag-bold-primary {
+  background-color: var(--color-primary-600) !important;
+  color: var(--color-primary-contrast) !important;
+}

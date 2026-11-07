@@ -1,0 +1,515 @@
+/*
+ * PDF export page (/export-pdf) + its print stylesheet. Everything is scoped
+ * under html.pdf-export or a .pdf-* class, so the rest of the site is untouched.
+ */
+
+.pdf-export .VPNav,
+.pdf-export .VPLocalNav,
+.pdf-export .VPSidebar,
+.pdf-export .VPAside,
+.pdf-export .VPDocFooter,
+.pdf-export .VPBackToTop,
+.pdf-export .edit-link,
+.pdf-export .prev-next {
+  display: none !important;
+}
+
+.pdf-export .VPContent,
+.pdf-export .VPDoc,
+.pdf-export .VPDoc .container,
+.pdf-export .content,
+.pdf-export .content-container {
+  padding: 0 !important;
+  margin: 0 !important;
+  max-width: none !important;
+}
+
+.pdf-export .VPDoc:not(.has-sidebar) .content {
+  padding: 0 !important;
+}
+
+.pdf-export-root {
+  position: relative;
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 5rem;
+  color: var(--vp-c-text-1);
+}
+
+.pdf-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  padding: 0.75rem 1rem;
+  background: var(--vp-c-bg-alt);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 10px;
+}
+
+.pdf-toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.pdf-toolbar-hint {
+  max-width: 22rem;
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: var(--vp-c-text-2);
+  text-align: right;
+}
+
+.pdf-toolbar-link {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--vp-c-brand-1);
+  text-decoration: none;
+}
+
+.pdf-toolbar-btn {
+  padding: 0.5rem 1.1rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--vp-button-brand-text);
+  cursor: pointer;
+  background: var(--vp-button-brand-bg);
+  border: none;
+  border-radius: 8px;
+}
+
+.pdf-toolbar-btn:hover {
+  filter: brightness(0.95);
+}
+
+.pdf-cover {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 2rem 0 2.5rem;
+  border-bottom: 1px solid var(--vp-c-divider);
+  page-break-after: always;
+}
+
+.pdf-cover-logo {
+  width: 140px;
+  height: auto;
+  margin-bottom: 0.5rem;
+}
+
+.pdf-cover-eyebrow {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--vp-c-text-2);
+}
+
+.pdf-cover-title {
+  margin: 0;
+  font-size: 2.25rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.pdf-cover-subtitle {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--vp-c-text-2);
+}
+
+.pdf-cover-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin: 1.25rem 0 0;
+}
+
+.pdf-cover-meta dt {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--vp-c-text-3);
+}
+
+.pdf-cover-meta dd {
+  margin: 0.2rem 0 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.pdf-outdated-banner {
+  margin-top: 1.25rem;
+  padding: 0.9rem 1rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #5c3b00;
+  background: #fff4d6;
+  border: 1px solid #e6c36a;
+  border-radius: 8px;
+}
+
+.pdf-outdated-banner a {
+  font-weight: 700;
+  color: inherit;
+}
+
+.pdf-toc {
+  padding: 2rem 0;
+  page-break-after: always;
+}
+
+.pdf-toc h2 {
+  margin: 0 0 1.25rem;
+  font-size: 1.6rem;
+}
+
+.pdf-toc-groups {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pdf-toc-groups > li {
+  margin-bottom: 1.25rem;
+}
+
+.pdf-toc-groups h3 {
+  margin: 0 0 0.4rem;
+  font-size: 1.05rem;
+}
+
+.pdf-toc-groups ol {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.pdf-toc-groups li a {
+  color: var(--vp-c-brand-1);
+  text-decoration: none;
+}
+
+.pdf-toc-groups li a:hover {
+  text-decoration: underline;
+}
+
+.pdf-section {
+  padding: 1.5rem 0 2rem;
+  page-break-before: always;
+}
+
+.pdf-section:first-of-type {
+  page-break-before: auto;
+}
+
+.pdf-section-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.75rem;
+}
+
+.pdf-section-back {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--vp-c-brand-1);
+  text-decoration: none;
+}
+
+.pdf-section-back:hover {
+  text-decoration: underline;
+}
+
+.pdf-section-content :is(h1, h2, h3, h4) {
+  break-after: avoid;
+  page-break-after: avoid;
+  break-inside: avoid;
+}
+
+.pdf-section-content > h1:first-child {
+  margin-top: 0;
+}
+
+.pdf-section-content :is(pre, blockquote, .pdf-callout, figure, img) {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.pdf-keep-together {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+/*
+ * VitePress sets `.vp-doc table { display: block }` for horizontal scrolling —
+ * in a PDF that leaves a blank band on the right and drops the left border.
+ */
+.pdf-section-content.vp-doc table,
+.pdf-section-content table {
+  display: table !important;
+  width: 100% !important;
+  max-width: 100%;
+  table-layout: auto;
+  border-collapse: collapse;
+  border-spacing: 0;
+  margin: 1rem 0;
+  overflow: visible !important;
+  border: 1px solid #444;
+  break-inside: auto;
+  page-break-inside: auto;
+}
+
+.pdf-section-content thead {
+  display: table-header-group;
+  break-inside: avoid;
+  break-after: avoid;
+}
+
+.pdf-section-content tr {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.pdf-section-content th,
+.pdf-section-content td {
+  border: 1px solid #444 !important;
+  padding: 8px 12px;
+  break-inside: avoid;
+  page-break-inside: avoid;
+  vertical-align: top;
+}
+
+.pdf-callout {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  border-left: 4px solid var(--vp-c-brand-1);
+  background: var(--vp-c-bg-alt);
+  border-radius: 0 8px 8px 0;
+}
+
+.pdf-callout.pdf-warning,
+.pdf-callout.pdf-danger {
+  border-left-color: var(--vp-c-danger-1);
+}
+
+.pdf-callout-title {
+  margin: 0 0 0.25rem;
+  font-weight: 700;
+}
+
+/* Screen: flatten the print-only table wrapper */
+.pdf-print-layout {
+  width: 100%;
+  border: none;
+  border-collapse: collapse;
+}
+
+.pdf-print-layout > thead,
+.pdf-print-layout > tfoot {
+  display: none;
+}
+
+.pdf-print-layout > tbody,
+.pdf-print-layout > tbody > tr,
+.pdf-print-layout > tbody > tr > td {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+}
+
+.pdf-print-header-space,
+.pdf-print-footer-space {
+  display: none;
+}
+
+.pdf-print-footer {
+  display: none;
+}
+
+@media print {
+  /*
+   * Chrome ignores @page margin for fixed footers (content still paints under them).
+   * Fix: tfoot spacer repeats on every page and reserves height; fixed footer paints
+   * into that reserved band. See: "ultimate print HTML template with header/footer".
+   */
+  @page {
+    margin: 10mm 12mm 8mm;
+  }
+
+  .no-print,
+  .pdf-toolbar {
+    display: none !important;
+  }
+
+  html.pdf-export,
+  html.pdf-export body {
+    background: #fff !important;
+    color: #213547 !important;
+  }
+
+  .pdf-export-root {
+    max-width: none;
+    padding: 0;
+  }
+
+  .pdf-print-layout {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .pdf-print-layout > thead {
+    display: table-header-group;
+  }
+
+  .pdf-print-layout > tfoot {
+    display: table-footer-group;
+  }
+
+  .pdf-print-layout > tbody {
+    display: table-row-group;
+  }
+
+  .pdf-print-layout > thead > tr > td,
+  .pdf-print-layout > tfoot > tr > td,
+  .pdf-print-layout > tbody > tr > td {
+    padding: 0;
+    border: none;
+    vertical-align: top;
+  }
+
+  .pdf-print-header-space {
+    display: block;
+    height: 0;
+  }
+
+  .pdf-print-footer,
+  .pdf-print-footer-space {
+    height: 14mm;
+  }
+
+  .pdf-print-footer-space {
+    display: block;
+    width: 100%;
+  }
+
+  .pdf-cover,
+  .pdf-toc,
+  .pdf-section {
+    orphans: 3;
+    widows: 3;
+  }
+
+  .pdf-outdated-banner {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .pdf-section-header {
+    margin-bottom: 4mm;
+    padding-bottom: 2mm;
+    border-bottom: 0.5pt solid #999;
+  }
+
+  .pdf-section-back {
+    font-size: 8pt;
+    color: var(--vp-c-brand-1, #3451b2);
+  }
+
+  .pdf-print-footer {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 9999;
+    box-sizing: border-box;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    padding: 2mm 0 2mm;
+    font-size: 8pt;
+    color: #444;
+    background: #fff;
+    border-top: 0.5pt solid #999;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .pdf-print-footer-logo {
+    width: 22px;
+    height: auto;
+    flex-shrink: 0;
+  }
+
+  .pdf-print-footer-text {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.75rem;
+    justify-content: space-between;
+  }
+
+  html.pdf-export a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .pdf-keep-together {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .pdf-section-content :is(h1, h2, h3, h4) {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  .pdf-section-content.vp-doc table,
+  .pdf-section-content table {
+    display: table !important;
+    width: 100% !important;
+    overflow: visible !important;
+    border: 1pt solid #333 !important;
+    background: #fff !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .pdf-section-content tr {
+    background: #fff !important;
+  }
+
+  .pdf-section-content tr:nth-child(2n) {
+    background: #f2f2f3 !important;
+  }
+
+  .pdf-section-content th,
+  .pdf-section-content td {
+    border: 1pt solid #333 !important;
+    color: #213547 !important;
+    background: transparent !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .pdf-section-content th {
+    background: #ececed !important;
+    color: #3c3c43 !important;
+  }
+
+  .pdf-section-content tr,
+  .pdf-section-content thead,
+  .pdf-section-content :is(pre, blockquote, .pdf-callout, figure) {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}

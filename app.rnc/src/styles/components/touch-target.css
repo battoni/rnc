@@ -1,0 +1,107 @@
+/*
+ * Thumb targets on a touch screen, without changing a single pixel that is drawn.
+ *
+ * A small button in this app measures 32-35px, and a default one 40-42px. That clears WCAG 2.2 AA (24px) everywhere, so this
+ * is not a compliance fix — it is a thumb fix, against Apple's 44pt and WCAG AAA. The density is
+ * deliberate and the product is read on a desktop as much as it is held in a hand, so the button
+ * keeps the size it is DRAWN at and only the area a finger has to land on grows: a transparent
+ * pseudo-element, six pixels out on every side, which pointer events land on and bubble from.
+ *
+ * `pointer: coarse` only, so a mouse — which is precise — is untouched.
+ *
+ * This lives here rather than in the PrimeVue preset because the preset's `global.css` block does
+ * not honour an `@media` rule: the declarations were served to the browser and never applied, and
+ * the pseudo-element's `content` computed to `none`. App-level CSS belongs to the app.
+ *
+ * The catch, and the reason `celer-06-design-system` carries a minimum-gap rule: two buttons 4px
+ * apart end up with hit areas that OVERLAP by 8px, and the later sibling wins the overlap. Aiming
+ * at a pencil and hitting the bin beside it is worse than a small pencil. Adjacent controls need
+ * 12px between them — exactly 6 + 6 — and the pairs where that mattered were spaced first.
+ *
+ * A PrimeVue icon-only button may take `touch-target` as well: opting one in used to collapse it
+ * (12×12 on the mobile bar's menu button) while this rule took over PrimeVue's `::after` spacer, and
+ * it no longer does — measured 40×42 with and without the class. A control that should be DRAWN at
+ * 44px grows its own box instead (`min-h-11 min-w-11`), which is what the menu button does.
+ */
+@media (pointer: coarse) {
+  .p-button-sm,
+  .touch-target {
+    position: relative;
+    /* PrimeVue clips its buttons for the ripple, which would clip the hit area with it. */
+    overflow: visible;
+  }
+
+  /*
+   * `::before`, and not `::after`, because `::after` is not free on a PrimeVue button.
+   *
+   * PrimeVue gives every icon-only button a `::after` spacer of its own —
+   * `content: " "; visibility: hidden; width: 0` — and that spacer is an inline box: it is what gives
+   * the button its line height. This rule used to take `::after` over. First it won on `content`,
+   * `position` and `inset` and lost on `visibility` and `width`, so the overlay came out zero-wide and
+   * invisible on the pin, the pencil and the bin, which are the whole point (lifeshifter). Declaring
+   * those two fixed the hit area and left the other half broken: an absolute pseudo-element is out of
+   * flow, so the spacer's line went with it and the button was DRAWN 7px shorter under a finger than
+   * under a mouse — 32×28 against 32×35. PrimeVue's button styles do not use `::before` at all.
+   */
+  .p-button-sm::before,
+  .touch-target::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+  }
+
+  /*
+   * The default-size controls. A `.p-button` without `size="small"` is drawn 40–42px tall, a Select
+   * or MultiSelect 40–42px, and a dialog's close button 40×40 — close to the floor, never on it
+   * ("Sign in", the filters on /ideas, the X of every dialog; VIS-18). They grow 2px past their
+   * border, not 6: enough to clear 44, and two of them 8px apart (`gap-2`) still keep 4px between
+   * their areas, where a 6px growth would make them overlap and hand the tap to the later sibling.
+   * The inset is 3px because an absolute box is placed from the PADDING box, inside the 1px border
+   * — `-2px` measured 1px of reach outside the drawn edge (40 → 42).
+   *
+   * A Select is already `position: relative` and clips nothing on its root; its label and its
+   * overlay are children with their own boxes, so `overflow` is left alone there. A small button or
+   * a control that opted into `touch-target` keeps the 6px above.
+   */
+  .p-button:not(.p-button-sm, .touch-target),
+  .p-select,
+  .p-multiselect {
+    position: relative;
+  }
+
+  .p-button:not(.p-button-sm, .touch-target) {
+    overflow: visible;
+  }
+
+  .p-button:not(.p-button-sm, .touch-target)::before,
+  .p-select::before,
+  .p-multiselect::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+  }
+
+  /*
+   * A SMALL Select or MultiSelect is the same case as a small button and was missing from it: drawn
+   * at 35px, the default 3px inset below leaves 39 under a finger, five short. Found in lifeshifter,
+   * whose forms use `size="small"` on their selects — 62 of them on one screen — and where
+   * `e2e/theme/touch-target.spec.ts` measured every one at 39.
+   *
+   * 6px, like the small button beside it: 35 + 2 × (6 − 1 border) = 45. The same overlap caveat
+   * applies, which is what the 12px minimum gap is for.
+   *
+   * LAST in this block on purpose: `.p-select::before` above matches a small select too and has the
+   * same specificity, so the rule that wins is the one written later.
+   */
+  .p-select-sm,
+  .p-multiselect-sm {
+    position: relative;
+  }
+
+  .p-select-sm::before,
+  .p-multiselect-sm::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+  }
+}

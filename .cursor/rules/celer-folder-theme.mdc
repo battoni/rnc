@@ -1,0 +1,24 @@
+---
+description: app.rnc theme system rules — app.rnc/src/styles/theme/
+globs: app.rnc/src/styles/theme/**
+alwaysApply: false
+---
+# Theme System — Folder Rules
+
+> Pre-edit hook injects the full `RULES.md` chain when editing Vue/TS. Read `app.rnc/src/styles/theme/RULES.md` manually when editing `colors.css`.
+
+## Brand contract
+
+- **`colors.css`** is the single source of truth for hex values — primary `#c0e021` (500), surface `#888b8d` (500), ink `#141413` (900)
+- **`theme.ts`** reads CSS vars only — no duplicate hex literals (except `surface.0` white)
+- Palettes: `primary`, `surface`, `ink` — never `lime`, `gray`, `black`
+
+## Contributor rules
+
+- Never hardcode hex in `.vue` files — use Tailwind utilities or `var(--color-*)`
+- Never use built-in Tailwind palettes (`sky`, `emerald`, `gray`, etc.) — use semantic tokens
+- State colors: `success`, `info`, `warn`, `danger` — not `green`, `red`, `amber`
+
+## Forking
+
+To retheme app.rnc: change hex in `colors.css` only — no component edits needed.

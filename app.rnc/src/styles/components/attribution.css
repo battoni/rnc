@@ -1,0 +1,20 @@
+/*
+ * Attribution marks belong to another brand, so their colour is PINNED here instead of taken from
+ * the active theme. Read from `--color-primary-500`, the battoni.dev mark would be repainted in
+ * whatever brand a project runs — someone else's logo in the product's colour.
+ *
+ * The one place a raw hex is right in a component context: not a design token, a third party's
+ * constant.
+ */
+:root {
+  --brand-battoni-ink: #141413;
+  --brand-battoni-lime: #c0e021;
+}
+
+.brand-attribution-mark {
+  color: var(--brand-battoni-ink);
+}
+
+[data-theme='dark'] .brand-attribution-mark {
+  color: var(--brand-battoni-lime);
+}

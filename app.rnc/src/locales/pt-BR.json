@@ -1,0 +1,1106 @@
+{
+  "common": {
+    "active": "Ativo",
+    "cancel": "Cancelar",
+    "create": "Criar",
+    "details": "Detalhes",
+    "error": "Ocorreu um erro",
+    "inactive": "Inativo",
+    "moreActions": "Mais ações",
+    "noItems": "Nenhum item",
+    "orderBy": "Ordenação",
+    "save": "Salvar",
+    "search": "Pesquisar",
+    "tip": "Dica",
+    "actions": {
+      "activate": "Ativar",
+      "archive": "Arquivar",
+      "cancel": "Cancelar",
+      "close": "Fechar",
+      "delete": "Excluir",
+      "edit": "Editar",
+      "menu": "Abrir menu",
+      "no": "Não",
+      "ok": "Ok",
+      "submit": "Enviar",
+      "view": "Visualizar Detalhes",
+      "yes": "Sim"
+    },
+    "multiselect": {
+      "emptyFilterMessage": "Nenhum resultado encontrado",
+      "emptyMessage": "Nenhuma opção disponível",
+      "filterPlaceholder": "Filtrar"
+    },
+    "paginator": {
+      "report": "Página {currentPage} de {totalPages}"
+    },
+    "password": {
+      "mediumLabel": "Média",
+      "promptLabel": "Digite uma senha",
+      "strongLabel": "Forte",
+      "weakLabel": "Fraca"
+    },
+    "select": {
+      "emptyMessage": "Nenhuma opção disponível"
+    }
+  },
+  "errors": {
+    "copied": "Erro copiado",
+    "copy": "Copiar o erro",
+    "refreshAndContactAdmin": "Atualize a página e tente novamente. Se o problema continuar, copie a mensagem de erro e entre em contato com o administrador do sistema.",
+    "somethingWentWrong": "Algo deu errado.",
+    "tooManyAttempts": "Aguarde um momento e tente de novo.",
+    "unexpected": "Um erro inesperado aconteceu. Copie o erro abaixo e por favor informe ao administrador do sistema: {error}"
+  },
+  "address": {
+    "cep": "CEP",
+    "cepLoading": "Buscando o endereço…",
+    "cepNotFound": "Não conseguimos preencher o endereço por este CEP. Digite-o abaixo.",
+    "cepPlaceholder": "00000-000",
+    "city": "Cidade",
+    "cityPlaceholder": "Cidade",
+    "complement": "Complemento",
+    "complementPlaceholder": "Sala, andar…",
+    "district": "Bairro",
+    "districtPlaceholder": "Bairro",
+    "number": "Número",
+    "numberPlaceholder": "Nº",
+    "optional": "opcional",
+    "region": "Região",
+    "regionPlaceholder": "Região ou zona",
+    "state": "UF",
+    "statePlaceholder": "UF",
+    "street": "Logradouro",
+    "streetPlaceholder": "Rua, avenida…"
+  },
+  "imageUpload": {
+    "callToAction": "Clique, arraste uma imagem ou cole com Ctrl+V",
+    "preview": "Pré-visualização",
+    "remove": "Remover imagem",
+    "tooLarge": "A imagem passa do tamanho máximo. Escolha uma menor.",
+    "wrongType": "Formato não aceito. Use JPG, PNG ou WEBP."
+  },
+  "navigation": {
+    "brand": "Marca",
+    "components": "Componentes",
+    "design": "Design",
+    "docs": "Documentação",
+    "features": "Funcionalidades",
+    "home": "Início",
+    "ideas": "Ideias",
+    "logout": "Sair",
+    "news": "Novidades",
+    "personalization": "Personalização",
+    "roles": "Permissões",
+    "settings": "Configurações",
+    "showcase": "Vitrine",
+    "tips": "Dicas",
+    "toggleGroup": "Mostrar ou ocultar {section}",
+    "unread": "Não lido",
+    "users": "Usuários"
+  },
+  "theme": {
+    "switchToDark": "Modo escuro",
+    "switchToLight": "Modo claro"
+  },
+  "auth": {
+    "accountInactive": "Esta conta foi desativada. Fale com um administrador.",
+    "seeYouSoon": "Até logo!",
+    "brand": {
+      "domain": "suamarca.dev",
+      "headline": "Feito para\nandar rápido.",
+      "tag": ">_ app.rnc",
+      "tagline": "Um ponto de partida para aplicações — pensado para entregas limpas e rápidas."
+    },
+    "flow": {
+      "back": "Voltar",
+      "continue": "Continuar",
+      "continueWith": "Continuar com",
+      "needHelp": "Precisa de ajuda?",
+      "or": "ou",
+      "login": {
+        "changePhone": "Trocar número",
+        "codeDeliveryFailed": "Não conseguimos enviar o código agora. Tente de novo em alguns minutos.",
+        "codeExpired": "Esse código expirou. Peça um novo.",
+        "codeInvalid": "Código inválido",
+        "codeLocked": "Houve tentativas erradas demais e este código não vale mais. Peça um novo para continuar.",
+        "codeLockedTitle": "Código bloqueado",
+        "codeRequired": "Código é obrigatório",
+        "codeSentTo": "Enviamos um código de 6 dígitos para",
+        "codeSuccess": "Código verificado com sucesso",
+        "codeSuccessDetail": "Bem-vindo de volta, {name}!",
+        "codeTitle": "Entrar com código",
+        "devCode": "Código de desenvolvimento:",
+        "email": "E-mail",
+        "emailInvalid": "E-mail inválido",
+        "emailPlaceholder": "Digite seu melhor e-mail",
+        "emailRequired": "E-mail é obrigatório",
+        "emailTitle": "Entrar com e-mail",
+        "enterCode": "Digite o código abaixo",
+        "forgotPasswordLink": "Esqueceu a senha?",
+        "identifierAriaEmail": "E-mail",
+        "identifierAriaWhatsapp": "Telefone (WhatsApp)",
+        "identifierInvalid": "Digite um celular ou e-mail válido",
+        "identifierLabel": "Celular ou e-mail",
+        "identifierPlaceholder": "Digite seu celular ou e-mail",
+        "identifierRequired": "Celular ou e-mail é obrigatório",
+        "passwordTitle": "Entrar",
+        "phoneInvalid": "Informe o número com o DDD",
+        "phoneNumber": "Número de Telefone",
+        "phoneRequired": "Telefone é obrigatório",
+        "phoneTitle": "Entrar",
+        "resendCode": "Reenviar código",
+        "resendCodeMissingPhone": "Telefone não encontrado para reenviar.",
+        "resendCodeSuccess": "Código reenviado",
+        "resendCodeWaitDetail": "Você pode reenviar o código quando o tempo terminar.",
+        "resendCodeWaitTitle": "Aguarde",
+        "resendIn": "Reenviar em {seconds}s",
+        "sendCode": "Enviar código",
+        "useEmailInstead": "Usar e-mail",
+        "usePhoneInstead": "Usar celular",
+        "welcome": "Bem-vindo",
+        "whatsappPlaceholder": "Insira seu número de WhatsApp"
+      },
+      "recover": {
+        "atLeastOne": "Informe o celular ou o e-mail",
+        "confirmLink": "Confirmar",
+        "description": "Enviamos uma mensagem de Whatsapp ou um e-mail para ajudar você a resetar sua senha.",
+        "enterCode": "Digite o código abaixo",
+        "fillAtLeastOneField": "Preencha pelo menos um campo",
+        "phone": "Número de celular",
+        "phoneInvalid": "Digite um celular válido com DDD (10 ou 11 dígitos)",
+        "successMessage": "Verifique seu e-mail e/ou SMS para concluir o processo de recuperação de acesso",
+        "successTitle": "E-mail e/ou SMS enviado com sucesso",
+        "title": "Recuperar acesso"
+      },
+      "resetCode": {
+        "codeLabel": "Código de verificação",
+        "codePlaceholder": "Digite o código que você recebeu",
+        "codeRequired": "Código é obrigatório",
+        "confirm": "Confirmar",
+        "newPassword": "Nova senha",
+        "resend": "Reenviar código",
+        "resendSuccess": "Código reenviado",
+        "success": "Senha atualizada",
+        "title": "Definir nova senha"
+      },
+      "setPassword": {
+        "confirmLabel": "Confirmar senha",
+        "confirmPlaceholder": "Digite a senha novamente",
+        "confirmRequired": "Confirme sua senha",
+        "minLength": "A senha deve ter pelo menos 8 caracteres",
+        "mismatch": "As senhas devem ser iguais",
+        "title": "Defina sua senha"
+      },
+      "signUp": {
+        "birthDate": "Data de nascimento",
+        "birthDateInvalid": "Verifique a data de nascimento",
+        "birthDatePlaceholder": "Insira sua data de nascimento",
+        "birthDateRequired": "Data de nascimento é obrigatória",
+        "cpf": "CPF",
+        "cpfDescription": "Seu CPF nos ajudará a proteger seus dados e garantir que você tem mais de 18 anos.",
+        "cpfPlaceholder": "Insira seu CPF",
+        "cpfRequired": "CPF é obrigatório",
+        "cpfTaken": "Este CPF já está em uso",
+        "email": "E-mail",
+        "emailInvalid": "Isso não parece um e-mail",
+        "emailPlaceholder": "voce{'@'}exemplo.com",
+        "emailRequired": "Informe seu e-mail",
+        "emailTaken": "Este e-mail já está em uso",
+        "fieldInvalid": "Verifique este campo",
+        "iAcceptThe": "Aceito os",
+        "invalidCpf": "Este CPF não é válido",
+        "lastName": "Sobrenome",
+        "lastNamePlaceholder": "Digite seu sobrenome",
+        "lastNameRequired": "Sobrenome é obrigatório",
+        "name": "Nome",
+        "namePlaceholder": "Digite seu nome",
+        "nameRequired": "Nome é obrigatório",
+        "phone": "Telefone (WhatsApp)",
+        "phoneDescription": "Opcional. Este número pode receber mensagens sobre a sua conta.",
+        "phoneInvalid": "Informe o número com DDD",
+        "phonePlaceholder": "(11) 99999-9999",
+        "termsAndConditionsOfUse": "termos e condições de uso",
+        "termsRequired": "Você precisa aceitar os termos e condições",
+        "title": "Complete seu cadastro",
+        "verify": {
+          "awaitingApproval": "Seu e-mail foi confirmado. Um administrador vai aprovar a sua conta antes de você entrar.",
+          "code": "Código",
+          "codeFormat": "O código tem seis dígitos",
+          "codeLocked": "Muitas tentativas erradas, por isso este código não vale mais. Peça um novo para continuar.",
+          "codePlaceholder": "000000",
+          "codeRequired": "Informe o código que enviamos",
+          "invalidCode": "Esse código não confere, ou expirou",
+          "resend": "Enviar o código de novo",
+          "resendIn": "Você pode pedir de novo em {seconds}s",
+          "resent": "Se houver um cadastro para esse endereço, o código está a caminho",
+          "submit": "Confirmar",
+          "subtitle": "Enviamos um código de seis dígitos para {email}.",
+          "title": "Confirme seu e-mail",
+          "userAlreadyExists": "Esse e-mail já tem uma conta"
+        }
+      },
+      "social": {
+        "email": "Email",
+        "facebook": "Facebook",
+        "google": "Google"
+      },
+      "support": {
+        "contactAdmins": "Entre em contato com um dos administradores:",
+        "pageTitle": "Suporte",
+        "viewTitle": "Support View"
+      },
+      "terms": {
+        "description": "Este ambiente e seus recursos destinam-se ao uso interno autorizado. Ao continuar, você concorda com as regras de uso, privacidade e segurança da plataforma.",
+        "title": "Termos e condições de uso",
+        "warning": "O descumprimento das políticas pode resultar em bloqueio de acesso e demais medidas administrativas cabíveis."
+      }
+    },
+    "forgotPassword": {
+      "back": "Voltar",
+      "description": "Entre em contato com um dos administradores abaixo para recuperar seu acesso:",
+      "title": "Esqueceu sua senha?"
+    },
+    "login": {
+      "forgotPassword": "Esqueceu sua senha?",
+      "invalidCredentials": "Usuário ou senha incorretos",
+      "password": "Senha",
+      "passwordPlaceholder": "Insira sua senha",
+      "passwordRequired": "Senha é obrigatória",
+      "submit": "Entrar",
+      "tooManyAttempts": "Muitas tentativas. Aguarde cerca de 1 minuto e tente de novo.",
+      "username": "Usuário",
+      "usernamePlaceholder": "Insira seu nome de usuário",
+      "usernameRequired": "Usuário é obrigatório",
+      "welcome": "Bem-vindo(a), {name}!"
+    }
+  },
+  "features": {
+    "base": "Base compartilhada",
+    "empty": "Nenhuma funcionalidade com esse termo.",
+    "lede": "O que existe nesta base e em que versão. A lista é gerada a partir dos contratos de cada unidade — ela relata, não liga nem desliga nada.",
+    "origin": "origem: {origin}",
+    "searchPlaceholder": "Buscar por nome ou caminho…",
+    "tally": "{features} funcionalidades · {units} unidades com contrato",
+    "title": "Funcionalidades",
+    "unitCount": "{count} unidades",
+    "versionDrift": "versão fora de sincronia",
+    "side": {
+      "api": "API",
+      "app": "App"
+    },
+    "tooling": {
+      "lede": "{count} peças de configuração e automação que vêm com o bootstrap. Não são unidades versionadas — a lista é o que cada uma já declara sobre si.",
+      "title": "Ferramental",
+      "groups": {
+        "agent": "Agentes",
+        "command": "Comandos",
+        "cortex": "Subsistemas do cortex",
+        "hook": "Hooks",
+        "rule": "Regras",
+        "skill": "Skills"
+      }
+    }
+  },
+  "finance": {
+    "transactions": {
+      "empty": "Nenhuma transação encontrada.",
+      "title": "Últimas transações",
+      "viewAll": "Ver todas as transações",
+      "columns": {
+        "amount": "Valor",
+        "date": "Data",
+        "entity": "Entidade",
+        "status": "Status",
+        "type": "Tipo"
+      }
+    }
+  },
+  "ideas": {
+    "moved": "uma ideia que você apoia mudou de situação | {count} ideias que você apoia mudaram de situação",
+    "title": "Ideias",
+    "actions": {
+      "backToBoard": "Voltar para as ideias",
+      "edit": "Editar ideia",
+      "new": "Enviar ideia",
+      "save": "Salvar",
+      "send": "Enviar",
+      "support": "Apoiar esta ideia",
+      "supportCount": "Apoiar esta ideia ({count} apoio) | Apoiar esta ideia ({count} apoios)",
+      "unsupport": "Retirar apoio"
+    },
+    "area": {
+      "account": "Conta",
+      "general": "Geral",
+      "home": "Início"
+    },
+    "capture": {
+      "title": "Enviar uma ideia"
+    },
+    "card": {
+      "hasImage": "com imagem",
+      "hidden": "oculta",
+      "moved": "A situação desta ideia mudou desde a última vez que você olhou",
+      "removedAuthor": "Conta removida"
+    },
+    "comments": {
+      "delete": "Apagar comentário",
+      "empty": "Ainda não há comentários. Se você tem algo a acrescentar, escreva.",
+      "official": "Resposta oficial",
+      "placeholder": "Acrescente alguma coisa — um detalhe, um caso parecido, uma discordância.",
+      "send": "Comentar",
+      "title": "Comentários"
+    },
+    "detail": {
+      "attachmentAlt": "Imagem anexada à ideia",
+      "maintainerAnswer": "Resposta de quem cuida do produto",
+      "title": "Ideia"
+    },
+    "empty": {
+      "description": "Nada por aqui ainda. Se alguma coisa no produto te incomodou ou faltou hoje, esse é o lugar.",
+      "title": "O quadro está vazio"
+    },
+    "emptyFiltered": {
+      "description": "Ninguém escreveu uma ideia que se encaixe aqui. Limpe os filtros para ver o quadro inteiro.",
+      "title": "Nada com esses filtros"
+    },
+    "filters": {
+      "area": "Área",
+      "clear": "Limpar filtros",
+      "mine": "Só as minhas",
+      "search": "Buscar",
+      "status": "Situação",
+      "type": "Tipo"
+    },
+    "form": {
+      "area": "Onde acontece",
+      "attachment": "Imagem (opcional)",
+      "attachmentHint": "JPG, PNG ou WEBP, até 2 MB. Um print costuma explicar melhor que um parágrafo.",
+      "description": "O que acontece, ou o que poderia acontecer",
+      "descriptionHint": "Conte o que você estava tentando fazer. Isso vale mais que uma solução pronta.",
+      "descriptionPlaceholder": "A tela levou quatro cliques para fazer uma coisa que eu faço todo dia…",
+      "title": "Título",
+      "titlePlaceholder": "Em uma frase, o que você quer",
+      "type": "Tipo"
+    },
+    "loadError": {
+      "retry": "Tentar de novo",
+      "title": "Não consegui carregar. Verifique a conexão."
+    },
+    "merge": {
+      "alreadyMerged": "Esta ideia já foi mesclada em outra.",
+      "sameIdea": "Uma ideia não pode ser mesclada nela mesma.",
+      "targetUnavailable": "Esta ideia está oculta ou já foi mesclada, então não pode receber a mescla."
+    },
+    "moderation": {
+      "hide": "Ocultar do quadro",
+      "merge": "Mesclar em outra",
+      "mergeConfirm": "Mesclar",
+      "mergeHint": "Os apoios desta ideia passam para a que você escolher. Quem apoiou as duas conta uma vez só.",
+      "mergeTarget": "Ideia que fica",
+      "mergeTitle": "Mesclar ideia duplicada",
+      "note": "Resposta pública",
+      "notePlaceholder": "O que você quer dizer a quem escreveu — e a quem apoiou.",
+      "noteRequired": "Um \"não agora\" sem explicação é o quadro ficando em silêncio. Escreva o porquê.",
+      "save": "Salvar situação",
+      "status": "Situação",
+      "title": "Cuidar desta ideia",
+      "unhide": "Devolver ao quadro"
+    },
+    "sort": {
+      "label": "Ordenar por",
+      "recent": "Mais recentes",
+      "votes": "Mais apoiadas"
+    },
+    "status": {
+      "delivered": "Entregue",
+      "inProgress": "Em construção",
+      "notNow": "Não agora",
+      "planned": "Planejada",
+      "received": "Recebida",
+      "underReview": "Em análise"
+    },
+    "toast": {
+      "createdDetail": "Obrigado. Toda ideia aqui é lida.",
+      "createdTitle": "Ideia enviada",
+      "errorDetail": "Não deu para concluir agora. Tente de novo.",
+      "errorTitle": "Algo deu errado",
+      "notFound": "Ideia não encontrada",
+      "savedTitle": "Salvo",
+      "statusTitle": "Situação atualizada"
+    },
+    "type": {
+      "idea": "Ideia",
+      "improvement": "Melhoria",
+      "problem": "Problema"
+    }
+  },
+  "news": {
+    "credit": "Veio da ideia de {author}:",
+    "draft": "Rascunho",
+    "draftOnly": "Só você vê os rascunhos.",
+    "readMore": "Ler",
+    "title": "Novidades",
+    "actions": {
+      "delete": "Apagar",
+      "deleteConfirm": "Apagar esta entrada? A capa, as leituras e os aplausos vão junto.",
+      "edit": "Editar",
+      "new": "Nova entrada",
+      "publish": "Publicar",
+      "publishAction": "Publicar",
+      "save": "Salvar",
+      "saveDraft": "Salvar rascunho",
+      "unpublish": "Despublicar"
+    },
+    "announce": {
+      "hint": "Esta ideia foi entregue. Quer anunciar agora? Já vem preenchida com o que você escreveu, e credita quem propôs.",
+      "later": "Agora não",
+      "publish": "Publicar novidade",
+      "title": "Anunciar em Novidades"
+    },
+    "empty": {
+      "description": "Assim que algo mudar por aqui, aparece nesta página.",
+      "title": "Nada publicado ainda"
+    },
+    "filter": {
+      "all": "Todas",
+      "emptyTitle": "Nada com esse filtro",
+      "read": "Lidas",
+      "showAll": "Ver todas",
+      "unread": "Não lidas"
+    },
+    "form": {
+      "areas": "Onde muda",
+      "areasHint": "As partes do produto que esta novidade toca. Aparecem no card.",
+      "areasPlaceholder": "Escolha uma ou mais",
+      "body": "O que mudou",
+      "bodyHint": "O artigo. Negrito, listas e links funcionam; imagens no corpo não — use a capa.",
+      "cover": "Capa",
+      "coverHint": "JPG, PNG ou WEBP, até 2 MB. Aparece na lista e no topo do artigo.",
+      "idea": "Ideia que originou (opcional)",
+      "ideaHint": "Só ideias entregues aparecem aqui. A maior parte do que sai não vem do quadro, e tudo bem.",
+      "ideaPlaceholder": "Nenhuma",
+      "link": "Link (opcional)",
+      "linkHint": "Para onde a entrada leva o leitor depois.",
+      "publish": "Publicar agora",
+      "subtitle": "Subtítulo",
+      "subtitleHint": "A frase que convence alguém a abrir. Opcional.",
+      "title": "Título"
+    },
+    "reactions": {
+      "clap": "Bater palmas — {count} até agora",
+      "heart": "Amei — {count} até agora",
+      "rocket": "Isso muda tudo — {count} até agora"
+    },
+    "readers": {
+      "count": "{count} leitura | {count} leitura | {count} leituras",
+      "empty": "Ninguém leu esta entrada ainda.",
+      "title": "Quem leu"
+    },
+    "share": {
+      "action": "Compartilhar",
+      "copied": "Link copiado"
+    },
+    "status": {
+      "draft": "Rascunho",
+      "published": "Publicada"
+    },
+    "toast": {
+      "notFound": "Novidade não encontrada",
+      "publishedDetail": "A entrada já está em Novidades, creditando quem propôs.",
+      "publishedTitle": "Novidade publicada"
+    }
+  },
+  "notFound": {
+    "backHome": "Voltar ao início",
+    "description": "O endereço que você abriu não corresponde a nada aqui. Pode ter sido um erro de digitação, ou um link que envelheceu.",
+    "title": "Esta página não existe"
+  },
+  "personalization": {
+    "description": "Ajuste a aparência da interface para se adequar melhor ao seu fluxo de trabalho. Estas preferências ficam salvas só neste navegador, então outro dispositivo ou navegador começa com as suas próprias.",
+    "subtitle": "Configurações de Interface",
+    "title": "Personalização",
+    "visualCard": {
+      "darkMode": "Modo escuro",
+      "fullWidth": "Tela cheia",
+      "language": "Idioma",
+      "pinMenuButton": "Fixar o botão de menu",
+      "title": "Preferências Visuais",
+      "tutor": "Dicas contextuais"
+    }
+  },
+  "rolesAndPermissions": {
+    "activateAll": "Ativar todos",
+    "administratorKeepsEveryKey": "O perfil Administrador sempre tem todas as permissões, então nenhuma pode ser retirada dele. Para limitar alguém, use outro perfil.",
+    "cannotAssignUnheldRole": "Este perfil concede mais do que você tem, então você não pode atribuí-lo. Peça a quem tem essas permissões.",
+    "cannotDeleteAdministratorRole": "O perfil de administrador não pode ser excluído",
+    "cannotDeleteRole": "Não é possível excluir este perfil",
+    "cannotGrantUnheldPermission": "Você só concede permissões que você mesmo tem. Peça a quem tem esta.",
+    "collapseAll": "Minimizar todos",
+    "deactivateAll": "Desativar todos",
+    "deleteConfirmHeader": "Esta ação não pode ser desfeita.",
+    "deleteConfirmMessage": "Tem certeza que deseja excluir o perfil {name}?",
+    "expandAll": "Expandir todos",
+    "newProfile": "Novo Perfil",
+    "roleCreatedSuccess": "Perfil {name} criado com sucesso!",
+    "roleDeletedSuccess": "Perfil excluído com sucesso!",
+    "roleUpdatedSuccess": "Perfil {name} atualizado com sucesso!",
+    "title": "Perfis e Permissões",
+    "toggleAllPanels": "Expandir/Recolher Todos",
+    "unknownPermission": "Esta permissão não existe. Atualize a página e tente de novo.",
+    "update": "Atualizar",
+    "usersUsingRole": "{count} usuário(s) está(ão) usando este perfil. Por favor, remova-os do perfil antes de excluí-lo.",
+    "form": {
+      "description": "Descrição",
+      "descriptionPlaceholder": "Digite uma descrição para o perfil (opcional)",
+      "editProfileHeader": "Editar Perfil",
+      "name": "Nome",
+      "namePlaceholder": "Digite o nome do perfil",
+      "nameRequired": "Nome é obrigatório",
+      "nameTaken": "Já existe um perfil com este nome",
+      "newProfileHeader": "Novo Perfil",
+      "permissionGroups": "Grupos de Permissões",
+      "permissionGroupsPlaceholder": "Selecione os grupos de permissões",
+      "permissionGroupsRequired": "Selecione pelo menos um grupo de permissões"
+    },
+    "groups": {
+      "design": "Design",
+      "home": "Início",
+      "ideas": "Ideias",
+      "news": "Novidades",
+      "permissions": "Permissões",
+      "roles": "Perfis",
+      "tips": "Dicas",
+      "users": "Usuários"
+    },
+    "permissions": {
+      "archive": "Arquivar",
+      "create": "Criar",
+      "delete": "Excluir",
+      "manage": "Gerenciar",
+      "read": "Ler",
+      "resetPassword": "Redefinir senha",
+      "search": "Pesquisar",
+      "update": "Atualizar"
+    },
+    "tabs": {
+      "admin": "Admin",
+      "manager": "Gerente"
+    }
+  },
+  "showcase": {
+    "brand": {
+      "title": "Marca",
+      "context": {
+        "role": "Perfil",
+        "rolePlaceholder": "Selecione o perfil",
+        "username": "Usuário",
+        "usernamePlaceholder": "Digite seu usuário",
+        "buttons": {
+          "danger": "Perigo",
+          "primary": "Primário",
+          "secondary": "Secundário",
+          "success": "Sucesso",
+          "withIcon": "Com ícone"
+        },
+        "tags": {
+          "canceled": "Cancelado",
+          "done": "Concluído",
+          "pending": "Pendente",
+          "primary": "Primário",
+          "scheduled": "Agendado"
+        }
+      },
+      "hero": {
+        "headline": "Um sistema feito para ir rápido.",
+        "lede": "A identidade do tema ativo — paleta, tipografia, raios e relevo, desenhados a partir dos tokens. Esta página é o guia de estilo vivo do tema que estiver ligado."
+      },
+      "language": {
+        "patternLabel": "padrão",
+        "patternNote": "monograma · baixa opacidade"
+      },
+      "ramps": {
+        "ink": "títulos · texto forte · o preto",
+        "primary": "ação da marca · o verde de assinatura",
+        "surface": "fundos · bordas · atenuado · o cinza"
+      },
+      "sections": {
+        "color": {
+          "eyebrow": "// 01 · cor",
+          "title": "Sistema de cores"
+        },
+        "components": {
+          "eyebrow": "// 05 · componentes",
+          "title": "Em contexto"
+        },
+        "language": {
+          "eyebrow": "// 04 · linguagem visual",
+          "title": "Código como ornamento"
+        },
+        "mark": {
+          "body": "A contraforma do \"G\" carrega um \"B\" — nome, sobrenome e ofício fundidos em um único símbolo com sabor de programação. Sobre o verde ele fica preto; sobre o escuro ele brilha verde. Nunca o deforme, recolora ou aperte.",
+          "eyebrow": "// 03 · a marca",
+          "title": "O monograma"
+        },
+        "signature": {
+          "eyebrow": "// 06 · assinatura",
+          "title": "Elementos vivos"
+        },
+        "type": {
+          "eyebrow": "// 02 · tipografia",
+          "title": "Tipografia"
+        }
+      },
+      "signature": {
+        "glossary": "glossário",
+        "glossaryDefinition": "a contraforma do \"G\" que carrega um \"B\"; a marca central da identidade, com sabor de programação.",
+        "glossaryLede": "Destaque um {term} com um sublinhado pontilhado verde-limão — quem lê recebe a definição ali mesmo, sem perder o contexto.",
+        "glossaryTerm": "monograma",
+        "progress": "progresso",
+        "timeline": "linha do tempo",
+        "bars": {
+          "atmosphere": "atmosfera",
+          "identity": "identidade",
+          "tokens": "tokens"
+        },
+        "phases": {
+          "atmosphere": {
+            "detail": "Brilhos, gradientes, profundidade.",
+            "title": "Atmosfera"
+          },
+          "foundation": {
+            "detail": "Escalas, tokens de papel, claro/escuro.",
+            "title": "Fundação"
+          },
+          "identity": {
+            "detail": "Geometria, voz mono, motivos.",
+            "title": "Identidade"
+          }
+        }
+      },
+      "tokens": {
+        "contrast": "secundário · terciário",
+        "danger": "erro · destrutivo",
+        "help": "dicas · suporte",
+        "info": "neutro · informativo",
+        "success": "concluído · ativo · positivo",
+        "warn": "agendado · pendente"
+      },
+      "typography": {
+        "displayBody": "Títulos, rótulos, navegação e a moldura da interface.",
+        "displayCaption": "Space Grotesk · títulos",
+        "displayLarge": "Construa rápido.",
+        "displayMedium": "Entregue código limpo.",
+        "textBody": "Texto corrido, blocos de código e dados tabulares. A voz monoespaçada mantém a comunicação dinâmica e técnica — fiel à marca.",
+        "textCaption": "Sometype Mono · texto"
+      }
+    },
+    "components": {
+      "addressDescription": "Digite um CEP e logradouro, bairro, cidade e UF são preenchidos pelo ViaCEP. Todos os campos continuam editáveis.",
+      "comingSoon": "Em breve",
+      "localityDescription": "Um lugar no nível da cidade. O campo de região é opcional e só aparece quando o formulário pede.",
+      "title": "Componentes",
+      "buttons": {
+        "danger": "Perigo",
+        "disabled": "Desabilitado",
+        "info": "Informação",
+        "outlined": "Contornado",
+        "primary": "Primário",
+        "secondary": "Secundário",
+        "success": "Sucesso",
+        "text": "Texto",
+        "warning": "Aviso",
+        "withIcon": "Com ícone"
+      },
+      "cards": {
+        "info": {
+          "description": "Descrição de exemplo do card informativo.",
+          "title": "Informação"
+        },
+        "primary": {
+          "description": "Descrição de exemplo do card primário.",
+          "title": "Primário"
+        },
+        "success": {
+          "description": "Descrição de exemplo do card de sucesso.",
+          "title": "Sucesso"
+        },
+        "warning": {
+          "description": "Descrição de exemplo do card de aviso.",
+          "title": "Aviso"
+        }
+      },
+      "columns": {
+        "amount": "Valor",
+        "date": "Data",
+        "entity": "Entidade",
+        "status": "Status",
+        "type": "Tipo"
+      },
+      "crud": {
+        "duration": "Duração: {minutes} min",
+        "history": "Histórico",
+        "historyDetail": "Histórico de {name}",
+        "itemDetail": "{action}: {name}",
+        "owner": "Responsável: {owner}"
+      },
+      "datasets": {
+        "financial": "Financeiro",
+        "inventory": "Estoque",
+        "tasks": "Tarefas"
+      },
+      "dialog": {
+        "body": "Este é um diálogo simples de demonstração, com conteúdo estático.",
+        "close": "Fechar",
+        "open": "Abrir diálogo"
+      },
+      "inputs": {
+        "textareaValue": "Este é um campo de texto longo de exemplo.",
+        "multiSelectOptions": {
+          "designSystem": "Design system",
+          "themeTokens": "Tokens do tema",
+          "uxWriting": "Escrita de UX"
+        },
+        "selectOptions": {
+          "design": "Design",
+          "engineering": "Engenharia",
+          "product": "Produto"
+        }
+      },
+      "messages": {
+        "error": "Exemplo de mensagem de erro.",
+        "info": "Exemplo de mensagem informativa.",
+        "success": "Exemplo de mensagem de sucesso.",
+        "warn": "Exemplo de mensagem de aviso."
+      },
+      "sample": {
+        "crud": {
+          "active": "Ativo",
+          "archived": "Arquivado",
+          "draft": "Rascunho",
+          "marketingPlan": "Plano de marketing",
+          "onboardingGuide": "Guia de integração",
+          "q3Budget": "Orçamento do 3º trimestre"
+        },
+        "inventory": {
+          "ballpointPens": "Canetas esferográficas",
+          "electronics": "Eletrônicos",
+          "furniture": "Móveis",
+          "inStock": "Em estoque",
+          "low": "Baixo",
+          "notebooks": "Cadernos",
+          "office": "Material de escritório",
+          "officeChairs": "Cadeiras de escritório",
+          "out": "Esgotado",
+          "usbCables": "Cabos USB"
+        },
+        "statuses": {
+          "canceled": "Cancelado",
+          "done": "Concluído",
+          "scheduled": "Agendado"
+        },
+        "tasks": {
+          "designLandingPage": "Desenhar a landing page",
+          "doing": "Em andamento",
+          "done": "Concluída",
+          "fixLoginBug": "Corrigir o bug do login",
+          "high": "Alta",
+          "low": "Baixa",
+          "medium": "Média",
+          "reviewPullRequests": "Revisar os PRs",
+          "todo": "A fazer",
+          "writeApiDocs": "Escrever a documentação da API"
+        },
+        "types": {
+          "deposit": "Depósito",
+          "payment": "Pagamento",
+          "refund": "Reembolso",
+          "withdraw": "Saque"
+        }
+      },
+      "sections": {
+        "accentStrip": "#3 · Faixa lateral de destaque",
+        "address": "Endereço (Brasil)",
+        "amountHero": "#8 · Valor em destaque",
+        "buttons": "Botões",
+        "cardGrid": "#2 · Grade de cards",
+        "cards": "Cards",
+        "crudList": "Lista CRUD gerenciada (não financeira)",
+        "dataTable": "DataTable",
+        "dialog": "Diálogo",
+        "dividedList": "#1 · Lista dividida",
+        "feed": "#6 · Feed de atividades",
+        "formInputs": "Campos de formulário",
+        "formValidation": "Validação de formulário",
+        "gridTable": "#9 · Tabela em grade responsiva",
+        "groupedByDate": "#5 · Agrupado por data",
+        "inDevelopment": "Em desenvolvimento",
+        "kanban": "#10 · Kanban por status",
+        "labelValueGrid": "#7 · Grade rótulo-valor",
+        "locality": "Localidade (Brasil)",
+        "messages": "Mensagens",
+        "statement": "#4 · Extrato bancário",
+        "tabs": "Abas (modo de visualização)",
+        "tagsAndBadges": "Tags e badges",
+        "toast": "Toast",
+        "typography": "Tipografia"
+      },
+      "tabs": {
+        "activity": "Atividade",
+        "activityBody": "Conteúdo da aba Atividade, renderizado pelo slot padrão.",
+        "editDetail": "O slot de ações da aba foi acionado.",
+        "editSummary": "Ação de editar",
+        "overview": "Visão geral",
+        "overviewBody": "Conteúdo da aba Visão geral, renderizado pelo slot padrão."
+      },
+      "tags": {
+        "danger": "Perigo",
+        "info": "Informação",
+        "success": "Sucesso",
+        "warn": "Aviso"
+      },
+      "toast": {
+        "detail": "Este é um toast de exemplo da vitrine de componentes.",
+        "error": "Toast de erro",
+        "info": "Toast informativo",
+        "success": "Toast de sucesso",
+        "summary": "Toast {severity}",
+        "warn": "Toast de aviso"
+      },
+      "typography": {
+        "body": "Texto base para o conteúdo de leitura padrão.",
+        "heading1": "Título 1",
+        "heading2": "Título 2",
+        "heading3": "Título 3",
+        "heading4": "Título 4",
+        "label": "Papel de rótulo de formulário / texto secundário.",
+        "muted": "Papel de texto de apoio atenuado."
+      },
+      "units": {
+        "items": "{count} itens",
+        "minutes": "{count} min"
+      },
+      "validation": {
+        "required": "Este campo é obrigatório.",
+        "unexpected": "Ocorreu um erro inesperado: tempo esgotado ao contatar o gateway da API."
+      }
+    },
+    "forms": {
+      "itemCreated": "Item criado",
+      "errors": {
+        "addressRequired": "O endereço é obrigatório",
+        "cityRequired": "A cidade é obrigatória",
+        "companyRequired": "A empresa é obrigatória",
+        "countryRequired": "O país é obrigatório",
+        "emailInvalid": "Informe um e-mail válido",
+        "emailRequired": "O e-mail é obrigatório",
+        "firstNameRequired": "O nome é obrigatório",
+        "jobTitleRequired": "O cargo é obrigatório",
+        "lastNameRequired": "O sobrenome é obrigatório",
+        "phoneRequired": "O telefone é obrigatório",
+        "postalCodeRequired": "O CEP é obrigatório",
+        "titleRequired": "O título é obrigatório",
+        "urlInvalid": "Informe uma URL válida"
+      },
+      "fields": {
+        "address": "Endereço",
+        "bio": "Biografia",
+        "city": "Cidade",
+        "company": "Empresa",
+        "country": "País",
+        "email": "E-mail",
+        "firstName": "Nome",
+        "jobTitle": "Cargo",
+        "lastName": "Sobrenome",
+        "notes": "Observações",
+        "phone": "Telefone",
+        "postalCode": "CEP",
+        "state": "Estado",
+        "title": "Título",
+        "website": "Site"
+      },
+      "placeholders": {
+        "address": "Rua Principal, 123",
+        "bio": "Uma breve descrição sobre você…",
+        "city": "São Paulo",
+        "company": "Acme Ltda",
+        "country": "Brasil",
+        "firstName": "João",
+        "jobTitle": "Gerente de produto",
+        "lastName": "Silva",
+        "notes": "Observações opcionais…",
+        "phone": "+55 11 91234-5678",
+        "postalCode": "01310-100",
+        "state": "SP",
+        "title": "Digite um título"
+      }
+    },
+    "showcase": {
+      "addItem": "Adicionar item",
+      "export": "Exportar",
+      "searchPlaceholder": "Buscar…",
+      "title": "Vitrine",
+      "orderBy": {
+        "dateAsc": "Mais antigos primeiro",
+        "dateDesc": "Mais recentes primeiro",
+        "nameAsc": "Nome A–Z",
+        "nameDesc": "Nome Z–A"
+      }
+    }
+  },
+  "tips": {
+    "add": "Nova dica",
+    "addTitle": "Nova dica",
+    "archive": "Arquivar",
+    "archiveConfirm": "A dica deixa de aparecer no app e o local fica livre para outra. O histórico é preservado.",
+    "archivedSuccess": "Dica arquivada.",
+    "archiveTitle": "Arquivar dica",
+    "createdSuccess": "Dica criada.",
+    "edit": "Editar dica",
+    "editTitle": "Editar dica",
+    "empty": "Nenhuma dica encontrada.",
+    "goToPlace": "Ver no app",
+    "lastChangedBy": "Última alteração por {name}",
+    "noAccess": "Você não tem permissão para ver as dicas.",
+    "orphanWarning": "Este local não existe mais no app — a dica não está sendo exibida em lugar nenhum.",
+    "showArchived": "Mostrar arquivadas",
+    "title": "Dicas",
+    "unarchive": "Reativar",
+    "unarchivedSuccess": "Dica reativada.",
+    "unknownAnchor": "Local desconhecido",
+    "updatedSuccess": "Dica atualizada.",
+    "usedIn": "Usada em",
+    "anchors": {
+      "featuresCatalogue": "Funcionalidades",
+      "personalizationAppearance": "Personalização",
+      "rolesPermissions": "Perfis e permissões",
+      "usersList": "Lista de usuários"
+    },
+    "errors": {
+      "anchorTaken": "Já existe uma dica ativa neste local.",
+      "contentRequired": "O texto da dica não pode ficar vazio.",
+      "reasonRequired": "Informe o motivo da alteração."
+    },
+    "form": {
+      "anchor": "Onde aparece",
+      "anchorHint": "A lista traz apenas os locais que ainda não têm dica.",
+      "anchorPlaceholder": "Escolha o local",
+      "content": "Texto da dica",
+      "reason": "Motivo da alteração",
+      "reasonHint": "Fica registrado no histórico junto com seu nome e a data."
+    },
+    "history": {
+      "empty": "Sem histórico.",
+      "loadError": "Não foi possível carregar o histórico.",
+      "restore": "Restaurar",
+      "restoreConfirm": "Restaurar esta versão? O texto atual vira uma versão anterior no histórico.",
+      "restoredFrom": "Restaurada da versão de {date}",
+      "restoredSuccess": "Versão restaurada.",
+      "system": "Sistema",
+      "title": "Histórico da dica",
+      "events": {
+        "archived": "Arquivada",
+        "created": "Criada",
+        "restored": "Restaurada",
+        "unarchived": "Reativada",
+        "updated": "Editada"
+      }
+    },
+    "sections": {
+      "administration": "Administração",
+      "workspace": "Área de trabalho"
+    },
+    "status": {
+      "active": "Ativa",
+      "archived": "Arquivada"
+    }
+  },
+  "users": {
+    "activateConfirmMessage": "Tem certeza que deseja ativar {name}?",
+    "add": "Novo Usuário",
+    "archiveConfirmMessage": "Tem certeza que deseja arquivar {name}?",
+    "cannotDeleteSelf": "Você não pode excluir a sua própria conta",
+    "cannotManageHigherAccount": "Esta conta tem permissões que você não tem, então você não pode alterá-la. Peça a quem tem essas permissões.",
+    "companyRole": "Cargo",
+    "deleteConfirmMessage": "Tem certeza que deseja excluir {name}? Esta ação não pode ser desfeita.",
+    "emailUnverified": "Não verificado",
+    "emailVerified": "E-mail verificado",
+    "noAccess": "Você não tem permissão para visualizar esta página.",
+    "status": "Status",
+    "systemRole": "Perfil",
+    "title": "Usuários",
+    "userActivatedSuccess": "Usuário {name} ativado com sucesso!",
+    "userArchivedSuccess": "Usuário {name} arquivado com sucesso!",
+    "userCreatedSuccess": "Usuário {name} criado com sucesso!",
+    "userDeletedSuccess": "Usuário excluído com sucesso!",
+    "userUpdatedSuccess": "Usuário {name} atualizado com sucesso!",
+    "confirmActions": {
+      "yesActivate": "Sim, ativar",
+      "yesArchive": "Sim, arquivar",
+      "yesDelete": "Sim, excluir"
+    },
+    "detail": {
+      "email": "E-mail",
+      "phone": "Telefone",
+      "role": "Perfil",
+      "username": "Usuário"
+    },
+    "empty": {
+      "description": "Adicione o primeiro membro da equipe para começar.",
+      "title": "Nenhum usuário ainda"
+    },
+    "form": {
+      "cancel": "Cancelar",
+      "cannotChangeOwnStatus": "Você não pode alterar o status da sua própria conta.",
+      "cannotDeactivateSelf": "Você não pode desativar a sua própria conta",
+      "companyRolePlaceholder": "Digite o cargo",
+      "companyRoleRequired": "Cargo é obrigatório",
+      "create": "Criar",
+      "createHeader": "Criar novo usuário",
+      "edit": "Editar",
+      "editHeader": "Editar usuário",
+      "lastName": "Sobrenome",
+      "lastNamePlaceholder": "Digite o sobrenome",
+      "lastNameRequired": "Sobrenome é obrigatório",
+      "name": "Nome",
+      "namePlaceholder": "Digite o nome",
+      "nameRequired": "Nome é obrigatório",
+      "optional": "opcional",
+      "password": "Senha",
+      "passwordConfirmation": "Confirmar senha",
+      "passwordConfirmationPlaceholder": "Confirme a senha",
+      "passwordConfirmationRequired": "Confirmação de senha é obrigatória",
+      "passwordMatch": "As senhas devem coincidir",
+      "passwordMin": "A senha deve ter pelo menos 8 caracteres",
+      "passwordPlaceholder": "Digite a senha",
+      "passwordRequired": "Senha é obrigatória",
+      "passwordResetPermissionRequired": "Você não tem permissão para redefinir senhas.",
+      "permissions": "Permissões",
+      "role": "Perfil",
+      "rolePlaceholder": "Selecione o perfil",
+      "roleRequired": "Perfil é obrigatório",
+      "roleUnknown": "Esse perfil não está no catálogo. Recarregue a página e escolha de novo.",
+      "statusPlaceholder": "Selecione o status",
+      "statusRequired": "Status é obrigatório",
+      "systemRolePlaceholder": "Digite o perfil",
+      "systemRoleRequired": "Perfil é obrigatório",
+      "username": "Usuário",
+      "usernameCheckUnavailable": "Não deu para conferir este nome de usuário agora. Ele será conferido quando você salvar.",
+      "usernamePlaceholder": "Digite o nome de usuário",
+      "usernameRequired": "Nome de usuário é obrigatório",
+      "usernameTaken": "Este nome de usuário já está em uso"
+    },
+    "loadError": {
+      "retry": "Tentar de novo",
+      "title": "Não deu para carregar os usuários. Verifique a conexão."
+    },
+    "sort": {
+      "nameAsc": "Nome (A–Z)",
+      "nameDesc": "Nome (Z–A)",
+      "roleAsc": "Perfil (A–Z)",
+      "roleDesc": "Perfil (Z–A)",
+      "statusAsc": "Status (A–Z)",
+      "statusDesc": "Status (Z–A)"
+    }
+  }
+}

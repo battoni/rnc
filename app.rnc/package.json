@@ -1,0 +1,89 @@
+{
+  "name": "app.rnc",
+  "version": "0.0.2",
+  "private": true,
+  "type": "module",
+  "overrides": {
+    "js-beautify": {
+      "glob": "^13.0.0"
+    },
+    "postcss": "^8.5.28",
+    "vite": {
+      "esbuild": "^0.28.1"
+    },
+    "vue-i18n": "$vue-i18n"
+  },
+  "engines": {
+    "node": "22.x"
+  },
+  "scripts": {
+    "build": "run-s build-only type-check",
+    "build-only": "vite build",
+    "build:features": "node scripts/build-features.mjs",
+    "check:aliases": "node scripts/check-aliases.mjs",
+    "dev": "vite",
+    "format": "prettier --write src/",
+    "lint": "eslint . --fix",
+    "preview": "vite preview",
+    "sort-locales": "node scripts/sort-locales.mjs",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "test:unit": "vitest",
+    "test:unit:run": "vitest run",
+    "type-check": "vue-tsc --build"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^7.1.0",
+    "@fortawesome/free-brands-svg-icons": "^7.1.0",
+    "@fortawesome/free-regular-svg-icons": "^7.1.0",
+    "@fortawesome/free-solid-svg-icons": "^7.1.0",
+    "@fortawesome/vue-fontawesome": "^3.1.2",
+    "@intlify/unplugin-vue-i18n": "^11.0.1",
+    "@primeuix/themes": "^2.0.2",
+    "@primevue/forms": "^4.5.4",
+    "@sentry/vue": "^10.29.0",
+    "@tailwindcss/vite": "^4.1.17",
+    "@vueuse/core": "^14.2.1",
+    "axios": "^1.20.0",
+    "pinia": "^3.0.4",
+    "prettier-plugin-tailwindcss": "^0.7.2",
+    "primeicons": "^7.0.0",
+    "primevue": "^4.5.2",
+    "quill": "^2.0.3",
+    "tailwindcss": "^4.1.17",
+    "tailwindcss-primeui": "^0.6.1",
+    "vue": "^3.5.25",
+    "vue-i18n": "^11.2.2",
+    "vue-router": "^4.6.3",
+    "yup": "^1.7.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.52.0",
+    "@primevue/auto-import-resolver": "^4.5.2",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/vue": "^8.1.0",
+    "@tsconfig/node22": "^22.0.5",
+    "@types/node": "^24.10.2",
+    "@vitejs/plugin-vue": "^6.0.2",
+    "@vitest/coverage-v8": "^4.1.11",
+    "@vue/eslint-config-prettier": "^10.2.0",
+    "@vue/eslint-config-typescript": "^14.6.0",
+    "@vue/test-utils": "^2.4.10",
+    "@vue/tsconfig": "^0.8.1",
+    "eslint": "^9.39.1",
+    "eslint-plugin-jsonc": "^2.21.1",
+    "eslint-plugin-perfectionist": "^5.7.0",
+    "eslint-plugin-vue": "~10.6.2",
+    "jiti": "^2.6.1",
+    "jsdom": "^29.1.1",
+    "msw": "^2.14.6",
+    "npm-run-all2": "^8.0.4",
+    "prettier": "3.7.4",
+    "typescript": "~5.9.3",
+    "unplugin-vue-components": "^30.0.0",
+    "vite": "^7.2.7",
+    "vite-plugin-vue-devtools": "^8.0.5",
+    "vitest": "^4.1.11",
+    "vue-tsc": "^3.1.8"
+  }
+}

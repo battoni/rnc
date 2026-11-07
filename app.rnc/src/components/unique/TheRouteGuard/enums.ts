@@ -1,0 +1,6 @@
+enum NAVIGATION_MODES {
+  HARD = 'HARD',
+  SOFT = 'SOFT',
+}
+
+export { NAVIGATION_MODES };

@@ -1,0 +1,28 @@
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always"
+  },
+  "[vue]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "prettier.requireConfig": true,
+  "volar.formatting.enable": false,
+  "eslint.workingDirectories": [
+    { "directory": "./app.rnc", "changeProcessCWD": true }
+  ],
+  "workbench.colorCustomizations": {
+    "titleBar.activeBackground": "#c0e021",
+    "titleBar.inactiveBackground": "#c0e02199",
+    "statusBar.background": "#c0e021",
+    "statusBar.foreground": "#15202b",
+    "statusBarItem.hoverBackground": "#a8c91d"
+  }
+}

@@ -1,0 +1,61 @@
+/*
+ * Quill ships a stylesheet built for a white page. These pull it onto the project's tokens so the
+ * editor is the same surface as the fields around it — and, more to the point, so it is legible in
+ * the dark scheme, where Quill's own defaults leave dark text on a dark ground.
+ */
+.p-editor .ql-toolbar.ql-snow,
+.p-editor .ql-container.ql-snow {
+  border-color: var(--color-line-strong);
+}
+
+.p-editor .ql-toolbar.ql-snow {
+  background: var(--color-panel-muted);
+  border-top-left-radius: var(--radius-md);
+  border-top-right-radius: var(--radius-md);
+}
+
+.p-editor .ql-container.ql-snow {
+  background: var(--color-panel);
+  border-bottom-left-radius: var(--radius-md);
+  border-bottom-right-radius: var(--radius-md);
+}
+
+.p-editor .ql-editor {
+  background: var(--color-panel);
+  color: var(--color-body);
+}
+
+/* A placeholder is text someone reads, so it takes the readable tier (theme RULES: subtle never
+   carries a sentence). */
+.p-editor .ql-editor.ql-blank::before {
+  color: var(--color-muted);
+  font-style: normal;
+}
+
+/* Quill draws its icons as SVG strokes and fills, so the dark scheme needs both told. */
+.p-editor .ql-snow .ql-stroke {
+  stroke: var(--color-muted);
+}
+
+.p-editor .ql-snow .ql-fill {
+  fill: var(--color-muted);
+}
+
+.p-editor .ql-snow .ql-picker {
+  color: var(--color-muted);
+}
+
+.p-editor .ql-snow .ql-picker-options {
+  background: var(--color-panel);
+  border-color: var(--color-line-strong);
+}
+
+.p-editor .ql-snow button:hover .ql-stroke,
+.p-editor .ql-snow button.ql-active .ql-stroke {
+  stroke: var(--color-primary-600);
+}
+
+.p-editor .ql-snow button:hover .ql-fill,
+.p-editor .ql-snow button.ql-active .ql-fill {
+  fill: var(--color-primary-600);
+}

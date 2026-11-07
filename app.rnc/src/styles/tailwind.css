@@ -1,0 +1,134 @@
+@import 'tailwindcss';
+@import 'tailwindcss-primeui';
+@import './theme/colors.css';
+@import './theme/fonts.css';
+
+/* Dark variant aligned with the role-token selector + PrimeVue darkModeSelector.
+ * Rarely needed — role tokens (canvas/panel/heading/…) flip on their own. Use
+ * `dark:` only for one-off cases the role tokens can't express. */
+@custom-variant dark (&:where([data-theme='dark'] *));
+
+/* A breakpoint above 2xl, for a grid that keeps earning columns on a wide monitor.
+ *
+ * Declared as a real breakpoint rather than written inline as `min-[1920px]:`, and the reason is
+ * emission order: an arbitrary min-width variant is emitted BEFORE the named ones, so at 2000px
+ * `2xl:grid-cols-4` came after it in the sheet and won. The grid rendered four columns while the
+ * class list promised five, and nothing anywhere reported a conflict — no error, no warning, no
+ * failing check. The only way to see it was to widen a window past 1920 and count.
+ *
+ * Reproduced in this build before the token was kept: `min-[1920px]:` lands at byte 56634 of the
+ * emitted sheet and `3xl:` at 61718, so the named one wins the cascade and the arbitrary one is
+ * dead weight that reads as if it worked.
+ */
+@theme {
+  --breakpoint-xs: 30rem; /* 480px — the phone bar's roomier layout (ONavbarMobile) */
+  --breakpoint-3xl: 120rem; /* 1920px */
+}
+
+/* ============================================================
+ * RELIEF
+ *
+ * By hand instead of as `--shadow-*` entries in a theme's `@theme` block, and the reason is not
+ * style. Tailwind generates a utility from a theme token by INLINING the token's value, so
+ * `.shadow-lift` would come out carrying the light scheme's literals and never read the property
+ * at all — every `[data-theme='dark']` override of those tokens would be dead code, and dark
+ * surfaces would wear light's geometry with only the edge colours swapped. Declared this way the
+ * utility resolves the custom property at runtime, which is what the cascade is for. The token is
+ * named `--relief-*` precisely so Tailwind does not claim the `shadow` namespace and reintroduce
+ * the inlined copy.
+ *
+ * These arrived late and they were already being asked for: `shadow-lift` appears in fourteen
+ * places in this repository and `shadow-sink` in three, none of which did anything, because the
+ * markup came across in an earlier back-port and the utilities behind it did not. An undeclared
+ * utility class is not an error — it is simply not generated — so fourteen raised surfaces have
+ * been rendering flat with nothing to report it.
+ * ============================================================ */
+@utility shadow-lift {
+  box-shadow: var(--relief-lift);
+}
+
+@utility shadow-lift-lg {
+  box-shadow: var(--relief-lift-lg);
+}
+
+@utility shadow-sink {
+  box-shadow: var(--relief-sink);
+}
+
+@utility shadow-edge-top {
+  box-shadow: var(--relief-edge-top);
+}
+
+/* ============================================================
+ * MOTION
+ *
+ * A duration is a token, never a literal, because the reduced-motion override
+ * below has to be able to reach it — an inlined duration would make that block
+ * dead code. Hence hand-written utilities, resolving the property at runtime.
+ *
+ * The scale is set by a product that lives open on a second screen all day.
+ * `settle` is the only step above half a second, and nothing a person can fire
+ * twice per second is allowed to reach it.
+ * ============================================================ */
+:root {
+  /* Something that must look like it was already true: hover, focus, tint. */
+  --motion-instant: 90ms;
+
+  /* Something the pointer just caused. Below ~120ms a change reads as a repaint
+     rather than an arrival; above ~250ms the next pointer move overtakes it. */
+  --motion-quick: 180ms;
+
+  /* Something that enters or leaves on its own: a panel, an empty state. */
+  --motion-calm: 320ms;
+
+  /* Matter settling. Long enough that the eye catches it after looking away
+     from the control that caused it, short enough not to be watched. */
+  --motion-settle: 520ms;
+
+  /* Not invented here: this is the curve MMainDialog has been using for its
+     sheet. Most of the speed is spent in the first third and the tail is long —
+     mass arriving and being absorbed. No overshoot: overshoot is a bounce, and
+     a bounce is a toy. */
+  --motion-ease-settle: cubic-bezier(0.32, 0.72, 0, 1);
+
+  /* Air drag, not gravity. Loose matter loses speed almost immediately and then
+     drifts. Only particles use this. */
+  --motion-ease-drift: cubic-bezier(0.12, 0.6, 0.25, 1);
+}
+
+/* Everything collapses to one near-instant step. Not zero: a cut with no
+   transition is its own vestibular problem, while a short cross-fade is not,
+   and it keeps the interface legible for someone who set the flag for reading
+   comfort rather than nausea. Particle emitters must also check this flag in
+   script — a duration of 90ms still inserts the nodes. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-quick: var(--motion-instant);
+    --motion-calm: var(--motion-instant);
+    --motion-settle: var(--motion-instant);
+  }
+}
+
+@utility motion-instant {
+  transition-duration: var(--motion-instant);
+}
+
+@utility motion-quick {
+  transition-duration: var(--motion-quick);
+}
+
+@utility motion-calm {
+  transition-duration: var(--motion-calm);
+}
+
+@utility motion-settle {
+  transition-duration: var(--motion-settle);
+}
+
+@utility motion-ease-settle {
+  transition-timing-function: var(--motion-ease-settle);
+}
+
+@utility motion-ease-drift {
+  transition-timing-function: var(--motion-ease-drift);
+}

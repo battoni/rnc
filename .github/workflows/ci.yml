@@ -1,0 +1,346 @@
+name: CI
+
+# Green-gating CI for the rnc monorepo. Runs the full suite — app.rnc
+# (type-check, lint, format, unit + integration, e2e) and api.rnc (Pint, PHPStan,
+# Pest) — on every push to main and every pull request. `make pre-commit` is the
+# local mirror of this file; `cortex/sync/TESTING-STRATEGY.md` lists what runs where.
+#
+# UPSTREAM-ONLY STEPS. Some checks concern rnc itself — the sync engine, the landing
+# site, the handbook — and must not run in a derived project, which receives this file.
+# They are guarded by `hashFiles('.cortex-sync.conf') == ''`: every derived project tracks
+# that file (the sync engine reads its name map from it) and rnc never has one. The
+# guard cannot name the repository instead, because the sync rewrites the upstream word in
+# this file, and cannot name the landing's folder, because that name is a brand literal that
+# `make sync-brand-audit` refuses in the shipped surface.
+#
+# This workflow is a MERGE artifact: it propagates to downstream projects via
+# the cortex sync engine (the app.rnc/api.rnc directory tokens are rewritten per
+# project). Keep it project-name-driven so the transform stays mechanical.
+#
+# JOB IDS ARE `app` AND `api`, NOT THE PROJECT NAMES (CRITICAL). A job id must match
+# ^[A-Za-z_][A-Za-z0-9_-]*$ — no dots. The sync transform rewrites the upstream project word
+# into a DOTTED name (app.rnc -> app.impressao), so a job id carrying that word becomes invalid
+# downstream and GitHub refuses to start the workflow at all: zero jobs, conclusion "failure",
+# no logs, and nothing to tell you the suite never ran. Names free of the project word survive
+# the transform untouched; the human-readable `name:` below is where the project name belongs.
+#
+# Found in new.impressao, where 20 of 20 runs had died this way since the file first existed —
+# type-check, ESLint, Vitest and Playwright had never gated a merge. `make sync-audit` fails on
+# a project token used as a YAML key now, and `test_sync.py` checks every job id here survives
+# the transform — both run in the `mirror-sync` job below, so this cannot come back silently.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# Cancel superseded runs on the same ref to save minutes.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # The AI/sync layer. `cortex/sync/handoff.py` strips this whole job from a client handoff
+  # (which has no cortex/), so every cortex check lives HERE rather than in a job of its own.
+  # The engine and init proofs clone this checkout into a temp dir and take about a minute
+  # together; they never touch a real project.
+  mirror-sync:
+    name: cortex — mirrors, sync engine, manifest audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check .claude/.cursor rule + command parity
+        run: python3 cortex/sync/cursor_mirror.py --check
+
+      - name: Sync classification tests
+        if: ${{ hashFiles('.cortex-sync.conf') == '' }}
+        run: python3 cortex/sync/test_sync.py
+
+      # The back-port preflight tells a Laravel global helper (`collect`) from a missing test
+      # persona by reading api.rnc's vendor tree, so its tests need `composer install` first:
+      # without vendor/, "collect() is not a persona" fails and nothing else does.
+      - name: Setup PHP (back-port tests read api.rnc/vendor)
+        if: ${{ hashFiles('.cortex-sync.conf') == '' }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_sqlite, sqlite3, mbstring, dom, bcmath
+          coverage: none
+
+      - name: Install api.rnc dependencies
+        if: ${{ hashFiles('.cortex-sync.conf') == '' }}
+        working-directory: api.rnc
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Back-port tooling tests
+        if: ${{ hashFiles('.cortex-sync.conf') == '' }}
+        run: python3 cortex/sync/test_backport.py
+
+      - name: Handoff, mirror and hook tests
+        if: ${{ hashFiles('.cortex-sync.conf') == '' }}
+        run: |
+          python3 cortex/sync/test_handoff.py
+          python3 cortex/sync/test_cursor_mirror.py
+          python3 cortex/hooks/test_claude_hooks.py
+
+      - name: Manifest coverage audit
+        if: ${{ hashFiles('.cortex-sync.conf') == '' }}
+        run: python3 cortex/sync/sync.py --audit
+
+      - name: Engine proof (disposable target)
+        if: ${{ hashFiles('.cortex-sync.conf') == '' }}
+        run: bash cortex/sync/test_engine.sh
+
+      - name: First-run transform proof (--init)
+        if: ${{ hashFiles('.cortex-sync.conf') == '' }}
+        run: bash cortex/sync/test_init.sh
+
+  app:
+    name: app.rnc — type-check, lint, unit, e2e
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app.rnc
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: app.rnc/.nvmrc
+          cache: npm
+          cache-dependency-path: app.rnc/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Features catalogue is current
+        run: node scripts/build-features.mjs --check
+
+      # Before type-check and before the suite, because it explains a failure that both of
+      # them report as something else: a missing alias surfaces as "cannot find module" in
+      # a file nobody just edited. This names the config that is out of step instead.
+      - name: Module aliases agree
+        run: npm run check:aliases
+
+      # No step generating `components.d.ts` first, deliberately. It used to be here, and
+      # it was papering over the problem: type-check passed in CI while the Vercel deploy
+      # kept failing on the same four errors, because Vercel runs `npm run build` and this
+      # ran a different thing. Source that needs a build artifact to type-check is the bug;
+      # it is fixed at the call sites, and `type-check` stands on its own now. If someone
+      # reintroduces the dependency, this goes red in the same breath as the deploy.
+      - name: Type-check
+        run: npm run type-check
+
+      - name: Lint
+        run: npx eslint .
+
+      # ESLint runs with `skip-formatting`, so it says nothing about format — and Prettier is
+      # what sorts Tailwind classes (celer-04, CRITICAL). Code only: the Markdown under src/ is
+      # RULES.md/CHANGELOG.md prose, which `make sanitize` reformats but nothing gates, and a
+      # table Prettier re-pads is not the defect this step exists to catch.
+      - name: Format (Prettier)
+        run: npx prettier --check 'src/**/*.{ts,js,mjs,vue,css,json}'
+
+      - name: Unit + integration (Vitest)
+        run: npm run test:unit:run
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: E2e (Playwright)
+        run: npm run test:e2e
+
+      - name: Upload Playwright report on failure
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: app.rnc/playwright-report/
+          retention-days: 7
+
+  # The documentation portal. Its `docs:extract:check` existed and worked — it names each stale
+  # data file and exits 1 — and nothing ran it, so main carried portal data describing 18
+  # endpoints against a repo with 21 and a schema about a thousand lines behind. A gate that
+  # only runs where someone might look is not a gate.
+  #
+  # Every step is conditional on the portal existing, because this file is MERGE and ships to
+  # every derived project, where `docs.rnc` becomes `docs.<project>` — and not every project
+  # has a portal. `hashFiles` is only allowed in a STEP's `if`, never the job's, hence the
+  # repetition. The job id carries no project word for the same reason `app` and `api` don't.
+  portal:
+    name: docs.rnc — data fresh, gate tests, lint, build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: docs.rnc
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        if: ${{ hashFiles('docs.rnc/package-lock.json') != '' }}
+        with:
+          node-version-file: app.rnc/.nvmrc
+          cache: npm
+          cache-dependency-path: docs.rnc/package-lock.json
+
+      - name: Install dependencies
+        if: ${{ hashFiles('docs.rnc/package-lock.json') != '' }}
+        run: npm ci
+
+      # The extractors read app.rnc and api.rnc as siblings, so this also fails when a route,
+      # migration or view changed without the portal data being regenerated with it.
+      - name: Extracted data is current
+        if: ${{ hashFiles('docs.rnc/package-lock.json') != '' }}
+        run: npm run docs:extract:check
+
+      - name: Staff gate tests
+        if: ${{ hashFiles('docs.rnc/package-lock.json') != '' }}
+        run: npm test
+
+      - name: Markdown lint
+        if: ${{ hashFiles('docs.rnc/package-lock.json') != '' }}
+        run: npm run lint
+
+      # `vitepress build` and not `docs:build`: the latter extracts first and would regenerate the
+      # data the check above just judged, hiding staleness if the steps were ever reordered.
+      - name: Build
+        if: ${{ hashFiles('docs.rnc/package-lock.json') != '' }}
+        run: npx vitepress build
+
+  # The landing site and the handbook are deployed by Vercel on every push to main, and until
+  # now nothing built them first. Both are upstream-only (see the header): the landing folder
+  # is SKIP in the manifest, and the handbook is removed from a client handoff.
+  #
+  # The landing's folder is reached by a glob because its name is a brand literal; the first
+  # step refuses anything but exactly one match, so the glob cannot quietly pick the wrong one.
+  landing:
+    name: landing — astro check, unit tests, build, audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Locate the landing
+        id: landing
+        if: ${{ hashFiles('.cortex-sync.conf') == '' && hashFiles('public.*/package-lock.json') != '' }}
+        run: |
+          set -- public.*/package-lock.json
+          test "$#" -eq 1 || { echo "expected one landing, found: $*" >&2; exit 1; }
+          echo "dir=$(dirname "$1")" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-node@v4
+        if: ${{ steps.landing.outputs.dir != '' }}
+        with:
+          node-version-file: app.rnc/.nvmrc
+          cache: npm
+          cache-dependency-path: ${{ steps.landing.outputs.dir }}/package-lock.json
+
+      - name: Install dependencies
+        if: ${{ steps.landing.outputs.dir != '' }}
+        working-directory: ${{ steps.landing.outputs.dir }}
+        run: npm ci
+
+      # `npm test` is the whole gate: astro check, the unit tests, the build and the
+      # deterministic audit of the built HTML (CSP, headers, structured data).
+      - name: Test (check + unit + build + audit)
+        if: ${{ steps.landing.outputs.dir != '' }}
+        working-directory: ${{ steps.landing.outputs.dir }}
+        run: npm test
+
+  handbook:
+    name: codelumen — build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: codelumen
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        if: ${{ hashFiles('.cortex-sync.conf') == '' && hashFiles('codelumen/package-lock.json') != '' }}
+        with:
+          node-version-file: app.rnc/.nvmrc
+          cache: npm
+          cache-dependency-path: codelumen/package-lock.json
+
+      - name: Install dependencies
+        if: ${{ hashFiles('.cortex-sync.conf') == '' && hashFiles('codelumen/package-lock.json') != '' }}
+        run: npm ci
+
+      # `docs:build` and not `vitepress build`: the pages are generated from .claude/rules, and
+      # building what the rules say NOW is the point.
+      - name: Build
+        if: ${{ hashFiles('.cortex-sync.conf') == '' && hashFiles('codelumen/package-lock.json') != '' }}
+        run: npm run docs:build
+
+  api:
+    name: api.rnc — Pint, PHPStan, Pest
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api.rnc
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_sqlite, sqlite3, mbstring, dom, bcmath
+          coverage: none
+
+      - name: Copy environment file
+        run: cp .env.example .env
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Generate application key
+        run: php artisan key:generate
+
+      # The Pint hook after a PHP edit is Claude Code's, not the repository's: an edit made by
+      # hand or in another editor reaches main unformatted unless this step catches it.
+      - name: Format (Pint)
+        run: vendor/bin/pint --test
+
+      # The whole of app/ (phpstan.neon.dist), not only the files a branch touched: a type error
+      # in a file nobody edited is exactly what `make phpstan-api.rnc` never sees. After the key,
+      # because larastan boots the application.
+      - name: Static analysis (PHPStan)
+        run: vendor/bin/phpstan analyse --memory-limit=1G --no-progress
+
+      - name: Test (Pest)
+        run: php artisan test
+
+  # Known advisories in the locked PHP dependencies. A job of its own, and never a gate: a new
+  # advisory is published against code nobody changed, so gating on it would turn every open PR
+  # red on the morning it appears, for a fix that belongs in a dependency PR of its own. The job
+  # still fails visibly (red X in the run) so the advisory is seen; `continue-on-error` keeps
+  # the run green, and deploy-api.yml never looks at this workflow at all.
+  audit:
+    name: api.rnc — composer audit (informational)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    defaults:
+      run:
+        working-directory: api.rnc
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+
+      # --locked reads composer.lock alone: nothing is installed, so this takes seconds.
+      - name: Audit locked dependencies
+        run: composer audit --locked
+
+# Note: rnc's own CI should additionally run the rnc-only meta-tests
+# (convention/architecture guards) once they land — see TESTING-ENHANCEMENTS.md.
+# Downstream projects inherit only the suite above.

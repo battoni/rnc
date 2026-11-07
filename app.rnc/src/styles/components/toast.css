@@ -1,0 +1,140 @@
+/**
+ * Toast severity styles – semantic palette per theme RULE.md
+ * (Success → success | Info → info | Warn → warn | Error → danger)
+ */
+
+.p-toast {
+  box-sizing: border-box;
+  max-width: min(400px, calc(100vw - 2rem));
+  width: auto;
+}
+
+.p-toast.p-toast-top-right {
+  right: 2rem !important;
+  top: 2rem !important;
+}
+
+@media (min-width: 640px) {
+  .p-toast.p-toast-top-right {
+    right: calc((100vw - 640px) / 2 + 2rem) !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .p-toast.p-toast-top-right {
+    right: calc((100vw - 768px) / 2 + 2rem) !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .p-toast.p-toast-top-right {
+    right: calc((100vw - 1024px) / 2 + 2rem) !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  .p-toast.p-toast-top-right {
+    right: calc((100vw - 1280px) / 2 + 2rem) !important;
+  }
+}
+
+@media (min-width: 1536px) {
+  .p-toast.p-toast-top-right {
+    right: calc((100vw - 1536px) / 2 + 2rem) !important;
+  }
+}
+
+/**
+ * A toast is furniture that carries a state: a panel with a mark on it, not a slab of colour.
+ *
+ * Everything is set on `.p-toast-message`, NOT on `.p-toast-message-content` where it used to be.
+ * The radius, border and shadow live on the outer element; painting the fill on the inner one laid
+ * a square rectangle over the rounded corners, so the toast came out hard-cornered and flat — the
+ * only overlay that did.
+ */
+.p-toast-message-info,
+.p-toast-message-success,
+.p-toast-message-warn,
+.p-toast-message-error {
+  background: var(--color-panel);
+  /* The bar IS the border: 4px on the left, nothing on the other three. */
+  border-style: solid;
+  border-width: 0 0 0 4px;
+  border-radius: var(--radius-lg);
+  /* Overlays float, and float means the large relief — the same a dialog or a popover takes. */
+  box-shadow: var(--relief-lift-lg);
+  /* Nothing shows through an opaque panel; the blur is a compositing layer for no picture. */
+  backdrop-filter: none;
+}
+
+.p-toast-message-info .p-toast-summary,
+.p-toast-message-success .p-toast-summary,
+.p-toast-message-warn .p-toast-summary,
+.p-toast-message-error .p-toast-summary {
+  color: var(--color-heading);
+}
+
+.p-toast-message-info .p-toast-detail,
+.p-toast-message-success .p-toast-detail,
+.p-toast-message-warn .p-toast-detail,
+.p-toast-message-error .p-toast-detail {
+  color: var(--color-body);
+}
+
+/* The close control is chrome, not state: the ink of any other quiet control. Coloured by severity
+   it was a green X on a green ground — the one element that must stay findable on an error. */
+.p-toast-message-info .p-toast-close-button,
+.p-toast-message-success .p-toast-close-button,
+.p-toast-message-warn .p-toast-close-button,
+.p-toast-message-error .p-toast-close-button,
+.p-toast-close-icon,
+.p-toast-close-icon svg {
+  color: var(--color-subtle);
+  fill: var(--color-subtle);
+}
+
+.p-toast-message .p-toast-close-button:hover {
+  background: var(--color-panel-muted);
+  color: var(--color-heading);
+}
+
+/* The severities differ in exactly two things: the bar and the icon. */
+.p-toast-message-success {
+  border-color: var(--color-success-500);
+}
+
+.p-toast-message-success .p-toast-message-icon,
+.p-toast-message-success .p-toast-message-icon svg {
+  color: var(--color-success-600);
+  fill: var(--color-success-600);
+}
+
+.p-toast-message-info {
+  border-color: var(--color-info-500);
+}
+
+.p-toast-message-info .p-toast-message-icon,
+.p-toast-message-info .p-toast-message-icon svg {
+  color: var(--color-info-600);
+  fill: var(--color-info-600);
+}
+
+.p-toast-message-warn {
+  border-color: var(--color-warn-500);
+}
+
+.p-toast-message-warn .p-toast-message-icon,
+.p-toast-message-warn .p-toast-message-icon svg {
+  color: var(--color-warn-600);
+  fill: var(--color-warn-600);
+}
+
+.p-toast-message-error {
+  border-color: var(--color-danger-500);
+}
+
+.p-toast-message-error .p-toast-message-icon,
+.p-toast-message-error .p-toast-message-icon svg {
+  color: var(--color-danger-600);
+  fill: var(--color-danger-600);
+}

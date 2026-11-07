@@ -1,0 +1,17 @@
+/* User / Developer toggle — pure-CSS show/hide driven by a class on <html>.
+   Content always stays in the DOM (good for SEO and local search); only its
+   visibility flips, with no reload. The class is applied before first paint by
+   the anti-FOUC script in .vitepress/config.mts. */
+
+html.mode-user .dev-only {
+  display: none;
+}
+
+html.mode-dev .user-only {
+  display: none;
+}
+
+/* User-facing hints recede (but stay) in developer mode. */
+html.mode-dev .user-hint {
+  opacity: 0.6;
+}

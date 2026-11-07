@@ -1,0 +1,256 @@
+---
+name: celer-testing
+description: "Use this skill for Vitest unit/integration tests and Playwright e2e tests in the app.rnc Vue 3 project. Trigger whenever writing, editing, fixing, or refactoring tests — including component tests with mountWithPlugins (VTU), view/integration tests with renderWithPlugins (Testing Library), MSW handler setup, store tests with Pinia, composable tests, and Playwright e2e flows."
+license: MIT
+metadata:
+  author: rnc
+paths:
+  - "app.rnc/**"
+---
+
+# app.rnc Testing
+
+## Three-tier model
+
+| Tier | Tool | Helper | When |
+|------|------|--------|------|
+| Unit | Vitest + `@vue/test-utils` | `mountWithPlugins` | Component contract, store logic, composables |
+| Integration | Vitest + `@testing-library/vue` + MSW | `renderWithPlugins` | View HTTP flows, end-to-end view behavior |
+| E2e | Playwright (Chromium) | — | Full browser, real server, real DB |
+
+## Running tests
+
+```bash
+make unit          # Vitest (unit + integration)
+make e2e           # Playwright (requires dev server + backend)
+make pest          # Arcus Pest
+make test-all      # unit + e2e + pest
+```
+
+Or directly:
+```bash
+cd app.rnc && npm run test:unit:run    # run once
+cd app.rnc && npm run test:unit        # watch mode
+cd app.rnc && npm run test:coverage
+cd app.rnc && npm run test:e2e
+```
+
+## Co-location and versioning
+
+Specs live **beside the unit** they test:
+```
+src/components/atoms/ALogo/ALogo.vue
+src/components/atoms/ALogo/ALogo.spec.ts          ← unit
+src/modules/User/views/Users/UsersView.view.vue
+src/modules/User/views/Users/UsersView.view.spec.ts           ← unit
+src/modules/User/views/Users/UsersView.view.integration.spec.ts  ← integration
+```
+
+Every test addition **bumps the unit's version** in both `RULES.md` frontmatter and `CHANGELOG.md` top entry (SemVer minor). See `cortex/sync/SCHEMA.md`.
+
+---
+
+## Unit tier — mountWithPlugins (VTU)
+
+Boots i18n, fresh Pinia, PrimeVue, Toast, ConfirmationService.
+
+```typescript
+import { mountWithPlugins } from '@/test/mount';
+const wrapper = mountWithPlugins(MyComponent, { props: { ... } });
+```
+
+### PrimeVue stubs
+
+PrimeVue components are **not** auto-imported in Vitest. Stub them:
+
+```typescript
+const selectStub = {
+  name: 'Select',
+  props: ['modelValue', 'options'],
+  emits: ['update:modelValue'],
+  template: '<div class="select-stub" />',
+};
+// Find by stub ref: wrapper.findComponent(selectStub).props('options')
+```
+
+For Dialog/Drawer — use `v-if="visible"` in stub so visibility tests work:
+
+```typescript
+const dialogStub = {
+  props: ['visible', 'showHeader'],
+  emits: ['update:visible'],
+  template: `<div v-if="visible" class="dialog-stub"><slot name="header" /><slot /><slot name="footer" /></div>`,
+};
+```
+
+### Mocking services + stores
+
+```typescript
+// Use vi.hoisted so refs are available in vi.mock factories
+const { getUsers } = vi.hoisted(() => ({ getUsers: vi.fn() }));
+vi.mock('../../services', () => ({ GetUsersService: getUsers }));
+vi.mock('../../store', () => ({ useUserStore: () => ({ hasPermission: vi.fn() }) }));
+```
+
+### Async (flushPromises)
+
+```typescript
+import { flushPromises } from '@vue/test-utils';
+getUsers.mockResolvedValue({ data: users });
+const wrapper = mountWithPlugins(UsersView, { global: { stubs } });
+await flushPromises();
+expect(wrapper.findAll('.user-card-stub')).toHaveLength(users.length);
+```
+
+**Fake only what the test is about.** `vi.useFakeTimers({ toFake: ['Date', 'setInterval'] })` for a
+countdown or a poller — never the blanket `vi.useFakeTimers()` in an integration spec: faking
+`setTimeout` and friends freezes Testing Library's `waitFor` and MSW's handlers, and the spec times
+out for a reason that has nothing to do with what it tests.
+
+---
+
+## Integration tier — renderWithPlugins (Testing Library + MSW)
+
+Same plugin wiring as `mountWithPlugins` but uses TL's `render()`. Layout components are stubbed by default (`TheLayout`, `ThePageHeader`, `TheCenteredLayout`). Query by role/label/text — **no CSS class queries**.
+
+### Setup store state before render
+
+The component mounts immediately — set store state first:
+
+```typescript
+import { createPinia, setActivePinia } from 'pinia';
+import { renderWithPlugins } from '@/test/render';
+
+const pinia = createPinia();
+setActivePinia(pinia);
+useUserStore().setUserAndPermissions(mockUser, ['users.read']);
+renderWithPlugins(UsersView, { pinia, global: { stubs } });
+```
+
+### MSW handlers
+
+Default handlers live in `src/test/msw/handlers.ts` (all auth/user/role endpoints).
+Override per-test with `server.use(...)`:
+
+```typescript
+import { server } from '@/test/msw/server';
+import { http, HttpResponse } from 'msw';
+
+server.use(
+  http.get('http://localhost/auth/users', () =>
+    HttpResponse.json({ data: [] })
+  )
+);
+```
+
+MSW is wired in `setup.ts`: starts before all tests, resets handlers after each, closes after all.
+
+When a module's mocks outgrow a few lines, give them their own file —
+`src/test/msw/fixtures/<domain>.fixture.ts` — and make the handlers **check what the real API
+checks**: a missing header or token is a 401, a wrong code is a 422 with the API's own error key. A
+handler that answers 200 to anything tests the happy path twice and the refusal never.
+
+### VITE_API_URL
+
+`vitest.config.ts` sets `VITE_API_URL = 'http://localhost'` so axios builds absolute URLs that MSW can intercept.
+
+### Router alias
+
+`@/libraries/router` and `@Libraries/router` are aliased to `src/test/mocks/router.stub.ts` (minimal router with no routes). The `@Libraries` barrel is aliased to `src/test/mocks/libraries-barrel.stub.ts` (provides axios without the router import that causes circular-dep errors).
+
+### Query patterns
+
+```typescript
+// Prefer role/label queries over CSS
+screen.getByRole('button', { name: /add user/i })
+screen.getByLabelText(/username/i)
+screen.getByText('Alice Smith')
+
+// Async — use waitFor
+await waitFor(() => expect(screen.getByText('Alice')).toBeInTheDocument());
+```
+
+### PrimeVue components in integration specs
+
+Register real PrimeVue components explicitly for specs that need form interaction:
+
+```typescript
+import Form from '@primevue/forms/form';
+import FormField from '@primevue/forms/formfield';
+import InputText from 'primevue/inputtext';
+import Button from 'primevue/button';
+
+renderWithPlugins(MLoginForm, {
+  global: { components: { Form, FormField, InputText, Button }, plugins: [router] },
+});
+```
+
+---
+
+## Store tests (pure Pinia)
+
+```typescript
+import { createPinia, setActivePinia } from 'pinia';
+beforeEach(() => setActivePinia(createPinia()));
+
+it('toggles sidenav', () => {
+  const store = useUiStore();
+  store.toggleSidenav();
+  expect(store.isSidenavOpen).toBe(true);
+});
+```
+
+---
+
+## Playwright e2e
+
+Config: `app.rnc/playwright.config.ts`. Tests in `app.rnc/e2e/*.spec.ts`.
+
+```typescript
+import { expect, test } from '@playwright/test';
+
+test('login', async ({ page }) => {
+  await page.goto('/login');
+  await page.getByLabel(/username/i).fill('admin');
+  await page.getByLabel(/password/i).fill('password');
+  await page.getByRole('button', { name: /sign in/i }).click();
+  await expect(page).not.toHaveURL(/login/);
+});
+```
+
+Env vars: `E2E_BASE_URL` (default `http://localhost:5173`) and `E2E_NO_WEBSERVER=1` (use a server that is already running instead of starting `vite --mode test`). The config reads no credentials: the API is mocked, so a login spec types whatever its mock accepts.
+
+### Lazy-route flakiness
+
+First visit to a lazily-imported route triggers a Vite compile that can exceed the test timeout. Pre-warm the chunk in `beforeAll` so the real test runs against an already-compiled module:
+
+```typescript
+test.beforeAll(async ({ browser }, testInfo) => {
+  const warmupPage = await browser.newPage({ baseURL: testInfo.project.use.baseURL });
+  await warmupPage.goto('/login-email').catch(() => {});
+  await warmupPage.waitForLoadState('networkidle').catch(() => {});
+  await warmupPage.close();
+});
+```
+
+`browser.newPage()` does not inherit the project's `baseURL`, and the page-scoped `baseURL` fixture
+is not available in `beforeAll` — so hand the project's over and use a relative path. Never hard-code
+`http://localhost:5173`: under `E2E_BASE_URL` on another port (with `E2E_NO_WEBSERVER=1`) it warms
+whatever else answers there, or nothing, and the `.catch` hides it (`e2e/auth/login.spec.ts`).
+
+Prefer `data-testid` selectors and event-based waits (`page.waitForResponse(...)`) over fixed `page.waitForTimeout(...)`.
+
+---
+
+## Reporter gotcha (terminal wrapper)
+
+The terminal wrapper mangles pretty reporter output — Vitest/Playwright pass counts can read low (e.g. "23" when 24 actually passed). For trustworthy counts:
+
+- **Vitest**: `npx vitest run --reporter=json --outputFile=/tmp/x.json` and parse the JSON.
+- **Playwright**: run from `app.rnc/` (not the repo root — the root config picks up Vitest specs and errors with "did not expect test.describe()"), and use `--reporter=dot` or `--reporter=line`. The `.last-run.json` under the output dir holds the authoritative pass/fail summary.
+
+---
+
+## Never-commit rule
+
+A spec is **done** only after a green run is confirmed. Never commit unrun or red specs.

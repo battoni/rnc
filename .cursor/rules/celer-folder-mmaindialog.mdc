@@ -1,0 +1,24 @@
+---
+description: MMainDialog folder rules — app.rnc/src/components/molecules/MMainDialog/
+globs: app.rnc/src/components/molecules/MMainDialog/**
+alwaysApply: false
+---
+# MMainDialog — Folder Rules
+
+> Pre-edit hook injects the full `RULES.md` chain. Canonical source: `app.rnc/src/components/molecules/MMainDialog/RULES.md`.
+
+## Consumer pattern (CRITICAL)
+
+- Use `isFooterless` for all create/edit flows — form molecule owns submit/cancel
+- `title` is always an i18n key — component calls `$t()` internally
+- `:key="editingEntity?.id ?? 'new'"` on the form molecule is mandatory
+- Place inside `<aside>` at end of view; hide `#actions` with `v-if="!dialogVisible"`
+- See `celer-07-view-patterns.mdc` and `UsersView.view.vue`
+
+## Component contract
+
+- `appendTo="self"` — mask scoped to `<main>`; requires `TheLayout`'s `transform-[translateZ(0)]`
+- Global `<style>` (not scoped) — required for teleported elements and scroll lock
+- `main-dialog-root` class — required for animation + `main:has(.main-dialog-root) .main-scroll`
+- Never pass pre-translated strings to `title` or button labels
+- Never use for destructive confirms — use `useConfirm()` + `ConfirmPopup`

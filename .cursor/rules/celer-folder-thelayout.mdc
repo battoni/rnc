@@ -1,0 +1,21 @@
+---
+description: TheLayout folder rules — app.rnc/src/layouts/TheLayout/
+globs: app.rnc/src/layouts/TheLayout/**
+alwaysApply: false
+---
+# TheLayout — Folder Rules
+
+> Pre-edit hook injects the full `RULES.md` chain. Canonical source: `app.rnc/src/layouts/TheLayout/RULES.md`.
+
+## Critical contracts
+
+- **`transform-[translateZ(0)]` on `<main>`** — required for `MMainDialog` `appendTo="self"` mask scoping. Do not remove.
+- **`main-scroll` class** — `MMainDialog` CSS locks overflow when dialog open. Do not rename.
+- **`#pageHeader` slot** — use for `ThePageHeader`; never put page headers in the default slot.
+- **`useUiStore()` call** — initializes store for navbar/page header children; do not remove.
+
+## Do not
+
+- Remove containing block transform from `<main>`
+- Rename `main-scroll`
+- Add configurable props that break the layout contract

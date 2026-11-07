@@ -1,0 +1,163 @@
+---
+version: 2.9.0
+origin: pendulum
+based-on: 2.9.0
+---
+# RULES — Auth Module
+
+> For AI agents. Captures Auth-specific decisions not covered by `arcus-api-architecture` or the laravel skill.
+
+## Local extension points
+
+- `Helpers/permission-groups.local.php` — groups a project adds (appended to the core ones).
+- `Helpers/manager-exclusions.local.php` — keys a project denies to the seeded Manager (merged into
+  the core exclusions in `ManagerSeeder`).
+- `Helpers/user-exclusions.local.php` — keys a project denies to the seeded member (`user`), merged
+  the same way. All three are LOCAL: the sync never touches them.
+
+## Domain
+
+Authentication, authorization, and the user/role/permission graph. Owns: `User` session
+auth (Sanctum), `Role`, `RolePermission`, `UserPermission`, and the effective-permission
+resolution that merges role + per-user grants.
+
+## What belongs here
+
+- Login / credential verification (`AuthService`)
+- User CRUD (`UserController` → `UserService` → `UserRepository`)
+- Role CRUD + permission syncing (`RoleController`, `RoleRepository`)
+- Permission resolution (`PermissionService`, `EffectivePermissionsHelper`)
+
+## What does NOT belong here
+
+- The shared `User` Eloquent model lives in `app/Models/User.php` (app-wide), NOT in the
+  module — only `Role`, `RolePermission`, `UserPermission` are module-local models. This is
+  intentional: `User` is referenced across the whole app.
+- The `ApiResponse` envelope is a shared helper (`app/Helpers/`), not module-owned.
+
+## Permission model (non-obvious)
+
+A user's effective permissions = **role permissions ∪ direct user permissions**, deduped.
+Resolved by `User::effectivePermissions()` (see `app/Models/RULES.md`). Roles hold
+permissions as rows in `role_permissions` (name strings), not a pivot to a permissions
+table — there is no standalone `permissions` table. Same for `user_permissions`.
+
+## Account status (non-obvious)
+
+`UserStatus` has two cases and INACTIVE means **deactivated** — by an administrator, or parked
+for approval by `registration.new_user_status`. Three rules follow from it:
+
+- **Deactivation takes effect on the next request.** `EnsureAccountActive` (api group) signs the
+  account out with a 401. Not a 403: the SPA keeps its session on a 403, so the person would sit
+  inside an app that refuses everything.
+- **Login with the right password names the deactivation.** `AuthService` answers
+  `auth.accountInactive` (speak to an administrator) only after `Hash::check` succeeds. Wrong
+  password or unknown username still share `auth.login.invalidCredentials` — revealing inactive
+  without a password would enumerate accounts by username alone. The old "one sentence for all
+  three" rule was retired for that reason.
+- **An administrator cannot deactivate their own account** — they could not sign back in to undo
+  it. `UserService::update` and `::archive` refuse with `users.form.cannotDeactivateSelf`.
+- **A parked registration is not signed in.** The account is created and returned; only an
+  ACTIVE account gets a session.
+
+## Routes: a permission per verb
+
+Every route names the permission for its own verb, never one for the resource. `auth/roles`
+reads with `permissions.read` **or** the user form's `users.create` / `users.update`
+(`permission:a,b` means any of them), and writes with `permissions.update`. The ordinary member
+role never holds `permissions.*` — whoever can edit roles can grant themselves anything.
+
+## Writing permissions (non-obvious)
+
+- **Only declared keys are stored.** A role's matrix and a person's overrides both pass through
+  `Rules/DeclaredPermissionKeys`: a key no group in `PermissionGroupsHelper` declares is a 422
+  (`rolesAndPermissions.unknownPermission`), never a row granted in advance to a route that adopts
+  the name later.
+- **A password sent to `auth/users/{id}` needs `users.reset_password`** on top of `users.update`,
+  checked in the controller because it depends on the body (403,
+  `users.form.passwordResetPermissionRequired`). The screen hiding the field was never the guard.
+- **A role write checks the role exists before touching the matrix** (404), and a role's row and
+  matrix — like a user's row and overrides — land in one transaction.
+- **The administrator role (`RoleService::ADMINISTRATOR_SLUG`) and a role somebody holds are not
+  deleted.** The rule lives in `RoleService::delete`; `RoleDeletionException` renders 403 / 409 with
+  an i18n key and, for 409, the holders' names.
+- **`auth/users/check-username` belongs to the user form's audience** (`users.create` or
+  `users.update`). A member asking whether a username exists is enumerating accounts.
+
+## Granting is capped by what the actor holds (CRITICAL)
+
+- **Nobody hands out a key they do not hold**, and nobody assigns a role that grants more than they
+  hold (`GrantableByActor`, `AssignableRole`, both on the user requests; the first also on
+  `auth/roles/{id}/permissions`). Editing accounts and deciding what accounts may do are different
+  jobs, and `users.update` must not be a way around `permissions.update` (ARC-03).
+- **The administrator's matrix is fixed: every declared key, always** — the same rule that keeps
+  the role from being deleted. A revoke there is refused for everybody, granting to it is exempt
+  from the cap, and a save writes the whole catalogue back (`RoleService::updatePermissions`). The
+  cap needs a root that holds everything; a key that left the root could never come back.
+- **Nobody edits an account that holds more than they do** (`UserService::refuseIfOutranked`, on
+  update, archive and delete): a target holding any key the actor lacks is refused with
+  `users.cannotManageHigherAccount`. Equal or less is fine; your own row follows the self rules.
+- **Only grants are capped.** Setting a key to `false` is not an escalation and stays open.
+- The refusals are 422s naming `rolesAndPermissions.cannotGrantUnheldPermission` and
+  `rolesAndPermissions.cannotAssignUnheldRole`.
+
+## E-mail verification code (non-obvious)
+
+- **A second registration for an address already waiting does not rewrite it** — it only re-issues
+  the code to that address (`RegistrationService::register`). Overwriting let a stranger register
+  somebody else's e-mail with a password of their own: the code arrived in the victim's inbox and
+  created an account the stranger could sign into. The answer is the same 201 either way, because a
+  different one would tell a stranger the address is registering here.
+
+- **The fifth wrong guess burns the code** (`EmailVerificationService::MAX_ATTEMPTS`, counted on
+  `pending_registrations.attempts`): the row expires and the answer is
+  `auth.flow.signUp.verify.codeLocked`. A new code resets the count. The count is returned from the
+  transaction and thrown after it, or the rollback would erase it.
+- **`auth/email/verify` is throttled by address and by e-mail** (`registration-verify`), so a guess
+  spread over many machines still meets a ceiling.
+- **`auth/support-names` is public on purpose** — the forgot-password screen names who can help —
+  and throttled per address (`support-names`).
+
+## Sign-in by phone code (non-obvious)
+
+`LoginCodeService` signs in to an **existing** account with a six-digit code sent to its phone.
+
+- **Only the hash is stored**, the code lives ten minutes, a new code consumes every open one for
+  the phone, and the fifth wrong guess burns it. An expired code answers `code_expired`, a wrong or
+  used one `invalid_code`, and the guess that burns a code — and every attempt after it —
+  `code_locked`, so the screen can send the person back instead of leaving them typing into a code
+  that can never work (`LoginCodeException`, which renders itself with a stable `code`).
+- **A phone with no account hears the same answer and gets the same stored row — nothing is
+  sent.** Without the row it stayed at `invalid_code` forever while a real phone moved on to
+  `code_expired` and `code_locked`, so waiting or guessing told a stranger which numbers have
+  accounts. A phone that two accounts share is treated the same way — `findSoleUserByPhone` never
+  picks one of two people.
+- **Delivery is a contract, not a provider.** `LoginCodeSender` is bound by name from
+  `auth.login_code.sender` in `AppServiceProvider::LOGIN_CODE_SENDERS`. The bootstrap ships `log`,
+  which writes that a code was issued (never the code) and **refuses in production**, so a deploy
+  without a real driver fails at the first request. An unknown driver name throws.
+- **`auth.login_code.expose`** (`LOGIN_CODE_EXPOSE`, off by default) returns the code as
+  `dev_code`, and is ignored in production whatever the environment says.
+- **A deactivated account is named only after the right code**, exactly like the password login.
+
+## Known Gaps
+
+- **Creating the account on the first verify is not here.** The product this came from made the
+  phone the customer and created the user on first sign-in; that needs a role and a profile the
+  bootstrap cannot choose. A product that wants it does it in its own service after `spend`.
+- **`request` skips the delivery for a phone with no account**, so its timing differs from a real
+  request by the provider call (the row and the hash are written either way). The throttle bounds how much can be learned; a product that
+  delivers through a slow provider should queue the delivery.
+- **`auth/support-names` lists the names of every active account holding `users.reset_password`
+  to anyone who asks.** Throttled, not closed: the forgot-password screen needs it before sign-in.
+  Whether a product should show real names there is an open decision (review 2026-09-17, F1).
+- **`EnsureUserPermission` still answers 401/403 in English prose** — it lives in
+  `app/Http/Middleware`, outside this module.
+- **`users.phone` is not unique.** Two accounts on one phone cannot sign in by code at all until
+  one of them changes it.
+
+## Do Not
+
+- Do not add a `permissions` master table or pivot — permissions are free-form name strings
+  stored per-role / per-user by design.
+- Do not move `User` into the module.

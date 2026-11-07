@@ -1,0 +1,65 @@
+/* Reserve space for the vertical scrollbar so overflow locks (e.g. PrimeVue modals) do not shift layout */
+html {
+  scrollbar-gutter: stable;
+}
+
+/* Base font styles */
+html,
+body {
+  /* The active theme's sans. `--font-sans` carries its own fallback stack. */
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--color-canvas);
+  color: var(--color-body);
+  height: 100%;
+  width: 100%;
+}
+
+#app {
+  /* `100dvh`, not `100%` (lifeshifter). `100%` chains from html/body to the LAYOUT viewport, which
+     on a phone is the tall one — it leaves out a collapsible URL bar that is on screen right now.
+     The column came out taller than what the person could see, and the document scrolled behind
+     a column that was already scrolling. `dvh` is the viewport as it is at this instant, and it
+     follows the browser chrome appearing and going. `e2e/theme/viewport-height.spec.ts`. */
+  height: 100dvh;
+  position: relative;
+  width: 100%;
+  margin: auto;
+}
+
+/*
+ * The band the floating mobile navigation occupies, as ONE definition.
+ *
+ * It used to be spelled out in three places — the bar's own bottom padding, the backdrop behind
+ * it, and the reserve TheLayout leaves at the end of its scroller — and each of them wrote
+ * `1rem + env(safe-area-inset-bottom)`. That sum is the bug: on a browser that reports no inset
+ * (Chrome Android) it is the 16px float, but on one that reports an inset (Firefox Android) the
+ * two STACK, and the bar floats that much too high with a band of empty canvas beneath it.
+ *
+ * `max()` is the fix, and it is the whole idea: the gap is the float OR the device's own reserved
+ * area, whichever is larger — never both added together.
+ */
+:root {
+  --mobile-nav-gap: max(1rem, env(safe-area-inset-bottom, 0px));
+  --mobile-nav-band: calc(4.75rem + var(--mobile-nav-gap));
+}
+
+/*
+ * Code is monospaced. Paragraphs are the theme's call: `battoni-dev` sets prose in its mono face in
+ * its own file, and a theme that does not gets sans prose.
+ */
+code,
+pre,
+kbd,
+samp {
+  font-family: var(--font-mono);
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  font-size: 14px;
+  -webkit-text-fill-color: var(--color-body);
+  -webkit-box-shadow: 0 0 0px 40rem var(--color-canvas) inset;
+}

@@ -1,0 +1,152 @@
+/*
+ * app.rnc semantic button classes — for a PrimeVue <Button> that has to be styled by class because the
+ * API in front of it takes no severity (a ConfirmPopup's `acceptProps`/`rejectProps`).
+ *
+ * The filled helpers READ the preset's button variables instead of naming colours of their own. They
+ * used to carry their own labels with `!important` — white on `warn.500` (2.15:1), on `danger.500`
+ * (3.76:1), on `surface.500` (3.43:1), and `ink-900` on the brand fill where the theme has
+ * `--color-primary-contrast` for exactly that — so a label fixed in the preset stayed broken here.
+ * Now the preset decides once, per scheme and per state (`styles/theme/RULES.md`, "What sits ON a
+ * fill"), and `e2e/theme/contrast.spec.ts` measures these classes on a real button. The variables
+ * exist whenever a Button has rendered, which is the only place these classes go.
+ */
+.p-button.celer-button-warning {
+  background: var(--p-button-warn-background) !important;
+  border-color: var(--p-button-warn-border-color) !important;
+  color: var(--p-button-warn-color) !important;
+}
+
+.p-button.celer-button-warning:not(:disabled):hover {
+  background: var(--p-button-warn-hover-background) !important;
+  border-color: var(--p-button-warn-hover-border-color) !important;
+  color: var(--p-button-warn-hover-color) !important;
+}
+
+.p-button.celer-button-warning:not(:disabled):active {
+  background: var(--p-button-warn-active-background) !important;
+  border-color: var(--p-button-warn-active-border-color) !important;
+  color: var(--p-button-warn-active-color) !important;
+}
+
+.p-button.celer-button-danger {
+  background: var(--p-button-danger-background) !important;
+  border-color: var(--p-button-danger-border-color) !important;
+  color: var(--p-button-danger-color) !important;
+}
+
+.p-button.celer-button-danger:not(:disabled):hover {
+  background: var(--p-button-danger-hover-background) !important;
+  border-color: var(--p-button-danger-hover-border-color) !important;
+  color: var(--p-button-danger-hover-color) !important;
+}
+
+.p-button.celer-button-danger:not(:disabled):active {
+  background: var(--p-button-danger-active-background) !important;
+  border-color: var(--p-button-danger-active-border-color) !important;
+  color: var(--p-button-danger-active-color) !important;
+}
+
+.p-button.celer-button-secondary {
+  background: var(--p-button-secondary-background) !important;
+  border-color: var(--p-button-secondary-border-color) !important;
+  color: var(--p-button-secondary-color) !important;
+}
+
+.p-button.celer-button-secondary:not(:disabled):hover {
+  background: var(--p-button-secondary-hover-background) !important;
+  border-color: var(--p-button-secondary-hover-border-color) !important;
+  color: var(--p-button-secondary-hover-color) !important;
+}
+
+.p-button.celer-button-secondary:not(:disabled):active {
+  background: var(--p-button-secondary-active-background) !important;
+  border-color: var(--p-button-secondary-active-border-color) !important;
+  color: var(--p-button-secondary-active-color) !important;
+}
+
+.p-button.celer-button-primary {
+  background: var(--p-button-primary-background) !important;
+  border-color: var(--p-button-primary-border-color) !important;
+  box-shadow: none !important;
+  color: var(--p-button-primary-color) !important;
+}
+
+.p-button.celer-button-primary:not(:disabled):hover {
+  background: var(--p-button-primary-hover-background) !important;
+  border-color: var(--p-button-primary-hover-border-color) !important;
+  color: var(--p-button-primary-hover-color) !important;
+}
+
+.p-button.celer-button-primary:not(:disabled):active {
+  background: var(--p-button-primary-active-background) !important;
+  border-color: var(--p-button-primary-active-border-color) !important;
+  color: var(--p-button-primary-active-color) !important;
+}
+
+.p-button.celer-button-soft-primary {
+  background: var(--color-primary-100) !important;
+  border-color: var(--color-primary-100) !important;
+  color: var(--color-ink-900) !important;
+}
+
+.p-button.celer-button-soft-primary:not(:disabled):hover {
+  background: var(--color-primary-200) !important;
+  border-color: var(--color-primary-200) !important;
+  color: var(--color-ink-900) !important;
+}
+
+.p-button.celer-button-soft-primary:not(:disabled):active {
+  background: var(--color-primary-300) !important;
+  border-color: var(--color-primary-300) !important;
+  color: var(--color-ink-900) !important;
+}
+
+.p-button.celer-button-outlined-secondary {
+  background: transparent !important;
+  border-color: var(--color-surface-800) !important;
+  color: var(--color-surface-800) !important;
+}
+
+.p-button.celer-button-outlined-secondary:not(:disabled):hover {
+  background: var(--color-surface-100) !important;
+}
+
+/* `--color-muted`, the readable secondary tier, in both schemes. `surface-600` was 4.09:1 on white
+ * ("Back", "Resend code"); the token flips, so the dark override these two had is gone. */
+.p-button.celer-button-text-secondary,
+.p-button.celer-button-text-secondary .p-button-label,
+.p-button.celer-button-text-secondary .p-button-icon {
+  color: var(--color-muted) !important;
+}
+
+.p-button.celer-button-link-primary,
+.p-button.celer-button-link-primary .p-button-label,
+.p-button.celer-button-link-primary .p-button-icon {
+  /* The darkest step of the brand ramp: `primary-700` was 1.93:1 on white in `battoni-dev`, and
+   * `primary-950` is 4.78. It still misses the panel (4.34) — a known gap in the theme RULES. */
+  color: var(--color-primary-950) !important;
+}
+
+.p-button.celer-button-link-secondary,
+.p-button.celer-button-link-secondary .p-button-label,
+.p-button.celer-button-link-secondary .p-button-icon {
+  color: var(--color-muted) !important;
+}
+
+/* Dark scheme: the outlined and link helpers name light-tuned ramp steps that lose contrast on a
+ * dark canvas, so they are overridden here. The filled helpers need nothing — they read the preset,
+ * which already answers per scheme. */
+[data-theme='dark'] .p-button.celer-button-outlined-secondary {
+  border-color: var(--color-line-strong) !important;
+  color: var(--color-body) !important;
+}
+
+[data-theme='dark'] .p-button.celer-button-outlined-secondary:not(:disabled):hover {
+  background: var(--color-panel-muted) !important;
+}
+
+[data-theme='dark'] .p-button.celer-button-link-primary,
+[data-theme='dark'] .p-button.celer-button-link-primary .p-button-label,
+[data-theme='dark'] .p-button.celer-button-link-primary .p-button-icon {
+  color: var(--color-primary-400) !important;
+}

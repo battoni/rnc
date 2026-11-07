@@ -1,0 +1,66 @@
+[
+  {
+    "text": "/battoni-agent-handoff",
+    "link": "/commands/battoni-agent-handoff"
+  },
+  {
+    "text": "/battoni-commit",
+    "link": "/commands/battoni-commit"
+  },
+  {
+    "text": "/battoni-create-pr",
+    "link": "/commands/battoni-create-pr"
+  },
+  {
+    "text": "/battoni-explain-rnc",
+    "link": "/commands/battoni-explain-rnc"
+  },
+  {
+    "text": "/battoni-generate-api-rules",
+    "link": "/commands/battoni-generate-api-rules"
+  },
+  {
+    "text": "/battoni-generate-component-rules",
+    "link": "/commands/battoni-generate-component-rules"
+  },
+  {
+    "text": "/battoni-grill-me",
+    "link": "/commands/battoni-grill-me"
+  },
+  {
+    "text": "/battoni-improve",
+    "link": "/commands/battoni-improve"
+  },
+  {
+    "text": "/battoni-pre-commit",
+    "link": "/commands/battoni-pre-commit"
+  },
+  {
+    "text": "/battoni-publish-pr",
+    "link": "/commands/battoni-publish-pr"
+  },
+  {
+    "text": "/battoni-review-arcus-code",
+    "link": "/commands/battoni-review-arcus-code"
+  },
+  {
+    "text": "/battoni-review-design-conventions",
+    "link": "/commands/battoni-review-design-conventions"
+  },
+  {
+    "text": "/battoni-review-vue-conventions",
+    "link": "/commands/battoni-review-vue-conventions"
+  },
+  {
+    "text": "/battoni-rules-sync",
+    "link": "/commands/battoni-rules-sync"
+  },
+  {
+    "text": "/battoni-setup-project",
+    "link": "/commands/battoni-setup-project"
+  },
+  {
+    "text": "/battoni-start-session",
+    "link": "/commands/battoni-start-session"
+  }
+]

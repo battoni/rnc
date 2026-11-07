@@ -1,0 +1,29 @@
+---
+description: MAddEdit form molecule rules — MAddEditUserForm, MAddEditProfileForm, etc.
+globs: app.rnc/src/modules/**/components/molecules/MAddEdit*/**
+alwaysApply: false
+---
+# MAddEdit Form Molecules — Folder Rules
+
+> Pre-edit hook injects the full `RULES.md` chain. This rule loads when files in `MAddEdit*` form folders under `app.rnc/src/modules/` are open.
+
+Reference implementations: `MAddEditUserForm/RULES.md`, `MAddEditProfileForm/RULES.md`.
+
+## Molecule contract (CRITICAL)
+
+- **Prop**: domain entity (`user`, `profile`, etc.) — `null`/`undefined` = create, object = edit
+- **Emits**: `@onClose` and `@onSuccess(entity)` — parent owns dialog visibility and list updates
+- **Molecule owns**: form fields, Yup validation, API call (`CreateUserService`, `UpdateUserService`, etc.), loading/saving, error toast
+- **Molecule does not**: manage `dialogVisible`, refetch parent list, or navigate
+
+## app.rnc patterns
+
+- Submit button **outside** `<Form>` with `form="user-form"` (or matching id) for sticky footer in `isFooterless` `MMainDialog`
+- **`:key="entity?.id ?? 'new'"`** at the call site in the parent view — mandatory for form state reset
+- **`onSuccess` receives the saved entity from the API** — parent does granular list update (see `UsersView.view.vue`)
+
+## Do not
+
+- Inline forms inside `MMainDialog` — always extract to `MAddEdit{Entity}Form`
+- Call list services (`GetUsersService`, etc.) inside the molecule — parent owns list state
+- Emit success without the saved entity from the API response

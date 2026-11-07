@@ -1,0 +1,42 @@
+/* {{TITLE}} brand. VitePress reads the three shades as ROLES, not as a ramp:
+   --vp-c-brand-1 is TEXT (links, the active sidebar item, inline code, the tip
+   block), --vp-c-brand-2 is the hover TEXT, --vp-c-brand-3 is the FILL of a
+   brand button. Text has to clear 4.5:1 on the page (#ffffff, #f6f6f7 and the
+   code/tip tints), so in light mode 1 and 2 are the brand darkened, and the
+   brand itself ({{BRAND_HEX}}) is kept for fills and accents. A label on a fill is
+   --vp-button-brand-text ({{BRAND_FILL_TEXT_HEX}}), measured against {{BRAND_HEX}} — never
+   white by default: on a light brand white reads at 1.5:1.
+   Pull from the project's design tokens / Liquen if it has them. */
+:root {
+  --vp-c-brand-1: color-mix(in srgb, {{BRAND_HEX}} 45%, black);
+  --vp-c-brand-2: color-mix(in srgb, {{BRAND_HEX}} 35%, black);
+  --vp-c-brand-3: {{BRAND_HEX}};
+  --vp-c-brand-soft: color-mix(in srgb, {{BRAND_HEX}} 14%, transparent);
+
+  --vp-button-brand-text: {{BRAND_FILL_TEXT_HEX}};
+  --vp-button-brand-hover-text: {{BRAND_FILL_TEXT_HEX}};
+  --vp-button-brand-active-text: {{BRAND_FILL_TEXT_HEX}};
+  --vp-button-brand-bg: {{BRAND_HEX}};
+  --vp-button-brand-hover-bg: color-mix(in srgb, {{BRAND_HEX}} 94%, black);
+  --vp-button-brand-active-bg: color-mix(in srgb, {{BRAND_HEX}} 88%, black);
+
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: linear-gradient(120deg, var(--vp-c-brand-1) 30%, var(--vp-c-brand-2));
+
+  --vp-home-hero-image-background-image: linear-gradient(
+    45deg,
+    color-mix(in srgb, var(--vp-c-brand-3) 30%, transparent),
+    color-mix(in srgb, var(--vp-c-brand-3) 25%, transparent)
+  );
+  --vp-home-hero-image-filter: blur(44px);
+}
+
+/* In dark mode the brand itself is the legible shade on the dark canvas, so the
+   text roles lift it and the fill keeps it. */
+.dark {
+  --vp-c-brand-1: color-mix(in srgb, {{BRAND_HEX}} 70%, white);
+  --vp-c-brand-2: {{BRAND_HEX}};
+  --vp-c-brand-3: {{BRAND_HEX}};
+
+  --vp-home-hero-name-background: linear-gradient(120deg, var(--vp-c-brand-3) 30%, var(--vp-c-brand-1));
+}

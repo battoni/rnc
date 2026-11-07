@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <!-- Everything here is behind a login. robots.txt only ASKS a crawler not to fetch; this tag
+         tells one that fetched anyway not to keep it, and it is the layer that still holds on a host
+         that serves this file without the `X-Robots-Tag` header (`vercel.json`, `.nginx`). Same
+         directive as the header — `staticAssets.spec.ts` keeps the two equal. -->
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex" />
+
+    <!-- Color scheme + tutor tips: set data-theme and data-tutor before paint to
+         avoid a flash of the wrong theme / of tip triggers. Mirrors
+         src/constants/theme.constant.ts (storage keys),
+         src/stores/colorScheme.store.ts (scheme resolution) and
+         src/stores/ui.store.ts (tutor resolution). -->
+    <script>
+      (function () {
+        try {
+          var preference = localStorage.getItem('app.rnc:color-scheme');
+          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var isDark = preference === 'dark' || ((!preference || preference === 'system') && prefersDark);
+          document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
+          document.documentElement.dataset.tutor =
+            localStorage.getItem('app.rnc:tutor-enabled') === '0' ? 'off' : 'on';
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.tutor = 'on';
+        }
+      })();
+    </script>
+
+    <!-- The browser chrome follows the page, per scheme. The values mirror `--color-canvas` in
+         `styles/theme/themes/battoni-dev.css`: a bar painted for the wrong scheme is the one part
+         of the app the theme cannot reach, and on a phone it is half of what somebody sees
+         (from lifeshifter). -->
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a0a09">
+    <meta name="msapplication-TileColor" content="#0a0a09">
+
+    <link rel="apple-touch-icon" sizes="57x57" href="/favicon/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/favicon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/favicon/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/favicon/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/favicon/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/favicon/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/favicon/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/favicon/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/favicon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/favicon/manifest.json">
+    <!-- Absolute, like every icon above: a relative path breaks on a deep route, where the SPA
+         fallback answers the image request with this HTML. The tile's colour (above) is the dark
+         `--color-canvas`, repeated in favicon/manifest.json and browserconfig.xml because none of
+         the three can read a CSS token. Change all three with the theme. -->
+    <meta name="msapplication-TileImage" content="/favicon/ms-icon-144x144.png">
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <title>app.rnc</title>
+  </head>
+
+  <body>
+    <div id="app"></div>
+
+    <script
+      type="module"
+      src="/src/main.ts"
+    ></script>
+  </body>
+</html>
