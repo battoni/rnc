@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.4.1 — 2026-11-07
+
+### Changed
+
+- `PortalReferralResource` tells a portfolio referral by `LeadChannel::Carteira` instead of its own `PORTFOLIO_CHANNEL` constant (rnc-2 F5, W23); no behaviour change.
+
 ## 1.4.0 — 2026-11-07
 
 ### Added

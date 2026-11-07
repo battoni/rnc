@@ -15,4 +15,7 @@ final class ConsentTerms
 
     /** The channel of an answer given in the diagnostic's form. */
     public const VIA_FORM = 'formulario';
+
+    /** The channel of an answer given to the chat receptionist (rnc-2 R14). */
+    public const VIA_CHAT = 'chat';
 }

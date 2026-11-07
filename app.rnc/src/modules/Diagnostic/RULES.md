@@ -1,5 +1,5 @@
 ---
-version: 1.2.0
+version: 1.3.0
 origin: rnc
 ---
 
@@ -47,8 +47,27 @@ confirmation, and the "Relatório de Impacto" at `/relatorio/:token` (route `DIA
   browser's zone; the API sends ISO-8601 with the offset.
 - **The report prints**: `ThePublicLayout`'s header and footer and the print button are `print:hidden`.
 
+- **The chat is a second face of the same diagnostic (rnc-2 R12–R14, D11)**: `useChatReceptionist`
+  writes each answer where the form's field writes it and saves through the form's own step, so it
+  sends the form's PATCHes (A10's proof, `useChatReceptionist.spec`, AM8). The view holds both
+  composables, so a switch either way keeps the answers and the transcript; the contact being typed
+  is `useDiagnostic.contact`, shared by both. No LLM: `ReceptionistScript` is pure and never
+  answers anything itself — text that matches no option, or two, is "Não entendi…".
+- **The channel is the surface on screen when the lead starts** (`selectChannel`, a no-op once the
+  token exists); the API keeps the lead's from then on, whatever the visitor switches to.
+- **Typed text is read in every UI language** (`ChatContext.labels`): a visitor on the English site
+  may still type "saúde". Accents, case and punctuation never matter; the longest option name the
+  text holds wins, a tie is not an answer, and "não sei"/"talvez" is never read as a "não".
+- **The chat's motion** is `motion-bubble` (each line rises on `calm`, the question a stagger after
+  the answer, the replies one by one) and `motion-typing` (the reception typing while the API
+  answers — the one idle loop, still under reduced motion); the log scrolls itself, smoothly unless
+  the visitor asked for less motion.
+
 ## Known Gaps
 
 - **No rescheduling by the visitor**: one meeting per lead (409 `already_booked`); changes are the team's.
+- **The chat's transcript lives in the page**: a refresh starts the talk over, like the form (below).
+- **The simulator stays in the form**: the chat's result links to it ("Ver o simulador") instead of
+  drawing the 2026–2033 columns in a bubble.
 - **A refresh starts over**: the token lives only in the page. The lead already saved stays with the
   team; resuming a diagnostic from a link is not built.

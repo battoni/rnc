@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.10.0 — 2026-11-07
+
+### Changed
+
+- rnc-2 F5: `PipelineSeeder` starts one lead in eight in the chat (`channel = chat`, consent `via = chat`, ~12 %, the demo's weight); `LeadFactory` names its channel by `LeadChannel`.
+
 ## 1.9.0 — 2026-11-07
 
 ### Added

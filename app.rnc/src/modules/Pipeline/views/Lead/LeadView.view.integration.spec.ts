@@ -9,10 +9,12 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { server } from '@/test/msw/server';
 import { renderWithPlugins } from '@/test/render';
 import { useUserStore } from '@UserModule';
+import MLeadChannelChip from '../../components/molecules/MLeadChannelChip/MLeadChannelChip.vue';
 import MLeadDiagnosis from '../../components/molecules/MLeadDiagnosis/MLeadDiagnosis.vue';
 import MLeadNoteForm from '../../components/molecules/MLeadNoteForm/MLeadNoteForm.vue';
 import MLeadTimeline from '../../components/molecules/MLeadTimeline/MLeadTimeline.vue';
 import MLostReasonForm from '../../components/molecules/MLostReasonForm/MLostReasonForm.vue';
+import { LEAD_CHANNEL } from '../../enums';
 import { LEAD_DETAIL_FIXTURE } from '../../test/fixtures';
 import LeadView from './LeadView.view.vue';
 
@@ -50,7 +52,17 @@ function renderLead() {
 
   return renderWithPlugins(LeadView, {
     global: {
-      components: { Button, MLeadDiagnosis, MLeadNoteForm, MLeadTimeline, MLostReasonForm, Select, Skeleton, Textarea },
+      components: {
+        Button,
+        MLeadChannelChip,
+        MLeadDiagnosis,
+        MLeadNoteForm,
+        MLeadTimeline,
+        MLostReasonForm,
+        Select,
+        Skeleton,
+        Textarea,
+      },
       stubs: STUBS,
     },
     pinia,
@@ -95,6 +107,26 @@ describe('LeadView', () => {
     expect(screen.getByTestId('lead-company').textContent).toContain('Padaria Trigo Dourado');
     expect(screen.getByTestId('diagnosis-detail').textContent).toContain('No Simples, a venda para empresa');
     expect(screen.getByTestId('diagnosis-item').textContent).toContain('LC 214/2025');
+  });
+
+  it('names the channel the lead came in by, the form included (rnc-2 R14)', async () => {
+    server.use(
+      http.get('http://localhost/leads/7', () =>
+        HttpResponse.json({ data: { ...structuredClone(LEAD_DETAIL_FIXTURE), channel: LEAD_CHANNEL.CHAT } })
+      )
+    );
+    renderLead();
+
+    const chip = await screen.findByTestId('lead-channel');
+
+    expect(chip.dataset.channel).toBe('chat');
+    expect(chip.textContent?.trim()).toBe('Chat');
+  });
+
+  it("shows a form lead's channel too", async () => {
+    renderLead();
+
+    expect((await screen.findByTestId('lead-channel')).textContent?.trim()).toBe('Form');
   });
 
   it('shows the consent as given, with its text and when', async () => {

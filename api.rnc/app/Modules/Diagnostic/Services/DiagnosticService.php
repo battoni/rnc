@@ -8,6 +8,7 @@ use App\Modules\Diagnostic\DTOs\DiagnosticProfileDTO;
 use App\Modules\Diagnostic\DTOs\StartDiagnosticDTO;
 use App\Modules\Diagnostic\DTOs\UpdateDiagnosticDTO;
 use App\Modules\Diagnostic\Exceptions\DiagnosticException;
+use App\Modules\Lead\Enums\LeadChannel;
 use App\Modules\Lead\Models\Lead;
 use App\Modules\Lead\Services\LeadService;
 
@@ -33,6 +34,7 @@ class DiagnosticService
             'source' => $dto->source,
             'medium' => $dto->medium,
             'sector' => $dto->sector,
+            'channel' => LeadChannel::from($dto->channel),
         ]);
     }
 

@@ -3,6 +3,7 @@
 namespace App\Modules\Partner\Resources;
 
 use App\Modules\Firm\Services\CurrentFirm;
+use App\Modules\Lead\Enums\LeadChannel;
 use App\Modules\Partner\Enums\ReferralStatus;
 use App\Modules\Partner\Models\Referral;
 use App\Modules\Partner\Services\ReferralSla;
@@ -22,9 +23,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class PortalReferralResource extends JsonResource
 {
-    /** The lead's channel for a portfolio client referred from the Radar (rnc-2 R27, D13). */
-    public const PORTFOLIO_CHANNEL = 'carteira';
-
     public function toArray(Request $request): array
     {
         $status = ReferralStatus::from($this->status);
@@ -52,7 +50,7 @@ class PortalReferralResource extends JsonResource
     /** @return array{via: string, name: string|null, phone: string|null, email: string|null} */
     private function contact(): array
     {
-        if ($this->lead->channel === self::PORTFOLIO_CHANNEL) {
+        if ($this->lead->channel === LeadChannel::Carteira->value) {
             $firm = app(CurrentFirm::class)->get();
 
             return ['via' => 'firm', 'name' => $firm?->name, 'phone' => $firm?->phone, 'email' => $firm?->mailbox];

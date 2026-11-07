@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.3.0 — 2026-11-07
+
+### Added
+
+- The chat receptionist (rnc-2 F5, R12–R14, D11): the toggle "Formulário · Conversar no chat" on `DiagnosticView`; `useChatReceptionist` over the view's own `useDiagnostic` (no second copy of the answers); the pure `ReceptionistScript` (prompts, quick replies, the typed-text matcher in every UI language, the contact reader); the turn table `CHAT_TURNS`; `MChatReceptionist` (transcript, quick replies, the box, the "Não entendi…" alert, the reception typing), `MChatResult` (the locked items, the same `MSlotPicker`) and `MBookingConfirmation` (the confirmation, now shared by the form and the chat). `useDiagnostic` gains `channel`/`selectChannel` (sent with the start) and the shared `contact` draft (`MDiagnosticContactForm` binds it with `v-model:draft`). Motion: `motion-bubble` and `motion-typing` in `styles/components/motion.css`. Tests: `receptionistScript.spec`, `useChatReceptionist.spec` (A10/AM8: the PATCH sequence deep-equals the form's), `MChatReceptionist.spec`, the switch in `DiagnosticView.view.integration.spec`, `e2e/diagnostic/chat.spec` (walk, "Não entendi…", the switch, contrast in both schemes, 390 px).
+
 ## 1.2.0 — 2026-11-07
 
 ### Changed

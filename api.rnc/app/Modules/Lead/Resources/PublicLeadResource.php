@@ -34,6 +34,7 @@ class PublicLeadResource extends JsonResource
             'stage' => $this->stage,
             'last_step' => $this->last_step,
             'path' => $this->path,
+            'channel' => $this->channel,
             'company' => $this->company,
             'cnpj' => $this->cnpj,
             'profile' => [

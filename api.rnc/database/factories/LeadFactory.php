@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Modules\Lead\Enums\LeadChannel;
 use App\Modules\Lead\Enums\LeadStage;
 use App\Modules\Lead\Enums\LeadStep;
 use App\Modules\Lead\Models\Lead;
@@ -35,7 +36,7 @@ class LeadFactory extends Factory
             'phone' => '5511988887777',
             'email' => fake()->unique()->safeEmail(),
             'profile' => ['sector' => 'servicos', 'regime' => 'simples', 'band' => null, 'b2b' => null, 'incentivos' => false, 'exporta' => false],
-            'channel' => 'formulario',
+            'channel' => LeadChannel::Formulario->value,
             'source' => 'direto',
             'medium' => null,
         ];

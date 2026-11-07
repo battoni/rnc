@@ -17,4 +17,10 @@ enum TRAFFIC_SOURCE {
   DIRETO = 'direto',
 }
 
-export { FUNNEL_STEP, TRAFFIC_SOURCE };
+/** The channel a lead started in (api `LeadChannel`'s public cases, rnc-2 R14). */
+enum FUNNEL_CHANNEL {
+  FORMULARIO = 'formulario',
+  CHAT = 'chat',
+}
+
+export { FUNNEL_CHANNEL, FUNNEL_STEP, TRAFFIC_SOURCE };

@@ -415,6 +415,70 @@
       "missingAction": "Fazer o diagnóstico",
       "seoTitle": "Relatório de Impacto da Reforma Tributária",
       "seoDescription": "O resultado do diagnóstico da Reforma Tributária, com o simulador 2026–2033."
+    },
+    "chat": {
+      "toggle": {
+        "label": "Como você quer responder",
+        "form": "Formulário",
+        "chat": "Conversar no chat"
+      },
+      "who": "Recepção Franco",
+      "note": "Cada resposta preenche o mesmo diagnóstico do formulário. Dá para trocar para o formulário no meio da conversa e voltar: nada se perde.",
+      "logLabel": "Conversa com a recepção da Franco",
+      "repliesLabel": "Respostas rápidas",
+      "send": "Enviar",
+      "typing": "A recepção está escrevendo…",
+      "greeting": "Olá! Sou a recepção virtual da Franco. Em 5 minutos eu mostro o que a Reforma Tributária muda na sua empresa e quanto isso pode valer.",
+      "resumed": "Vi que você já começou pelo formulário. Vamos continuar de onde parou.",
+      "advanced": "Vi que você avançou pelo formulário. Vamos continuar de onde parou.",
+      "notUnderstood": "Não entendi. Escolha uma das opções abaixo.",
+      "contactInvalid": "Não consegui ler esse contato. Pode mandar um e-mail completo ou um telefone com DDD?",
+      "asks": {
+        "path": "Para começar: você tem o CNPJ da empresa à mão?",
+        "cnpj": "Pode digitar o CNPJ. Eu consulto Receita Federal, Simples Nacional e CNAE e preencho o resto.",
+        "lookupRunning": "Consultando Receita · Simples · CNAE…",
+        "lookupFound": "Encontrei: {name}, {sector}, {regime}. Está certo?",
+        "lookupFoundNoRegime": "Encontrei: {name}, {sector}. Está certo? Depois eu pergunto o regime.",
+        "lookupUnavailable": "Não consegui consultar esse CNPJ agora. Sem problema: o questionário tem poucas perguntas e o resultado é o mesmo.",
+        "sector": "Em que setor a empresa atua?",
+        "regime": "E o regime tributário hoje?",
+        "company": "Para quem eu envio o resultado? Qual o nome da empresa?",
+        "name": "E o seu nome?",
+        "contact": "Qual o seu WhatsApp, telefone ou e-mail? Basta um. Seus dados ficam com a Franco e não são compartilhados sem a sua autorização.",
+        "consent": "Mais uma, opcional: quando o diagnóstico indicar, posso te apresentar a um especialista da rede da Franco? \"{text}\" O resultado vem do mesmo jeito.",
+        "b2b": "Quanto das suas vendas vai para outras empresas (B2B)? O resto é consumidor final.",
+        "band": "Qual a faixa de faturamento anual?",
+        "incentivos": "A empresa tem incentivos fiscais de ICMS?",
+        "exporta": "Última: exporta produtos ou serviços?"
+      },
+      "replies": {
+        "hasCnpj": "Tenho o CNPJ",
+        "noCnpj": "Não tenho o CNPJ",
+        "confirmCompany": "Sim, está certo",
+        "notThisCompany": "Não é essa empresa",
+        "useQuiz": "Usar o questionário",
+        "otherCnpj": "Tentar outro CNPJ",
+        "authorize": "Autorizo",
+        "decline": "Prefiro não",
+        "yes": "Sim",
+        "no": "Não"
+      },
+      "inputs": {
+        "cnpj": "CNPJ",
+        "cnpjPlaceholder": "CNPJ, com ou sem pontuação",
+        "company": "Empresa",
+        "companyPlaceholder": "Nome da empresa",
+        "name": "Seu nome",
+        "namePlaceholder": "Seu nome",
+        "contact": "Contato",
+        "contactPlaceholder": "WhatsApp, telefone ou e-mail",
+        "answer": "Sua resposta",
+        "answerPlaceholder": "Ou escreva a sua resposta"
+      },
+      "result": {
+        "specialist": "Um especialista da Franco explica cada item, sem custo. Escolha um horário:",
+        "simulator": "Ver o simulador 2026–2033 do meu caso"
+      }
     }
   },
   "notifications": {
@@ -604,7 +668,13 @@
       "empty": "Sem reuniões.",
       "loadFailed": "Não foi possível carregar a agenda."
     },
-    "noDiagnosis": "Sem diagnóstico ainda"
+    "noDiagnosis": "Sem diagnóstico ainda",
+    "channels": {
+      "formulario": "Formulário",
+      "chat": "Chat",
+      "carteira": "Carteira"
+    },
+    "channelLabel": "Canal: {channel}"
   },
   "partners": {
     "title": "Parceiros",
@@ -812,7 +882,21 @@
       "conversion": "Visita → cliente"
     },
     "loadFailed": "Não foi possível carregar o funil agora.",
-    "retry": "Tentar de novo"
+    "retry": "Tentar de novo",
+    "byChannel": {
+      "title": "Por canal",
+      "lede": "Do início do diagnóstico em diante, pelo canal em que cada lead começou."
+    },
+    "channels": {
+      "formulario": "Formulário",
+      "chat": "Chat"
+    },
+    "columnsChannel": {
+      "channel": "Canal",
+      "inicio": "Início",
+      "resultado": "Resultado",
+      "bookingRate": "Início → agendou"
+    }
   },
   "repricing": {
     "title": "Reajuste de honorários",

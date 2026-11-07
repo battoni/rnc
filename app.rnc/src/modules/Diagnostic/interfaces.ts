@@ -1,4 +1,12 @@
-import type { DIAGNOSTIC_PATH, DIAGNOSTIC_STEP, LOOKUP_STATUS, RESULT_KIND } from './enums';
+import type {
+  CHAT_SPEAKER,
+  CHAT_TURN,
+  DIAGNOSTIC_CHANNEL,
+  DIAGNOSTIC_PATH,
+  DIAGNOSTIC_STEP,
+  LOOKUP_STATUS,
+  RESULT_KIND,
+} from './enums';
 import type { TRAFFIC_SOURCE } from '@SiteModule';
 
 /** The quiz's answers, as `PublicLeadResource` sends them and the steps fill them (R10). */
@@ -13,6 +21,8 @@ interface DiagnosticProfile {
 
 /** `PublicLeadResource` — the visitor's own lead, never a phone, an e-mail or an id (AM3). */
 interface PublicLead {
+  /** How the lead was started (rnc-2 R14); it never changes after. */
+  channel: DIAGNOSTIC_CHANNEL;
   cnpj: string | null;
   company: string | null;
   consent: { text: string; version: number };
@@ -90,11 +100,21 @@ interface DiagnosticSimulation {
 
 /** What `StartDiagnosticRequest` validates, key for key. */
 interface StartDiagnosticPayload {
+  channel: DIAGNOSTIC_CHANNEL;
   medium: string | null;
   path: DIAGNOSTIC_PATH;
   sector: string | null;
   source: TRAFFIC_SOURCE;
   visitor: string;
+}
+
+/** The contact as it is being typed (the form's fields, the chat's turns): every field a string. */
+interface DiagnosticContactDraft {
+  company: string;
+  consent: boolean;
+  email: string;
+  name: string;
+  phone: string;
 }
 
 /** What `UpdateDiagnosticRequest` validates under `contact`. */
@@ -166,6 +186,69 @@ interface PublicReport {
   simulation: DiagnosticSimulation;
 }
 
+/** A line the chat shows: an i18n key for the reception's, the visitor's own words for theirs. */
+interface ChatMessage {
+  id: number;
+  key?: string;
+  params?: Record<string, unknown>;
+  speaker: CHAT_SPEAKER;
+  text?: string;
+}
+
+/** The free-text box of a turn that asks for one (CNPJ, company, name, contact). */
+interface ChatInput {
+  autocomplete: string;
+  inputmode: 'email' | 'numeric' | 'text';
+  label: string;
+  placeholder: string;
+}
+
+/** A quick reply: the value the turn takes, the i18n key (or a literal `text`) on the button. */
+interface ChatReply {
+  label?: string;
+  params?: Record<string, unknown>;
+  text?: string;
+  value: string;
+}
+
+/** What the reception asks at a turn, the quick replies it offers and its box. */
+interface ChatPrompt {
+  ask: string;
+  askParams: Record<string, unknown>;
+  busy: boolean;
+  /** The box under the replies — every turn has one but a running lookup (R13: typed text everywhere). */
+  input: ChatInput | null;
+  /** Whether the box takes the visitor's own words (CNPJ, company, name, contact) or reads an option. */
+  isFreeText: boolean;
+  replies: ChatReply[];
+  turn: CHAT_TURN;
+}
+
+/**
+ * What the receptionist script reads besides the turn: the diagnostic's state, the words shown
+ * (`translate`) and a label in every language the site speaks (`labels`) — a visitor reading the
+ * English site may still type "saúde".
+ */
+interface ChatContext {
+  company: CnpjCompany | null;
+  consentText: string;
+  labels: (key: string, params?: Record<string, unknown>) => string[];
+  lookupStatus: LOOKUP_STATUS;
+  translate: (key: string, params?: Record<string, unknown>) => string;
+}
+
+/** A typed line read against a turn: the value it chose, or (value null) why it was not taken. */
+interface ChatAnswer {
+  errorKey: string | null;
+  value: string | null;
+}
+
+/** The one way to reach the visitor the chat's contact turn read: an e-mail or a phone. */
+interface ChatContact {
+  email: string | null;
+  phone: string | null;
+}
+
 /** One answer of a choice group: the value sent, the i18n key shown. */
 interface ChoiceOption {
   label: string;
@@ -178,9 +261,17 @@ export type {
   AvailabilitySpecialist,
   BookingConfirmation,
   BookMeetingPayload,
+  ChatAnswer,
+  ChatContact,
+  ChatContext,
+  ChatInput,
+  ChatMessage,
+  ChatPrompt,
+  ChatReply,
   ChoiceOption,
   CnpjCompany,
   CnpjLookupResult,
+  DiagnosticContactDraft,
   DiagnosticContactPayload,
   DiagnosticProfile,
   DiagnosticResult,

@@ -12,5 +12,6 @@ class StartDiagnosticDTO extends Data
         public ?string $visitor = null,
         public ?string $sector = null,
         public ?string $medium = null,
+        public string $channel = 'formulario',
     ) {}
 }

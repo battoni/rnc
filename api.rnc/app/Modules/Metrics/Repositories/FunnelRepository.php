@@ -92,6 +92,17 @@ class FunnelRepository
     }
 
     /**
+     * The channel each lead started in (rnc-2 R14).
+     *
+     * @param  list<int>  $leadIds
+     * @return array<int, string> lead id → channel
+     */
+    public function findLeadChannels(array $leadIds): array
+    {
+        return Lead::query()->whereIn('id', $leadIds)->pluck('channel', 'id')->all();
+    }
+
+    /**
      * Which leads lived each timeline line in the window, once per (lead, type) — a stage change only
      * when it was to `cliente`.
      *

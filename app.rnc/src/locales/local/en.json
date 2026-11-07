@@ -415,6 +415,70 @@
       "missingAction": "Take the diagnostic",
       "seoTitle": "Tax Reform Impact Report",
       "seoDescription": "The Tax Reform diagnostic result, with the 2026–2033 simulator."
+    },
+    "chat": {
+      "toggle": {
+        "label": "How do you want to answer",
+        "form": "Form",
+        "chat": "Chat with us"
+      },
+      "who": "Franco reception",
+      "note": "Every answer fills the same diagnostic as the form. You can switch to the form mid-way and come back: nothing is lost.",
+      "logLabel": "Conversation with Franco's reception",
+      "repliesLabel": "Quick replies",
+      "send": "Send",
+      "typing": "The reception is typing…",
+      "greeting": "Hi! I am Franco's virtual reception. In 5 minutes I show what the Tax Reform changes for your company and what it may be worth.",
+      "resumed": "I see you already started on the form. Let's pick up where you stopped.",
+      "advanced": "I see you moved on in the form. Let's pick up where you stopped.",
+      "notUnderstood": "I did not understand. Choose one of the options below.",
+      "contactInvalid": "I could not read that contact. Can you send a full e-mail or a phone with the area code?",
+      "asks": {
+        "path": "To start: do you have the company's CNPJ at hand?",
+        "cnpj": "Type the CNPJ. I check Receita Federal, Simples Nacional and CNAE and fill in the rest.",
+        "lookupRunning": "Checking Receita · Simples · CNAE…",
+        "lookupFound": "Found it: {name}, {sector}, {regime}. Is that right?",
+        "lookupFoundNoRegime": "Found it: {name}, {sector}. Is that right? I will ask the regime next.",
+        "lookupUnavailable": "I could not check this CNPJ right now. No problem: the questionnaire is a few questions and the result is the same.",
+        "sector": "Which sector is the company in?",
+        "regime": "And its tax regime today?",
+        "company": "Who do I send the result to? What is the company's name?",
+        "name": "And your name?",
+        "contact": "What is your WhatsApp, phone or e-mail? One is enough. Your data stays with Franco and is not shared without your permission.",
+        "consent": "One more, optional: when the diagnostic calls for it, may I introduce you to a specialist of Franco's network? \"{text}\" You get the result either way.",
+        "b2b": "How much of your sales goes to other companies (B2B)? The rest is end consumers.",
+        "band": "What is the annual revenue band?",
+        "incentivos": "Does the company have ICMS tax incentives?",
+        "exporta": "Last one: do you export goods or services?"
+      },
+      "replies": {
+        "hasCnpj": "I have the CNPJ",
+        "noCnpj": "I don't have the CNPJ",
+        "confirmCompany": "Yes, that's right",
+        "notThisCompany": "That's not the company",
+        "useQuiz": "Use the questionnaire",
+        "otherCnpj": "Try another CNPJ",
+        "authorize": "I authorise",
+        "decline": "I'd rather not",
+        "yes": "Yes",
+        "no": "No"
+      },
+      "inputs": {
+        "cnpj": "CNPJ",
+        "cnpjPlaceholder": "CNPJ, with or without punctuation",
+        "company": "Company",
+        "companyPlaceholder": "Company name",
+        "name": "Your name",
+        "namePlaceholder": "Your name",
+        "contact": "Contact",
+        "contactPlaceholder": "WhatsApp, phone or e-mail",
+        "answer": "Your answer",
+        "answerPlaceholder": "Or type your answer"
+      },
+      "result": {
+        "specialist": "A Franco specialist explains each item, free of charge. Choose a time:",
+        "simulator": "See the 2026–2033 simulator for my case"
+      }
     }
   },
   "notifications": {
@@ -604,7 +668,13 @@
       "empty": "No meetings.",
       "loadFailed": "The agenda could not be loaded."
     },
-    "noDiagnosis": "No diagnostic yet"
+    "noDiagnosis": "No diagnostic yet",
+    "channels": {
+      "formulario": "Form",
+      "chat": "Chat",
+      "carteira": "Portfolio"
+    },
+    "channelLabel": "Channel: {channel}"
   },
   "partners": {
     "title": "Partners",
@@ -812,7 +882,21 @@
       "conversion": "Visit → client"
     },
     "loadFailed": "The funnel could not be loaded right now.",
-    "retry": "Try again"
+    "retry": "Try again",
+    "byChannel": {
+      "title": "By channel",
+      "lede": "From the diagnostic's start on, by the channel each lead started in."
+    },
+    "channels": {
+      "formulario": "Form",
+      "chat": "Chat"
+    },
+    "columnsChannel": {
+      "channel": "Channel",
+      "inicio": "Started",
+      "resultado": "Result",
+      "bookingRate": "Started → booked"
+    }
   },
   "repricing": {
     "title": "Fee repricing",

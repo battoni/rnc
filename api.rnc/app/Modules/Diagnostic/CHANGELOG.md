@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.1.0 — 2026-11-07
+
+### Added
+
+- `POST public/diagnostics` takes `channel` ∈ {`formulario`, `chat`}, `formulario` when absent (rnc-2 F5, R14; `StartDiagnosticRequest`, `StartDiagnosticDTO`); the lead's channel is Lead's rule. Tested by `tests/Feature/Diagnostic/ChatChannelTest`.
+
 ## 1.0.1 — 2026-11-07
 
 ### Added

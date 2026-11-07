@@ -1,5 +1,5 @@
 ---
-version: 1.5.0
+version: 1.6.0
 origin: rnc
 ---
 # RULES — Lead Module
@@ -45,6 +45,11 @@ them and writes the team's notes — through this module's service.
 - **Every contact submission writes a consent row (AM12)**, given true or false — the box starts
   unticked — with `ConsentTerms::TEXT`, `VERSION` 1, `via = formulario` and `given_at`. No IP, no
   user agent. A new wording is a new version; the stored text is the text read.
+- **The channel is set once (rnc-2 R14)**: `LeadChannel`, stamped when the lead is created and never
+  written again — a later PATCH carries no channel, and a start from the other surface on the same
+  visitor reopens the `visitante` with its channel kept. `carteira` is Franco's own portfolio
+  (F10) and never a visitor's (`StartDiagnosticRequest` takes `formulario|chat` only). The consent's
+  `via` is the lead's channel, so a chat walk's consent reads `chat`.
 - **The visitor is kept by UUID** (`visitor_uuid`), not a foreign key to Tracking's `visitors`: the
   diagnostic may start before the visit's beacon lands, and the two meet on (firm, uuid).
 - **Children carry no firm column** (`lead_consents`, `lead_events`): they belong to their lead.

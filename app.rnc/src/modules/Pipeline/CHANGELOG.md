@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.2.0 — 2026-11-07
+
+### Added
+
+- The lead's channel (rnc-2 F5, R14, A12): `LEAD_CHANNEL`, `LEAD_CHANNEL_ICONS` and `MLeadChannelChip`; `MLeadCard` shows it for a chat or carteira lead, `LeadView` for every lead. Tests: `MLeadCard.spec`, `LeadView.view.integration.spec`.
+
 ## 1.1.1 — 2026-11-07
 
 ### Added

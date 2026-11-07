@@ -1,5 +1,5 @@
 ---
-version: 1.0.0
+version: 1.1.0
 origin: rnc
 ---
 # RULES — Metrics Module
@@ -37,6 +37,10 @@ The team (`equipe`) gets 403 — tested in `tests/Feature/Metrics/FunnelTest.php
 - **Source** is the visitor's first touch (`visitors.source`, W15); all four always listed.
 - **Sector page** is the page of the visitor's first visit in the window when it is
   `/reforma/<slug>`; every sector page of the firm is listed, the landing's visits are in none.
+- **Channel** (rnc-2 R14) is the channel the visitor's lead started in (`leads.channel`); a visitor
+  with a chat lead among its leads counts under chat. Only the two public channels are rows, from
+  "início" on — a visitor that never started a lead has no channel and is in neither row, so the
+  two rows add up to the funnel's own início.
 - **Drop-off** is the share of the step before that did not come through, one decimal; 0 when the
   step before is 0; null for the first step.
 
@@ -50,7 +54,7 @@ over those few distinct rows — no window functions, no driver-specific SQL.
 ## Tables read from other modules
 
 - `events`, `visitors` (Tracking) — the beacons, the first touch, the entry page.
-- `leads`, `lead_events` (Lead) — the visitor's lead and its timeline lines.
+- `leads`, `lead_events` (Lead) — the visitor's lead, its channel (rnc-2) and its timeline lines.
 - `sector_pages` (Content), through `SectorPageService::list()` — the sector table's rows.
 
 ## Known Gaps

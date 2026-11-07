@@ -12,6 +12,7 @@ import { server } from '@/test/msw/server';
 import { renderWithPlugins } from '@/test/render';
 import { useUserStore } from '@UserModule';
 import MLeadCard from '../../components/molecules/MLeadCard/MLeadCard.vue';
+import MLeadChannelChip from '../../components/molecules/MLeadChannelChip/MLeadChannelChip.vue';
 import MLostReasonForm from '../../components/molecules/MLostReasonForm/MLostReasonForm.vue';
 import { LEAD_DRAG_TYPE } from '../../constants';
 import { LEAD_STAGE } from '../../enums';
@@ -41,7 +42,17 @@ function renderBoard(permissions = ['leads.read', 'leads.update', 'agenda.read']
 
   return renderWithPlugins(PipelineView, {
     global: {
-      components: { Button, IconField, InputIcon, InputText, MLeadCard, MLostReasonForm, Skeleton, Textarea },
+      components: {
+        Button,
+        IconField,
+        InputIcon,
+        InputText,
+        MLeadCard,
+        MLeadChannelChip,
+        MLostReasonForm,
+        Skeleton,
+        Textarea,
+      },
       stubs: STUBS,
     },
     pinia,

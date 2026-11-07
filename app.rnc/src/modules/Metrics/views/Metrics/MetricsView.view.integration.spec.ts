@@ -113,6 +113,21 @@ describe('MetricsView', () => {
     ).toContain('27');
   });
 
+  it("splits the funnel by channel from the diagnostic's start on (rnc-2 R14, A12)", async () => {
+    renderMetrics();
+
+    const channels = await screen.findAllByTestId('channel-row');
+
+    expect(channels.map((row) => row.getAttribute('data-key'))).toEqual(['formulario', 'chat']);
+    expect(within(channels[1]!).getByRole('rowheader').textContent?.trim()).toBe('Chat');
+    expect(
+      within(channels[1]!)
+        .getAllByRole('cell')
+        .map((cell) => cell.textContent?.trim())
+    ).toEqual(['5', '4', '3', '2', '1', '40.0%']);
+    expect(screen.getByRole('table', { name: 'By channel' })).toBeTruthy();
+  });
+
   it('offers a retry when the funnel cannot be read', async () => {
     failNext = true;
     renderMetrics();

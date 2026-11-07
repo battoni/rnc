@@ -4,6 +4,7 @@ import type {
   BookingConfirmation,
   CnpjCompany,
   CnpjLookupResult,
+  DiagnosticContactDraft,
   DiagnosticContactPayload,
   DiagnosticProfile,
   DiagnosticResult,
@@ -14,8 +15,8 @@ import type {
 import type { ApiResponse } from '@Providers';
 import { HTTP_STATUS } from '@Enums';
 import { TRACKING_EVENT_TYPE, useTracking } from '@SiteModule';
-import { CNPJ_LENGTH, EMPTY_PROFILE, LOOKUP_STEP_MS, LOOKUP_STEPS } from '../constants';
-import { DIAGNOSTIC_STEP, LOOKUP_STATUS } from '../enums';
+import { CNPJ_LENGTH, EMPTY_CONTACT, EMPTY_PROFILE, LOOKUP_STEP_MS, LOOKUP_STEPS } from '../constants';
+import { DIAGNOSTIC_CHANNEL, DIAGNOSTIC_STEP, LOOKUP_STATUS } from '../enums';
 import {
   GetDiagnosticResultService,
   GetDiagnosticSimulationService,
@@ -32,12 +33,19 @@ const NON_DIGITS = /\D/g;
  * Picking a path starts the lead (a `visitante`, AM13) and keeps its token; every later step is
  * saved as the visitor leaves it, so a visitor who gives the contact and goes away is a lead parcial
  * with the step it stopped at (R11). Each funnel step is tracked with the token, never a lead id.
+ *
+ * The form and the chat receptionist (rnc-2 R12–R14) are two faces of this one instance: both write
+ * the same `profile` and the same `contact` draft and save through the same steps, so switching
+ * between them mid-way loses nothing and both send the same PATCHes. The channel goes with the
+ * start and is fixed from then on (the API keeps the lead's).
  */
 function useDiagnostic() {
   const { track, visitContext } = useTracking();
 
   const booking = ref<BookingConfirmation | null>(null);
+  const channel = ref<DIAGNOSTIC_CHANNEL>(DIAGNOSTIC_CHANNEL.FORM);
   const company = ref<CnpjCompany | null>(null);
+  const contact = ref<DiagnosticContactDraft>({ ...EMPTY_CONTACT });
   const consentText = ref('');
   const errorKey = ref<string | null>(null);
   const hasEmail = ref(false);
@@ -54,6 +62,17 @@ function useDiagnostic() {
   // HELPERS
   function fail(key: string) {
     errorKey.value = key;
+  }
+
+  function orNull(value: string): string | null {
+    return value.trim() || null;
+  }
+
+  /** The draft as `UpdateDiagnosticRequest` takes it: trimmed, an empty way to reach is null. */
+  function contactPayload(): DiagnosticContactPayload {
+    const { company: companyName, consent, email, name, phone } = contact.value;
+
+    return { company: companyName.trim(), consent, email: orNull(email), name: orNull(name), phone: orNull(phone) };
   }
 
   function save(payload: UpdateDiagnosticPayload): Promise<void> {
@@ -86,6 +105,9 @@ function useDiagnostic() {
   function onLookupAnswered({ data }: ApiResponse<CnpjLookupResult>) {
     company.value = data.company;
     profile.value = { ...profile.value, ...data.lead.profile };
+
+    if (data.company && !contact.value.company) contact.value.company = data.company.name;
+
     lookupStatus.value = data.company ? LOOKUP_STATUS.FOUND : LOOKUP_STATUS.UNAVAILABLE;
   }
 
@@ -115,7 +137,7 @@ function useDiagnostic() {
     if (token.value || isSaving.value) return;
 
     const { medium, source, visitor } = visitContext();
-    const PAYLOAD = { medium, path: next, sector: profile.value.sector, source, visitor };
+    const PAYLOAD = { channel: channel.value, medium, path: next, sector: profile.value.sector, source, visitor };
 
     isSaving.value = true;
 
@@ -123,6 +145,13 @@ function useDiagnostic() {
       .then(onStarted)
       .catch(() => fail('diagnostic.errors.unavailable'))
       .finally(() => (isSaving.value = false));
+  }
+
+  /** Form or chat, as the visitor shows it — sent with the start; once the lead exists it stays. */
+  function selectChannel(next: DIAGNOSTIC_CHANNEL) {
+    if (token.value) return;
+
+    channel.value = next;
   }
 
   function lookupCnpj(typed: string) {
@@ -157,17 +186,18 @@ function useDiagnostic() {
       .catch(() => fail('diagnostic.errors.unavailable'));
   }
 
-  function saveContact(contact: DiagnosticContactPayload) {
-    const hasWayToReach = !!contact.phone || !!contact.email;
+  function saveContact() {
+    const CONTACT = contactPayload();
+    const hasWayToReach = !!CONTACT.phone || !!CONTACT.email;
 
-    if (!contact.company || !hasWayToReach) {
+    if (!CONTACT.company || !hasWayToReach) {
       fail('diagnostic.errors.contact');
       return;
     }
 
-    save({ contact, step: DIAGNOSTIC_STEP.PROFILE })
+    save({ contact: CONTACT, step: DIAGNOSTIC_STEP.PROFILE })
       .then(() => {
-        hasEmail.value = !!contact.email;
+        hasEmail.value = !!CONTACT.email;
         step.value = DIAGNOSTIC_STEP.PROFILE;
 
         track(TRACKING_EVENT_TYPE.DIAGNOSTIC_CONTACT, profile.value.sector, token.value);
@@ -225,6 +255,7 @@ function useDiagnostic() {
   function restart() {
     booking.value = null;
     company.value = null;
+    contact.value = { ...EMPTY_CONTACT };
     errorKey.value = null;
     hasEmail.value = false;
     lookupStatus.value = LOOKUP_STATUS.IDLE;
@@ -238,11 +269,13 @@ function useDiagnostic() {
 
   return {
     booking,
+    channel,
     choosePath,
     company,
     confirmBooking,
     confirmCompany,
     consentText,
+    contact,
     errorKey,
     finish,
     hasEmail,
@@ -258,10 +291,14 @@ function useDiagnostic() {
     result,
     saveContact,
     saveProfile,
+    selectChannel,
     simulation,
     step,
     token,
   };
 }
 
+type UseDiagnostic = ReturnType<typeof useDiagnostic>;
+
 export { useDiagnostic };
+export type { UseDiagnostic };
