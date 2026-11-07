@@ -5,9 +5,10 @@ Updated: 07/11/2026
 Intent approved 07/11 · spec closed 07/11 (29 R · 24 A · 15 D) · plan approved 07/11 (F1–F10 with F6 split into F6a/F6b, after a clean-context Sonnet review and a `fable-reviewer` review — plan.md → Plan review, Amendments AM1–AM13). Nothing built yet. Branch `feature/rnc-2-reforma-hub-phase-2` starts from the finished `feature/rnc-1-reforma-hub-pilot` (8ed5ef3); rnc-1 is not on `main` yet.
 - **F1 Partner access — done 07/11** (9916eb7; A1, A2, A4): `parceiro` role, `users.partner_id` (unique), `partner_access_events`, `POST/DELETE partners/{id}/access` + `…/access/password`, `CurrentPartner` + `ResolveCurrentPartner` (`portal`), `GET portal/me`, the route matrix (`tests/Feature/Access`), the Portal SPA module (`/parceiro`), Home's bounce, the rail entry, "Acesso ao portal" in the registry, `PartnerUserSeeder`. Gate: 822 Pest · 884 Vitest · 122 Playwright. `parceiro.1` signed in against the served worktree API (port 8012, stopped after): `GET portal/me` 200, `GET leads` 403.
 - **F2 Portal API — done 07/11** (cb630b5; A3, A5, A6, A7, A8's Pest half): `GET portal/referrals`, `GET portal/referrals/{id}`, `POST portal/referrals/{id}/transition` (`PortalReferralService`/`Repository`/`Resource`, `TransitionReferralRequest`), `ReferralStatus` graph, `BusinessHours` + `ReferralSla`, the `referrals` portal columns, `encaminhamento.status` lines, `ReferralStatusNotification`, the demo's twelve seeded referrals. Gate: 967 Pest · 906 Vitest · 122 Playwright. Live on the served worktree API (port 8012, stopped after): `parceiro.1` walked referral 3 enviado → fechado, 5 `encaminhamento.status` lines and 6+6 bell rows (aceito, fechado) in the DB; off-graph move 422; `GET leads` 403.
+- **F3 Portal SPA and Franco's view — done 07/11** (f83d844; A8's Vitest half, A8 complete): `PortalInboxView` at `/parceiro` (KPIs and "Próximas reuniões" from the list), `MPortalReferralCard`, `MReferralMeetingForm`, `MReferralCloseForm`, the shared `MSlaChip`; `MLeadRouting` and `TrailView` show status, SLA and "Fechado · R$ …" (API: `ReferralResource` and `PartnerMatchesResource` gain `status_at`, `sla`, `deal_value_cents`); the bell's aceitou / recusou / fechou contrato. Gate: 968 Pest · 942 Vitest · 123 Playwright. Live on :8012 (stopped after): `parceiro.1` walked referral 3 to fechado; patricia's bell aceito + fechado (R$ 12.000); trail and panel fechado · cumprido · 1200000.
 ## Next
 1. Read the W# list below and the spec's D1–D15 (every one taken while the owner was away).
-2. Build: `/loop /battoni-run rnc-2` — F3 Portal SPA next (F1–F2 done; read plan.md → Amendments before each phase), or attended `/battoni-start-session rnc-2` per phase.
+2. Build: `/loop /battoni-run rnc-2` — F4 Ledger next (F1–F3 done; read plan.md → Amendments before each phase), or attended `/battoni-start-session rnc-2` per phase.
 3. Before verify's PR: rnc-1 must reach the remote first (its state.md → Next 2); this branch's PR bases on `feature/rnc-1-reforma-hub-pilot` until rnc-1 is merged.
 ## Pitfalls
 - Every rnc-1 pitfall still holds (`specs/rnc-1-reforma-hub-pilot/state.md` → Pitfalls); the plan's P1–P10 carry the ones that bite here.
@@ -23,6 +24,9 @@ Intent approved 07/11 · spec closed 07/11 (29 R · 24 A · 15 D) · plan approv
 - `Referral::create([... 'created_at' => …])` in a Pest test drops `created_at` (not fillable) — use `forceCreate`; seeders run unguarded, tests do not.
 - A Lead looked up in a Pest test with no `CurrentFirm` set is `null` under `FirmScope`: `Lead::withoutGlobalScopes()->find()`.
 - Every new portal route goes in `routes/api.local.php` with `$portal` (`auth`, `permission:portal.access`, `portal`) and in `routeClasses.php` as `portal`; the matrix also checks the middleware structurally.
+- The portal's components are `@PortalModule` and Partner imports `MSlaChip`/`SLA_STATE` from it (one-way: Portal reads only the `partners.specialties` strings and must never import `@PartnerModule`, or the barrels cycle).
+- A money string from `formatReal` has a NO-BREAK space after `R$`: assert with `/R\$\s12\.000,00/`, never `'R$ 12.000,00'`.
+- A new PrimeVue component in a template must be added to `vite.config.ts` → `optimizeDeps.include`, or `src/test/optimizeDeps.spec.ts` fails.
 ## QA
 - None yet.
 ## Local environment
