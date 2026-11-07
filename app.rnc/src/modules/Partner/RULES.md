@@ -1,11 +1,11 @@
 ---
-version: 1.1.0
+version: 1.2.0
 origin: rnc
 ---
 
 # RULES — Partner Module
 
-> For AI agents. rnc-1 F6, 07/11/2026.
+> For AI agents. rnc-1 F6, 07/11/2026; rnc-2 F1 (portal access), F3 (the partner's progress on the panel and the trail).
 
 ## Domain
 
@@ -47,7 +47,16 @@ routing panel `MLeadRouting` the Pipeline's lead detail mounts under the diagnos
   Refusals are read by `code` (`PARTNER_ACCESS_ERROR_KEYS`), like the routing form's. Revoke is
   reversible (create again), so no confirm popup.
 
+- **The partner's progress, read-only (rnc-2 R10)**: the routing panel and the trail show each
+  referral's status, the shared `MSlaChip` (Portal's — the partner and Franco read the same
+  words) and, once `fechado`, the first-year value ("Fechado · R$ …"; the trail's "Contrato no 1º
+  ano"). The API sends `status_at`, `sla` and `deal_value_cents` (`null` until closed) on both
+  answers; Franco never moves a status — only the partner does, from its portal.
+
 ## Known Gaps
 
-- **The status still stays `enviado`** until the portal's transitions (rnc-2 F2–F3); the trail shows it as sent.
+- ~~The status still stays `enviado` until the portal's transitions~~ — retired in rnc-2 F3: the
+  partner moves it from `/parceiro` and the panel and the trail show where it stands.
+- **The panel's status is as of its load**: it does not poll; the bell (30 s) says when a partner
+  moved something, and reopening the lead shows it.
 - **The trail has no date range** — newest first and by partner only.

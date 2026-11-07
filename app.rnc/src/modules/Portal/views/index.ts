@@ -1,1 +1,1 @@
-export * from './PortalHome';
+export * from './PortalInbox';

@@ -1,5 +1,5 @@
 ---
-version: 1.2.0
+version: 1.3.0
 origin: rnc
 ---
 # RULES — Partner Module
@@ -119,6 +119,11 @@ partner's portal login — `partners.access_*_at` and `partner_access_events` �
   Booking's national holidays (`Helpers/BusinessHours`, pure maths). ok < 12 ≤ atencao < 24 ≤
   estourado while open; cumprido ≤ 24 < fora once contacted; encerrado when declined. The state
   reads the exact hours, the answer carries one decimal (a whole number reaches JSON as an integer).
+- **Franco reads the partner's progress** (R10): `ReferralResource` (the trail) and
+  `PartnerMatchesResource`'s `referral` carry `status_at`, `sla` (`ReferralSla::of`, the same clock
+  as the portal) and `deal_value_cents` — `null` until `fechado`, then the partner's value. The key
+  is always there for the staff (the partner's answer omits it until closed, W24): Franco sees
+  every referral, and a typed field reads simpler than a missing one.
 - **Every API route is classified** in `tests/Feature/Access/routeClasses.php` (public · portal ·
   staff · shared, A2): a route added without a class fails `RouteMatrixTest`.
 
@@ -134,14 +139,15 @@ e-mail and the portal's firm name, through `CurrentFirm` / `BelongsToFirm::firm`
 
 ## Known Gaps
 
+*Retired 07/11/2026 (rnc-2 F3):* "The portal's screens are not built yet" — the SPA's inbox and
+cards, and Franco's status and SLA on the routing panel and the trail, now read these answers.
+
 *Retired 07/11/2026 (rnc-2 F2):* "The portal answers only `GET portal/me` so far" and "No SLA
 clock" — the inbox, the moves and `ReferralSla` now answer on the API.
 
 *Retired 07/11/2026 (rnc-2 F1):* "No partner login yet (D7)". A partner now has a portal login
 (`POST partners/{id}/access`); the status still stays `enviado` until the portal moves it (F2).
 
-- **The portal's screens are not built yet** (rnc-2 F2): the inbox, the moves and the SLA answer on
-  the API; the SPA's inbox and cards, and Franco's status and SLA columns, arrive in F3.
 - **Seeded moves carry no login** (`PartnerSeeder`): `status_by` and the seeded lines' `user_id`
   are null, because the partners' logins are seeded after the referrals (`PartnerUserSeeder`).
 - **A firm without `business_hours` never breaches the SLA** (zero hours a week): `firms` requires

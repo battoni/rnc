@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
 import type { PartnerMatch, PartnerMatches, ReferralTimelineEvent, ReferralWritten } from '../../../interfaces';
+import { formatReal } from '@Helpers';
 import { COVERED_SCORE } from '../../../constants';
 import { GetPartnerMatchesService } from '../../../services';
 
@@ -11,7 +12,9 @@ import { GetPartnerMatchesService } from '../../../services';
  * its score against this lead's diagnostic ("92% · ERP/NF-e") and the items it covers, best first,
  * and "Encaminhar" with a message. Franco stays the lead's owner. Without the lead's consent every
  * button is disabled and the reason sits above them — the API refuses it too (422). Whether the
- * person may refer at all is the VIEW's permission, passed in (celer-07).
+ * person may refer at all is the VIEW's permission, passed in (celer-07). A referred partner shows
+ * where it took the referral from its portal (rnc-2 R10): the status, the SLA chip, and "Fechado ·
+ * R$ …" once closed.
  */
 const emit = defineEmits<{
   onReferred: [event: ReferralTimelineEvent];
@@ -24,6 +27,7 @@ const props = defineProps<{
 }>();
 
 const BLOCKED_REASON_ID = `routing-blocked-${props.leadId}`;
+const CLOSED_STATUS = 'fechado';
 const TOAST_LIFE_MS = 3500;
 
 const { t } = useI18n();
@@ -54,6 +58,14 @@ function isCovering(match: PartnerMatch): boolean {
   return match.score >= COVERED_SCORE;
 }
 
+function closedValue(match: PartnerMatch): string | null {
+  const { referral } = match;
+
+  return referral?.status === CLOSED_STATUS && referral.deal_value_cents !== null
+    ? t('partners.routing.closedValue', { value: formatReal(referral.deal_value_cents) })
+    : null;
+}
+
 function sentOn(at: string): string {
   return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit' }).format(new Date(at));
 }
@@ -64,7 +76,9 @@ function onOpen(partnerId: number) {
 }
 
 function onReferred(match: PartnerMatch, written: ReferralWritten) {
-  match.referral = { at: written.referral.at, id: written.referral.id, status: written.referral.status };
+  const { at, deal_value_cents, id, sla, status, status_at } = written.referral;
+
+  match.referral = { at, deal_value_cents, id, sla, status, status_at };
   openPartnerId.value = null;
 
   emit('onReferred', written.event);
@@ -174,18 +188,32 @@ function onReferred(match: PartnerMatch, written: ReferralWritten) {
               </span>
             </div>
 
-            <span
+            <div
               v-if="match.referral"
-              class="bg-success-50 text-success-800 flex w-fit shrink-0 items-center gap-1.5 rounded-sm px-2 py-1 text-xs font-semibold"
-              data-testid="match-referred"
+              class="flex shrink-0 flex-col items-start gap-1.5 sm:items-end"
             >
-              <i
-                aria-hidden="true"
-                class="pi pi-check"
-              />
+              <span
+                class="bg-success-50 text-success-800 flex w-fit items-center gap-1.5 rounded-sm px-2 py-1 text-xs font-semibold"
+                data-testid="match-referred"
+              >
+                <i
+                  aria-hidden="true"
+                  class="pi pi-check"
+                />
 
-              {{ $t('partners.routing.referredOn', { date: sentOn(match.referral.at) }) }}
-            </span>
+                {{ closedValue(match) ?? $t('partners.routing.referredOn', { date: sentOn(match.referral.at) }) }}
+              </span>
+
+              <span
+                v-if="!closedValue(match)"
+                class="bg-info-50 text-info-800 w-fit rounded-sm px-2 py-0.5 text-xs font-semibold"
+                data-testid="match-status"
+              >
+                {{ $t(`partners.statuses.${match.referral.status}`) }}
+              </span>
+
+              <MSlaChip :sla="match.referral.sla" />
+            </div>
 
             <Button
               v-else-if="props.canRefer && openPartnerId !== match.partner.id"

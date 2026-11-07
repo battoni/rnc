@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { BellNotification } from '../../../interfaces';
+import { formatReal } from '@Helpers';
 import { NOTIFICATION_POLL_MS } from '../../../constants';
 import { NOTIFICATION_KIND } from '../../../enums';
 import { useNotificationStore } from '../../../store';
@@ -9,7 +10,9 @@ import { useNotificationStore } from '../../../store';
 /*
  * The back office's bell (rnc-1 R17, D5): the unread count, asked again every 30 s, and a dropdown
  * with one sentence per notification — a lead that left its contact, a meeting booked — each with
- * "marcar como lida", and "marcar todas". Meeting times are São Paulo's (AM9).
+ * "marcar como lida", and "marcar todas". Meeting times are São Paulo's (AM9). A partner's move
+ * (rnc-2 R9: aceitou, recusou, fechou contrato) reads its title and sentence by kind AND status —
+ * one `referral_status` kind, three lines.
  */
 const notificationStore = useNotificationStore();
 
@@ -20,6 +23,9 @@ const MEETING_TIME_ZONE = 'America/Sao_Paulo';
 const KIND_ICONS: Record<string, string> = {
   [NOTIFICATION_KIND.MEETING_BOOKED]: 'pi pi-calendar',
   [NOTIFICATION_KIND.NEW_LEAD]: 'pi pi-user-plus',
+  [`${NOTIFICATION_KIND.REFERRAL_STATUS}_aceito`]: 'pi pi-check-circle',
+  [`${NOTIFICATION_KIND.REFERRAL_STATUS}_recusado`]: 'pi pi-times-circle',
+  [`${NOTIFICATION_KIND.REFERRAL_STATUS}_fechado`]: 'pi pi-briefcase',
 };
 
 const hasFailed = ref(false);
@@ -52,7 +58,20 @@ function sentenceOf(notification: BellNotification): string {
       })
     : '';
 
-  return t(`notifications.kinds.${notification.kind}`, { company, specialist: notification.specialist ?? '', when });
+  return t(`notifications.kinds.${lineOf(notification)}`, {
+    company,
+    partner: notification.partner ?? '',
+    specialist: notification.specialist ?? '',
+    value: notification.deal_value_cents ? formatReal(notification.deal_value_cents) : '',
+    when,
+  });
+}
+
+/** The key a notification's title, sentence and icon are read by: its kind, and a partner move's status. */
+function lineOf(notification: BellNotification): string {
+  return notification.kind === NOTIFICATION_KIND.REFERRAL_STATUS
+    ? `${notification.kind}_${notification.status}`
+    : notification.kind;
 }
 
 function arrivedAt(notification: BellNotification): string {
@@ -156,12 +175,12 @@ function onMarkAllRead() {
           >
             <i
               aria-hidden="true"
-              :class="[KIND_ICONS[notification.kind] ?? 'pi pi-bell', 'text-primary-700 mt-0.5']"
+              :class="[KIND_ICONS[lineOf(notification)] ?? 'pi pi-bell', 'text-primary-700 mt-0.5']"
             />
 
             <div class="flex min-w-0 flex-1 flex-col gap-0.5">
               <span class="text-heading text-sm font-semibold">
-                {{ $t(`notifications.kindTitles.${notification.kind}`) }}
+                {{ $t(`notifications.kindTitles.${lineOf(notification)}`) }}
               </span>
 
               <span class="text-body text-sm break-words">{{ sentenceOf(notification) }}</span>

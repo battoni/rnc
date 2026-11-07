@@ -6,6 +6,7 @@ import Textarea from 'primevue/textarea';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { server } from '@/test/msw/server';
 import { renderWithPlugins } from '@/test/render';
+import { MSlaChip, SLA_STATE } from '@PortalModule';
 import { MATCHES_FIXTURE, REFERRAL_FIXTURE } from '../../../test/fixtures';
 import MReferralForm from '../MReferralForm/MReferralForm.vue';
 import MLeadRouting from './MLeadRouting.vue';
@@ -13,14 +14,15 @@ import MLeadRouting from './MLeadRouting.vue';
 /*
  * The routing panel on the lead detail (rnc-1 F6, R22, A12): each partner with its score and
  * specialty, "Encaminhar" with a message — and, without consent, every button disabled with the
- * reason beside it.
+ * reason beside it. rnc-2 F3 (R10, A8): a referred partner shows where it took the referral — its
+ * status, the SLA chip and, once closed, the contract value.
  */
 const sent: Record<string, unknown>[] = [];
 
 function renderRouting(canRefer = true) {
   return renderWithPlugins(MLeadRouting, {
     global: {
-      components: { Button, MReferralForm, Skeleton, Textarea },
+      components: { Button, MReferralForm, MSlaChip, Skeleton, Textarea },
       stubs: { AFormError: { props: ['error'], template: '<p v-if="error" data-testid="form-error">{{ error }}</p>' } },
     },
     props: { canRefer, company: 'Consultoria Prisma', leadId: 7 },
@@ -129,5 +131,30 @@ describe('MLeadRouting', () => {
     const rows = await screen.findAllByTestId('partner-match');
 
     expect(within(rows[0]!).queryByTestId('refer-open')).toBeNull();
+  });
+
+  it("shows each referral's status and SLA, and the contract value once closed (A8, R10)", async () => {
+    const answer = structuredClone(MATCHES_FIXTURE);
+
+    answer.matches[0]!.referral = {
+      at: '2026-11-13T16:00:00-03:00',
+      deal_value_cents: 1_200_000,
+      id: 41,
+      sla: { hours: 3, state: SLA_STATE.CUMPRIDO },
+      status: 'fechado',
+      status_at: '2026-11-18T15:00:00+00:00',
+    };
+    server.use(http.get('http://localhost/leads/7/partner-matches', () => HttpResponse.json({ data: answer })));
+    renderRouting();
+
+    const rows = await screen.findAllByTestId('partner-match');
+    const closed = within(rows[0]!).getByTestId('match-referred');
+    const sent = within(rows[1]!).getByTestId('match-referred');
+
+    expect(closed.textContent).toMatch(/Closed · R\$\s12\.000,00/);
+    expect(within(rows[0]!).getByTestId('sla-chip').dataset.sla).toBe('cumprido');
+    expect(sent.textContent).toContain('Referred on 18/11');
+    expect(within(rows[1]!).getByTestId('sla-chip').dataset.sla).toBe('ok');
+    expect(within(rows[1]!).getByTestId('match-status').textContent).toContain('Sent');
   });
 });

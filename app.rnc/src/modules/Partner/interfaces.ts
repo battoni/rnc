@@ -1,4 +1,13 @@
 import type { ROUTING_BLOCK } from './enums';
+import type { ReferralSla } from '@PortalModule';
+
+/** Where the partner has taken a referral since (rnc-2 R10): its move, its SLA, the value once closed. */
+interface ReferralProgress {
+  deal_value_cents: number | null;
+  sla: ReferralSla;
+  status: string;
+  status_at: string | null;
+}
 
 /** A partner's portal login (`PartnerAccessResource`, rnc-2 R2) — never with its password. */
 interface PartnerAccess {
@@ -65,7 +74,7 @@ interface CoveredItem {
 interface PartnerMatch {
   covers: CoveredItem[];
   partner: { city: string | null; id: number; name: string; specialty: string };
-  referral: { at: string; id: number; status: string } | null;
+  referral: (ReferralProgress & { at: string; id: number }) | null;
   score: number;
 }
 
@@ -83,7 +92,7 @@ interface ReferLeadPayload {
 }
 
 /** One line of the trail (`ReferralResource`). */
-interface Referral {
+interface Referral extends ReferralProgress {
   at: string;
   consent: { at: string; given: boolean; text: string; version: number };
   covers: CoveredItem[];
@@ -93,7 +102,6 @@ interface Referral {
   partner: { active: boolean; id: number; name: string; specialty: string };
   referred_by: { id: number; name: string };
   score: number;
-  status: string;
 }
 
 /** The lead's timeline line a referral wrote (the Pipeline's `LeadEventResource`). */
@@ -123,6 +131,7 @@ export type {
   PartnerPayload,
   ReferLeadPayload,
   Referral,
+  ReferralProgress,
   ReferralTimelineEvent,
   ReferralWritten,
   UpdatePartnerPayload,

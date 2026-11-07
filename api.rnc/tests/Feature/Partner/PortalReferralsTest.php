@@ -489,6 +489,24 @@ describe('Franco hears the partner (R9, A8 Pest half)', function () {
             ->and($byStatus['recusado']->first()->data['company'])->toBe('Recusada Ltda');
     });
 
+    it('shows Franco\'s routing panel and trail the partner\'s status, SLA and, once closed, the contract value (A8, R10)', function () {
+        $referral = inboxReferral($this->nexo);
+        $equipe = inboxStaff('equipe');
+        $ceo = inboxStaff('ceo');
+        $panel = fn () => collect($this->actingAs($equipe)->getJson("/api/leads/{$referral->lead_id}/partner-matches")->assertOk()->json('data.matches'))
+            ->firstWhere('partner.id', $this->nexo->id)['referral'];
+        $trail = fn () => collect($this->actingAs($ceo)->getJson('/api/referrals')->assertOk()->json('data.data'))->firstWhere('id', $referral->id);
+
+        expect($panel())->toMatchArray(['status' => 'enviado', 'sla' => ['state' => 'ok', 'hours' => 3], 'deal_value_cents' => null])
+            ->and($trail())->toMatchArray(['status' => 'enviado', 'sla' => ['state' => 'ok', 'hours' => 3], 'deal_value_cents' => null]);
+
+        inboxBringTo($this->nexoLogin, $referral, 'fechado');
+
+        expect($panel())->toMatchArray(['status' => 'fechado', 'sla' => ['state' => 'cumprido', 'hours' => 3], 'deal_value_cents' => 1_200_000])
+            ->and($panel()['status_at'])->toBe('2026-11-16T13:00:00+00:00')
+            ->and($trail())->toMatchArray(['status' => 'fechado', 'sla' => ['state' => 'cumprido', 'hours' => 3], 'deal_value_cents' => 1_200_000, 'status_at' => '2026-11-16T13:00:00+00:00']);
+    });
+
     it('writes nothing when the move is refused', function () {
         $referral = inboxReferral($this->nexo);
 

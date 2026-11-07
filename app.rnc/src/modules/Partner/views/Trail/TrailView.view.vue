@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue';
 import type { PartnerOption, Referral } from '../../interfaces';
 import { usePaginatedList } from '@Composables';
-import { getI18nRouteName } from '@Helpers';
+import { formatReal, getI18nRouteName } from '@Helpers';
 import { PIPELINE_ROUTE_NAMES } from '@PipelineModule';
 import { TRAIL_PER_PAGE } from '../../constants';
 import { GetPartnerOptionsService, GetReferralsService } from '../../services';
@@ -10,9 +10,13 @@ import { GetPartnerOptionsService, GetReferralsService } from '../../services';
 /*
  * The trail (rnc-1 R23, the demo's `governanceView()`): every referral of the network, newest
  * first — which company, to which partner, with which authorisation (the consent text as the lead
- * read it, and when), by whom and when, and where it stands. Filterable by partner, inactive ones
- * included: the history keeps them. Reinaldo and the operator only (`referrals.read`).
+ * read it, and when), by whom and when, and where it stands — the status the partner moved it to
+ * from its portal, its first-contact SLA chip and, once closed, the contract value (rnc-2 R10).
+ * Filterable by partner, inactive ones included: the history keeps them. Reinaldo and the operator
+ * only (`referrals.read`).
  */
+const CLOSED_STATUS = 'fechado';
+
 const partnerId = ref<number | null>(null);
 const partnerOptions = ref<PartnerOption[]>([]);
 
@@ -181,11 +185,24 @@ function onFilter(value: number | null) {
               {{ $t('partners.trail.score', { score: referral.score }) }}
             </span>
 
-            <span class="bg-info-50 text-info-800 rounded-sm px-2 py-0.5 text-xs font-semibold">
+            <span
+              class="bg-info-50 text-info-800 rounded-sm px-2 py-0.5 text-xs font-semibold"
+              data-testid="trail-status"
+            >
               {{ $t(`partners.statuses.${referral.status}`) }}
+            </span>
+
+            <span
+              v-if="referral.status === CLOSED_STATUS && referral.deal_value_cents !== null"
+              class="bg-success-50 text-success-800 rounded-sm px-2 py-0.5 text-xs font-semibold tabular-nums"
+              data-testid="trail-value"
+            >
+              {{ $t('partners.trail.closedValue', { value: formatReal(referral.deal_value_cents) }) }}
             </span>
           </div>
         </div>
+
+        <MSlaChip :sla="referral.sla" />
 
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div

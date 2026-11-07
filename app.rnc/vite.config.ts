@@ -98,6 +98,7 @@ export default defineConfig(({ mode }) => {
         'primevue/inputgroupaddon',
         'primevue/inputicon',
         'primevue/inputmask',
+        'primevue/inputnumber',
         'primevue/inputotp',
         'primevue/inputtext',
         'primevue/message',

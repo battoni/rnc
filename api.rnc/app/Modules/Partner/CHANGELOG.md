@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.3.0 — 2026-11-07
+
+### Added
+
+- Franco's view of the partner's progress (rnc-2 F3, R10, A8): `ReferralResource` (the trail) and `PartnerMatchesResource`'s `referral` carry `status_at`, `sla` and `deal_value_cents` (`null` until `fechado`). Tested by `PortalReferralsTest` ("shows Franco's routing panel and trail…").
+
 ## 1.2.0 — 2026-11-07
 
 ### Added

@@ -23,9 +23,26 @@ const LEAD_NOTIFICATION_FIXTURE: BellNotification = {
   sector: 'comercio',
 };
 
+/** A partner's move the bell names (rnc-2 R9, `ReferralStatusNotification`): aceito, recusado, fechado. */
+function referralStatusNotification(status: string, overrides: Partial<BellNotification> = {}): BellNotification {
+  return {
+    company: 'Consultoria Prisma Ltda',
+    created_at: '2026-11-19T11:00:00-03:00',
+    id: `9a0c1d2e-0000-4000-8000-00000000000${status.length}`,
+    kind: NOTIFICATION_KIND.REFERRAL_STATUS,
+    lead_id: 7,
+    partner: 'NexoERP (exemplo)',
+    read_at: null,
+    referral_id: 31,
+    status,
+    ...(status === 'fechado' ? { deal_value_cents: 1_200_000 } : {}),
+    ...overrides,
+  };
+}
+
 const INBOX_FIXTURE: NotificationInbox = {
   items: [MEETING_NOTIFICATION_FIXTURE, LEAD_NOTIFICATION_FIXTURE],
   unread_count: 2,
 };
 
-export { INBOX_FIXTURE, LEAD_NOTIFICATION_FIXTURE, MEETING_NOTIFICATION_FIXTURE };
+export { INBOX_FIXTURE, LEAD_NOTIFICATION_FIXTURE, MEETING_NOTIFICATION_FIXTURE, referralStatusNotification };

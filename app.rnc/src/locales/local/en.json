@@ -424,11 +424,17 @@
     "markAllRead": "Mark all as read",
     "kinds": {
       "new_lead": "{company} left a contact in the diagnostic",
-      "meeting_booked": "{company} booked a meeting with {specialist} for {when}"
+      "meeting_booked": "{company} booked a meeting with {specialist} for {when}",
+      "referral_status_aceito": "{partner} accepted the referral of {company}",
+      "referral_status_recusado": "{partner} declined the referral of {company}",
+      "referral_status_fechado": "{partner} closed a {value} contract with {company}"
     },
     "kindTitles": {
       "new_lead": "New lead",
-      "meeting_booked": "Meeting booked"
+      "meeting_booked": "Meeting booked",
+      "referral_status_aceito": "Partner accepted",
+      "referral_status_recusado": "Partner declined",
+      "referral_status_fechado": "Partner closed a contract"
     },
     "unknownCompany": "A company"
   },
@@ -674,7 +680,8 @@
       "blocked": {
         "consent_missing": "No consent: the lead has not answered the request to be introduced to partners yet. No referral goes out without it.",
         "consent_refused": "No consent: the lead did not agree to be introduced to partners. No referral goes out without it."
-      }
+      },
+      "closedValue": "Closed · {value}"
     },
     "trail": {
       "title": "Referral trail",
@@ -688,7 +695,8 @@
       "by": "by {name}",
       "loadFailed": "The trail could not be loaded.",
       "emptyTitle": "No referrals yet",
-      "emptyText": "When the team refers a lead to a partner, it shows here with the recorded consent."
+      "emptyText": "When the team refers a lead to a partner, it shows here with the recorded consent.",
+      "closedValue": "1st-year contract: {value}"
     },
     "portalAccess": "Portal access",
     "access": {
@@ -921,9 +929,87 @@
   "portal": {
     "title": "Partner portal",
     "greeting": "Hello, {name}",
-    "description": "This is {firm}'s partner portal. The referrals it sends you will appear here.",
-    "loadFailed": "The portal could not be loaded.",
+    "description": "The referrals {firm} sends you, and where each one stands. You only see what {firm} referred to you: nothing of its client base, nothing of other partners. The {hours}-business-hour first-contact SLA is the yardstick {firm} holds you to, and every accept and every status goes straight back to the lead's file at {firm}.",
+    "firmFallback": "the firm",
+    "loadFailed": "Your referrals could not be loaded.",
     "retry": "Try again",
-    "noPartner": "This login is not linked to a partner."
+    "noPartner": "This login is not linked to a partner.",
+    "kpis": {
+      "label": "Referral summary",
+      "novos": "New",
+      "andamento": "In progress",
+      "fechados": "Closed",
+      "estourado": "SLA breached"
+    },
+    "meetings": {
+      "title": "Upcoming meetings",
+      "empty": "No meeting booked. Book one from the referral's card, after the first contact."
+    },
+    "inbox": {
+      "label": "Referrals",
+      "emptyTitle": "No referrals yet",
+      "emptyText": "When {firm} refers a company to you, it shows up here."
+    },
+    "statuses": {
+      "enviado": "New",
+      "aceito": "Accepted",
+      "contato": "In contact",
+      "reuniao": "Meeting",
+      "proposta": "Proposal",
+      "fechado": "Closed",
+      "recusado": "Declined"
+    },
+    "actions": {
+      "aceito": "Accept",
+      "recusado": "Decline",
+      "contato": "Log first contact",
+      "reuniao": "Book meeting",
+      "proposta": "Send proposal",
+      "fechado": "Close contract"
+    },
+    "referral": {
+      "score": "{score}% fit",
+      "received": "Received {when}",
+      "contact": "Contact",
+      "phone": "Phone",
+      "email": "E-mail",
+      "viaFirm": "Through {firm}",
+      "contactAfterAccept": "The lead's contact appears once you accept.",
+      "covers": "In the diagnostic, for your specialty",
+      "meetingAt": "Meeting {when}",
+      "closedLine": "Contract of {value} in the 1st year · closed on {date}",
+      "declinedLine": "Declined on {date}. {firm} may refer another partner."
+    },
+    "sla": {
+      "ok": "First contact: {hours} of {target} business hours",
+      "atencao": "Attention: {hours} of {target} business hours without contact",
+      "estourado": "SLA breached: {hours} business hours without contact (target {target})",
+      "cumprido": "First contact in {hours} business hours · within the {target}-hour SLA",
+      "fora": "First contact in {hours} business hours · outside the {target}-hour SLA",
+      "encerrado": "Declined: no SLA"
+    },
+    "meeting": {
+      "title": "Book the meeting",
+      "lede": "When do you meet {company}? The meeting shows in your upcoming meetings and on the lead's file at Franco.",
+      "label": "Meeting date and time",
+      "cancel": "Cancel",
+      "confirm": "Book meeting"
+    },
+    "close": {
+      "title": "Close the contract",
+      "lede": "The first-year value of the contract with {company}. It is what Franco's statement reads.",
+      "label": "First-year contract value (R$)",
+      "cancel": "Cancel",
+      "confirm": "Close contract"
+    },
+    "referrals": {
+      "invalidTransition": "This referral has moved on meanwhile: your inbox was refreshed.",
+      "notFound": "This referral is no longer in your inbox.",
+      "meetingRequired": "Choose the meeting's date and time.",
+      "meetingInvalid": "Choose the meeting's date and time.",
+      "meetingInPast": "The meeting must be in the future.",
+      "dealValueRequired": "Enter the first-year contract value.",
+      "dealValueInvalid": "Enter a first-year contract value above zero."
+    }
   }
 }

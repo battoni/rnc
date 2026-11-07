@@ -1,11 +1,11 @@
 ---
-version: 1.0.0
+version: 1.1.0
 origin: rnc
 ---
 
 # RULES — Notification Module
 
-> For AI agents. rnc-1 F4, 07/11/2026.
+> For AI agents. rnc-1 F4, 07/11/2026; rnc-2 F3 (the partner's moves).
 
 The back office's bell (R17): `MNotificationBell` with the unread count, polled every 30 s
 (`NOTIFICATION_POLL_MS`, D5), a dropdown with one sentence per notification and mark-as-read (one
@@ -17,6 +17,9 @@ or all), through `useNotificationStore`.
   of its row), shown to whoever holds `notifications.read` — no feature import in a synced file.
 - **The API stores data, the SPA writes the sentence** (`notifications.kinds.<kind>`), meeting times
   in São Paulo (AM9).
+- **One kind, three lines** (rnc-2 R9): `referral_status` is read by kind AND status
+  (`referral_status_aceito`, `_recusado`, `_fechado` — title, sentence and icon); a closing says
+  its first-year value (`formatReal`).
 - **Granular updates**: mark-as-read replaces the one entry from the API's answer.
 
 ## Known Gaps

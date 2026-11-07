@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.2.0 — 2026-11-07
+
+### Added
+
+- The partner's progress on Franco's side (rnc-2 F3, R10, A8's Vitest half): `MLeadRouting` shows each referred partner's status, `MSlaChip` and "Fechado · R$ …" once closed; `TrailView` adds the status, the SLA chip and the first-year value. `Referral` and `PartnerMatch.referral` gain `ReferralProgress` (`status_at`, `sla`, `deal_value_cents`). Tested by `MLeadRouting.spec.ts` and `TrailView.view.integration.spec.ts`.
+
 ## 1.1.0 — 2026-11-07
 
 ### Added

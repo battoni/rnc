@@ -1,4 +1,5 @@
 import type { Partner, PartnerAccess, PartnerMatches, Referral } from '../interfaces';
+import { SLA_STATE } from '@PortalModule';
 
 /* What the API answers for the network (rnc-1 F6), as the specs need it. */
 const MATCHES_FIXTURE: PartnerMatches = {
@@ -23,7 +24,14 @@ const MATCHES_FIXTURE: PartnerMatches = {
     {
       covers: [],
       partner: { city: 'Barueri-SP', id: 3, name: 'NexoERP (exemplo)', specialty: 'erp_nfe' },
-      referral: { at: '2026-11-18T15:00:00-03:00', id: 40, status: 'enviado' },
+      referral: {
+        at: '2026-11-18T15:00:00-03:00',
+        deal_value_cents: null,
+        id: 40,
+        sla: { hours: 3, state: SLA_STATE.OK },
+        status: 'enviado',
+        status_at: null,
+      },
       score: 19,
     },
   ],
@@ -38,13 +46,16 @@ const REFERRAL_FIXTURE: Referral = {
     version: 1,
   },
   covers: [{ id: 'contratos', title: 'Contratos de longo prazo' }],
+  deal_value_cents: null,
   id: 51,
   lead: { company: 'Consultoria Prisma', id: 7 },
   message: 'A Franco indica a Consultoria Prisma.',
   partner: { active: true, id: 7, name: 'Margem Certa (exemplo)', specialty: 'precificacao_controladoria' },
   referred_by: { id: 3, name: 'Patrícia Gomes' },
   score: 92,
+  sla: { hours: 0, state: SLA_STATE.OK },
   status: 'enviado',
+  status_at: null,
 };
 
 const PARTNER_FIXTURE: Partner = {
