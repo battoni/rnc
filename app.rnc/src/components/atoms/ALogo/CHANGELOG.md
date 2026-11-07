@@ -3,6 +3,14 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 2.1.0 — 2026-11-07
+
+### Changed
+
+- `tone="brand"` paints `text-brand-word` instead of `text-primary-500`: on the dark scheme the navy
+  step sat on the near-black header at 1.6:1 and the public site opened without its mark. The theme's
+  `--color-primary-text` names the step that reads on each ground (rnc-1).
+
 ## 1.2.0 — 2026-09-06
 
 ### Changed

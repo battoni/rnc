@@ -144,7 +144,7 @@ function onSlugChange() {
             </p>
 
             <h1
-              class="motion-enter text-3xl leading-[1.05] font-bold tracking-tight text-balance sm:text-5xl"
+              class="motion-enter text-3xl leading-[1.05] font-semibold tracking-tight text-balance sm:text-5xl"
               style="--reveal-index: 1"
             >
               {{ page.title }}

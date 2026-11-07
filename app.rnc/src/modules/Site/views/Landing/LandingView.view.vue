@@ -107,8 +107,11 @@ function onSectorsSettled() {
           />
         </div>
 
+        <!-- 1.1fr/0.9fr, not 1.05/1: at 1440 the copy column was 537px, the two buttons wrapped onto two
+             rows and the countdown — the hook — landed at 779px, under a 749px fold. At 598px they share a
+             row and the lede loses a line; at 490px the card's rows still hold on one line. -->
         <div
-          class="relative mx-auto grid w-full max-w-6xl items-center gap-12 px-5 py-16 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:gap-16 lg:py-24"
+          class="relative mx-auto grid w-full max-w-6xl items-center gap-12 px-5 py-14 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-16 lg:py-20"
         >
           <div class="flex min-w-0 flex-col gap-6">
             <p
@@ -122,7 +125,8 @@ function onSectorsSettled() {
               {{ $t('site.landing.kicker') }}
             </p>
 
-            <h1 class="text-4xl leading-[1.05] font-bold tracking-tight text-balance sm:text-5xl lg:text-6xl">
+            <!-- Semibold, not bold: at 60px Space Grotesk's 700 reads as shouting; 600 is the demo's weight. -->
+            <h1 class="text-4xl leading-[1.05] font-semibold tracking-tight text-balance sm:text-5xl lg:text-6xl">
               <AWordRise
                 class="block"
                 :start-index="1"

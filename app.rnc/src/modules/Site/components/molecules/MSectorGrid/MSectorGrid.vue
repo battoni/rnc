@@ -19,7 +19,7 @@ defineProps<{
     >
       <RouterLink
         v-spotlight
-        class="group bg-panel shadow-lift hover:shadow-lift-lg focus-visible:outline-primary-500 motion-quick border-primary-300 flex h-full flex-col gap-3 rounded-lg border-l-4 p-5 transition hover:-translate-y-1 focus-visible:outline-2"
+        class="group bg-panel shadow-lift hover:shadow-lift-lg focus-visible:outline-primary-500 motion-quick ring-line/60 hover:ring-primary-300/70 flex h-full flex-col gap-3 rounded-lg p-5 ring-1 transition hover:-translate-y-1 focus-visible:outline-2"
         data-testid="sector-link"
         :data-sector="sector.slug"
         :to="{ name: SITE_ROUTE_NAMES.sector, params: { slug: sector.slug } }"

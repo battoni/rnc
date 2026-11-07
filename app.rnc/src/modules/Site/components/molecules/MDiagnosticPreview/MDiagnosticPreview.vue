@@ -26,14 +26,14 @@ const ROWS = [
   <div
     v-tilt="4"
     aria-hidden="true"
-    class="relative mx-auto w-full max-w-md pt-4 pb-10 lg:max-w-none"
+    class="relative mx-auto w-full max-w-md pt-4 pb-8 lg:max-w-none"
   >
     <div
       class="motion-enter"
       :style="{ '--reveal-index': enterIndex }"
     >
       <div class="motion-float">
-        <div class="bg-panel text-body shadow-lift-lg ring-line/60 flex flex-col gap-4 rounded-xl p-5 ring-1 sm:p-6">
+        <div class="bg-panel text-body shadow-lift-lg ring-line/60 flex flex-col gap-3 rounded-xl p-5 ring-1">
           <div
             class="motion-enter flex items-start justify-between gap-3"
             :style="{ '--reveal-index': enterIndex + 1 }"
@@ -79,7 +79,7 @@ const ROWS = [
           <ul class="divide-line flex flex-col divide-y">
             <li
               v-for="(row, index) in ROWS"
-              class="motion-enter flex items-start gap-3 py-3"
+              class="motion-enter flex items-start gap-3 py-2.5"
               :key="row.key"
               :style="{ '--reveal-index': enterIndex + 3 + index }"
             >
@@ -103,11 +103,11 @@ const ROWS = [
             class="motion-enter bg-panel-muted flex flex-wrap items-center justify-between gap-3 rounded-lg p-3 text-xs"
             :style="{ '--reveal-index': enterIndex + 6 }"
           >
-            <span class="text-muted">
+            <span class="text-muted min-w-0 flex-1">
               {{ $t('site.landing.preview.foot') }}
             </span>
 
-            <span class="bg-primary-500 text-primary-contrast rounded-md px-3 py-1.5 font-semibold">
+            <span class="bg-primary-500 text-primary-contrast shrink-0 rounded-md px-3 py-1.5 font-semibold">
               {{ $t('site.landing.preview.action') }}
             </span>
           </div>
