@@ -89,4 +89,5 @@ return [
     'POST repricing/mark' => 'staff',
     'POST clients/import' => 'staff',
     'GET clients/import/template' => 'staff',
+    'POST fiscal/imports' => 'staff',
 ];

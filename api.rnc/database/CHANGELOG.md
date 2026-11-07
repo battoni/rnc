@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.11.0 — 2026-11-07
+
+### Added
+
+- rnc-2 F6a: the Fiscal module's `nfe_imports` (one batch: who, how, files, stored, refused json, at UTC) and `nfe_documents` (one NF-e per client: unique `(firm_id, access_key, client_id)` — spec C1 — and an index on `(firm_id, client_id, direction, issued_at)`; `client_id` with no foreign key, W25) as new `create_*` migrations (`000015`, `000016`); `RoleSeeder` gives `ceo` `fiscal.import`. `.schema` dumped before and after `migrate` and diffed: the two new tables and their indexes, nothing else.
+
 ## 1.10.0 — 2026-11-07
 
 ### Changed

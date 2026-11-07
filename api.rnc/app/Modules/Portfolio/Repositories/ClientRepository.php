@@ -34,6 +34,18 @@ class ClientRepository
     }
 
     /**
+     * The firm's client ids by CNPJ (14 digits), for Fiscal's NF-e matching (rnc-2 R15, D6) — read
+     * only; a CNPJ that is not a client is absent from the answer.
+     *
+     * @param  list<string>  $cnpjs
+     * @return array<string, int>
+     */
+    public function findClientIdsByCnpjs(array $cnpjs): array
+    {
+        return Client::query()->whereIn('cnpj', $cnpjs)->pluck('id', 'cnpj')->map(fn ($id) => (int) $id)->all();
+    }
+
+    /**
      * Who marked a repricing, by id (reads Auth's `users`).
      *
      * @param  list<int>  $ids

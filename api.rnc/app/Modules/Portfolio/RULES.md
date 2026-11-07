@@ -1,5 +1,5 @@
 ---
-version: 1.0.0
+version: 1.1.0
 origin: rnc
 ---
 # RULES — Portfolio Module
@@ -60,6 +60,11 @@ fee — with the letter that proposes it and the batch mark. It owns `clients`.
   (Mt19937 seeded 2027); fees by band × regime ±10 % in R$ 900–9.000 (demo W27). Every CNPJ passes
   the check digits but is plainly not real: root `999` + the client's number on five digits, branch
   `9999` (`999.00NNN/9999-DD`). It is never looked up.
+
+## Read by other modules
+
+Fiscal (rnc-2 F6a) matches each NF-e to a client by CNPJ through `ClientRepository::findClientIdsByCnpjs`
+— read only; a change to `clients.cnpj` (14 digits, unique per firm) is a change for Fiscal too.
 
 ## Tables read from other modules
 
