@@ -2,7 +2,7 @@
 Stage: plan
 Updated: 07/11/2026
 ## Done
-Intent approved 07/11 · spec closed 07/11 (29 R · 27 A · 15 D) · plan approved 07/11 (F1–F9 with F3 split into F3a/F3b, after a clean-context Sonnet review — plan.md → Amendments AM1–AM14, Plan review). Nothing built yet. Branch `feature/rnc-3-reforma-hub-phase-3` starts from `feature/rnc-2-reforma-hub-phase-2` at its F1 (454b0c5); neither rnc-1 nor rnc-2 is on `main`.
+Intent approved 07/11 · spec closed 07/11 (29 R · 27 A · 15 D) · plan approved 07/11 (F1–F9 with F3 split into F3a/F3b, after a clean-context Sonnet review — plan.md → Amendments AM1–AM14, Plan review — and a Fable review, AM15–AM23). Nothing built yet. Branch `feature/rnc-3-reforma-hub-phase-3` starts from `feature/rnc-2-reforma-hub-phase-2` at its F1 (454b0c5); neither rnc-1 nor rnc-2 is on `main`.
 ## Next
 1. Read the W# list below and the spec's D1–D15 (every one taken while the owner was away).
 2. Build: `/loop /battoni-run rnc-3` — F1 Brands API first (read plan.md → "Carried up front", P0 merges rnc-2 before each phase), or attended `/battoni-start-session rnc-3` per phase.
@@ -40,6 +40,7 @@ Stop at: PR after verify · Reviewer: code-reviewer (Sonnet) · Chrome QA: on
 - W17 spec: the briefing's "meetings" tile counts the next 5 business days with today as the sub-line, and "new leads" 7 days with 24 h as the sub-line — the demo's numbers, where `battonidev-1` R22 said only "meetings today" (to reverse: the windows in `BriefingService`).
 - W18 spec: the daily 07:00 e-mail is included, business days only (D13; to reverse: unschedule `briefing:send`).
 - W19 plan: F6–F9 depend on rnc-2 being finished; F1–F5 depend only on rnc-1 + rnc-2's F1, so they go first, and every phase merges rnc-2's branch when it moved (P0; to reverse: build after rnc-2 lands, in spec order).
-- W20 plan: the high-risk Fable plan review (permissions, who sees what) → skipped: no `#fable` in this session; the clean-context Sonnet review ran, and the verify review covers the diff (to reverse: run `fable-reviewer` on spec + plan before F1).
+- W20 (retired, 07/11): "Fable plan review skipped" was wrong — the owner had granted `#fable`; `fable-reviewer` reviewed the plan (no AM1–AM14 judged wrong; W2, W4, W9/W10 confirmed) and its findings are plan.md → AM15–AM23.
 - W21 plan: the away settings, normally asked of the owner → stop at the PR after verify, `code-reviewer` on Sonnet, Chrome QA on — rnc-2's choices (to reverse: edit the block above before `/battoni-run`).
+- W23 plan: the Fable review's 9 findings → AM15–AM23 (Reinaldo sees no platform price, a re-import never downgrades a marked clause, exposure formula, stray-request guard from F1, note expiry counter and bell, partner sees a value range, stale brand fallback, red steps, D1 citation); to reverse each, see its AM.
 - W22 plan: the review's 29 findings → 14 amendments (AM1–AM14: the F3 split, the knowledge base under Equipe so specialists can review, exact tie/day-90/quartile/years rules, the global stray-request guard, schedule and clause tests) and the spec fixes they name; the "too many files" finding was rejected for every phase but F3, as rnc-2 did (to reverse: split F1, F4 or F6 the same way).

@@ -1,5 +1,5 @@
 # Spec: Franco Reforma Hub — Phase 3 (growth)
-Status: closed 07/11/2026 (decided by Claude in the owner's absence, every D# reversible) · ID: rnc-3 · Intent: approved 07/11/2026
+Status: closed 07/11/2026 (decided by Claude in the owner's absence, every D# reversible; amended by plan.md AM15–AM23) · ID: rnc-3 · Intent: approved 07/11/2026
 Proposal: none — the behaviour reference is the approved demo `battonidev-1`
 (`/Users/battoni/Work/battoni.dev/dev/demos/franco-reforma-hub/src/` — `views/carteira.js` 279–392
 (contracts), `store.js` 10–86 + `views/operator.js` 35–136 (Express/Prime), `views/operator.js`
@@ -26,9 +26,9 @@ other Rede Nacional de Contabilidade firms), not a video channel: no video host 
   Prime Contabilidade" with the demo's colours, taglines and proof points (D1).
 - R2. `GET public/firm` with header `X-Brand: <slug>` answers the brand's name, short name, tagline,
   colours and proof points over the firm's own address, phone, mailbox and hours; an unknown or
-  inactive slug is 404 `brands.notFound`; no header is the main brand. The SPA reads `?marca=<slug>`
+  inactive slug is 404 `brands.notFound` (on `POST public/events` it falls back to the main brand); no header is the main brand. The SPA reads `?marca=<slug>`
   once, keeps it for the tab (`sessionStorage`), sends `X-Brand` on every public call, and
-  `?marca=franco` clears it (D2).
+  `?marca=franco` clears it, and so does any 404 `brands.notFound` (D2).
 - R3. Under a brand everything the visitor sees re-themes: page titles, header, hero tagline, proof
   points, footer, colours (runtime CSS custom properties from primary/accent), the chat bubbles'
   name, the consent sentence ("…parceiros da Franco Express Contabilidade"), the confirmation
@@ -55,8 +55,10 @@ other Rede Nacional de Contabilidade firms), not a video channel: no video host 
   count per stage; one row per firm with the stepper, "R$ fee/mês", the share or "na ativação", and
   the advance button or the chip "Ativo". Share = `intdiv(fee_cents × share_bp + 5000, 10000)`
   (half-up). Every amount says "valor a conferir — sem cobrança automática" (D6).
-- R9. Reinaldo (`channel.read`) sees the same screen read-only at `/reinaldo/canal-rnc`: no add, no
-  edit, no advance. Neither screen says anything about how the platform's owners split the rest.
+- R9. Reinaldo (`channel.read`) sees the screen read-only at `/reinaldo/canal-rnc`: no add, no
+  edit, no advance, and no platform price — only his share per firm (R$ 525/mês), the stage and the
+  year total, with no "R$ 3.500" and no "pela plataforma" lede (the API omits `monthly_fee_cents` and
+  `share_bp` without `channel.manage`; `commercial.md:41`, the platform path is undecided). Neither screen says anything about how the platform's owners split the rest.
 
 **Reforma assistant**
 - R10. Knowledge base (`assistant_notes`, new Assistant module): question, answer, rule (the legal
@@ -68,7 +70,7 @@ other Rede Nacional de Contabilidade firms), not a video channel: no video host 
   returns it to rascunho (D7).
 - R11. Only a user holding `assistant.ask` with `is_specialist`, and not the note's last editor, marks
   a note revisada (403 `assistant.notReviewer`). A review is served while `reviewed_at` is at most 90 days old (day 90 still served); after that the note shows
-  "revisão vencida" and is not served until reviewed again (D8).
+  "revisão vencida" and is not served until reviewed again (D8). "Base da Reforma" counts "N notas vencem em 7 dias" (reviewed 83–90 days ago) and the reviewer's bell rings at day 83.
 - R12. Ask ("Assistente da Reforma", `/equipe/assistente`, `assistant.ask`: equipe, ceo):
   `POST assistant/ask` goes to the `ReformaAnswerer` contract, whose bound driver `curated` returns
   the best served note of the firm (reviewed and in date) by the demo matcher — lower-case, accents
@@ -99,7 +101,7 @@ other Rede Nacional de Contabilidade firms), not a video channel: no video host 
   `cnpj_cliente;tipo;valor_anual;inicio;fim;clausula_reforma`, read as the clients CSV is (labels or
   slugs, `1.200.000,00`, `;` or `,`, `sim`/`não` case- and accent-insensitive). A CNPJ that is no
   client, a year outside 2000–2100 or `fim` before `inicio` names its line; the same client + kind +
-  start + end updates the row; an empty clause is "não"; good lines are stored and bad lines
+  start + end updates the row; an empty clause is "não" on a new row, and on an update it keeps what is stored — a contract marked through "Cláusula incluída" is never downgraded by a re-import; good lines are stored and bad lines
   reported (a bad line never stops the others). The local seed gives the demo's 40 contracts.
 - R19. The alert lists the contracts ending in 2027 or later without the clause, ranked by exposure
   = annual value × years exposed (`min(end, 2033) − max(start, 2027) + 1`, floor 0), highest first,
@@ -115,8 +117,8 @@ other Rede Nacional de Contabilidade firms), not a video channel: no video host 
   disabled with the demo's reason and the API answers 422 `consent_required`. The referral goes
   through the client's portfolio lead (rnc-2 D13), carries `contract_id` and the demo's message, is
   one per contract and partner (409 `already_referred`), and the row shows "Com <parceiro>" (D11).
-- R21. In the partner portal a contract referral shows the contract summary (kind, annual value, end
-  year, "sem cláusula da Reforma") and Franco's contact as the way in; never the client's other
+- R21. In the partner portal a contract referral shows the contract summary (kind, end year,
+  "sem cláusula da Reforma" and a value range by fixed bands, never the exact annual value) and Franco's contact as the way in; never the client's other
   contracts, its fee or its other referrals.
 - R22. "Cláusula incluída" marks the contract `has_reforma_clause` (a `contrato.clausula` line on the
   client timeline with who and when) and it leaves the list.
@@ -181,8 +183,8 @@ Layers: `→ Pest`, `→ Vitest`, `→ E2E` (Playwright, API mocked), `→ Chrom
   give 525,01). → Pest (unit + feature)
 - A8 (R6, R7): each forward move succeeds and writes one event; skipping, going back and moving an
   ativo firm are 422 `channel.invalidTransition`; a firm of firm B is 404; ceo gets 403 on every
-  write and 200 on the read; equipe 403 on both. → Pest
-- A9 (R9): Reinaldo's screen renders the figures without any add, edit or advance control; the
+  write and 200 on the read, whose resource carries no `monthly_fee_cents`/`share_bp` (the operator's does); equipe 403 on both. → Pest
+- A9 (R9): Reinaldo's screen renders his share, the stage and the year total without any add, edit or advance control and without "R$ 3.500" or "pela plataforma"; the
   operator's has them; neither renders "Willy", "APW", "Battoni" or any split of the platform's
   share. → Vitest
 - A10 (R10, R11): editing a reviewed note's answer returns it to rascunho; a non-specialist and the
@@ -206,15 +208,15 @@ Layers: `→ Pest`, `→ Vitest`, `→ E2E` (Playwright, API mocked), `→ Chrom
 - A15 (R16): an unknown `assistant.driver` fails at boot; no file under `app/Modules/Assistant` uses
   `Http::`, Guzzle or a socket (a test greps the module). → Pest
 - A16 (R17, R18): a CSV with labels, slugs, `1.200.000,00`, `SIM`/`nao`/`Não` imports; an unknown
-  CNPJ, a year 1999 and `fim < inicio` name their lines; the same key twice updates one row. → Pest
+  CNPJ, a year 1999 and `fim < inicio` name their lines; the same key twice updates one row; a contract marked through `clause` and re-imported with an empty clause stays marked. → Pest
 - A17 (R19): fixtures — a contract ending 2026 and one with the clause are absent; one ending 2035
-  counts 7 years; the order is by exposure then id; the KPIs match by hand. → Pest
+  counts 7 years; 2028–2030 counts 3 and 2030–2033 counts 4; the order is by exposure then id; the KPIs match by hand. → Pest
 - A18 (R20): `GET contracts/legal-partners` lists the active advocacia partners before the
   precificação ones and is empty without them; a partner of another specialty is 422 `partner_not_legal`; a client without consent is
   422 `consent_required`; a second send to the same partner is 409; the referral sits on the
   client's portfolio lead with `contract_id` and the demo message; a Radar referral of the same client
   to the same partner does not block it, nor it the Radar one. → Pest
-- A19 (R21): the partner sees the contract summary and Franco's contact, no fee, no other contract;
+- A19 (R21): the partner sees the contract summary with a value range (no exact annual value) and Franco's contact, no fee, no other contract;
   partner B gets 404. → Pest
 - A20 (R22; R19–R22 UI): `POST contracts/{id}/clause` sets the clause, writes one `contrato.clausula`
   line with the user and drops the row from `GET contracts` (Pest); a row without consent has the
@@ -237,12 +239,13 @@ Layers: `→ Pest`, `→ Vitest`, `→ E2E` (Playwright, API mocked), `→ Chrom
   and 1440 px without a console error or sideways scroll; no "Willy" or "APW" anywhere; the walks
   — Express site to a lead, RNC advance, ask → hand-off → answer, contract → partner's portal, the
   briefing — pass. → Chrome
-- A27 (constraints): every Pest file touching HTTP calls `Http::preventStrayRequests()`; no LLM,
+- A27 (constraints): `tests/Pest.php` calls `Http::preventStrayRequests()` for every test (a test asserts the line exists); no LLM,
   embedding or video client exists; mail stays `log`. → Pest
+- A28 (R11): with `setTestNow`, a reviewed note 82 days old rings no bell, 83 days old rings one bell to its reviewer (not repeated by a second run), and the counter "notas vencem em 7 dias" counts the notes 83–90 days old. → Pest
 
 ## Decisions (taken by Claude on 07/11/2026, owner away; each says how to reverse)
 - D1 Express/Prime → brands of the one Franco firm (`firm_brands`), not firms: the demo's C4 says
-  they share Franco's data, network, address and mailbox, and a second firm would split the
+  they share Franco's data, network, address and mailbox (`operator.js:5,131`: "mesmos dados, mesma rede, mesmo endereço"); `commercial.md:13` speaks of "tenants", and sub-brands of one firm is still the decision because the sub-brands have no tenant of their own to manage, and a second firm would split the
   pipeline and need the operator's cross-firm access (Firm `RULES.md`: "Phase 3", still not built).
   Rejected: two `firms` rows with a parent. Reverse: a `parent_firm_id` and a data copy.
 - D2 Brand on the public site → `?marca=` kept per tab and an `X-Brand` header, because locally

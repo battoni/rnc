@@ -1,7 +1,7 @@
 # Plan: Franco Reforma Hub — Phase 3 (growth)
 ID: rnc-3 · Spec: `specs/rnc-3-reforma-hub-phase-3/spec.md` (closed 07/11/2026)
 Approved: 07/11/2026 (Claude, owner away — `/battoni-run` mode, W# logged in `state.md`) ·
-reviewed by a clean-context Sonnet agent 07/11/2026 → Amendments AM1–AM14 and "Plan review" below
+reviewed by a clean-context Sonnet agent 07/11/2026 → Amendments AM1–AM14 and "Plan review" below, then by `fable-reviewer` → AM15–AM23
 
 Every phase: Pest tests red first for the API, then Vitest for the SPA, then code; then
 `E2E_PORT=5176 make pre-commit` green (Node 24; stop any `npm run dev` of this worktree first — the
@@ -41,7 +41,7 @@ in the spec header.
 - **P6 Safe parsing** — CSV through the clients CSV's reader (UTF-8, `;`/`,`, size cap, line cap,
   no formula evaluation); text inputs length-capped in the FormRequest; the matcher works on a
   normalised copy, never a regex built from user text.
-- **P7 HTTP** — `Http::preventStrayRequests()` in every Pest file touching HTTP.
+- **P7 HTTP** — `Http::preventStrayRequests()` once, in `tests/Pest.php`, from F1 (AM18); F1's builder fixes any inherited test that reaches real HTTP.
 - **P8 Errors** — a refusal the SPA branches on has a stable `code`; another firm's row is 404, a
   missing key 403; the SPA branches on `code`, never on the sentence.
 - **P9 SPA** — the rnc-1/rnc-2 SPA pitfalls (components registered in `global.components`, `Select`
@@ -67,7 +67,7 @@ in the spec header.
   short_name 40, tagline 160, brand_primary, brand_accent, proof json — exactly 4 `{value ≤ 20,
   label ≤ 60}`, active, timestamps), `Models/FirmBrand.php` (`BelongsToFirm`),
   `Services/CurrentBrand.php` (scoped binding, null = main), `app/Http/Middleware/ResolveCurrentBrand.php`
-  (reads `X-Brand` under `CurrentFirm`, 404 `brands.notFound` for unknown/inactive; alias `brand`,
+  (reads `X-Brand` under `CurrentFirm`, 404 `brands.notFound` for unknown/inactive — except on `POST public/events`, where an unknown or inactive slug falls back to the main brand, so a stale tab never loses its analytics (AM21); alias `brand`,
   put on the public routes only), `PublicFirmResource` (changed: brand overrides name, logo text,
   colours, tagline, proof; address/phone/mailbox/hours stay the firm's), `Helpers/Contrast.php`
   (WCAG relative luminance, pure), `BrandService`, `BrandRepository`, `Requests/UpdateBrandRequest.php`
@@ -83,6 +83,9 @@ in the spec header.
   (address: the firm's mailbox).
 - Seed: `BrandSeeder` (new, local only — the demo's Express/Prime tokens, taglines, proof);
   `PipelineSeeder` (changed: ~10 % Express, ~10 % Prime leads).
+- AM22: red step for the `Pest.php` line (A27, asserted in F9): delete the line, watch the fail, restore; the same builder does it when F9 lands.
+- AM18: `tests/Pest.php` gains the global `beforeEach` calling `Http::preventStrayRequests()` in this phase; run the whole Pest suite, and fix every inherited test that hits real HTTP (fake it) before the commit. F9 keeps only A27's assertion that the line exists.
+- AM21: `PublicBrandTest.php` also covers `POST public/events` with an unknown and an inactive slug → 200 on the main brand.
 - Tests first: `tests/Unit/Modules/Firm/ContrastTest.php`, `tests/Feature/Firm/PublicBrandTest.php`
   (A1, incl. firm B's slug 404), `tests/Feature/Firm/BrandAdminTest.php` (A5),
   `tests/Feature/Diagnostic/BrandLeadTest.php` (A3, `Mail::fake`), `tests/Feature/Pipeline/BrandFilterTest.php`
@@ -95,7 +98,7 @@ in the spec header.
   consent sentence and that no other firm's name (the firm list of the seed, plus "Alvorada") renders;
   AM12: "Ver como" is disabled "Inativa" for an inactive brand.
 - Site module: `usePublicFirm.ts` (changed: `?marca=` → `sessionStorage` `app.rnc:brand`, sends
-  `X-Brand` on public calls through one helper, `franco` clears, a 404 clears and reloads the main);
+  `X-Brand` on public calls through one helper, `franco` clears, any 404 with code `brands.notFound` clears the stored brand and reloads the main (AM21));
   `ThePublicLayout` (changed: CSS custom properties from primary/accent on the layout root, title,
   footer, preview banner when `previa=1`); hero/proof components and the consent sentence read the
   brand; Phase 2's chat bubble name ("Recepção <short>") if present after P0.
@@ -105,7 +108,7 @@ in the spec header.
   (`window.open` of the preview URL); services `getBrands`, `updateBrand`, `toggleBrand`; rail child
   "Marcas" under Operador.
 - Pipeline (changed): `MLeadCard` + `LeadView` brand chip; board filter "Marca".
-- Tests first: `usePublicFirm.spec.ts` (keeps, clears, 404), `ThePublicLayout.spec.ts` (A2: CSS
+- Tests first: `usePublicFirm.spec.ts` (keeps, clears, any 404 `brands.notFound` clears the stored brand), `ThePublicLayout.spec.ts` (A2: CSS
   properties, title, banner only with `previa`), `BrandsView.spec.ts` + `MAddEditBrandForm.spec.ts`
   (A6, contrast refusal shown by `code`), `MLeadCard.spec.ts` (changed, A4), `navItems.local.spec.ts`
   (changed); E2E `e2e/site/brands.spec.ts` (A2 reload and clear, A6 banner).
@@ -123,17 +126,18 @@ in the spec header.
   in a transaction writing the event), repository, requests, resource, `ChannelController`:
   `GET channel` (`channel.read`), `POST channel/firms`, `PATCH channel/firms/{id}`,
   `POST channel/firms/{id}/advance` (`channel.manage`). Grants: ceo `channel.read`.
+- F3a — AM15: `ChannelResource` omits `monthly_fee_cents` and `share_bp` unless the user holds `channel.manage`; without it a firm row carries its own `share_cents` (R$ 525/mês), stage and `stage_at`, and the summary only the share Σ, the per-year total and the counts (never the list price). Reason: `commercial.md:41`, the platform path is undecided and must be settled before Reinaldo sees it.
 - F3a — seed: `ChannelSeeder` (the demo's 6 firms "(exemplo)", 3 ativo, `stage_at` 5–90 days back).
 - F3b — SPA new module `Channel`: `ChannelView` (hero, stage counts, rows with the stepper and the share,
-  "valor a conferir — sem cobrança automática"; controls only with `channel.manage`),
+  "valor a conferir — sem cobrança automática"; controls only with `channel.manage`; AM15: without it the screen shows only each firm's share, the stage and the year total — no "R$ 3.500", no "pela plataforma" lede),
   `MAddEditChannelFirmForm`; routes `/operador/canal-rnc` (+ `/operator/rnc`) and
   `/reinaldo/canal-rnc` (+ `/ceo/rnc`), both `channel.read`; rail children under Operador and Reinaldo.
 - F3a tests first: `tests/Unit/Modules/Channel/ChannelShareTest.php` + `ChannelStageTest.php` (A7
   unit, A8 graph), `tests/Feature/Channel/ChannelTest.php` (A7 sums, A8 moves/events/403/404, fee and
-  share bounds 422 — AM9, seeded names all end "(exemplo)" — AM10); `Phase3AccessTest.php` rows;
+  share bounds 422 — AM9, seeded names all end "(exemplo)" — AM10, red step AM22: rename a seeded firm, watch it fail, restore; ceo's `GET channel` carries no `monthly_fee_cents`/`share_bp` key, operador's does — AM15); `Phase3AccessTest.php` rows;
   route classes. Done when: gate green; `curl POST channel/firms/{litoral}/advance` as battoni moves
   the hero R$ 1.575 → R$ 2.100/mês.
-- F3b tests first: `ChannelView.spec.ts` (A9 with and without `channel.manage`, and none of
+- F3b tests first: `ChannelView.spec.ts` (A9 with and without `channel.manage` — without it "R$ 3.500" and "pela plataforma" are absent — and none of
   "Willy", "APW", "Battoni", "divisão" rendered); E2E `e2e/channel/channel.spec.ts`. Done when: gate
   green; live, the operator advances a firm and Reinaldo's screen shows it without buttons.
 
@@ -162,20 +166,20 @@ in the spec header.
   `assistant.ask`, ceo `assistant.manage`.
 - Seed: `AssistantNoteSeeder` — the demo's 10 notes (`fiscal.js` 408–509) with `source_label`/`url`
   and `as_of` taken from `facts.md` §2 (each note's line cited in the seeder), reviewers the seeded
-  specialists (sp1 Mariana, sp2 Carlos, sp3 Juliana, sp4 Rafael), reviewed 27–31/10/2026,
+  specialists (sp1 Mariana, sp2 Carlos, sp3 Juliana, sp4 Rafael), `reviewed_at` relative to now (now − 1..5 days, so the seed is always inside the 90 days — AM19),
   `credito-simples` as rascunho (§2 "Unverified"); `last_edited_by` = reinaldo; two open
   `assistant_questions` (patricia → Mariana, patricia → Carlos) — AM2.
 - Tests first: `tests/Unit/Modules/Assistant/NoteMatcherTest.php` (A11),
   `tests/Feature/Assistant/AskTest.php` (A12, firm B notes), `NoteReviewTest.php` (A10 with
   `setTestNow` at day 90 and 91), `AssistantGapsTest.php` (A14's Pest half), `QuestionHandoffTest.php` (A13 hand-off + bell), `AssistantDriverTest.php` (A15: unknown
-  driver throws; a scan of `app/Modules/Assistant` finds no `Http::`, `Guzzle`, `curl_`, `fsockopen`);
+  driver throws; a scan of `app/Modules/Assistant` finds no `Http::`, `Guzzle`, `curl_`, `fsockopen` — AM22 red step: put an `Http::get` in a dummy driver, watch it fail, remove it);
   `Phase3AccessTest.php` rows; route classes.
 - Done when: gate green; `curl POST assistant/ask` as patricia with "quando começa a cobrança da
-  CBS" answers `cbs` with "revisado por Mariana Toledo em 30/10/2026"; "qual o melhor ERP" answers
+  CBS" answers `cbs` with "revisado por <seeded specialist> em <the seeded date>"; "qual o melhor ERP" answers
   `note: null`.
 
 **F5 Assistant screens** (R12–R15 UI, R14 API · completes A13, A14)
-- API (Assistant, changed): `GET assistant/questions` (own as specialist; all with
+- API (Assistant, changed): the notes list returns `expires_in_days` and a `expiring_count` (7 days); a daily `assistant:notify-expiring` (per firm, `forEachFirm`, scheduled 07:00 São Paulo) rings the note's reviewer at day 83 once (AM19); `GET assistant/questions` (own as specialist; all with
   `assistant.manage`), `POST assistant/questions/{id}/answer` (assigned specialist only, else 404;
   asker's bell), "Virar nota" = `POST assistant/notes` with `from_question`.
 - New SPA module `Assistant`: `AssistantView` at `/equipe/assistente` (+ `/team/assistant`: greeting,
@@ -184,10 +188,10 @@ in the spec header.
   `QuestionsView` at `/equipe/assistente/perguntas` (+ `/team/assistant/questions`: list, answer form,
   "Virar nota"); `KnowledgeView` at `/equipe/base-da-reforma` (+ `/team/knowledge`, `assistant.ask`; shown in the rail
   for `assistant.manage` or `is_specialist`; write/review/retire controls by the policy and key — AM4: notes with
-  status chips incl. "revisão vencida", `MAddEditNoteForm`, review/retire, "Perguntas sem nota");
+  status chips incl. "revisão vencida", `MAddEditNoteForm`, review/retire, "Perguntas sem nota", and the counter "N notas vencem em 7 dias" (revisada notes whose `reviewed_at` is 83–90 days old — AM19));
   rail: "Assistente da Reforma" under Equipe (`assistant.ask`), "Base da Reforma" under Equipe (AM4).
 - Tests first: Pest `tests/Feature/Assistant/QuestionAnswerTest.php` (A13 rest: answer bell, other
-  specialist 404, virar nota); `AssistantView.spec.ts`, `MAnswerCard.spec.ts`, `QuestionsView.spec.ts`,
+  specialist 404, virar nota); `tests/Feature/Assistant/NoteExpiryTest.php` (A28: day 82 no bell, day 83 one bell to the reviewer and not twice, counter 0 → 1); `AssistantView.spec.ts`, `MAnswerCard.spec.ts`, `QuestionsView.spec.ts`,
   `KnowledgeView.spec.ts` (A14 incl. gaps grouping shown); E2E `e2e/assistant/assistant.spec.ts`
   (ask → answer card; unknown → hand-off).
 - Done when: gate green; live, patricia asks an unknown question and hands it to Mariana, Mariana's
@@ -197,10 +201,10 @@ in the spec header.
 - Portfolio (changed): new `create_client_contracts_table` (firm_id, client_id, kind string,
   annual_value_cents, start_year, end_year, has_reforma_clause, clause_marked_at, clause_marked_by,
   unique (firm_id, client_id, kind, start_year, end_year)), `Enums/ContractKind.php`,
-  `Helpers/ContractExposure.php` (pure: years `min(end, 2033) − 2026`, floor 0; `LAST_YEAR`),
+  `Helpers/ContractExposure.php` (pure: years `min(end, 2033) − max(start, 2027) + 1`, floor 0, e.g. 2030–2033 = 4 years — AM17; `LAST_YEAR`),
   `Services/ContractCsvParser.php` (reuses the clients CSV reader; R18 line errors with codes
   `client_unknown`, `year_invalid`, `end_before_start`, `kind_invalid`, `clause_invalid`),
-  `ContractImportService`, `ContractService` (alert list + KPIs in fixed queries — P13; consent and
+  `ContractImportService` (AM16: on update it never downgrades `has_reforma_clause` once `clause_marked_at` is set — an empty clause column means keep, not "não"; on a row never marked, empty = não), `ContractService` (alert list + KPIs in fixed queries — P13; consent and
   "Com <parceiro>" joined, not per row; `markClause` → `ClientService::recordEvent('contrato.clausula')`),
   `ContractController`: `GET contracts`, `POST contracts/import`, `GET contracts/template`,
   `POST contracts/{id}/clause` (`contracts.manage`, import throttled `throttle:10,1,contracts-import`).
@@ -211,18 +215,18 @@ in the spec header.
   `partner_not_legal`; client consent else 422 `consent_required`; `findOrStartPortfolioLead`; the
   demo message; 409 `already_referred`; `ReferralSent` with Franco's contact);
   `POST contracts/{id}/referrals` (`contracts.manage`); `GET contracts/legal-partners`;
-  `PortalReferralResource` (changed: `contract {kind, annual_value_cents, end_year}` for a contract
-  referral, nothing else of the client). Grants: ceo `contracts.manage`.
+  `PortalReferralResource` (changed, AM20: `contract {kind, end_year, sem_clausula, value_range}` for a contract
+  referral — a range label such as "R$ 500 mil a 1 mi" by fixed bands, never the exact annual value; nothing else of the client). Step: write this confidentiality rule in the Partner module's `RULES.md` and bump its CHANGELOG. Grants: ceo `contracts.manage`.
 - Seed: `ContractSeeder` (the demo's 40: kinds, R$ 40.000–1.200.000 a year, start 2022–2026, end
   2026–2033, 30 % with the clause; at least 5 at-risk ones on clients without consent).
 - Tests first: `tests/Unit/Modules/Portfolio/ContractExposureTest.php`,
-  `tests/Feature/Portfolio/ContractImportTest.php` (A16), `ContractAlertTest.php` (A17),
+  `tests/Feature/Portfolio/ContractImportTest.php` (A16, incl. AM16: a marked contract re-imported with an empty clause keeps it), `ContractAlertTest.php` (A17),
   `tests/Feature/Partner/ContractReferralTest.php` (A18 incl. the Radar-vs-contract non-collision),
-  `tests/Feature/Partner/PortalContractReferralTest.php` (A19), `ContractClauseTest.php` (A20's Pest
+  `tests/Feature/Partner/PortalContractReferralTest.php` (A19: the payload holds no exact `annual_value_cents`), `ContractClauseTest.php` (A20's Pest
   half — AM5); `Phase3AccessTest.php` rows; route
   classes.
 - Done when: gate green; `GET contracts` on the seed lists 20–30 at-risk rows in < 2 s (logged);
-  `curl` sends one to Andrade and `parceiro.1`'s `GET portal/referrals` shows its contract summary.
+  `curl` sends one to Andrade and `parceiro.1`'s `GET portal/referrals` shows its contract summary with a value range, not the exact value.
 
 **F7 Contracts screen** (R19–R22 UI, R21 UI · completes A20)
 - New SPA module `Contracts`: `ContractsView` at `/reinaldo/contratos` (+ `/ceo/contracts`: note with
@@ -257,8 +261,8 @@ in the spec header.
 **F9 Briefing screen and the closing sweeps** (R26 · proves A23, A27; completes A25)
 - API: `tests/Feature/Access/NoOutwardClientsTest.php` (A27: `composer.json` and `app/` carry no
   LLM, embedding or video SDK — `openai`, `anthropic`, `gemini`, `vimeo`, `youtube`, `mux` —;
-  `tests/Pest.php` calls `Http::preventStrayRequests()` in a global `beforeEach` (so a file reaching
-  HTTP without naming `Http::` is covered too — AM8) and the test asserts it, `config('mail.default')` is
+  `tests/Pest.php` calls `Http::preventStrayRequests()` in a global `beforeEach` since F1 (AM18; so a file reaching
+  HTTP without naming `Http::` is covered too — AM8) and this test only asserts the line exists, `config('mail.default')` is
   `log` under `.env.example`); `Phase3AccessTest.php` reviewed so every new route of F1–F8 has its
   parceiro, equipe and firm B line (A25 complete).
 - New SPA module `Briefing`: `BriefingView` at `/reinaldo/briefing` (+ `/ceo/briefing`; greeting by
@@ -312,6 +316,18 @@ Each AM is also written into its phase; where they disagree, the AM wins.
 - **AM12 Ver como inactive (F2; R5).** The button is disabled "Inativa" for an inactive brand.
 - **AM13 Brand filter by slug (F1; A4).** `brand=<slug|main>`, unknown 422.
 - **AM14 A25 per phase.** Every API phase's header names its A25 rows; F9 checks the whole file.
+
+## Amendments from the Fable plan review (07/11/2026) — each OVERRIDES the step it amends
+`fable-reviewer` (owner had granted `#fable`) judged no AM1–AM14 wrong. Each AM is also written into its phase, R# and A#; where they disagree, the AM wins.
+- **AM15 Channel price is not Reinaldo's (F3a, F3b; R9, A8, A9; high).** `ChannelResource` omits `monthly_fee_cents` and `share_bp` without `channel.manage`. Reinaldo's read-only screen shows only his share (R$ 525/mês per firm), the stage and the year total — no platform list price, no "pela plataforma" lede. A9 adds: without `channel.manage`, "R$ 3.500" and "pela plataforma" are not rendered; A8 covers the resource. Reason: `commercial.md:41`, the platform path is undecided and must be settled before showing it to Reinaldo.
+- **AM16 Import never downgrades a marked clause (F6; R18, A16; high).** On update, `ContractImportService` keeps `has_reforma_clause` when `clause_marked_at` is set (empty clause column = keep). A16 / `ContractImportTest` gets a case that fails on the old rule (empty = não).
+- **AM17 Exposure formula (F6; medium).** `Helpers/ContractExposure.php` uses `min(end, 2033) − max(start, 2027) + 1`, as AM7/R19/A17; 2030–2033 = 4 years.
+- **AM18 Stray-request guard from F1 (F1, F9; P7, A27; medium).** `Http::preventStrayRequests()` in `tests/Pest.php` moves to F1; F1's builder fixes any inherited test that hits real HTTP; F9 keeps only A27's assertion that the line exists.
+- **AM19 Notes expire visibly (F4, F5; R11, new A28; medium).** The F4 seed sets `reviewed_at` relative (now − 1..5 days). F5 adds the "N notas vencem em 7 dias" counter on the knowledge base and a bell to the reviewer at day 83. A28 (Pest): day 82 no bell, day 83 one bell (not repeated), the counter counts notes 83–90 days old.
+- **AM20 Partner sees a range (F6; R21, A19; medium).** `PortalReferralResource` sends contract type, end year, "sem cláusula" and a value range, never the exact annual value (client confidentiality); recorded in the Partner module's `RULES.md` in F6.
+- **AM21 Stale brand (F1, F2; R2; low).** `ResolveCurrentBrand`: on `POST public/events` an unknown or inactive slug falls back to the main brand; the SPA helper clears the stored brand on any 404 `brands.notFound`.
+- **AM22 Red steps for the guards (F1, F3a, F4, F6; low).** Per shared-conventions each guard is seen red once, written in the phase: A15 — add an `Http::get` in a dummy driver under `app/Modules/Assistant`, watch `AssistantDriverTest` fail, remove it; A27 — delete the `Pest.php` line, watch `NoOutwardClientsTest` fail, restore; AM10 — rename a seeded channel firm / note person / contract client, watch the seed-hygiene assertion fail, restore. The builder logs each in `state.md`.
+- **AM23 D1 is cited (spec D1; low).** D1 cites `commercial.md:13` ("tenants") and says why sub-brands of one firm still stands: `operator.js:5,131` — "mesmos dados, mesma rede, mesmo endereço".
 
 ## Defaults
 Sub-brand contrast 4,5:1 · RNC fee R$ 3.500/month, share 15 % · note validity 90 days, matcher
