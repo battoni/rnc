@@ -36,13 +36,15 @@ const props = defineProps<{
       </p>
     </div>
 
+    <!-- The items land one after the other under the summary, so the count reads first. -->
     <ul class="flex flex-col gap-3">
       <li
-        v-for="item in props.result.items"
-        class="bg-panel shadow-lift flex flex-col gap-3 rounded-lg p-4 sm:flex-row sm:items-center sm:gap-5 sm:p-5"
+        v-for="(item, index) in props.result.items"
+        class="motion-enter bg-panel shadow-lift flex flex-col gap-3 rounded-lg p-4 sm:flex-row sm:items-center sm:gap-5 sm:p-5"
         data-testid="result-item"
         :key="item.title"
         :data-kind="item.kind"
+        :style="{ '--reveal-index': index + 1 }"
       >
         <span
           :class="[

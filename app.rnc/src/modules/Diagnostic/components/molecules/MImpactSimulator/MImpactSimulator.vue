@@ -67,7 +67,7 @@ function share(rate: number): string {
     >
       <div class="border-line-strong grid h-56 grid-cols-8 items-end gap-0.5 border-b sm:gap-4">
         <div
-          v-for="year in props.simulation.years"
+          v-for="(year, index) in props.simulation.years"
           class="flex h-full min-w-0 flex-col items-center justify-end gap-1"
           data-testid="sim-year"
           :key="year.year"
@@ -77,9 +77,11 @@ function share(rate: number): string {
             {{ formatRate(year.total) }}
           </span>
 
+          <!-- The column wipes in sideways (`motion-wipe-x`), never up: its height is the number, and a
+               bar growing to it would show a false rate while it grows. -->
           <div
-            class="flex w-full max-w-12 flex-col-reverse overflow-hidden rounded-t-sm"
-            :style="{ height: share(year.total) }"
+            class="motion-wipe-x flex w-full max-w-12 flex-col-reverse overflow-hidden rounded-t-sm"
+            :style="{ '--reveal-index': index, height: share(year.total) }"
           >
             <span
               v-for="part in year.parts"

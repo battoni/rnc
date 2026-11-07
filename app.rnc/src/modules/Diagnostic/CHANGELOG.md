@@ -2,6 +2,15 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.2.0 — 2026-11-07
+
+### Changed
+
+- A step change crosses over (`<Transition name="step-fade" mode="out-in">`, keyed on step and path):
+  the old step fades on `quick`, the new one rises on `calm`. The result's items land one after the
+  other under the summary, the simulator's columns wipe in sideways (never up: the height is the
+  rate), the progress bar's fill moves on `calm` (rnc-1, the site's motion).
+
 ## 1.1.0 — 2026-11-07
 
 ### Added

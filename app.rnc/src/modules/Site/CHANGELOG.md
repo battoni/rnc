@@ -1,5 +1,33 @@
 # Changelog — Site Module
 
+## 1.3.1 — 2026-11-07
+
+### Changed
+
+- Second pass on the first impression (rnc-1): the hero grid is 1.1fr/0.9fr and `lg:py-20`, so at
+  1440×749 the two buttons share a row and the countdown's top sits above the fold (hero 934px →
+  808px, countdown top 795px → 685px); the headlines of the landing and the sector page are
+  semibold, not bold; the preview card is one density tighter (`p-5`, rows `py-2.5`) and its foot
+  keeps the text and the button on one row; the sector cards drop the cyan `border-l-4` for a 1px
+  ring that turns brand on hover — with the stripe they read as notices, like the news line.
+
+## 1.3.0 — 2026-11-07
+
+### Added
+
+- The motion after the demo (rnc-1): the hero assembles on mount (kicker, headline word by word via
+  the new `AWordRise` atom, lede, buttons, countdown, then the picture of the product, which floats,
+  leans toward the pointer and rolls its count); the proof figures roll up (`v-count-up`); every
+  band below the fold rises into view (`v-reveal`, staggered cards); the "o que muda" and sector
+  cards lift and carry a spotlight; the timeline bars thicken in. The sector page's hero and facts
+  land in sequence and its facts read as a timeline on a phone. `AWordRise.spec.ts`.
+
+### Changed
+
+- `MDiagnosticPreview` takes `enterIndex` (where the hero's words end) so the card follows the copy.
+- The navy bands carry a cyan glow and a faint dot grid; section headers an eyebrow rule; the
+  closing band a larger radius and relief. Hover on a CTA lifts it.
+
 ## 1.2.0 — 2026-11-07
 
 ### Changed

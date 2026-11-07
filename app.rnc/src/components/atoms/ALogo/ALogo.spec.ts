@@ -20,9 +20,12 @@ describe('ALogo', () => {
     expect(tile.text()).toBe('F');
   });
 
-  it('paints from the brand token, or inherits the parent colour', () => {
-    expect(mountWithPlugins(ALogo).classes()).toContain('text-primary-500');
-    expect(mountWithPlugins(ALogo, { props: { tone: 'inherit' } }).classes()).not.toContain('text-primary-500');
+  // `text-brand-word`, never a ramp step: `text-primary-500` was navy on the dark scheme's
+  // near-black header (1.6:1), and which step reads on a dark ground is the theme's call.
+  it('paints the brand as a word, or inherits the parent colour', () => {
+    expect(mountWithPlugins(ALogo).classes()).toContain('text-brand-word');
+    expect(mountWithPlugins(ALogo).classes()).not.toContain('text-primary-500');
+    expect(mountWithPlugins(ALogo, { props: { tone: 'inherit' } }).classes()).not.toContain('text-brand-word');
   });
 
   it('carries no image', () => {

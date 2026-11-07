@@ -3,6 +3,17 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 2.6.0 — 2026-11-07
+
+### Added
+
+- `--motion-stagger` (55ms, 0 under reduced motion): the interval between one sibling's entrance and
+  the next's — not a fifth duration, each sibling still takes `settle`. Read by
+  `styles/components/motion.css` through `--reveal-index` (rnc-1).
+- `text-brand-word`: the brand as a WORD on whatever ground the scheme gives it —
+  `--color-primary-text` where the theme declares it, `primary-500` otherwise. The first template
+  consumer of the token the preset already read; it replaces a `dark:` pair of ramp steps.
+
 ## 2.5.1 — 2026-09-22
 
 ### Changed

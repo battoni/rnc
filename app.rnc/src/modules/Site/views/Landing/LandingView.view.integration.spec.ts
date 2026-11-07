@@ -5,6 +5,7 @@ import Skeleton from 'primevue/skeleton';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { server } from '@/test/msw/server';
 import { renderWithPlugins } from '@/test/render';
+import AWordRise from '../../components/atoms/AWordRise/AWordRise.vue';
 import MCbsCountdown from '../../components/molecules/MCbsCountdown/MCbsCountdown.vue';
 import MReformaTimeline from '../../components/molecules/MReformaTimeline/MReformaTimeline.vue';
 import MSectorGrid from '../../components/molecules/MSectorGrid/MSectorGrid.vue';
@@ -29,7 +30,7 @@ const STUBS = {
 
 function renderLanding() {
   return renderWithPlugins(LandingView, {
-    global: { components: { Button, MCbsCountdown, MReformaTimeline, MSectorGrid, Skeleton }, stubs: STUBS },
+    global: { components: { AWordRise, Button, MCbsCountdown, MReformaTimeline, MSectorGrid, Skeleton }, stubs: STUBS },
   });
 }
 

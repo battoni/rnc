@@ -1,5 +1,5 @@
 ---
-version: 1.2.0
+version: 1.3.1
 origin: rnc
 ---
 
@@ -50,6 +50,19 @@ No login. The CTA's destination `/diagnostico` is the Diagnostic module's (F3); 
   `text-heading` in the nav): the theme paints `.router-link-exact-active` with the rail's glowing
   bar, which on the site drew a bar beside the logo and every link to `/`.
 - **Prose is sans on this theme** (`franco.css`, W13), not battoni-dev's mono.
+- **The motion is the demo's feel, in the repo's grammar** (`src/directives/RULES.md`): what is on
+  screen at load enters on mount in CSS (`motion-enter`, `AWordRise`), what is below the fold waits
+  for `v-reveal`, and nothing is hidden unless the browser has confirmed it can show it again. The
+  words of the headline are split by `AWordRise`, which renders the spaces from script: written in a
+  template, the whitespace around `{{ ' ' }}` doubled and the `<h1>` no longer read as its sentence.
+  E2e asserts text and counts, never a frame of the motion; the one infinite animation (the hero
+  card's float) is ignored by the suite's "finite animations" wait.
+- **The hero keeps the countdown in the first screen.** The grid is 1.1fr/0.9fr so the copy column
+  holds both buttons on one row at 1440 (at 1.05/1 they wrapped and pushed the countdown 30px under
+  a 749px fold); the display headline is semibold — Space Grotesk's 700 at 60px reads as shouting,
+  and the demo's weight was 520. A card on the site carries a 1px `ring-line` and a shadow, never a
+  coloured left stripe: the stripe is the news line's, and a stripe on a sector card made it read as
+  a notice.
 
 ## Known Gaps
 
