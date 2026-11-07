@@ -1,4 +1,4 @@
-import type { LEAD_EVENT_TYPE, LEAD_STAGE, MOVE_VIA } from './enums';
+import type { LEAD_CHANNEL, LEAD_EVENT_TYPE, LEAD_STAGE, MOVE_VIA } from './enums';
 
 /** `LeadMeetingResource`: a lead's booked meeting, times in São Paulo with the offset. */
 interface LeadMeeting {
@@ -25,7 +25,7 @@ interface BoardBrandOption {
 /** `LeadCardResource`: one card on the board. */
 interface LeadCard {
   brand: LeadBrand | null;
-  channel: string;
+  channel: LEAD_CHANNEL;
   company: string | null;
   contact_name: string | null;
   created_at: string;
@@ -104,7 +104,7 @@ interface LeadProfile {
 /** `LeadDetailResource`: the lead detail (R19). */
 interface LeadDetail {
   brand: LeadBrand | null;
-  channel: string;
+  channel: LEAD_CHANNEL;
   cnpj: string | null;
   company: string | null;
   consent: LeadConsent | null;

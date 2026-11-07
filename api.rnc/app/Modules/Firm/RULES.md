@@ -1,5 +1,5 @@
 ---
-version: 1.2.1
+version: 1.3.1
 origin: rnc
 ---
 # RULES — Firm Module
@@ -59,6 +59,17 @@ firms records of the Channel module, with no tenant.
   grouped query whatever the number of brands; `PATCH brands/{id}`, `POST brands/{id}/activate|deactivate`.
 - **The lead's brand is the Lead module's** (`leads.brand_id`, no foreign key across modules); this
   module answers the board filter's slug → id (`BrandService::brandIdForFilter`, `main` → `Lead::MAIN_BRAND`).
+## The network's money model (rnc-2 F4, R11, D10)
+
+- **One model per firm**: `firms.partner_money_model` (`PartnerMoneyModel`: `comissao` · `assinatura`,
+  a string, no enum column — AM11), `partner_commission_rate_bp` (1000 = 10 %) and
+  `partner_monthly_fee_cents` (49000 = R$ 490), folded into the `create_firms` migration (D15); the
+  model's `$attributes` carry the same defaults so a firm just created reads them.
+- **`FirmSettingsService` is the only writer** of these columns, and writes the CURRENT firm only
+  (`CurrentFirm` — the signed-in person's, never `X-Firm`). Partner's `PATCH ledger/model` calls it;
+  Partner's `LedgerService` reads them through `CurrentFirm`. The rate and the fee have no write
+  path yet: they change in the seeder or the database (Known Gaps).
+- `PublicFirmResource` is an allow-list, so none of this reaches the public site.
 
 ## Intentional Decisions
 
@@ -74,6 +85,8 @@ firms records of the Channel module, with no tenant.
   one host. `express.franco…` hosts need a `host` column read by `ResolveCurrentBrand`.
 - **No brand is created or renamed through the API.** Express and Prime are `BrandSeeder` rows; a
   third brand is a seeder row until a screen asks for one.
+- **The commission rate and the monthly fee have no screen or endpoint** (rnc-2 F4): R11 asks only
+  for the model switch; a different rate or fee is a database edit until Franco asks for one.
 
 - **The first models on `BelongsToFirm` are F2's** `SectorPage`, `Visitor` and `TrackingEvent`; the
   scope itself is proven on a test-only table (`tests/Feature/Firm/FirmScopeTest.php`, A1). (This

@@ -12,6 +12,7 @@ use App\Modules\Diagnostic\Services\RulesEngine;
 use App\Modules\Firm\Models\Firm;
 use App\Modules\Firm\Models\FirmBrand;
 use App\Modules\Firm\Services\CurrentFirm;
+use App\Modules\Lead\Enums\LeadChannel;
 use App\Modules\Lead\Enums\LeadEventType;
 use App\Modules\Lead\Enums\LeadStage;
 use App\Modules\Lead\Enums\LeadStep;
@@ -110,6 +111,11 @@ class PipelineSeeder extends Seeder
 
     private const LINK_DAYS = 30;
 
+    /** One lead in eight came through the chat receptionist (~12 %, rnc-2 F5's demo weight). */
+    private const CHAT_EVERY = 8;
+
+    private const CHAT_OFFSET = 3;
+
     public function run(CurrentFirm $currentFirm, RulesEngine $rulesEngine): void
     {
         if (app()->environment('production')) {
@@ -186,7 +192,7 @@ class PipelineSeeder extends Seeder
             'phone' => $isVisitor || ! $hasPhone ? null : self::PHONE_PREFIX.str_pad((string) ($index + 1), 5, '0', STR_PAD_LEFT),
             'email' => $isVisitor || ! $hasEmail ? null : Str::slug($firstName).'@'.Str::slug($company).'.'.self::EMAIL_DOMAIN,
             'profile' => $profile,
-            'channel' => ConsentTerms::VIA_FORM,
+            'channel' => $this->channelOf($index)->value,
             'source' => self::SOURCES[$index % count(self::SOURCES)],
             'medium' => null,
             'brand_id' => $brand?->id,
@@ -216,7 +222,7 @@ class PipelineSeeder extends Seeder
 
         $consent = $index % 3 !== 2;
         $last = $at->addMinutes(2);
-        LeadConsent::query()->create(['lead_id' => $lead->id, 'text' => ConsentTerms::textFor($lead->brand?->name), 'version' => ConsentTerms::VERSION, 'given' => $consent, 'via' => ConsentTerms::VIA_FORM, 'given_at' => $last]);
+        LeadConsent::query()->create(['lead_id' => $lead->id, 'text' => ConsentTerms::textFor($lead->brand?->name), 'version' => ConsentTerms::VERSION, 'given' => $consent, 'via' => LeadChannel::from($lead->channel)->consentVia(), 'given_at' => $last]);
         $this->event($lead, LeadEventType::ContactCaptured, ['consent' => $consent], $last);
         $last = $last->addMinutes(3);
         $this->event($lead, LeadEventType::StepReached, ['step' => LeadStep::Perfil->value], $last);
@@ -352,6 +358,11 @@ class PipelineSeeder extends Seeder
         }
 
         return $slots;
+    }
+
+    private function channelOf(int $index): LeadChannel
+    {
+        return $index % self::CHAT_EVERY === self::CHAT_OFFSET ? LeadChannel::Chat : LeadChannel::Formulario;
     }
 
     private function lastStepOf(LeadStage $stage, int $index): LeadStep

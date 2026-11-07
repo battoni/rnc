@@ -1,11 +1,11 @@
 ---
-version: 1.1.0
+version: 1.3.0
 origin: rnc
 ---
 
 # RULES — Partner Module
 
-> For AI agents. rnc-1 F6, 07/11/2026.
+> For AI agents. rnc-1 F6, 07/11/2026; rnc-2 F1 (portal access), F3 (the partner's progress on the panel and the trail).
 
 ## Domain
 
@@ -13,7 +13,8 @@ Franco's network (R21–R23): the partner registry (`/reinaldo/parceiros`, route
 trail of every referral (`/reinaldo/trilha`, `referral-trail`), each with its `/ceo/…` twin, and the
 routing panel `MLeadRouting` the Pipeline's lead detail mounts under the diagnostic. The API is
 `GET/POST partners`, `PATCH partners/{id}`, `GET partners/options`, `GET leads/{id}/partner-matches`,
-`POST leads/{id}/referrals`, `GET referrals` (api `Partner` module).
+`POST leads/{id}/referrals`, `GET referrals` (api `Partner` module). From rnc-2 F4 also the network
+ledger (`/reinaldo/extrato`, `network-ledger`, `ledger.read`): `GET ledger`, `PATCH ledger/model`.
 
 ## Intentional Decisions
 
@@ -47,7 +48,23 @@ routing panel `MLeadRouting` the Pipeline's lead detail mounts under the diagnos
   Refusals are read by `code` (`PARTNER_ACCESS_ERROR_KEYS`), like the routing form's. Revoke is
   reversible (create again), so no confirm popup.
 
+- **The partner's progress, read-only (rnc-2 R10)**: the routing panel and the trail show each
+  referral's status, the shared `MSlaChip` (Portal's — the partner and Franco read the same
+  words) and, once `fechado`, the first-year value ("Fechado · R$ …"; the trail's "Contrato no 1º
+  ano"). The API sends `status_at`, `sla` and `deal_value_cents` (`null` until closed) on both
+  answers; Franco never moves a status — only the partner does, from its portal.
+
+- **The network ledger (rnc-2 R11, D10)**: every partner's month, the total under the network's
+  model and the other model's — Franco's comparison, never the partner's. The switch is two
+  buttons with `aria-pressed` in a labelled group, offered only with `partners.manage`; a switch
+  PATCHes then reads the month again, so both totals come from the API, never from SPA maths.
+  Without the key the model is only named. The month is Portal's `useLedgerMonth` (Partner may read
+  Portal; Portal never reads Partner).
+
 ## Known Gaps
 
-- **The status still stays `enviado`** until the portal's transitions (rnc-2 F2–F3); the trail shows it as sent.
+- ~~The status still stays `enviado` until the portal's transitions~~ — retired in rnc-2 F3: the
+  partner moves it from `/parceiro` and the panel and the trail show where it stands.
+- **The panel's status is as of its load**: it does not poll; the bell (30 s) says when a partner
+  moved something, and reopening the lead shows it.
 - **The trail has no date range** — newest first and by partner only.

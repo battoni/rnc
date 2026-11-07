@@ -19,6 +19,22 @@ class ClientRepository
             ->get();
     }
 
+    /**
+     * The firm's clients of some regimes, by id — Fiscal's readiness and supplier-credit lists
+     * (rnc-2 R18, R21: Presumido and Real), read only. One query whatever the portfolio's size.
+     *
+     * @param  list<string>  $regimes
+     * @return Collection<int, Client>
+     */
+    public function findClientsByRegimes(array $regimes, ?string $sector = null): Collection
+    {
+        return Client::query()
+            ->whereIn('regime', $regimes)
+            ->when($sector, fn ($query) => $query->where('sector', $sector))
+            ->orderBy('id')
+            ->get();
+    }
+
     public function findClientById(int $id): ?Client
     {
         return Client::query()->find($id);
@@ -31,6 +47,18 @@ class ClientRepository
     public function findClientsByIds(array $ids): Collection
     {
         return Client::query()->whereIn('id', $ids)->orderBy('name')->get();
+    }
+
+    /**
+     * The firm's client ids by CNPJ (14 digits), for Fiscal's NF-e matching (rnc-2 R15, D6) — read
+     * only; a CNPJ that is not a client is absent from the answer.
+     *
+     * @param  list<string>  $cnpjs
+     * @return array<string, int>
+     */
+    public function findClientIdsByCnpjs(array $cnpjs): array
+    {
+        return Client::query()->whereIn('cnpj', $cnpjs)->pluck('id', 'cnpj')->map(fn ($id) => (int) $id)->all();
     }
 
     /**

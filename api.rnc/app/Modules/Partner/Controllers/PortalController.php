@@ -5,11 +5,16 @@ namespace App\Modules\Partner\Controllers;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Modules\Partner\DTOs\LedgerMonthDTO;
 use App\Modules\Partner\DTOs\TransitionReferralDTO;
+use App\Modules\Partner\Models\Partner;
+use App\Modules\Partner\Requests\LedgerMonthRequest;
 use App\Modules\Partner\Requests\TransitionReferralRequest;
+use App\Modules\Partner\Resources\PartnerStatementResource;
 use App\Modules\Partner\Resources\PortalMeResource;
 use App\Modules\Partner\Resources\PortalReferralResource;
 use App\Modules\Partner\Services\CurrentPartner;
+use App\Modules\Partner\Services\LedgerService;
 use App\Modules\Partner\Services\PortalReferralService;
 use Illuminate\Http\JsonResponse;
 
@@ -25,6 +30,7 @@ class PortalController extends Controller
     public function __construct(
         private CurrentPartner $currentPartner,
         private PortalReferralService $portalReferralService,
+        private LedgerService $ledgerService,
     ) {}
 
     public function me(): JsonResponse
@@ -51,5 +57,15 @@ class PortalController extends Controller
         $referral = $this->portalReferralService->transition($id, TransitionReferralDTO::from($request->validated()), $person);
 
         return ! $referral ? ApiResponse::notFound(message: self::NOT_FOUND) : ApiResponse::success(data: new PortalReferralResource($referral));
+    }
+
+    /** The partner's own month (R11): its lines under the firm's model, never the other model's. */
+    public function statement(LedgerMonthRequest $request): JsonResponse
+    {
+        /** @var Partner $partner the `portal` alias set it */
+        $partner = $this->currentPartner->get();
+        $month = LedgerMonthDTO::from($request)->month ?? LedgerService::currentMonth();
+
+        return ApiResponse::success(data: new PartnerStatementResource($this->ledgerService->statementFor($partner, $month)));
     }
 }

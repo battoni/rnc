@@ -45,7 +45,9 @@
     "brands": "Marcas",
     "channel": "Canal RNC",
     "assistant": "Assistente da Reforma",
-    "knowledge": "Base da Reforma"
+    "knowledge": "Base da Reforma",
+    "ledger": "Extrato da rede",
+    "statement": "Extrato"
   },
   "rolesAndPermissions": {
     "groups": {
@@ -426,6 +428,70 @@
       "missingAction": "Fazer o diagnóstico",
       "seoTitle": "Relatório de Impacto da Reforma Tributária",
       "seoDescription": "O resultado do diagnóstico da Reforma Tributária, com o simulador 2026–2033."
+    },
+    "chat": {
+      "toggle": {
+        "label": "Como você quer responder",
+        "form": "Formulário",
+        "chat": "Conversar no chat"
+      },
+      "who": "Recepção Franco",
+      "note": "Cada resposta preenche o mesmo diagnóstico do formulário. Dá para trocar para o formulário no meio da conversa e voltar: nada se perde.",
+      "logLabel": "Conversa com a recepção da Franco",
+      "repliesLabel": "Respostas rápidas",
+      "send": "Enviar",
+      "typing": "A recepção está escrevendo…",
+      "greeting": "Olá! Sou a recepção virtual da Franco. Em 5 minutos eu mostro o que a Reforma Tributária muda na sua empresa e quanto isso pode valer.",
+      "resumed": "Vi que você já começou pelo formulário. Vamos continuar de onde parou.",
+      "advanced": "Vi que você avançou pelo formulário. Vamos continuar de onde parou.",
+      "notUnderstood": "Não entendi. Escolha uma das opções abaixo.",
+      "contactInvalid": "Não consegui ler esse contato. Pode mandar um e-mail completo ou um telefone com DDD?",
+      "asks": {
+        "path": "Para começar: você tem o CNPJ da empresa à mão?",
+        "cnpj": "Pode digitar o CNPJ. Eu consulto Receita Federal, Simples Nacional e CNAE e preencho o resto.",
+        "lookupRunning": "Consultando Receita · Simples · CNAE…",
+        "lookupFound": "Encontrei: {name}, {sector}, {regime}. Está certo?",
+        "lookupFoundNoRegime": "Encontrei: {name}, {sector}. Está certo? Depois eu pergunto o regime.",
+        "lookupUnavailable": "Não consegui consultar esse CNPJ agora. Sem problema: o questionário tem poucas perguntas e o resultado é o mesmo.",
+        "sector": "Em que setor a empresa atua?",
+        "regime": "E o regime tributário hoje?",
+        "company": "Para quem eu envio o resultado? Qual o nome da empresa?",
+        "name": "E o seu nome?",
+        "contact": "Qual o seu WhatsApp, telefone ou e-mail? Basta um. Seus dados ficam com a Franco e não são compartilhados sem a sua autorização.",
+        "consent": "Mais uma, opcional: quando o diagnóstico indicar, posso te apresentar a um especialista da rede da Franco? \"{text}\" O resultado vem do mesmo jeito.",
+        "b2b": "Quanto das suas vendas vai para outras empresas (B2B)? O resto é consumidor final.",
+        "band": "Qual a faixa de faturamento anual?",
+        "incentivos": "A empresa tem incentivos fiscais de ICMS?",
+        "exporta": "Última: exporta produtos ou serviços?"
+      },
+      "replies": {
+        "hasCnpj": "Tenho o CNPJ",
+        "noCnpj": "Não tenho o CNPJ",
+        "confirmCompany": "Sim, está certo",
+        "notThisCompany": "Não é essa empresa",
+        "useQuiz": "Usar o questionário",
+        "otherCnpj": "Tentar outro CNPJ",
+        "authorize": "Autorizo",
+        "decline": "Prefiro não",
+        "yes": "Sim",
+        "no": "Não"
+      },
+      "inputs": {
+        "cnpj": "CNPJ",
+        "cnpjPlaceholder": "CNPJ, com ou sem pontuação",
+        "company": "Empresa",
+        "companyPlaceholder": "Nome da empresa",
+        "name": "Seu nome",
+        "namePlaceholder": "Seu nome",
+        "contact": "Contato",
+        "contactPlaceholder": "WhatsApp, telefone ou e-mail",
+        "answer": "Sua resposta",
+        "answerPlaceholder": "Ou escreva a sua resposta"
+      },
+      "result": {
+        "specialist": "Um especialista da Franco explica cada item, sem custo. Escolha um horário:",
+        "simulator": "Ver o simulador 2026–2033 do meu caso"
+      }
     }
   },
   "notifications": {
@@ -440,14 +506,20 @@
       "meeting_booked": "{company} marcou reunião com {specialist} para {when}",
       "assistant_question": "{askedBy} encaminhou a você: “{question}”",
       "assistant_answer": "{answeredBy} respondeu: “{question}”",
-      "assistant_note_expiring": "Sua revisão de “{question}” vale até {expiresOn}."
+      "assistant_note_expiring": "Sua revisão de “{question}” vale até {expiresOn}.",
+      "referral_status_aceito": "{partner} aceitou a indicação de {company}",
+      "referral_status_recusado": "{partner} recusou a indicação de {company}",
+      "referral_status_fechado": "{partner} fechou contrato de {value} com {company}"
     },
     "kindTitles": {
       "new_lead": "Novo lead",
       "meeting_booked": "Reunião marcada",
       "assistant_question": "Pergunta para especialista",
       "assistant_answer": "Resposta do especialista",
-      "assistant_note_expiring": "Revisão vence em 7 dias"
+      "assistant_note_expiring": "Revisão vence em 7 dias",
+      "referral_status_aceito": "Parceiro aceitou",
+      "referral_status_recusado": "Parceiro recusou",
+      "referral_status_fechado": "Parceiro fechou contrato"
     },
     "unknownCompany": "Uma empresa"
   },
@@ -622,7 +694,13 @@
       "main": "Marca principal",
       "inactive": "{name} (inativa)"
     },
-    "brandChip": "Lead da {name}"
+    "brandChip": "Lead da {name}",
+    "channels": {
+      "formulario": "Formulário",
+      "chat": "Chat",
+      "carteira": "Carteira"
+    },
+    "channelLabel": "Canal: {channel}"
   },
   "partners": {
     "title": "Parceiros",
@@ -700,7 +778,8 @@
       "blocked": {
         "consent_missing": "Sem autorização: o lead ainda não respondeu ao pedido para ser apresentado a parceiros. Nenhum encaminhamento sai sem ela.",
         "consent_refused": "Sem autorização: o lead não autorizou ser apresentado a parceiros. Nenhum encaminhamento sai sem ela."
-      }
+      },
+      "closedValue": "Fechado · {value}"
     },
     "trail": {
       "title": "Trilha de encaminhamentos",
@@ -714,7 +793,8 @@
       "by": "por {name}",
       "loadFailed": "Não foi possível carregar a trilha.",
       "emptyTitle": "Nenhum encaminhamento ainda",
-      "emptyText": "Quando a equipe encaminhar um lead a um parceiro, ele aparece aqui com a autorização registrada."
+      "emptyText": "Quando a equipe encaminhar um lead a um parceiro, ele aparece aqui com a autorização registrada.",
+      "closedValue": "Contrato no 1º ano: {value}"
     },
     "portalAccess": "Acesso ao portal",
     "access": {
@@ -741,6 +821,38 @@
       "missing": "Este parceiro não tem acesso ativo.",
       "partnerInactive": "Reative o parceiro antes de dar um acesso a ele.",
       "active": "Portal ativo"
+    },
+    "ledger": {
+      "title": "Extrato da rede",
+      "lede": "O que cada parceiro deve à Franco no mês, no modelo da rede, e o que o outro modelo daria.",
+      "previousMonth": "Mês anterior",
+      "nextMonth": "Próximo mês",
+      "modelLabel": "Modelo de cobrança",
+      "models": {
+        "comissao": "Comissão por fechamento",
+        "assinatura": "Assinatura mensal"
+      },
+      "currentModel": "Modelo da rede: {model}",
+      "ruleCommission": "Regra: {rate}% do valor do contrato no 1º ano, por indicação fechada.",
+      "ruleSubscription": "Regra: {fee} por mês para cada parceiro com acesso ao portal; o fechamento não paga extra.",
+      "networkWide": "A troca vale para a rede inteira.",
+      "notice": "Valores a conferir — sem cobrança automática.",
+      "loadFailed": "Não foi possível carregar o extrato da rede.",
+      "switchFailed": "Não foi possível trocar o modelo. Tente de novo.",
+      "summaryLabel": "Resumo do mês",
+      "total": "Total devido no mês · {model}",
+      "other": "No outro modelo · {model}",
+      "dealsLabel": "Contratos fechados",
+      "dealTotal": "{total} no 1º ano",
+      "empty": "Nenhum parceiro cadastrado ainda.",
+      "partner": "Parceiro",
+      "deals": "Fechados",
+      "dealValue": "Contrato 1º ano",
+      "commission": "Comissão ({rate}%)",
+      "subscription": "Assinatura",
+      "due": "Devido",
+      "noAccess": "sem acesso",
+      "footerTotal": "Total da rede no mês"
     }
   },
   "metrics": {
@@ -796,7 +908,21 @@
       "conversion": "Visita → cliente"
     },
     "loadFailed": "Não foi possível carregar o funil agora.",
-    "retry": "Tentar de novo"
+    "retry": "Tentar de novo",
+    "byChannel": {
+      "title": "Por canal",
+      "lede": "Do início do diagnóstico em diante, pelo canal em que cada lead começou."
+    },
+    "channels": {
+      "formulario": "Formulário",
+      "chat": "Chat"
+    },
+    "columnsChannel": {
+      "channel": "Canal",
+      "inicio": "Início",
+      "resultado": "Resultado",
+      "bookingRate": "Início → agendou"
+    }
   },
   "repricing": {
     "title": "Reajuste de honorários",
@@ -947,10 +1073,109 @@
   "portal": {
     "title": "Portal do parceiro",
     "greeting": "Olá, {name}",
-    "description": "Este é o portal de parceiros da {firm}. Os encaminhamentos que ela enviar para vocês aparecem aqui.",
-    "loadFailed": "Não foi possível carregar o portal.",
+    "description": "Os encaminhamentos que a {firm} envia para vocês e onde cada um está. Vocês só enxergam o que a {firm} encaminhou: nada da carteira, nada dos outros parceiros. O SLA de {hours} horas úteis para o primeiro contato é a régua que a {firm} cobra, e cada aceite e cada status volta na hora para a ficha do lead na {firm}.",
+    "firmFallback": "a firma",
+    "loadFailed": "Não foi possível carregar os seus encaminhamentos.",
     "retry": "Tentar de novo",
-    "noPartner": "Este acesso não está ligado a um parceiro."
+    "noPartner": "Este acesso não está ligado a um parceiro.",
+    "kpis": {
+      "label": "Resumo das indicações",
+      "novos": "Novos",
+      "andamento": "Em andamento",
+      "fechados": "Fechados",
+      "estourado": "SLA estourado"
+    },
+    "meetings": {
+      "title": "Próximas reuniões",
+      "empty": "Nenhuma reunião marcada. Agende pelo cartão da indicação, depois do primeiro contato."
+    },
+    "inbox": {
+      "label": "Indicações",
+      "emptyTitle": "Nenhuma indicação ainda",
+      "emptyText": "Quando a {firm} indicar uma empresa para vocês, ela aparece aqui."
+    },
+    "statuses": {
+      "enviado": "Novo",
+      "aceito": "Aceito",
+      "contato": "Em contato",
+      "reuniao": "Reunião",
+      "proposta": "Proposta",
+      "fechado": "Fechado",
+      "recusado": "Recusado"
+    },
+    "actions": {
+      "aceito": "Aceitar",
+      "recusado": "Recusar",
+      "contato": "Registrar primeiro contato",
+      "reuniao": "Agendar reunião",
+      "proposta": "Enviar proposta",
+      "fechado": "Fechar contrato"
+    },
+    "referral": {
+      "score": "{score}% de aderência",
+      "received": "Recebido {when}",
+      "contact": "Contato",
+      "phone": "Telefone",
+      "email": "E-mail",
+      "viaFirm": "Pela {firm}",
+      "contactAfterAccept": "O contato do lead aparece depois que vocês aceitam.",
+      "covers": "No diagnóstico, para a sua especialidade",
+      "meetingAt": "Reunião {when}",
+      "closedLine": "Contrato de {value} no 1º ano · fechado em {date}",
+      "declinedLine": "Recusado em {date}. A {firm} pode indicar outro parceiro."
+    },
+    "sla": {
+      "ok": "Primeiro contato: {hours} de {target}h úteis",
+      "atencao": "Atenção: {hours} de {target}h úteis sem contato",
+      "estourado": "SLA estourado: {hours}h úteis sem contato (meta {target}h)",
+      "cumprido": "Primeiro contato em {hours}h úteis · dentro do SLA de {target}h",
+      "fora": "Primeiro contato em {hours}h úteis · fora do SLA de {target}h",
+      "encerrado": "Recusado: sem SLA"
+    },
+    "meeting": {
+      "title": "Agendar a reunião",
+      "lede": "Quando vocês se reúnem com a {company}? A reunião aparece nas suas próximas reuniões e na ficha do lead na Franco.",
+      "label": "Data e horário da reunião",
+      "cancel": "Cancelar",
+      "confirm": "Agendar reunião"
+    },
+    "close": {
+      "title": "Fechar o contrato",
+      "lede": "O valor do contrato com a {company} no primeiro ano. É o que o extrato da Franco lê.",
+      "label": "Valor do contrato no 1º ano (R$)",
+      "cancel": "Cancelar",
+      "confirm": "Fechar contrato"
+    },
+    "referrals": {
+      "invalidTransition": "Esta indicação andou nesse meio-tempo: a sua caixa foi atualizada.",
+      "notFound": "Esta indicação não está mais na sua caixa.",
+      "meetingRequired": "Escolha a data e o horário da reunião.",
+      "meetingInvalid": "Escolha a data e o horário da reunião.",
+      "meetingInPast": "A reunião precisa ser no futuro.",
+      "dealValueRequired": "Informe o valor do contrato no primeiro ano.",
+      "dealValueInvalid": "Informe um valor do contrato no primeiro ano acima de zero."
+    },
+    "statement": {
+      "title": "Extrato",
+      "heading": "Extrato com a {firm}",
+      "previousMonth": "Mês anterior",
+      "nextMonth": "Próximo mês",
+      "notice": "Valor a conferir — sem cobrança automática.",
+      "ruleCommission": "Regra: {rate}% do valor do contrato no 1º ano, por indicação fechada.",
+      "ruleSubscription": "Regra: {fee} por mês, com indicações ilimitadas; o fechamento não paga extra.",
+      "item": "Item",
+      "closedAt": "Fechado em",
+      "dealValue": "Contrato 1º ano",
+      "owed": "Devido à {firm}",
+      "subscriptionLine": "Assinatura mensal da rede",
+      "thisMonth": "no mês",
+      "included": "incluído",
+      "empty": "Nenhuma indicação fechada neste mês.",
+      "total": "Total devido à {firm}",
+      "deals": "Nenhum contrato fechado no mês. | 1 contrato fechado ({total} no 1º ano). | {n} contratos fechados ({total} no 1º ano).",
+      "loadFailed": "Não foi possível carregar o extrato.",
+      "open": "Ver o extrato do mês"
+    }
   },
   "brands": {
     "title": "Marcas",

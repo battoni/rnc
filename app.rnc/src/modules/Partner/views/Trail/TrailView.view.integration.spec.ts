@@ -5,12 +5,14 @@ import Skeleton from 'primevue/skeleton';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { server } from '@/test/msw/server';
 import { renderWithPlugins } from '@/test/render';
+import { MSlaChip, SLA_STATE } from '@PortalModule';
 import { REFERRAL_FIXTURE } from '../../test/fixtures';
 import TrailView from './TrailView.view.vue';
 
 /*
  * The trail (rnc-1 F6, R23): every referral, newest first — the lead, the partner, the consent as it
  * was given, who and when — and the filter by partner, which asks the API again from page 1.
+ * rnc-2 F3 (R10, A8): each row shows where the partner took it — status, SLA, the value once closed.
  */
 const requested: URL[] = [];
 
@@ -23,7 +25,11 @@ vi.mock('vue-router', async (importOriginal) => ({
 const OLDER = {
   ...REFERRAL_FIXTURE,
   at: '2026-11-18T15:00:00-03:00',
+  deal_value_cents: 1_200_000,
   id: 40,
+  sla: { hours: 30, state: SLA_STATE.FORA },
+  status: 'fechado',
+  status_at: '2026-11-20T15:00:00+00:00',
   lead: { company: 'Padaria Trigo Dourado', id: 2 },
   partner: { active: false, id: 3, name: 'NexoERP (exemplo)', specialty: 'erp_nfe' },
 };
@@ -31,7 +37,7 @@ const OLDER = {
 function renderTrail() {
   return renderWithPlugins(TrailView, {
     global: {
-      components: { Button, Skeleton },
+      components: { Button, MSlaChip, Skeleton },
       stubs: {
         OPaginator: { props: ['total'], template: '<div data-testid="paginator">{{ total }}</div>' },
         // PrimeVue's Select opens an overlay jsdom cannot drive: a native one with the same contract.
@@ -109,5 +115,18 @@ describe('TrailView', () => {
     renderTrail();
 
     expect(await screen.findByTestId('trail-empty')).toBeTruthy();
+  });
+
+  it("shows each referral's status and SLA, and the contract value once closed (A8, R10)", async () => {
+    renderTrail();
+
+    const rows = await screen.findAllByTestId('trail-row');
+
+    expect(within(rows[0]!).getByTestId('trail-status').textContent).toContain('Sent');
+    expect(within(rows[0]!).getByTestId('sla-chip').dataset.sla).toBe('ok');
+    expect(within(rows[0]!).queryByTestId('trail-value')).toBeNull();
+    expect(within(rows[1]!).getByTestId('trail-status').textContent).toContain('Closed');
+    expect(within(rows[1]!).getByTestId('sla-chip').dataset.sla).toBe('fora');
+    expect(within(rows[1]!).getByTestId('trail-value').textContent).toMatch(/R\$\s12\.000,00/);
   });
 });

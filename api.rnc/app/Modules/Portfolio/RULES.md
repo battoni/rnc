@@ -1,17 +1,20 @@
 ---
-version: 1.0.0
+version: 1.2.0
 origin: rnc
+based-on: 1.2.0
 ---
 # RULES — Portfolio Module
 
-> For AI agents. rnc-1 F8, 07/11/2026.
+> For AI agents. rnc-1 F8, 07/11/2026; rnc-2 F7 (the client's timeline), 07/11/2026.
 
 ## Domain
 
 The firm's client portfolio and Reinaldo's fee repricing (R25–R26): the companies Franco already
 serves, imported from a CSV (or seeded locally), each quoted by the same rules engine as the
 public diagnostic — how much new work the Reforma brings to that client, as a suggested new monthly
-fee — with the letter that proposes it and the batch mark. It owns `clients`.
+fee — with the letter that proposes it and the batch mark. It owns `clients` and, from rnc-2 F7,
+`client_events` — a client's timeline (D12): the team's "Registrar aviso" (`nfe.aviso`) and "Propor
+revisão" (`fornecedores.revisao`), each with who and when.
 
 ## The routes (`routes/api.local.php`)
 
@@ -23,6 +26,7 @@ fee — with the letter that proposes it and the batch mark. It owns `clients`.
 | `POST repricing/mark` | `repricing.manage` | `{client_ids}` → `{marked, clients: [row]}`; each client stores `{at, by, pct, suggested}` |
 | `POST clients/import` | `clients.import` | multipart `file` → `{created, updated, total}`; 422 with `code` (below) |
 | `GET clients/import/template` | `clients.import` | `modelo-clientes.csv`: a BOM and the header row |
+| `GET clients/{id}/events` | `fiscal.read` | the client's timeline, newest first: `[{id, client_id, type, data, at, user: {id, name} \| null}]`; 404 for another firm's or an unknown client. Behind Fiscal's key: the fiscal screens are the only ones that write it so far |
 
 ## Intentional Decisions
 
@@ -60,10 +64,25 @@ fee — with the letter that proposes it and the batch mark. It owns `clients`.
   (Mt19937 seeded 2027); fees by band × regime ±10 % in R$ 900–9.000 (demo W27). Every CNPJ passes
   the check digits but is plainly not real: root `999` + the client's number on five digits, branch
   `9999` (`999.00NNN/9999-DD`). It is never looked up.
+- **The timeline has ONE writer (rnc-2 F7, D12)**: `ClientService::recordEvent(Client, ClientEventType,
+  data, ?userId)` — Fiscal's notice and review call it, never an insert of their own (arcus "a module
+  never writes another's tables"). It stamps the client's own `firm_id` (not `BelongsToFirm`'s
+  `creating` event, silenced under `WithoutModelEvents`) and `at` in UTC — passed already in UTC,
+  because a class cast read back on the created model is the value SET, zone kept. `type` is a
+  `ClientEventType` value, a plain string column (AM11). A line is never edited or deleted; the same
+  line may be written twice (a second notice is a second warning).
+
+## Read by other modules
+
+Fiscal (rnc-2 F6a) matches each NF-e to a client by CNPJ through `ClientRepository::findClientIdsByCnpjs`
+— read only; a change to `clients.cnpj` (14 digits, unique per firm) is a change for Fiscal too.
+Fiscal (rnc-2 F7) lists the Presumido/Real clients through `ClientRepository::findClientsByRegimes`
+and reads and writes the timeline through `ClientService` (`recordEvent`, `clientIdsWithEvent`).
 
 ## Tables read from other modules
 
-`users` (the name of who marked, through `ClientRepository::findUserNamesByIds`); `firms` (the
+`users` (the name of who marked, through `ClientRepository::findUserNamesByIds`; who wrote a
+timeline line, through `ClientEvent::user`); `firms` (the
 letter's signature and contact, through `CurrentFirm`). Code reused: Diagnostic's `RulesEngine`,
 `DiagnosticProfileDTO` and its `Sector`/`Regime`/`RevenueBand` enums.
 

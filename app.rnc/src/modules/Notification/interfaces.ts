@@ -10,18 +10,25 @@ interface BellNotification {
   asked_by?: string;
   company?: string;
   created_at: string;
+  /** A partner's closing (`referral_status` at `fechado`): the first-year contract value. */
+  deal_value_cents?: number;
   expires_on?: string;
   /** A UUID: Laravel's notifications key. */
   id: string;
   kind: NOTIFICATION_KIND;
   lead_id?: number;
   note_id?: number;
+  /** `referral_status`: the partner that moved the referral. */
+  partner?: string;
   question?: string;
   question_id?: number;
   read_at: string | null;
+  referral_id?: number;
   sector?: string | null;
   specialist?: string;
   starts_at?: string;
+  /** `referral_status`: where the partner took it — aceito, recusado or fechado. */
+  status?: string;
 }
 
 /** `GET /api/notifications`. */

@@ -45,6 +45,7 @@ return [
     'GET portal/referrals' => 'portal',
     'GET portal/referrals/{id}' => 'portal',
     'POST portal/referrals/{id}/transition' => 'portal',
+    'GET portal/statement' => 'portal',
 
     // STAFF — the back office
     'GET auth/permission-groups' => 'staff',
@@ -79,6 +80,8 @@ return [
     'GET leads/{id}/partner-matches' => 'staff',
     'POST leads/{id}/referrals' => 'staff',
     'GET referrals' => 'staff',
+    'GET ledger' => 'staff',
+    'PATCH ledger/model' => 'staff',
     'GET metrics/funnel' => 'staff',
     'GET repricing' => 'staff',
     'GET repricing/{id}' => 'staff',
@@ -112,4 +115,12 @@ return [
     // STAFF — Phase 3 (rnc-3): F5 the questions' inbox and the answer, `assistant.ask` + the service
     'GET assistant/questions' => 'staff',
     'POST assistant/questions/{id}/answer' => 'staff',
+    'POST fiscal/imports' => 'staff',
+    'GET fiscal/imports' => 'staff',
+    'GET fiscal/readiness' => 'staff',
+    'GET fiscal/readiness/{id}' => 'staff',
+    'POST fiscal/readiness/{id}/notice' => 'staff',
+    'GET fiscal/supplier-credit' => 'staff',
+    'POST fiscal/supplier-credit/{id}/review' => 'staff',
+    'GET clients/{id}/events' => 'staff',
 ];

@@ -20,6 +20,9 @@ final class ConsentTerms
     /** The channel of an answer given in the diagnostic's form. */
     public const VIA_FORM = 'formulario';
 
+    /** The channel of an answer given to the chat receptionist (rnc-2 R14). */
+    public const VIA_CHAT = 'chat';
+
     private const BRAND_TEXT = 'Autorizo a %s a me apresentar a especialistas da Rede de Especialistas Franco quando o diagnóstico indicar.';
 
     /** @param  string|null  $brandName  the sub-brand's full name; null is the main brand */

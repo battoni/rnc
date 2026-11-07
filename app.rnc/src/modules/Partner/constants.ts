@@ -1,10 +1,13 @@
 import { PARTNER_SPECIALTY } from './enums';
 
 /** The screens this module owns, linked by name (celer-05): the rail links here. */
-const PARTNER_ROUTE_NAMES = { partners: 'partners', trail: 'referral-trail' } as const;
+const PARTNER_ROUTE_NAMES = { ledger: 'network-ledger', partners: 'partners', trail: 'referral-trail' } as const;
 
-/** The keys of the network (plan AM8): Reinaldo and the operator manage and read; the team routes. */
-const PARTNER_PERMISSIONS = { manage: 'partners.manage', trail: 'referrals.read' } as const;
+/**
+ * The keys of the network (plan AM8): Reinaldo and the operator manage and read; the team routes.
+ * The network ledger reads with `ledger.read`; its model switch is the registry's `partners.manage` (rnc-2 D14).
+ */
+const PARTNER_PERMISSIONS = { ledger: 'ledger.read', manage: 'partners.manage', trail: 'referrals.read' } as const;
 
 /** Every specialty, in the order the form offers them (facts.md §3). */
 const PARTNER_SPECIALTIES: PARTNER_SPECIALTY[] = Object.values(PARTNER_SPECIALTY);

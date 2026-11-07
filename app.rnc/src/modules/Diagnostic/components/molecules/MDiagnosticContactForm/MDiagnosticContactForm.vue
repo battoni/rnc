@@ -1,44 +1,26 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import type { DiagnosticContactPayload } from '../../../interfaces';
+import type { DiagnosticContactDraft } from '../../../interfaces';
 
 /*
  * The contact, asked right after step 1 (rnc-1 R11): the company, the person's name, one way to
  * reach them — WhatsApp/phone or e-mail — and the optional consent to be introduced to Franco's
  * partners, unticked until the visitor ticks it (AM12). The words of the consent are the API's, so
- * the text shown is the text stored.
+ * the text shown is the text stored. The fields are `useDiagnostic`'s contact draft, the one the
+ * chat receptionist fills too (rnc-2 R14): what was typed in either shows in the other.
  */
 const props = defineProps<{
-  company: string | null;
   consentText: string;
   errorKey: string | null;
   isSaving: boolean;
 }>();
 
-const emit = defineEmits<{ onSubmit: [contact: DiagnosticContactPayload] }>();
+const draft = defineModel<DiagnosticContactDraft>('draft', { required: true });
 
-const companyName = ref(props.company ?? '');
-const consent = ref(false);
-const email = ref('');
-const name = ref('');
-const phone = ref('');
-
-// HELPERS
-function orNull(value: string): string | null {
-  return value.trim() || null;
-}
+const emit = defineEmits<{ onSubmit: [] }>();
 
 // EVENTS
 function onSubmit() {
-  const CONTACT = {
-    company: companyName.value.trim(),
-    consent: consent.value,
-    email: orNull(email.value),
-    name: orNull(name.value),
-    phone: orNull(phone.value),
-  };
-
-  emit('onSubmit', CONTACT);
+  emit('onSubmit');
 }
 </script>
 
@@ -62,7 +44,7 @@ function onSubmit() {
       </label>
 
       <InputText
-        v-model="companyName"
+        v-model="draft.company"
         id="contact-company"
         autocomplete="organization"
         data-testid="contact-company"
@@ -78,7 +60,7 @@ function onSubmit() {
       </label>
 
       <InputText
-        v-model="name"
+        v-model="draft.name"
         id="contact-name"
         autocomplete="name"
         data-testid="contact-name"
@@ -95,7 +77,7 @@ function onSubmit() {
         </label>
 
         <InputText
-          v-model="phone"
+          v-model="draft.phone"
           id="contact-phone"
           autocomplete="tel"
           data-testid="contact-phone"
@@ -113,7 +95,7 @@ function onSubmit() {
         </label>
 
         <InputText
-          v-model="email"
+          v-model="draft.email"
           id="contact-email"
           autocomplete="email"
           data-testid="contact-email"
@@ -133,7 +115,7 @@ function onSubmit() {
       for="contact-consent"
     >
       <Checkbox
-        v-model="consent"
+        v-model="draft.consent"
         binary
         class="mt-0.5 shrink-0"
         input-id="contact-consent"

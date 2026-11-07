@@ -2,13 +2,13 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
-## 1.2.1 — 2026-11-07
+## 1.3.1 — 2026-11-07
 
 ### Added
 
 - `BrandService::all()` — the firm's sub-brands by name, inactive too, for the board's brand filter (rnc-3 F2).
 
-## 1.2.0 — 2026-11-07
+## 1.3.0 — 2026-11-07
 
 ### Added
 
@@ -18,6 +18,11 @@ All notable changes to this unit are documented here. Versioned with SemVer.
 
 - `PublicFirmResource` gains `brand`, `short_name`, `tagline` and `proof` (null for the main brand) and, under a sub-brand, its name, logo text and colours over the firm's own contact (`underBrand()`). `PublicFirmTest` updated.
 
+## 1.2.0 — 2026-11-07
+
+### Added
+
+- The network's money model (rnc-2 F4, R11, D10): `firms.partner_money_model` (default `comissao`), `partner_commission_rate_bp` (1000) and `partner_monthly_fee_cents` (49000), folded into `create_firms`; `PartnerMoneyModel` enum (`other()`), `Firm::partnerMoneyModel()`, `FirmRepository::updateFirm`, and `FirmSettingsService::updatePartnerMoneyModel` — the only writer, on the current firm. Tested by `tests/Feature/Partner/LedgerTest` (the switch moves only the signed-in person's firm, whatever `X-Firm` says).
 
 ## 1.1.0 — 2026-11-07
 

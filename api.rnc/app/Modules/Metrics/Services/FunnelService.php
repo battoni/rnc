@@ -4,6 +4,7 @@ namespace App\Modules\Metrics\Services;
 
 use App\Modules\Content\Models\SectorPage;
 use App\Modules\Content\Services\SectorPageService;
+use App\Modules\Lead\Enums\LeadChannel;
 use App\Modules\Metrics\Enums\FunnelStep;
 use App\Modules\Metrics\Repositories\FunnelRepository;
 use App\Modules\Tracking\Enums\TrafficSource;
@@ -16,7 +17,7 @@ use Carbon\CarbonImmutable;
  * timeline lines stand in for a lost beacon, and `cliente` is its lead moved there by the team.
  *
  * The visitor's source is its first touch (W15); its sector page is the page of its first visit in
- * the window when that is `/reforma/<slug>`.
+ * the window when that is `/reforma/<slug>`; its channel is the one its lead started in (rnc-2 R14).
  */
 class FunnelService
 {
@@ -28,20 +29,24 @@ class FunnelService
     /** The steps the source table shows. */
     private const SOURCE_STEPS = [FunnelStep::Visitas, FunnelStep::Cta, FunnelStep::Contato, FunnelStep::Agendou, FunnelStep::Cliente];
 
+    /** The steps the channel table shows: from "início diagnóstico" on, where a channel exists. */
+    private const CHANNEL_STEPS = [FunnelStep::Inicio, FunnelStep::Contato, FunnelStep::Resultado, FunnelStep::Agendou, FunnelStep::Cliente];
+
     public function __construct(
         private FunnelRepository $funnelRepository,
         private SectorPageService $sectorPageService,
     ) {}
 
     /**
-     * @return array{days: int, from: CarbonImmutable, to: CarbonImmutable, steps: list<array{key: string, count: int, drop_off: float|null}>, by_source: list<array<string, int|string>>, by_sector: list<array<string, int|string>>}
+     * @return array{days: int, from: CarbonImmutable, to: CarbonImmutable, steps: list<array{key: string, count: int, drop_off: float|null}>, by_source: list<array<string, int|string>>, by_sector: list<array<string, int|string>>, by_channel: list<array<string, int|string>>}
      */
     public function funnel(int $days): array
     {
         $to = CarbonImmutable::now();
         $from = $to->subDays($days);
         $entries = $this->entries($from, $to);
-        $depths = $this->depths(array_keys($entries), $from, $to);
+        $visitorsOfLead = $this->visitorsOfLead($from);
+        $depths = $this->depths(array_keys($entries), $this->reached($visitorsOfLead, $from, $to));
         $sources = $this->funnelRepository->findVisitorSourcesSince($from);
 
         return [
@@ -51,6 +56,7 @@ class FunnelService
             'steps' => $this->steps($depths),
             'by_source' => $this->bySource($depths, $sources),
             'by_sector' => $this->bySector($depths, $entries),
+            'by_channel' => $this->byChannel($depths, $this->channelsOf($visitorsOfLead)),
         ];
     }
 
@@ -74,11 +80,11 @@ class FunnelService
      * How far down the funnel each visitor went: 1 = a visit only, 7 = cliente.
      *
      * @param  list<int>  $visitorIds
+     * @param  array<string, array<int, true>>  $reached
      * @return array<int, int> visitor id → number of steps reached in a row
      */
-    private function depths(array $visitorIds, CarbonImmutable $from, CarbonImmutable $to): array
+    private function depths(array $visitorIds, array $reached): array
     {
-        $reached = $this->reached($from, $to);
         $depths = [];
 
         foreach ($visitorIds as $visitorId) {
@@ -99,11 +105,28 @@ class FunnelService
     }
 
     /**
+     * Which visitors each lead belongs to — by a beacon that carried its token or by its UUID.
+     *
+     * @return array<int, array<int, true>> lead id → visitor ids
+     */
+    private function visitorsOfLead(CarbonImmutable $from): array
+    {
+        $visitorsOfLead = [];
+
+        foreach ($this->funnelRepository->findLeadVisitorsSince($from) as $link) {
+            $visitorsOfLead[$link['lead_id']][$link['visitor_id']] = true;
+        }
+
+        return $visitorsOfLead;
+    }
+
+    /**
      * Every step after the visit, with the visitors who did it — by beacon or by their lead's line.
      *
+     * @param  array<int, array<int, true>>  $visitorsOfLead
      * @return array<string, array<int, true>> step → visitor ids
      */
-    private function reached(CarbonImmutable $from, CarbonImmutable $to): array
+    private function reached(array $visitorsOfLead, CarbonImmutable $from, CarbonImmutable $to): array
     {
         $byBeacon = [];
         $byLine = [];
@@ -122,12 +145,6 @@ class FunnelService
 
         foreach ($this->funnelRepository->findBeaconVisitorsBetween(array_keys($byBeacon), $from, $to) as $row) {
             $reached[$byBeacon[$row['type']]][$row['visitor_id']] = true;
-        }
-
-        $visitorsOfLead = [];
-
-        foreach ($this->funnelRepository->findLeadVisitorsSince($from) as $link) {
-            $visitorsOfLead[$link['lead_id']][$link['visitor_id']] = true;
         }
 
         foreach ($this->funnelRepository->findLeadLinesBetween(array_keys($byLine), $from, $to) as $line) {
@@ -188,6 +205,44 @@ class FunnelService
 
             return ['slug' => $page->slug, 'label' => $page->label, ...$this->columns($own, self::SECTOR_STEPS)];
         })->values()->all();
+    }
+
+    /**
+     * The visitor's channel is its lead's. A visitor with two leads (a restart after the first got a
+     * contact) counts under chat when either is a chat lead — it did talk to the receptionist.
+     *
+     * @param  array<int, array<int, true>>  $visitorsOfLead
+     * @return array<int, string> visitor id → channel
+     */
+    private function channelsOf(array $visitorsOfLead): array
+    {
+        $channels = [];
+
+        foreach ($this->funnelRepository->findLeadChannels(array_keys($visitorsOfLead)) as $leadId => $channel) {
+            foreach (array_keys($visitorsOfLead[$leadId]) as $visitorId) {
+                if (($channels[$visitorId] ?? null) !== LeadChannel::Chat->value) {
+                    $channels[$visitorId] = $channel;
+                }
+            }
+        }
+
+        return $channels;
+    }
+
+    /**
+     * The two public channels, always both, form first (rnc-2 R14).
+     *
+     * @param  array<int, int>  $depths
+     * @param  array<int, string>  $channels
+     * @return list<array<string, int|string>>
+     */
+    private function byChannel(array $depths, array $channels): array
+    {
+        return array_map(function (LeadChannel $channel) use ($depths, $channels) {
+            $own = array_filter($depths, fn (int $depth, int $visitorId) => ($channels[$visitorId] ?? null) === $channel->value, ARRAY_FILTER_USE_BOTH);
+
+            return ['channel' => $channel->value, ...$this->columns($own, self::CHANNEL_STEPS)];
+        }, LeadChannel::public());
     }
 
     /**

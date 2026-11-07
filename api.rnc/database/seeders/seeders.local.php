@@ -6,6 +6,7 @@ use Database\Seeders\ChannelSeeder;
 use Database\Seeders\ClientSeeder;
 use Database\Seeders\LocalUsersSeeder;
 use Database\Seeders\MetricsSeeder;
+use Database\Seeders\NfeSeeder;
 use Database\Seeders\PartnerSeeder;
 use Database\Seeders\PartnerUserSeeder;
 use Database\Seeders\PipelineSeeder;
@@ -64,3 +65,7 @@ $this->call(ChannelSeeder::class);
 // 1–5 days back by the four specialists, and two open questions — local only (refuses production),
 // after the people it names.
 $this->call(AssistantNoteSeeder::class);
+// The clients' NF-e (rnc-2 F6b): 90 days of invented XMLs for 40 Presumido/Real clients, imported
+// through `NfeImporter` — local only (refuses production and the Pest suite, AM7), after the
+// portfolio it reads. It first clears `storage/app/private/nfe/<firm id>/`.
+$this->call(NfeSeeder::class);

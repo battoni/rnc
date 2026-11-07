@@ -5,6 +5,7 @@ namespace App\Modules\Lead\Services;
 use App\Models\User;
 use App\Modules\Firm\Services\CurrentFirm;
 use App\Modules\Lead\DTOs\LeadContactDTO;
+use App\Modules\Lead\Enums\LeadChannel;
 use App\Modules\Lead\Enums\LeadEventType;
 use App\Modules\Lead\Enums\LeadStage;
 use App\Modules\Lead\Enums\LeadStep;
@@ -33,8 +34,6 @@ class LeadService
 
     private const REPORT_DAYS = 30;
 
-    private const FORM_CHANNEL = 'formulario';
-
     /** The answers a profile holds, all unanswered at the start. */
     private const EMPTY_PROFILE = ['sector' => null, 'regime' => null, 'band' => null, 'b2b' => null, 'incentivos' => false, 'exporta' => false];
 
@@ -48,12 +47,13 @@ class LeadService
      * Step 1: a `visitante` with no personal data (AM13), and its token. Null when the request has
      * no firm to create it in. A visitor who already has an open `visitante` (no contact yet, token
      * live) starts that one again — its path and answers reset, its token, first touch and timeline
-     * kept — so a restart or a loop on one browser does not pile empty cards on the board.
+     * kept — so a restart or a loop on one browser does not pile empty cards on the board. The
+     * channel is the new lead's only (rnc-2 R14): a reopened `visitante` keeps the one it began in.
      *
      * `brand_id` is the sub-brand the visitor is on (rnc-3 R4), written once here and never by a later
      * step — like `channel`. A visitor who starts again keeps the brand the lead was born under.
      *
-     * @param  array{path: string, visitor_uuid: string|null, source: string, medium: string|null, sector: string|null, brand_id: int|null}  $start
+     * @param  array{path: string, visitor_uuid: string|null, source: string, medium: string|null, sector: string|null, brand_id: int|null, channel: LeadChannel}  $start
      */
     public function startLead(array $start): ?Lead
     {
@@ -83,7 +83,7 @@ class LeadService
                 'last_step' => LeadStep::Empresa->value,
                 'path' => $start['path'],
                 'profile' => [...self::EMPTY_PROFILE, 'sector' => $start['sector']],
-                'channel' => self::FORM_CHANNEL,
+                'channel' => $start['channel']->value,
                 'source' => $start['source'],
                 'medium' => $start['medium'],
                 'brand_id' => $start['brand_id'],
@@ -131,7 +131,7 @@ class LeadService
 
     /**
      * The contact right after step 1 (R11): the lead becomes a `lead_parcial` and the consent
-     * answer is stored with the words read, the time and the channel — given or not (AM12). The
+     * answer is stored with the words read, the time and the lead's channel — given or not (AM12). The
      * first time a lead becomes a lead parcial the team's bell rings (R17, `NewLead`).
      */
     public function recordContact(Lead $lead, LeadContactDTO $contact): Lead
@@ -155,7 +155,7 @@ class LeadService
                 'text' => ConsentTerms::textFor($lead->brand?->name),
                 'version' => ConsentTerms::VERSION,
                 'given' => $contact->consent,
-                'via' => ConsentTerms::VIA_FORM,
+                'via' => LeadChannel::from($lead->channel)->consentVia(),
                 'given_at' => $now,
             ]);
 

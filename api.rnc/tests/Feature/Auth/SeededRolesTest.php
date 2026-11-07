@@ -20,7 +20,9 @@ uses(RefreshDatabase::class);
  *
  * The table is the plan review's AM8 (rnc-1, 07/11/2026): the team works the pipeline, Reinaldo
  * also runs the network, the numbers and the repricing, and the operator holds everything.
- * rnc-2 F1 adds `parceiro` (R1): the portal key and nothing else, and Reinaldo's `ledger.read`.
+ * rnc-2 F1 adds `parceiro` (R1): the portal key and nothing else, and Reinaldo's `ledger.read`;
+ * F6a gives Reinaldo `fiscal.import` (the NF-e upload, D14); F7 gives the team — and so Reinaldo —
+ * `fiscal.read` (NF-e readiness and supplier credit, D14).
  * rnc-3 F1 declares Phase 3's seven keys: the operator's only, until each phase grants its own.
  */
 
@@ -51,6 +53,7 @@ describe('the seeded roles', function () {
         expect(seededRoleKeys('equipe'))->toBe([
             'agenda.read',
             'assistant.ask',
+            'fiscal.read',
             'home.read',
             'leads.read',
             'leads.update',
@@ -65,6 +68,8 @@ describe('the seeded roles', function () {
             'assistant.manage',
             'channel.read',
             'clients.import',
+            'fiscal.import',
+            'fiscal.read',
             'home.read',
             'leads.read',
             'leads.update',

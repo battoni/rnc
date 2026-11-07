@@ -8,9 +8,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * The funnel (R24): the window, the seven steps with the drop-off from the step before, and the
- * tables by source and by sector page. Counts only — no visitor, no lead, no contact.
+ * tables by source, by sector page and by channel (rnc-2 R14). Counts only — no visitor, no lead, no contact.
  *
- * @property array{days: int, from: CarbonImmutable, to: CarbonImmutable, steps: list<array{key: string, count: int, drop_off: float|null}>, by_source: list<array<string, int|string>>, by_sector: list<array<string, int|string>>} $resource
+ * @property array{days: int, from: CarbonImmutable, to: CarbonImmutable, steps: list<array{key: string, count: int, drop_off: float|null}>, by_source: list<array<string, int|string>>, by_sector: list<array<string, int|string>>, by_channel: list<array<string, int|string>>} $resource
  */
 class FunnelResource extends JsonResource
 {
@@ -23,6 +23,7 @@ class FunnelResource extends JsonResource
             'steps' => $this->resource['steps'],
             'by_source' => $this->resource['by_source'],
             'by_sector' => $this->resource['by_sector'],
+            'by_channel' => $this->resource['by_channel'],
         ];
     }
 }

@@ -1,5 +1,5 @@
 ---
-version: 1.0.0
+version: 1.1.0
 origin: rnc
 ---
 
@@ -31,6 +31,9 @@ agendou → cliente) with the drop-off, a table by source and one by sector page
   the page never scrolls sideways at 390 px.
 - **Sources are labelled here** (`metrics.sources.*`, the four of W15); sector rows carry the API's
   label (the firm's own sector pages).
+
+- **"Por canal" starts at "início"** (rnc-2 R14): before the diagnostic starts a visitor has no
+  lead and so no channel; its last column is the share of the channel's starts that booked.
 
 ## Known Gaps
 

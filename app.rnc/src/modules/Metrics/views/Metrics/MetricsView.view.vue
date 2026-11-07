@@ -9,7 +9,7 @@ import { GetFunnelService } from '../../services';
 /*
  * Reinaldo's funnel (rnc-1 R24, the demo's `metricsView()`): where each visit comes from, where the
  * business owner gives up and which sector page sells — the seven steps with the drop-off, a table
- * by source and one by sector page, over the last 7 or 30 days. Each step counts only the visitors
+ * by source, one by sector page and one by channel (formulário · chat, rnc-2 R14), over the last 7 or 30 days. Each step counts only the visitors
  * who passed the one before (api `FunnelService`). Reinaldo and the operator only (`metrics.read`).
  */
 const { locale, t } = useI18n();
@@ -53,6 +53,26 @@ const sectorRows = computed(() =>
     label: row.label,
   }))
 );
+
+const channelRows = computed(() =>
+  (funnel.value?.by_channel ?? []).map((row) => ({
+    cells: [row.inicio, row.contato, row.resultado, row.agendou, row.cliente]
+      .map(formatCount)
+      .concat(formatShare(row.agendou, row.inicio)),
+    key: row.channel,
+    label: t(`metrics.channels.${row.channel}`),
+  }))
+);
+
+const channelHeaders = computed(() => [
+  t('metrics.columnsChannel.channel'),
+  t('metrics.columnsChannel.inicio'),
+  t('metrics.columns.contato'),
+  t('metrics.columnsChannel.resultado'),
+  t('metrics.columns.agendou'),
+  t('metrics.columns.cliente'),
+  t('metrics.columnsChannel.bookingRate'),
+]);
 
 const sourceHeaders = computed(() =>
   ['source', 'visitas', 'cta', 'contato', 'agendou', 'cliente', 'conversion'].map((key) => t(`metrics.columns.${key}`))
@@ -241,6 +261,21 @@ function onPeriod(value: number) {
             :caption="$t('metrics.bySector.title')"
             :headers="sectorHeaders"
             :rows="sectorRows"
+          />
+        </section>
+
+        <section class="bg-panel shadow-lift flex min-w-0 flex-col gap-4 rounded-lg p-5">
+          <div class="flex flex-col gap-1">
+            <h2 class="text-heading text-base font-semibold">{{ $t('metrics.byChannel.title') }}</h2>
+
+            <p class="text-muted text-sm">{{ $t('metrics.byChannel.lede') }}</p>
+          </div>
+
+          <MFunnelTable
+            testId="channel-row"
+            :caption="$t('metrics.byChannel.title')"
+            :headers="channelHeaders"
+            :rows="channelRows"
           />
         </section>
       </div>

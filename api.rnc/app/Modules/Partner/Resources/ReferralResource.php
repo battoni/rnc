@@ -2,14 +2,18 @@
 
 namespace App\Modules\Partner\Resources;
 
+use App\Modules\Partner\Enums\ReferralStatus;
 use App\Modules\Partner\Models\Referral;
+use App\Modules\Partner\Services\ReferralSla;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * One line of the trail (R23): the lead (by company), the partner, the consent as it was given
- * (text, version, when), who referred it, when, the message and the status. No contact data of the
- * lead: the trail is about the hand-off, not the person.
+ * (text, version, when), who referred it, when, the message and the status — and, since the partner
+ * moves it from its portal (rnc-2 R10), when it last moved, its first-contact SLA and, once closed,
+ * the first-year contract value (`null` before). No contact data of the lead: the trail is about
+ * the hand-off, not the person.
  *
  * @mixin Referral
  */
@@ -21,6 +25,9 @@ class ReferralResource extends JsonResource
             'id' => $this->id,
             'at' => $this->created_at->toIso8601String(),
             'status' => $this->status,
+            'status_at' => $this->status_at?->toImmutable()->utc()->toIso8601String(),
+            'sla' => app(ReferralSla::class)->of($this->resource),
+            'deal_value_cents' => $this->status === ReferralStatus::Fechado->value ? $this->deal_value_cents : null,
             'score' => $this->score,
             'covers' => $this->covers,
             'message' => $this->message,

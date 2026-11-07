@@ -1,4 +1,13 @@
 import type { ROUTING_BLOCK } from './enums';
+import type { LEDGER_MODEL, ReferralSla } from '@PortalModule';
+
+/** Where the partner has taken a referral since (rnc-2 R10): its move, its SLA, the value once closed. */
+interface ReferralProgress {
+  deal_value_cents: number | null;
+  sla: ReferralSla;
+  status: string;
+  status_at: string | null;
+}
 
 /** A partner's portal login (`PartnerAccessResource`, rnc-2 R2) — never with its password. */
 interface PartnerAccess {
@@ -65,7 +74,7 @@ interface CoveredItem {
 interface PartnerMatch {
   covers: CoveredItem[];
   partner: { city: string | null; id: number; name: string; specialty: string };
-  referral: { at: string; id: number; status: string } | null;
+  referral: (ReferralProgress & { at: string; id: number }) | null;
   score: number;
 }
 
@@ -83,7 +92,7 @@ interface ReferLeadPayload {
 }
 
 /** One line of the trail (`ReferralResource`). */
-interface Referral {
+interface Referral extends ReferralProgress {
   at: string;
   consent: { at: string; given: boolean; text: string; version: number };
   covers: CoveredItem[];
@@ -93,7 +102,6 @@ interface Referral {
   partner: { active: boolean; id: number; name: string; specialty: string };
   referred_by: { id: number; name: string };
   score: number;
-  status: string;
 }
 
 /** The lead's timeline line a referral wrote (the Pipeline's `LeadEventResource`). */
@@ -111,9 +119,40 @@ interface ReferralWritten {
   referral: Referral;
 }
 
+/** One partner's month on the network ledger: both models' figures and what it owes under the current one. */
+interface NetworkLedgerRow {
+  commission_cents: number;
+  deal_total_cents: number;
+  deals: number;
+  due_cents: number;
+  partner: { active: boolean; id: number; name: string; specialty: string };
+  subscribed: boolean;
+  subscription_cents: number;
+}
+
+/** The network's money model as it is now (`LedgerModelResource`): the model and both rules. */
+interface LedgerModelSettings {
+  commission_rate_bp: number;
+  model: LEDGER_MODEL;
+  monthly_fee_cents: number;
+}
+
+/** Franco's "Extrato da rede" (`NetworkStatementResource`, rnc-2 R11): every partner, the total and the other model's. */
+interface NetworkLedger extends LedgerModelSettings {
+  deal_total_cents: number;
+  deals: number;
+  month: string;
+  other: { model: LEDGER_MODEL; total_cents: number };
+  partners: NetworkLedgerRow[];
+  total_cents: number;
+}
+
 export type {
   CoveredItem,
   IssuedPartnerAccess,
+  LedgerModelSettings,
+  NetworkLedger,
+  NetworkLedgerRow,
   Partner,
   PartnerAccess,
   PartnerAccessPayload,
@@ -123,6 +162,7 @@ export type {
   PartnerPayload,
   ReferLeadPayload,
   Referral,
+  ReferralProgress,
   ReferralTimelineEvent,
   ReferralWritten,
   UpdatePartnerPayload,

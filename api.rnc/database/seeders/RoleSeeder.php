@@ -22,7 +22,9 @@ use Illuminate\Database\Seeder;
  *   `portal.access` too and is refused by the portal for lacking one.
  *
  * Phase 2's other keys are declared from rnc-2 F1 on (the operator holds them at once) and granted
- * to Reinaldo in their own phase: `ledger.read` now, `fiscal.*` and `radar.manage` with F6a–F9.
+ * to Reinaldo in their own phase: `ledger.read` with F4, `fiscal.import` with F6a (the NF-e upload),
+ * `fiscal.read` with F7 — to the team too, so Reinaldo inherits it (D14: NF-e readiness and supplier
+ * credit) — and `radar.manage` with F9.
  *
  * Phase 3's seven keys (rnc-3 F1, R28) are declared from rnc-3 F1 on — the operator holds them, and
  * `brands.manage` stays the operator's alone (D3); the channel, assistant, contracts and briefing
@@ -44,6 +46,7 @@ class RoleSeeder extends Seeder
         'agenda.read',
         'notifications.read',
         'assistant.ask',
+        'fiscal.read',
     ];
 
     public const CEO_EXTRA_KEYS = [
@@ -55,6 +58,7 @@ class RoleSeeder extends Seeder
         'ledger.read',
         'channel.read',
         'assistant.manage',
+        'fiscal.import',
     ];
 
     public const PARCEIRO_KEYS = [

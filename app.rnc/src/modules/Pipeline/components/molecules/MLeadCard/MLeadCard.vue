@@ -4,12 +4,13 @@ import type { LeadCard } from '../../../interfaces';
 import { getI18nRouteName } from '@Helpers';
 import { canMarkLost, nextStage, previousStage, useLeadFormat } from '../../../composables';
 import { LEAD_DRAG_TYPE, PIPELINE_ROUTE_NAMES } from '../../../constants';
-import { LEAD_STAGE } from '../../../enums';
+import { LEAD_CHANNEL, LEAD_STAGE } from '../../../enums';
 
 /*
  * One card of the board (rnc-1 R18): who, where it stopped or what the diagnostic found, the meeting
  * or why it was lost — and, for whoever holds `leads.update`, the ◀ ▶ ✕ moves and the drag. The view
- * owns the move: the card only says where to. A lead started under a sub-brand wears its chip (rnc-3 R4).
+ * owns the move: the card only says where to. A lead started under a sub-brand wears its chip (rnc-3 R4), and one that
+ * did not come by the form says by which channel (rnc-2 R14: the chat, or Franco's own portfolio).
  */
 const emit = defineEmits<{
   onMove: [stage: LEAD_STAGE];
@@ -84,6 +85,10 @@ function onDragStart(event: DragEvent) {
           class="pi pi-palette text-[0.7rem]"
         />{{ props.lead.brand.short_name }}
       </span>
+      <MLeadChannelChip
+        v-if="props.lead.channel !== LEAD_CHANNEL.FORMULARIO"
+        :channel="props.lead.channel"
+      />
 
       <span>{{ $t(`pipeline.sources.${props.lead.source}`) }}</span>
 

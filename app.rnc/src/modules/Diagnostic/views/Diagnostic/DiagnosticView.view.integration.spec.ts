@@ -6,6 +6,9 @@ import InputText from 'primevue/inputtext';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { server } from '@/test/msw/server';
 import { renderWithPlugins } from '@/test/render';
+import MBookingConfirmation from '../../components/molecules/MBookingConfirmation/MBookingConfirmation.vue';
+import MChatReceptionist from '../../components/molecules/MChatReceptionist/MChatReceptionist.vue';
+import MChatResult from '../../components/molecules/MChatResult/MChatResult.vue';
 import MChoiceGroup from '../../components/molecules/MChoiceGroup/MChoiceGroup.vue';
 import MCnpjLookup from '../../components/molecules/MCnpjLookup/MCnpjLookup.vue';
 import MDiagnosticContactForm from '../../components/molecules/MDiagnosticContactForm/MDiagnosticContactForm.vue';
@@ -66,6 +69,9 @@ function renderDiagnostic() {
         Button,
         Checkbox,
         InputText,
+        MBookingConfirmation,
+        MChatReceptionist,
+        MChatResult,
         MChoiceGroup,
         MCnpjLookup,
         MDiagnosticContactForm,
@@ -375,5 +381,109 @@ describe('DiagnosticView — the CNPJ path', () => {
 
     expect(screen.getByTestId('cnpj-invalid')).toBeTruthy();
     expect(requests).toHaveLength(1);
+  });
+});
+
+describe('DiagnosticView — Formulário · Conversar no chat (rnc-2 R12, R14)', () => {
+  function mode(key: 'chat' | 'form') {
+    return screen.getByTestId(`mode-${key}`);
+  }
+
+  async function tap(value: string) {
+    const reply = await waitFor(() => {
+      const found = screen.getAllByTestId('chat-reply').find((button) => button.getAttribute('data-value') === value);
+
+      expect(found, `reply ${value}`).toBeDefined();
+
+      return found!;
+    });
+
+    await fireEvent.click(reply);
+  }
+
+  it('opens on the form, with the chat one tap away', async () => {
+    renderDiagnostic();
+
+    expect(mode('form').getAttribute('aria-pressed')).toBe('true');
+    expect(mode('chat').getAttribute('aria-pressed')).toBe('false');
+    expect(screen.queryByTestId('chat')).toBeNull();
+
+    await fireEvent.click(mode('chat'));
+
+    expect(await screen.findByTestId('chat')).toBeTruthy();
+    expect(mode('chat').getAttribute('aria-pressed')).toBe('true');
+    expect(screen.queryByTestId('path-quiz')).toBeNull();
+  });
+
+  it('starts a chat lead from the chat and a form lead from the form (A10)', async () => {
+    renderDiagnostic();
+
+    await fireEvent.click(mode('chat'));
+    await tap('quiz');
+    await waitFor(() => expect(requests.some((request) => request.method === 'POST')).toBe(true));
+
+    expect(requests[0]!.body).toMatchObject({ channel: 'chat', path: 'quiz' });
+  });
+
+  it('keeps every answer when the visitor switches to the form mid-way, and back (A10)', async () => {
+    renderDiagnostic();
+
+    await fireEvent.click(mode('chat'));
+    await tap('quiz');
+    await waitFor(() => expect(requests.some((request) => request.method === 'POST')).toBe(true));
+    await tap('servicos');
+    await tap('simples');
+    await waitFor(() => expect(screen.getByTestId('chat').getAttribute('data-turn')).toBe('company'));
+    await fireEvent.update(screen.getByTestId('chat-input'), 'Clínica Horizonte');
+    await fireEvent.submit(screen.getByTestId('chat-compose'));
+
+    await fireEvent.click(mode('form'));
+
+    const company = (await screen.findByTestId('contact-company')) as HTMLInputElement;
+
+    expect(company.value).toBe('Clínica Horizonte');
+    expect(patches()[0]).toEqual({ profile: { regime: 'simples', sector: 'servicos' }, step: 'contato' });
+
+    await fireEvent.update(screen.getByTestId('contact-email'), 'ana@horizonte.com.br');
+    await fireEvent.click(screen.getByTestId('contact-save'));
+    await screen.findByTestId('step-profile');
+
+    expect(screen.getByTestId('sector-servicos').getAttribute('aria-checked')).toBe('true');
+    expect(screen.getByTestId('regime-simples').getAttribute('aria-checked')).toBe('true');
+
+    await fireEvent.click(mode('chat'));
+
+    const chat = await screen.findByTestId('chat');
+
+    expect(chat.getAttribute('data-turn')).toBe('b2b');
+    expect(chat.textContent).toContain('I see you moved on in the form');
+    expect(requests.filter((request) => request.method === 'POST')).toHaveLength(1);
+  });
+
+  it("opens the simulator in the form from the chat's result", async () => {
+    renderDiagnostic();
+
+    await fireEvent.click(mode('chat'));
+    await tap('quiz');
+    await waitFor(() => expect(requests.some((request) => request.method === 'POST')).toBe(true));
+    await tap('servicos');
+    await tap('simples');
+    await waitFor(() => expect(screen.getByTestId('chat').getAttribute('data-turn')).toBe('company'));
+
+    for (const text of ['Clínica Horizonte', 'Ana Souza', 'ana@horizonte.com.br']) {
+      await fireEvent.update(screen.getByTestId('chat-input'), text);
+      await fireEvent.submit(screen.getByTestId('chat-compose'));
+    }
+
+    await tap('autorizo');
+    await tap('80');
+    await tap('b2');
+    await tap('nao');
+    await tap('nao');
+    await fireEvent.click(await screen.findByTestId('chat-simulator'));
+
+    expect(await screen.findByTestId('result')).toBeTruthy();
+    expect(screen.getAllByTestId('sim-year')).toHaveLength(8);
+    expect(mode('form').getAttribute('aria-pressed')).toBe('true');
   });
 });

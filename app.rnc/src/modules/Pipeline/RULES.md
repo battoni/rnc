@@ -1,5 +1,5 @@
 ---
-version: 1.2.0
+version: 1.3.0
 origin: rnc
 ---
 
@@ -21,6 +21,9 @@ The team's screens (R18–R20): the board (`/equipe/pipeline`, route `pipeline`)
 - **Permissions (AM8)**: `leads.read` opens the board and the detail, `leads.update` shows the
   ◀ ▶ ✕, the drag, the stage select and the note form, `agenda.read` the agenda. A missing key hides
   the control; the API refuses it too.
+- **The channel chip (rnc-2 R14)**: the board card names the channel only when it is not the form
+  (chat, carteira) — the usual case would repeat "Formulário" on every card; the lead detail
+  always names it (`MLeadChannelChip`).
 - **One way to move a card** — `MoveLeadStageService` with `via` (`botao` for ◀ ▶ ✕, `arrastar` for a
   drop, `ficha` for the detail's select). Perdido never moves directly: the view opens
   `MLostReasonForm` in its `MMainDialog`, which owns the call (celer-07 "a destructive action that

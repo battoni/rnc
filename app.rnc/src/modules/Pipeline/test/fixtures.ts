@@ -1,10 +1,10 @@
 import type { AgendaWeek, LeadBoard, LeadCard, LeadDetail, LeadMove } from '../interfaces';
-import { LEAD_STAGE } from '../enums';
+import { LEAD_CHANNEL, LEAD_STAGE } from '../enums';
 
 /** A lead that has seen its result — the `lead` column's only card. */
 const LEAD_CARD_FIXTURE: LeadCard = {
   brand: null,
-  channel: 'formulario',
+  channel: LEAD_CHANNEL.FORMULARIO,
   company: 'Padaria Trigo Dourado',
   contact_name: 'Ana Almeida',
   created_at: '2026-11-10T09:12:00-03:00',
@@ -64,7 +64,7 @@ function moveFixture(stage: LEAD_STAGE, via: string, reason?: string): LeadMove 
 
 const LEAD_DETAIL_FIXTURE: LeadDetail = {
   brand: null,
-  channel: 'formulario',
+  channel: LEAD_CHANNEL.FORMULARIO,
   cnpj: '90001371000159',
   company: 'Padaria Trigo Dourado',
   consent: {

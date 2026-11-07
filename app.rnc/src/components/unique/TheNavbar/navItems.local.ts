@@ -55,7 +55,7 @@ import { useUserStore } from '@UserModule';
  */
 /**
  * What each group already holds. The team's has its pipeline and agenda (F5); the operator's carries
- * the bootstrap's own administration screens; Reinaldo's has the metrics (F7), the network (F6) and the fee repricing (F8); rnc-3 F3b puts the RNC channel in his and the operator's. Route
+ * the bootstrap's own administration screens; Reinaldo's has the metrics (F7), the network (F6), its ledger (rnc-2 F4) and the fee repricing (F8); rnc-3 F3b puts the RNC channel in his and the operator's. Route
  * names are the owners' (celer-05), never an import of their screens.
  */
 const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
@@ -98,6 +98,12 @@ const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
       label: 'navigation.trail',
       permission: PARTNER_PERMISSIONS.trail,
       routeName: PARTNER_ROUTE_NAMES.trail,
+    },
+    {
+      icon: 'pi pi-wallet',
+      label: 'navigation.ledger',
+      permission: PARTNER_PERMISSIONS.ledger,
+      routeName: PARTNER_ROUTE_NAMES.ledger,
     },
     {
       icon: 'pi pi-percentage',
@@ -154,8 +160,18 @@ const KNOWLEDGE_ENTRY: NavItem = {
  * The partner's portal (rnc-2 R3, A4): a partner's whole rail. Gated on the key AND the role — the
  * operator holds every key, `portal.access` included, and must never see a portal link; a partner
  * holds none of the three groups' keys, so it sees only this (and the core Home, which sends it here).
+ * Its one child is the statement (rnc-2 F4, R11), behind the same key and role.
  */
 const PORTAL_ENTRY: NavItem = {
+  children: [
+    {
+      icon: 'pi pi-wallet',
+      label: 'navigation.statement',
+      permission: PORTAL_PERMISSIONS.access,
+      role: PORTAL_ROLE_SLUG,
+      routeName: PORTAL_ROUTE_NAMES.statement,
+    },
+  ],
   icon: 'pi pi-briefcase',
   label: 'navigation.portal',
   permission: PORTAL_PERMISSIONS.access,

@@ -2,6 +2,24 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.4.1 — 2026-11-07
+
+### Changed
+
+- `PortalReferralResource` tells a portfolio referral by `LeadChannel::Carteira` instead of its own `PORTFOLIO_CHANNEL` constant (rnc-2 F5, W23); no behaviour change.
+
+## 1.4.0 — 2026-11-07
+
+### Added
+
+- The network ledger (rnc-2 F4, R11, D10, A9; plan AM9): `GET portal/statement` (`PortalController::statement`, `PartnerStatementResource`), `GET ledger` and `PATCH ledger/model` (`LedgerController`, `NetworkStatementResource`, `LedgerModelResource`); `LedgerService` (`statementFor`, `networkStatement`, the pure `commission` — half-up — and `subscribedPartnerIds` — folded from `partner_access_events`), `LedgerRepository` (closings in a month, access history, UTC bounds), `LedgerMonthRequest`/`LedgerMonthDTO` (`YYYY-MM`), `UpdateLedgerModelRequest`/`UpdateLedgerModelDTO`. Tested by `tests/Feature/Partner/LedgerTest` and `tests/Unit/Modules/Partner/LedgerServiceTest`; routes classified in `tests/Feature/Access/routeClasses.php`.
+
+## 1.3.0 — 2026-11-07
+
+### Added
+
+- Franco's view of the partner's progress (rnc-2 F3, R10, A8): `ReferralResource` (the trail) and `PartnerMatchesResource`'s `referral` carry `status_at`, `sla` and `deal_value_cents` (`null` until `fechado`). Tested by `PortalReferralsTest` ("shows Franco's routing panel and trail…").
+
 ## 1.2.0 — 2026-11-07
 
 ### Added

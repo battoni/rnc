@@ -3,17 +3,51 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
-## 1.10.0 — 2026-11-07
+## 1.15.0 — 2026-11-07
 
 ### Added
 
 - rnc-3 F4: the `assistant_notes`, `assistant_questions` and `assistant_asks` tables (sequence `300004`–`300006`; people and notes are ids without a foreign key — W25); `AssistantNoteFactory` (a served note); `AssistantNoteSeeder` (local only) seeds the demo's ten notes word for word, each citing its `facts.md` §2 lines, read 05/11/2026, reviewed 1–5 days back by the four seeded specialists and written by Reinaldo — `credito-simples` a rascunho (§2 unverified) — plus two open questions from Patrícia to Mariana and Carlos; a person missing from the seeded staff stops the seed (AM10); `RoleSeeder` grants the team and Reinaldo `assistant.ask` and Reinaldo `assistant.manage`.
 
-## 1.9.0 — 2026-11-07
+## 1.14.0 — 2026-11-07
 
 ### Added
 
 - rnc-3 F3a: the `channel_firms` and `channel_firm_events` tables (sequence `300002`–`300003`; the event's `user_id` has no foreign key — W25); `ChannelFirmFactory`; `ChannelSeeder` (local only) seeds the demo's six "(exemplo)" RNC firms, three ativo, on the default fee and share, 5–90 days into their stage; `RoleSeeder` grants Reinaldo `channel.read` (`channel.manage` stays the operator's).
+
+## 1.13.0 — 2026-11-07
+
+### Added
+
+- rnc-2 F7: `create_client_events_table` (Portfolio's client timeline — firm, client, user without a foreign key, type, data json, `at` UTC).
+
+### Changed
+
+- `RoleSeeder`: the team (`equipe`) — and so Reinaldo — gets `fiscal.read` (NF-e readiness and supplier credit, D14); `SeededRolesTest` states it.
+
+## 1.12.0 — 2026-11-07
+
+### Added
+
+- rnc-2 F6b: `NfeSeeder` (local only — refuses production and `testing`, plan AM7): it clears `storage/app/private/nfe/<firm id>/`, then imports 90 days of invented NF-e for the first 40 Presumido/Real clients (15–60 sales, 10–40 purchases each; the demo's readiness tiers and `SIMPLES_SHARE_BY_BAND`) through `NfeImporter`, one `folder` batch per client, and prints the counts and its time; called from `seeders.local.php` after `ClientSeeder`. `seeders/Support/NfeXmlBuilder` (the invented NF-e XML, shared with the Fiscal tests — F6a's hand-written fixtures moved onto it) and `GeneratedNfeSource`.
+
+## 1.11.0 — 2026-11-07
+
+### Added
+
+- rnc-2 F6a: the Fiscal module's `nfe_imports` (one batch: who, how, files, stored, refused json, at UTC) and `nfe_documents` (one NF-e per client: unique `(firm_id, access_key, client_id)` — spec C1 — and an index on `(firm_id, client_id, direction, issued_at)`; `client_id` with no foreign key, W25) as new `create_*` migrations (`000015`, `000016`); `RoleSeeder` gives `ceo` `fiscal.import`. `.schema` dumped before and after `migrate` and diffed: the two new tables and their indexes, nothing else.
+
+## 1.10.0 — 2026-11-07
+
+### Changed
+
+- rnc-2 F5: `PipelineSeeder` starts one lead in eight in the chat (`channel = chat`, consent `via = chat`, ~12 %, the demo's weight); `LeadFactory` names its channel by `LeadChannel`.
+
+## 1.9.0 — 2026-11-07
+
+### Added
+
+- rnc-2 F4: `firms` gains `partner_money_model` (default `comissao`), `partner_commission_rate_bp` (1000) and `partner_monthly_fee_cents` (49000); `referrals` gains an index on `(firm_id, closed_at)` — both folded into their `create_*` migrations (D15). `.schema firms` and `.schema referrals` diffed before and after `migrate:fresh`: the three columns and the index, nothing else.
 
 ## 1.8.0 — 2026-11-07
 

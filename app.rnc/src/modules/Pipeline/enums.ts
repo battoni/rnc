@@ -9,6 +9,13 @@ enum LEAD_STAGE {
   PERDIDO = 'perdido',
 }
 
+/** How a lead came in (rnc-2 R14) — the API's `LeadChannel`; fixed once the lead exists. */
+enum LEAD_CHANNEL {
+  CARTEIRA = 'carteira',
+  CHAT = 'chat',
+  FORMULARIO = 'formulario',
+}
+
 /** How a card was moved — the API's `MoveVia`, kept on the timeline line. */
 enum MOVE_VIA {
   BUTTON = 'botao',
@@ -29,4 +36,4 @@ enum LEAD_EVENT_TYPE {
   STEP_REACHED = 'diagnostico.passo',
 }
 
-export { LEAD_EVENT_TYPE, LEAD_STAGE, MOVE_VIA };
+export { LEAD_CHANNEL, LEAD_EVENT_TYPE, LEAD_STAGE, MOVE_VIA };

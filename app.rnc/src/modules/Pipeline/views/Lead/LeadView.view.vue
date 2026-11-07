@@ -266,13 +266,17 @@ function onNoteSaved(note: LeadTimelineEvent) {
             </span>
           </div>
 
-          <p class="text-muted text-sm">
-            {{
-              $t('pipeline.lead.since', {
-                date: formatDate(lead.created_at),
-                source: $t(`pipeline.sources.${lead.source}`),
-              })
-            }}
+          <p class="text-muted flex flex-wrap items-center gap-2 text-sm">
+            <span>
+              {{
+                $t('pipeline.lead.since', {
+                  date: formatDate(lead.created_at),
+                  source: $t(`pipeline.sources.${lead.source}`),
+                })
+              }}
+            </span>
+
+            <MLeadChannelChip :channel="lead.channel" />
           </p>
 
           <p

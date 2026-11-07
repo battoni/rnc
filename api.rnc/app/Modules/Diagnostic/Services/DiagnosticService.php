@@ -9,6 +9,7 @@ use App\Modules\Diagnostic\DTOs\StartDiagnosticDTO;
 use App\Modules\Diagnostic\DTOs\UpdateDiagnosticDTO;
 use App\Modules\Diagnostic\Exceptions\DiagnosticException;
 use App\Modules\Firm\Services\CurrentBrand;
+use App\Modules\Lead\Enums\LeadChannel;
 use App\Modules\Lead\Models\Lead;
 use App\Modules\Lead\Services\LeadService;
 
@@ -37,6 +38,7 @@ class DiagnosticService
             'sector' => $dto->sector,
             // The sub-brand of this visit (rnc-3 R4), stored once at the start.
             'brand_id' => $this->currentBrand->id(),
+            'channel' => LeadChannel::from($dto->channel),
         ]);
     }
 

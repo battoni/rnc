@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Schema;
  * the meeting, and the first-year contract value with the closing moment. The moments are UTC
  * (`UtcDateTime`, AM9); `status_by` is the partner's login (Auth's `users`) with no foreign key —
  * a cross-module id (rnc-1 W25), as in `partner_access_events`. The partner is restricted on
- * delete: the trail must keep it.
+ * delete: the trail must keep it. `(firm_id, closed_at)` serves the ledger's month of closings (F4).
  */
 return new class extends Migration
 {
@@ -43,6 +43,7 @@ return new class extends Migration
             $table->unique(['lead_id', 'partner_id']);
             $table->index(['firm_id', 'created_at']);
             $table->index(['partner_id', 'status']);
+            $table->index(['firm_id', 'closed_at']);
         });
     }
 

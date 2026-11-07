@@ -2,14 +2,17 @@
 
 namespace App\Modules\Partner\Resources;
 
+use App\Modules\Partner\Enums\ReferralStatus;
 use App\Modules\Partner\Models\Partner;
 use App\Modules\Partner\Models\Referral;
+use App\Modules\Partner\Services\ReferralSla;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * The routing panel (R22): whether the lead can be referred and why not, and each active partner
- * with its score, the diagnostic items it covers and the referral already sent to it. A partner's
+ * with its score, the diagnostic items it covers and the referral already sent to it — where the
+ * partner has taken it since (status, SLA, the contract value once closed; rnc-2 R10). A partner's
  * e-mail and phone stay in the registry: the team routes, Reinaldo manages.
  *
  * @property array{can_refer: bool, blocked_reason: string|null, matches: list<array{partner: Partner, score: int, covers: list<array{id: string, title: string}>, referral: Referral|null}>} $resource
@@ -34,6 +37,9 @@ class PartnerMatchesResource extends JsonResource
                     'id' => $match['referral']->id,
                     'status' => $match['referral']->status,
                     'at' => $match['referral']->created_at->toIso8601String(),
+                    'status_at' => $match['referral']->status_at?->toImmutable()->utc()->toIso8601String(),
+                    'sla' => app(ReferralSla::class)->of($match['referral']),
+                    'deal_value_cents' => $match['referral']->status === ReferralStatus::Fechado->value ? $match['referral']->deal_value_cents : null,
                 ] : null,
             ], $this->resource['matches']),
         ];

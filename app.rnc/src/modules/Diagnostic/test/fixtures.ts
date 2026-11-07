@@ -7,7 +7,7 @@ import type {
   PublicLead,
   PublicReport,
 } from '../interfaces';
-import { DIAGNOSTIC_PATH, DIAGNOSTIC_STEP, RESULT_KIND } from '../enums';
+import { DIAGNOSTIC_CHANNEL, DIAGNOSTIC_PATH, DIAGNOSTIC_STEP, RESULT_KIND } from '../enums';
 
 /* The API's answers as the Diagnostic specs need them — the shapes of the `Public*` resources. */
 const CONSENT_TEXT =
@@ -16,6 +16,7 @@ const CONSENT_TEXT =
 const TOKEN_FIXTURE = 'k'.repeat(48);
 
 const LEAD_FIXTURE: PublicLead = {
+  channel: DIAGNOSTIC_CHANNEL.FORM,
   cnpj: null,
   company: null,
   consent: { text: CONSENT_TEXT, version: 1 },

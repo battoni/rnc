@@ -51,6 +51,7 @@ async function signedInAs(page: Page, user: Record<string, unknown>) {
   await seedLanguage(page, 'pt-BR');
   await page.route('**/auth/me**', (route) => route.fulfill(json({ data: user })));
   await page.route('**/portal/me**', (route) => route.fulfill(json({ data: PORTAL_ME })));
+  await page.route('**/portal/referrals**', (route) => route.fulfill(json({ data: [] })));
 }
 
 /** A rail entry, by its visible name (the rail renders links, the page header a heading). */
@@ -63,6 +64,7 @@ test.describe('Partner portal — the partner', () => {
     await page.route('**/auth/me**', (route) => route.fulfill(json({ message: 'Unauthenticated' }, 401)));
     await page.route('**/auth/login**', (route) => route.fulfill(json({ data: PARTNER_LOGIN })));
     await page.route('**/portal/me**', (route) => route.fulfill(json({ data: PORTAL_ME })));
+    await page.route('**/portal/referrals**', (route) => route.fulfill(json({ data: [] })));
 
     await page.goto('/entrar');
     await page.locator('[data-testid="login-username"]').fill('parceiro.3');

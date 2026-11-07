@@ -1,8 +1,12 @@
 import type { Funnel } from '../interfaces';
-import { FUNNEL_STEP, TRAFFIC_SOURCE } from '../enums';
+import { FUNNEL_CHANNEL, FUNNEL_STEP, TRAFFIC_SOURCE } from '../enums';
 
 /** The funnel of a month: 400 visits narrowing to 3 clients. */
 const FUNNEL_30_FIXTURE: Funnel = {
+  by_channel: [
+    { agendou: 8, channel: FUNNEL_CHANNEL.FORMULARIO, cliente: 2, contato: 21, inicio: 35, resultado: 17 },
+    { agendou: 2, channel: FUNNEL_CHANNEL.CHAT, cliente: 1, contato: 4, inicio: 5, resultado: 3 },
+  ],
   by_sector: [
     { agendou: 2, contato: 5, cta: 27, label: 'Comércio', slug: 'comercio', visitas: 66 },
     { agendou: 0, contato: 0, cta: 0, label: 'Agro', slug: 'agro', visitas: 0 },

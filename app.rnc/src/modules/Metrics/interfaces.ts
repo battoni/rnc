@@ -1,4 +1,4 @@
-import type { FUNNEL_STEP, TRAFFIC_SOURCE } from './enums';
+import type { FUNNEL_CHANNEL, FUNNEL_STEP, TRAFFIC_SOURCE } from './enums';
 
 /** One step of the funnel (`FunnelResource`): visitors who reached it, and the share of the step before lost. */
 interface FunnelStepCount {
@@ -28,8 +28,19 @@ interface FunnelSectorRow {
   visitas: number;
 }
 
+/** A row of the table by channel (rnc-2 R14): from "início diagnóstico" on, by the lead's channel. */
+interface FunnelChannelRow {
+  agendou: number;
+  channel: FUNNEL_CHANNEL;
+  cliente: number;
+  contato: number;
+  inicio: number;
+  resultado: number;
+}
+
 /** `GET /api/metrics/funnel?days=` (R24). */
 interface Funnel {
+  by_channel: FunnelChannelRow[];
   by_sector: FunnelSectorRow[];
   by_source: FunnelSourceRow[];
   days: number;
@@ -38,4 +49,4 @@ interface Funnel {
   to: string;
 }
 
-export type { Funnel, FunnelSectorRow, FunnelSourceRow, FunnelStepCount };
+export type { Funnel, FunnelChannelRow, FunnelSectorRow, FunnelSourceRow, FunnelStepCount };

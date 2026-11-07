@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.6.0 — 2026-11-07
+
+### Added
+
+- `LeadChannel` (`formulario`, `chat`, `carteira`) replaces `LeadService::FORM_CHANNEL` (rnc-2 F5, R14): `startLead` takes the channel and stamps it on a NEW lead only — a reopened `visitante` keeps the one it began in; `recordContact` stores the consent `via` from the lead's channel (`LeadChannel::consentVia`, `ConsentTerms::VIA_CHAT`). `PublicLeadResource` sends `channel`. Tested by `tests/Feature/Diagnostic/ChatChannelTest`.
+
 ## 1.5.0 — 2026-11-07
 
 ### Added

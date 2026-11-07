@@ -1,4 +1,4 @@
-import { LEAD_EVENT_TYPE, LEAD_STAGE } from './enums';
+import { LEAD_CHANNEL, LEAD_EVENT_TYPE, LEAD_STAGE } from './enums';
 
 /** Every column of the board, in order (R18): the pipeline, then Perdido. */
 const BOARD_STAGES: LEAD_STAGE[] = [
@@ -42,6 +42,13 @@ const STAGE_ACCENT_CLASSES: Record<LEAD_STAGE, string> = {
 };
 
 /** The screens this module owns, linked by name (celer-05): the bell and the home link here. */
+/** The icon each channel's chip carries beside its name. */
+const LEAD_CHANNEL_ICONS: Record<LEAD_CHANNEL, string> = {
+  [LEAD_CHANNEL.CARTEIRA]: 'pi pi-briefcase',
+  [LEAD_CHANNEL.CHAT]: 'pi pi-comments',
+  [LEAD_CHANNEL.FORMULARIO]: 'pi pi-list-check',
+};
+
 const PIPELINE_ROUTE_NAMES = { agenda: 'agenda', board: 'pipeline', lead: 'pipeline-lead' } as const;
 
 /** The keys that open and change the pipeline (plan AM8). */
@@ -60,6 +67,7 @@ const SEARCH_DEBOUNCE_MS = 300;
 const LOST_REASON_MAX_LENGTH = 300;
 
 export {
+  LEAD_CHANNEL_ICONS,
   BOARD_STAGES,
   LEAD_DRAG_TYPE,
   LOST_REASON_MAX_LENGTH,
