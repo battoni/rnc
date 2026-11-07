@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.2.0 — 2026-11-07
+
+### Added
+
+- The partner's statement (rnc-2 F4, R11, A9's Vitest half): `PortalStatementView` at `/parceiro/extrato` (`/partner/statement`, route `portal-statement`) — the month's lines, "Total devido à {firm}", the current model's rule and "valor a conferir — sem cobrança automática", ◀ ▶ by month; `useLedgerMonth` / `shiftMonth` (shared with Partner's ledger); `LEDGER_MODEL`, `STATEMENT_LINE_KIND`; `GetPortalStatementService`; the inbox links to the statement. Tested by `PortalStatementView.view.integration.spec.ts`, `useLedgerMonth.spec.ts`, `routes.spec.ts` and `PortalInboxView.view.integration.spec.ts`.
+
 ## 1.1.0 — 2026-11-07
 
 ### Added

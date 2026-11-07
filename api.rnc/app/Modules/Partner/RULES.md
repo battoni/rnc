@@ -1,11 +1,11 @@
 ---
-version: 1.3.0
+version: 1.4.0
 origin: rnc
 ---
 # RULES — Partner Module
 
 > For AI agents. rnc-1 F6, 07/11/2026; rnc-2 F1 (partner access, the portal's first route), F2
-> (the portal's inbox, the moves along the graph, the SLA).
+> (the portal's inbox, the moves along the graph, the SLA), F4 (the ledger).
 
 ## Domain
 
@@ -35,6 +35,9 @@ partner's portal login — `partners.access_*_at` and `partner_access_events` �
 | `GET portal/referrals` | `portal.access` + `portal` | the partner's referrals (`PortalReferralResource`), open before closed, newest first; unpaginated (a partner's few dozen) |
 | `GET portal/referrals/{id}` | `portal.access` + `portal` | one of them; anybody else's, or no referral, 404 |
 | `POST portal/referrals/{id}/transition` | `portal.access` + `portal` | `{to, meeting_at? (reuniao, future), deal_value_cents? (fechado, > 0)}` → the referral as it is now; 422 `code: invalid_transition` off the graph |
+| `GET portal/statement?month=YYYY-MM` | `portal.access` + `portal` | the partner's month (`PartnerStatementResource`): `{month, model, firm: {name}, commission_rate_bp \| monthly_fee_cents, lines: [{kind: subscription\|closing, referral_id, company, closed_at, deal_value_cents, amount_cents}], deals, deal_total_cents, total_cents}`; no month = this one in São Paulo |
+| `GET ledger?month=YYYY-MM` | `ledger.read` | every partner's month (`NetworkStatementResource`): both rules, `partners: [{partner, deals, deal_total_cents, commission_cents, subscribed, subscription_cents, due_cents}]`, `total_cents` and `other: {model, total_cents}` |
+| `PATCH ledger/model` | `partners.manage` | `{model: comissao\|assinatura}` → `{model, commission_rate_bp, monthly_fee_cents}` (`LedgerModelResource`) |
 
 ## Intentional Decisions
 
@@ -127,6 +130,27 @@ partner's portal login — `partners.access_*_at` and `partner_access_events` �
 - **Every API route is classified** in `tests/Feature/Access/routeClasses.php` (public · portal ·
   staff · shared, A2): a route added without a class fails `RouteMatrixTest`.
 
+### The ledger (rnc-2 F4, R11, D10; plan AM9)
+
+- **One model for the network, stored on the firm** (Firm's `partner_money_model`, written only by
+  `FirmSettingsService`); `LedgerService` reads it, the rate and the fee through `CurrentFirm`.
+- **Comissão** = per closing `intdiv(deal_value_cents * rate_bp + 5000, 10000)` — half-up to the
+  cent, each closing on its own (`LedgerService::commission`); R$ 12.345,67 at 10 % is R$ 1.234,57.
+- **A closing belongs to the month of its `closed_at` in São Paulo** (`LedgerService::bounds`): the
+  repository converts the bounds to UTC itself, because a `Carbon` binding is written as its
+  wall-clock time.
+- **Assinatura** = the fee for each partner whose access existed on any day of the month, folded
+  from `partner_access_events` (`LedgerService::subscribedPartnerIds`, pure): a grant opens a
+  period, a revoke closes it; a period that touches the month bills it. A revoke and a later regrant
+  bill both periods, never the gap. Closings are listed at `0` ("incluído").
+- **The partner sees only its own month under the current model** — the rule of that model, its
+  lines, its total — never the other model, nor another partner (D10). Its id comes from
+  `CurrentPartner`, so `?partner_id=` and `X-Firm` change nothing. Franco's network ledger carries
+  both rules, every partner (inactive too: history), the total and the other model's.
+- **Three queries per answer, whatever the network's size** (closings, access history, partners —
+  the statement eager-loads the lead's company): the maths is PHP; `LedgerTest` counts them.
+- **Nothing is billed**: both screens say "valor a conferir — sem cobrança automática".
+
 ## Tables read from other modules
 
 `leads`, `lead_consents` (Lead, through `LeadRepository`, `Lead::latestConsent` and the portal's
@@ -134,7 +158,8 @@ partner's portal login — `partners.access_*_at` and `partner_access_events` �
 referrer's name; a partner's login through `Partner::account` and `CreatePartnerAccessRequest`'s
 uniqueness — written only by Auth's `LinkedAccountService`); `firms` (Franco's contact for the
 e-mail and the portal's firm name, through `CurrentFirm` / `BelongsToFirm::firm`; the SLA's
-`business_hours` and a `carteira` referral's phone and mailbox, through `CurrentFirm`). Booking's
+`business_hours` and a `carteira` referral's phone and mailbox, through `CurrentFirm`; the ledger's
+money model, rate and fee, through `CurrentFirm` — written only by Firm's `FirmSettingsService`). Booking's
 `Holidays` helper (no table) for the SLA's days off.
 
 ## Known Gaps

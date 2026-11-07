@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.2.0 — 2026-11-07
+
+### Added
+
+- The network's money model (rnc-2 F4, R11, D10): `firms.partner_money_model` (default `comissao`), `partner_commission_rate_bp` (1000) and `partner_monthly_fee_cents` (49000), folded into `create_firms`; `PartnerMoneyModel` enum (`other()`), `Firm::partnerMoneyModel()`, `FirmRepository::updateFirm`, and `FirmSettingsService::updatePartnerMoneyModel` — the only writer, on the current firm. Tested by `tests/Feature/Partner/LedgerTest` (the switch moves only the signed-in person's firm, whatever `X-Firm` says).
+
 ## 1.1.0 — 2026-11-07
 
 ### Added

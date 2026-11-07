@@ -2,7 +2,8 @@
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { PortalMe, PortalReferral } from '../../interfaces';
-import { IN_PROGRESS_STATUSES, SLA_HOURS } from '../../constants';
+import { getI18nRouteName } from '@Helpers';
+import { IN_PROGRESS_STATUSES, PORTAL_ROUTE_NAMES, SLA_HOURS } from '../../constants';
 import { REFERRAL_STATUS, SLA_STATE } from '../../enums';
 import { GetPortalMeService, GetPortalReferralsService } from '../../services';
 
@@ -140,6 +141,14 @@ function onFormSuccess(moved: PortalReferral) {
       <p class="text-body text-sm">
         {{ $t('portal.description', { firm: me.firm.name, hours: SLA_HOURS }) }}
       </p>
+
+      <RouterLink
+        class="text-primary-700 hover:text-primary-800 w-fit text-sm font-semibold underline-offset-4 hover:underline"
+        data-testid="portal-statement-link"
+        :to="{ name: getI18nRouteName(PORTAL_ROUTE_NAMES.statement) }"
+      >
+        {{ $t('portal.statement.open') }}
+      </RouterLink>
     </section>
 
     <div

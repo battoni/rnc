@@ -1,5 +1,5 @@
-import type { PortalMe, PortalReferral } from '../interfaces';
-import { REFERRAL_STATUS, SLA_STATE } from '../enums';
+import type { PortalMe, PortalReferral, PortalStatement } from '../interfaces';
+import { LEDGER_MODEL, REFERRAL_STATUS, SLA_STATE, STATEMENT_LINE_KIND } from '../enums';
 
 /* What the portal API answers (rnc-2 F2's `PortalMeResource` and `PortalReferralResource`), as the specs need it. */
 const PORTAL_ME_FIXTURE: PortalMe = {
@@ -54,4 +54,69 @@ function referralAt(status: REFERRAL_STATUS, overrides: Partial<PortalReferral> 
   };
 }
 
-export { ACCEPTED_REFERRAL_FIXTURE, NEW_REFERRAL_FIXTURE, PORTAL_ME_FIXTURE, referralAt };
+/** A month under comissão (rnc-2 A9): R$ 12.000 and R$ 24.000 closed, R$ 1.200 + R$ 2.400 owed (`PartnerStatementResource`). */
+const COMMISSION_STATEMENT_FIXTURE: PortalStatement = {
+  commission_rate_bp: 1000,
+  deal_total_cents: 3_600_000,
+  deals: 2,
+  firm: { name: 'Franco Contabilidade' },
+  lines: [
+    {
+      amount_cents: 240_000,
+      closed_at: '2026-11-12T14:00:00+00:00',
+      company: 'Consultoria Prisma Ltda',
+      deal_value_cents: 2_400_000,
+      kind: STATEMENT_LINE_KIND.CLOSING,
+      referral_id: 32,
+    },
+    {
+      amount_cents: 120_000,
+      closed_at: '2026-11-03T18:00:00+00:00',
+      company: 'Padaria Trigo Dourado',
+      deal_value_cents: 1_200_000,
+      kind: STATEMENT_LINE_KIND.CLOSING,
+      referral_id: 31,
+    },
+  ],
+  model: LEDGER_MODEL.COMISSAO,
+  month: '2026-11',
+  total_cents: 360_000,
+};
+
+/** The same month under assinatura: the R$ 490 fee, and the closings add nothing. */
+const SUBSCRIPTION_STATEMENT_FIXTURE: PortalStatement = {
+  deal_total_cents: 1_200_000,
+  deals: 1,
+  firm: { name: 'Franco Contabilidade' },
+  lines: [
+    {
+      amount_cents: 49_000,
+      closed_at: null,
+      company: null,
+      deal_value_cents: null,
+      kind: STATEMENT_LINE_KIND.SUBSCRIPTION,
+      referral_id: null,
+    },
+    {
+      amount_cents: 0,
+      closed_at: '2026-11-03T18:00:00+00:00',
+      company: 'Padaria Trigo Dourado',
+      deal_value_cents: 1_200_000,
+      kind: STATEMENT_LINE_KIND.CLOSING,
+      referral_id: 31,
+    },
+  ],
+  model: LEDGER_MODEL.ASSINATURA,
+  month: '2026-11',
+  monthly_fee_cents: 49_000,
+  total_cents: 49_000,
+};
+
+export {
+  ACCEPTED_REFERRAL_FIXTURE,
+  COMMISSION_STATEMENT_FIXTURE,
+  NEW_REFERRAL_FIXTURE,
+  PORTAL_ME_FIXTURE,
+  referralAt,
+  SUBSCRIPTION_STATEMENT_FIXTURE,
+};

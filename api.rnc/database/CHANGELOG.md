@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.9.0 — 2026-11-07
+
+### Added
+
+- rnc-2 F4: `firms` gains `partner_money_model` (default `comissao`), `partner_commission_rate_bp` (1000) and `partner_monthly_fee_cents` (49000); `referrals` gains an index on `(firm_id, closed_at)` — both folded into their `create_*` migrations (D15). `.schema firms` and `.schema referrals` diffed before and after `migrate:fresh`: the three columns and the index, nothing else.
+
 ## 1.8.0 — 2026-11-07
 
 ### Added

@@ -41,6 +41,7 @@ function renderView() {
         Skeleton,
       },
       stubs: {
+        RouterLink: { props: ['to'], template: '<a :data-to="JSON.stringify(to)"><slot /></a>' },
         MMainDialog: {
           props: ['visible', 'title'],
           template: '<div v-if="visible" data-testid="dialog"><slot /></div>',
@@ -103,6 +104,15 @@ describe('PortalInboxView', () => {
 
     expect((await screen.findByTestId('portal-partner')).textContent).toContain('NexoERP (exemplo)');
     expect(screen.getByTestId('portal-home').textContent).toContain('Franco Contabilidade');
+  });
+
+  it("links to the month's statement, also where the rail shows no children (rnc-2 R11)", async () => {
+    renderView();
+
+    const link = await screen.findByTestId('portal-statement-link');
+
+    expect(link.textContent).toContain("See this month's statement");
+    expect(link.getAttribute('data-to')).toContain('portal-statement-en');
   });
 
   it('counts Novos · Em andamento · Fechados · SLA estourado from the list (R5)', async () => {

@@ -41,7 +41,9 @@
     "trail": "Trail",
     "metrics": "Metrics",
     "repricing": "Repricing",
-    "portal": "Partner portal"
+    "portal": "Partner portal",
+    "ledger": "Network ledger",
+    "statement": "Statement"
   },
   "rolesAndPermissions": {
     "groups": {
@@ -723,6 +725,38 @@
       "missing": "This partner has no active login.",
       "partnerInactive": "Reactivate the partner before giving it a login.",
       "active": "Portal on"
+    },
+    "ledger": {
+      "title": "Network ledger",
+      "lede": "What each partner owes Franco in the month under the network's model, and what the other model would give.",
+      "previousMonth": "Previous month",
+      "nextMonth": "Next month",
+      "modelLabel": "Billing model",
+      "models": {
+        "comissao": "Commission per closing",
+        "assinatura": "Monthly subscription"
+      },
+      "currentModel": "Network model: {model}",
+      "ruleCommission": "Rule: {rate}% of the first-year contract value, per closed referral.",
+      "ruleSubscription": "Rule: {fee} a month for each partner with portal access; a closing adds nothing.",
+      "networkWide": "A switch applies to the whole network.",
+      "notice": "Amounts to be checked — no automatic billing.",
+      "loadFailed": "The network ledger could not be loaded.",
+      "switchFailed": "The model could not be switched. Try again.",
+      "summaryLabel": "Month summary",
+      "total": "Owed this month · {model}",
+      "other": "Under the other model · {model}",
+      "dealsLabel": "Closed contracts",
+      "dealTotal": "{total} in the first year",
+      "empty": "No partner registered yet.",
+      "partner": "Partner",
+      "deals": "Closed",
+      "dealValue": "First-year contract",
+      "commission": "Commission ({rate}%)",
+      "subscription": "Subscription",
+      "due": "Owed",
+      "noAccess": "no access",
+      "footerTotal": "Network total this month"
     }
   },
   "metrics": {
@@ -1010,6 +1044,27 @@
       "meetingInPast": "The meeting must be in the future.",
       "dealValueRequired": "Enter the first-year contract value.",
       "dealValueInvalid": "Enter a first-year contract value above zero."
+    },
+    "statement": {
+      "title": "Statement",
+      "heading": "Statement with {firm}",
+      "previousMonth": "Previous month",
+      "nextMonth": "Next month",
+      "notice": "Amount to be checked — no automatic billing.",
+      "ruleCommission": "Rule: {rate}% of the first-year contract value, per closed referral.",
+      "ruleSubscription": "Rule: {fee} a month, unlimited referrals; a closing adds nothing.",
+      "item": "Item",
+      "closedAt": "Closed on",
+      "dealValue": "First-year contract",
+      "owed": "Owed to {firm}",
+      "subscriptionLine": "Monthly network subscription",
+      "thisMonth": "this month",
+      "included": "included",
+      "empty": "No referral closed this month.",
+      "total": "Total owed to {firm}",
+      "deals": "No contract closed this month. | 1 contract closed ({total} in the first year). | {n} contracts closed ({total} in the first year).",
+      "loadFailed": "The statement could not be loaded.",
+      "open": "See this month's statement"
     }
   }
 }

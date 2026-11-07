@@ -41,7 +41,9 @@
     "trail": "Trilha",
     "metrics": "Métricas",
     "repricing": "Reajuste",
-    "portal": "Portal do parceiro"
+    "portal": "Portal do parceiro",
+    "ledger": "Extrato da rede",
+    "statement": "Extrato"
   },
   "rolesAndPermissions": {
     "groups": {
@@ -723,6 +725,38 @@
       "missing": "Este parceiro não tem acesso ativo.",
       "partnerInactive": "Reative o parceiro antes de dar um acesso a ele.",
       "active": "Portal ativo"
+    },
+    "ledger": {
+      "title": "Extrato da rede",
+      "lede": "O que cada parceiro deve à Franco no mês, no modelo da rede, e o que o outro modelo daria.",
+      "previousMonth": "Mês anterior",
+      "nextMonth": "Próximo mês",
+      "modelLabel": "Modelo de cobrança",
+      "models": {
+        "comissao": "Comissão por fechamento",
+        "assinatura": "Assinatura mensal"
+      },
+      "currentModel": "Modelo da rede: {model}",
+      "ruleCommission": "Regra: {rate}% do valor do contrato no 1º ano, por indicação fechada.",
+      "ruleSubscription": "Regra: {fee} por mês para cada parceiro com acesso ao portal; o fechamento não paga extra.",
+      "networkWide": "A troca vale para a rede inteira.",
+      "notice": "Valores a conferir — sem cobrança automática.",
+      "loadFailed": "Não foi possível carregar o extrato da rede.",
+      "switchFailed": "Não foi possível trocar o modelo. Tente de novo.",
+      "summaryLabel": "Resumo do mês",
+      "total": "Total devido no mês · {model}",
+      "other": "No outro modelo · {model}",
+      "dealsLabel": "Contratos fechados",
+      "dealTotal": "{total} no 1º ano",
+      "empty": "Nenhum parceiro cadastrado ainda.",
+      "partner": "Parceiro",
+      "deals": "Fechados",
+      "dealValue": "Contrato 1º ano",
+      "commission": "Comissão ({rate}%)",
+      "subscription": "Assinatura",
+      "due": "Devido",
+      "noAccess": "sem acesso",
+      "footerTotal": "Total da rede no mês"
     }
   },
   "metrics": {
@@ -1010,6 +1044,27 @@
       "meetingInPast": "A reunião precisa ser no futuro.",
       "dealValueRequired": "Informe o valor do contrato no primeiro ano.",
       "dealValueInvalid": "Informe um valor do contrato no primeiro ano acima de zero."
+    },
+    "statement": {
+      "title": "Extrato",
+      "heading": "Extrato com a {firm}",
+      "previousMonth": "Mês anterior",
+      "nextMonth": "Próximo mês",
+      "notice": "Valor a conferir — sem cobrança automática.",
+      "ruleCommission": "Regra: {rate}% do valor do contrato no 1º ano, por indicação fechada.",
+      "ruleSubscription": "Regra: {fee} por mês, com indicações ilimitadas; o fechamento não paga extra.",
+      "item": "Item",
+      "closedAt": "Fechado em",
+      "dealValue": "Contrato 1º ano",
+      "owed": "Devido à {firm}",
+      "subscriptionLine": "Assinatura mensal da rede",
+      "thisMonth": "no mês",
+      "included": "incluído",
+      "empty": "Nenhuma indicação fechada neste mês.",
+      "total": "Total devido à {firm}",
+      "deals": "Nenhum contrato fechado no mês. | 1 contrato fechado ({total} no 1º ano). | {n} contratos fechados ({total} no 1º ano).",
+      "loadFailed": "Não foi possível carregar o extrato.",
+      "open": "Ver o extrato do mês"
     }
   }
 }

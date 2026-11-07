@@ -1,5 +1,5 @@
 import type { ROUTING_BLOCK } from './enums';
-import type { ReferralSla } from '@PortalModule';
+import type { LEDGER_MODEL, ReferralSla } from '@PortalModule';
 
 /** Where the partner has taken a referral since (rnc-2 R10): its move, its SLA, the value once closed. */
 interface ReferralProgress {
@@ -119,9 +119,40 @@ interface ReferralWritten {
   referral: Referral;
 }
 
+/** One partner's month on the network ledger: both models' figures and what it owes under the current one. */
+interface NetworkLedgerRow {
+  commission_cents: number;
+  deal_total_cents: number;
+  deals: number;
+  due_cents: number;
+  partner: { active: boolean; id: number; name: string; specialty: string };
+  subscribed: boolean;
+  subscription_cents: number;
+}
+
+/** The network's money model as it is now (`LedgerModelResource`): the model and both rules. */
+interface LedgerModelSettings {
+  commission_rate_bp: number;
+  model: LEDGER_MODEL;
+  monthly_fee_cents: number;
+}
+
+/** Franco's "Extrato da rede" (`NetworkStatementResource`, rnc-2 R11): every partner, the total and the other model's. */
+interface NetworkLedger extends LedgerModelSettings {
+  deal_total_cents: number;
+  deals: number;
+  month: string;
+  other: { model: LEDGER_MODEL; total_cents: number };
+  partners: NetworkLedgerRow[];
+  total_cents: number;
+}
+
 export type {
   CoveredItem,
   IssuedPartnerAccess,
+  LedgerModelSettings,
+  NetworkLedger,
+  NetworkLedgerRow,
   Partner,
   PartnerAccess,
   PartnerAccessPayload,

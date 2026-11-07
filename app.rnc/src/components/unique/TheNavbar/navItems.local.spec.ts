@@ -35,14 +35,24 @@ describe('useLocalNavItems', () => {
     ]);
   });
 
-  it("puts the metrics, the partner registry, the trail and the repricing in Reinaldo's group, each behind its own key (AM8)", () => {
+  it("puts the metrics, the partner registry, the trail, the network ledger and the repricing in Reinaldo's group, each behind its own key (AM8)", () => {
     const ceo = useLocalNavItems().value[1];
 
     expect(ceo?.children?.map((child) => [child.routeName, child.permission])).toEqual([
       ['metrics', 'metrics.read'],
       ['partners', 'partners.manage'],
       ['referral-trail', 'referrals.read'],
+      // rnc-2 F4 (R11): "Extrato da rede", behind `ledger.read` (D14).
+      ['network-ledger', 'ledger.read'],
       ['repricing', 'repricing.manage'],
+    ]);
+  });
+
+  it("puts the partner's statement under its portal, behind the same key and role (rnc-2 R11)", () => {
+    const portal = useLocalNavItems().value[3];
+
+    expect(portal?.children?.map((child) => [child.label, child.routeName, child.permission, child.role])).toEqual([
+      ['navigation.statement', 'portal-statement', 'portal.access', 'parceiro'],
     ]);
   });
 });

@@ -1,7 +1,7 @@
 import { REFERRAL_STATUS } from './enums';
 
 /** The screens this module owns, linked by name (celer-05): the rail and Home's redirect link here. */
-const PORTAL_ROUTE_NAMES = { home: 'portal' } as const;
+const PORTAL_ROUTE_NAMES = { home: 'portal', statement: 'portal-statement' } as const;
 
 /** The partner's only key (rnc-2 R1, `RoleSeeder::PARCEIRO_KEYS`). The operator holds it too. */
 const PORTAL_PERMISSIONS = { access: 'portal.access' } as const;

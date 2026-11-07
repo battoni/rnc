@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.3.0 — 2026-11-07
+
+### Added
+
+- The network ledger (rnc-2 F4, R11, A9's Vitest half): `LedgerView` at `/reinaldo/extrato` (`/ceo/ledger`, route `network-ledger`, `ledger.read`) — every partner's month, the total and the other model's, the model switch (`partners.manage`) that reloads both totals, "valor a conferir — sem cobrança automática", ◀ ▶ by month; `NetworkLedger`, `NetworkLedgerRow`, `LedgerModelSettings`; services `GetLedgerService`, `UpdateLedgerModelService`; rail child "Extrato da rede" under Reinaldo. Tested by `LedgerView.view.integration.spec.ts` and `navItems.local.spec.ts`.
+
 ## 1.2.0 — 2026-11-07
 
 ### Added

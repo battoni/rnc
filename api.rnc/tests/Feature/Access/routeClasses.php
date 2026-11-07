@@ -45,6 +45,7 @@ return [
     'GET portal/referrals' => 'portal',
     'GET portal/referrals/{id}' => 'portal',
     'POST portal/referrals/{id}/transition' => 'portal',
+    'GET portal/statement' => 'portal',
 
     // STAFF — the back office
     'GET auth/permission-groups' => 'staff',
@@ -79,6 +80,8 @@ return [
     'GET leads/{id}/partner-matches' => 'staff',
     'POST leads/{id}/referrals' => 'staff',
     'GET referrals' => 'staff',
+    'GET ledger' => 'staff',
+    'PATCH ledger/model' => 'staff',
     'GET metrics/funnel' => 'staff',
     'GET repricing' => 'staff',
     'GET repricing/{id}' => 'staff',

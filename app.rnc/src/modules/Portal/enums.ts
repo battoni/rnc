@@ -19,4 +19,16 @@ enum SLA_STATE {
   ENCERRADO = 'encerrado',
 }
 
-export { REFERRAL_STATUS, SLA_STATE };
+/** The firm's one money model for the whole network (rnc-2 R11, D10) — the API's `PartnerMoneyModel`. */
+enum LEDGER_MODEL {
+  COMISSAO = 'comissao',
+  ASSINATURA = 'assinatura',
+}
+
+/** A line of a partner's statement (`LedgerService::LINE_*`): the month's fee, or one closing. */
+enum STATEMENT_LINE_KIND {
+  SUBSCRIPTION = 'subscription',
+  CLOSING = 'closing',
+}
+
+export { LEDGER_MODEL, REFERRAL_STATUS, SLA_STATE, STATEMENT_LINE_KIND };

@@ -1,4 +1,4 @@
-import type { REFERRAL_STATUS, SLA_STATE } from './enums';
+import type { LEDGER_MODEL, REFERRAL_STATUS, SLA_STATE, STATEMENT_LINE_KIND } from './enums';
 
 /** Who is signed in to the portal (`PortalMeResource`). */
 interface PortalMe {
@@ -47,4 +47,38 @@ interface TransitionReferralPayload {
   to: REFERRAL_STATUS;
 }
 
-export type { PortalMe, PortalReferral, PortalReferralContact, ReferralSla, TransitionReferralPayload };
+/** One line of the partner's month: the fee (no referral) or a closing, with what it adds — `0` under assinatura. */
+interface StatementLine {
+  amount_cents: number;
+  closed_at: string | null;
+  company: string | null;
+  deal_value_cents: number | null;
+  kind: STATEMENT_LINE_KIND;
+  referral_id: number | null;
+}
+
+/**
+ * The partner's "Extrato" (`PartnerStatementResource`, rnc-2 R11): its month under the firm's model
+ * only, with that model's rule — the rate under comissão, the fee under assinatura (D10).
+ */
+interface PortalStatement {
+  commission_rate_bp?: number;
+  deal_total_cents: number;
+  deals: number;
+  firm: { name: string };
+  lines: StatementLine[];
+  model: LEDGER_MODEL;
+  month: string;
+  monthly_fee_cents?: number;
+  total_cents: number;
+}
+
+export type {
+  PortalMe,
+  PortalReferral,
+  PortalReferralContact,
+  PortalStatement,
+  ReferralSla,
+  StatementLine,
+  TransitionReferralPayload,
+};

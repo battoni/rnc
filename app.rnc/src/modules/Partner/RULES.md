@@ -1,5 +1,5 @@
 ---
-version: 1.2.0
+version: 1.3.0
 origin: rnc
 ---
 
@@ -13,7 +13,8 @@ Franco's network (R21–R23): the partner registry (`/reinaldo/parceiros`, route
 trail of every referral (`/reinaldo/trilha`, `referral-trail`), each with its `/ceo/…` twin, and the
 routing panel `MLeadRouting` the Pipeline's lead detail mounts under the diagnostic. The API is
 `GET/POST partners`, `PATCH partners/{id}`, `GET partners/options`, `GET leads/{id}/partner-matches`,
-`POST leads/{id}/referrals`, `GET referrals` (api `Partner` module).
+`POST leads/{id}/referrals`, `GET referrals` (api `Partner` module). From rnc-2 F4 also the network
+ledger (`/reinaldo/extrato`, `network-ledger`, `ledger.read`): `GET ledger`, `PATCH ledger/model`.
 
 ## Intentional Decisions
 
@@ -52,6 +53,13 @@ routing panel `MLeadRouting` the Pipeline's lead detail mounts under the diagnos
   words) and, once `fechado`, the first-year value ("Fechado · R$ …"; the trail's "Contrato no 1º
   ano"). The API sends `status_at`, `sla` and `deal_value_cents` (`null` until closed) on both
   answers; Franco never moves a status — only the partner does, from its portal.
+
+- **The network ledger (rnc-2 R11, D10)**: every partner's month, the total under the network's
+  model and the other model's — Franco's comparison, never the partner's. The switch is two
+  buttons with `aria-pressed` in a labelled group, offered only with `partners.manage`; a switch
+  PATCHes then reads the month again, so both totals come from the API, never from SPA maths.
+  Without the key the model is only named. The month is Portal's `useLedgerMonth` (Partner may read
+  Portal; Portal never reads Partner).
 
 ## Known Gaps
 

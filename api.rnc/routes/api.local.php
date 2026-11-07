@@ -15,6 +15,7 @@ use App\Modules\Diagnostic\Controllers\PublicDiagnosticController;
 use App\Modules\Firm\Controllers\PublicFirmController;
 use App\Modules\Metrics\Controllers\FunnelController;
 use App\Modules\Notification\Controllers\NotificationController;
+use App\Modules\Partner\Controllers\LedgerController;
 use App\Modules\Partner\Controllers\PartnerAccessController;
 use App\Modules\Partner\Controllers\PartnerController;
 use App\Modules\Partner\Controllers\PortalController;
@@ -96,6 +97,11 @@ Route::get('portal/me', [PortalController::class, 'me'])->middleware($portal);
 Route::get('portal/referrals', [PortalController::class, 'referrals'])->middleware($portal);
 Route::get('portal/referrals/{id}', [PortalController::class, 'referral'])->middleware($portal);
 Route::post('portal/referrals/{id}/transition', [PortalController::class, 'transition'])->middleware($portal);
+// The ledger (rnc-2 F4, R11, D10): the partner's own month on the portal; Franco's network month
+// behind `ledger.read` (ceo, operador) and the one money model behind the registry's key.
+Route::get('portal/statement', [PortalController::class, 'statement'])->middleware($portal);
+Route::get('ledger', [LedgerController::class, 'index'])->middleware(['auth', 'permission:ledger.read']);
+Route::patch('ledger/model', [LedgerController::class, 'updateModel'])->middleware(['auth', 'permission:partners.manage']);
 
 // Reinaldo's funnel (rnc-1 F7, R24, AM8): the last 7 or 30 days behind `metrics.read` (ceo, operador).
 Route::get('metrics/funnel', [FunnelController::class, 'show'])->middleware(['auth', 'permission:metrics.read']);
