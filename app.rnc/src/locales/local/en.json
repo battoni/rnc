@@ -40,7 +40,8 @@
     "partners": "Partners",
     "trail": "Trail",
     "metrics": "Metrics",
-    "repricing": "Repricing"
+    "repricing": "Repricing",
+    "portal": "Partner portal"
   },
   "rolesAndPermissions": {
     "groups": {
@@ -51,10 +52,15 @@
       "referrals": "Referral trail",
       "metrics": "Metrics",
       "repricing": "Fee repricing",
-      "clients": "Client portfolio"
+      "clients": "Client portfolio",
+      "portal": "Partner portal",
+      "ledger": "Network ledger",
+      "fiscal": "NF-e and suppliers",
+      "radar": "Opportunity radar"
     },
     "permissions": {
-      "import": "Import"
+      "import": "Import",
+      "access": "Access"
     }
   },
   "site": {
@@ -683,6 +689,32 @@
       "loadFailed": "The trail could not be loaded.",
       "emptyTitle": "No referrals yet",
       "emptyText": "When the team refers a lead to a partner, it shows here with the recorded consent."
+    },
+    "portalAccess": "Portal access",
+    "access": {
+      "title": "Portal access",
+      "lede": "The partner signs in with this username at the same login screen and sees only its portal.",
+      "username": "Username",
+      "usernameHint": "Letters, numbers and dots, e.g. parceiro.3.",
+      "email": "E-mail",
+      "required": "Required.",
+      "emailInvalid": "Type a valid e-mail.",
+      "create": "Create access",
+      "cancel": "Cancel",
+      "current": "Signs in as {username} · {email}",
+      "grantedAt": "Active since {date}",
+      "regenerate": "New password",
+      "revoke": "Revoke access",
+      "revokedNote": "Access revoked. Create it again to give the partner a new password.",
+      "passwordTitle": "Password",
+      "passwordOnce": "Shown only now: copy it and send it to the partner. It cannot be seen again.",
+      "copy": "Copy",
+      "copied": "Copied",
+      "done": "Done",
+      "exists": "This partner already has an active login.",
+      "missing": "This partner has no active login.",
+      "partnerInactive": "Reactivate the partner before giving it a login.",
+      "active": "Portal on"
     }
   },
   "metrics": {
@@ -885,5 +917,13 @@
     },
     "loadFailed": "Could not load the portfolio now.",
     "retry": "Try again"
+  },
+  "portal": {
+    "title": "Partner portal",
+    "greeting": "Hello, {name}",
+    "description": "This is {firm}'s partner portal. The referrals it sends you will appear here.",
+    "loadFailed": "The portal could not be loaded.",
+    "retry": "Try again",
+    "noPartner": "This login is not linked to a partner."
   }
 }

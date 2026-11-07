@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 3.3.0 — 2026-11-07
+
+### Changed
+
+- `HomeView` sends a partner's login (holds `portal.access`, not `home.read`) on to its portal with `router.replace` and renders nothing (rnc-2 F1, R3, A4): every refused back-office route falls back to `home`, so this bounces a partner from all of them. Reads `usePortalLanding` from `@PortalModule`.
+
 ## 3.2.0 — 2026-11-07
 
 ### Changed

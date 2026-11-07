@@ -19,6 +19,17 @@ have: `RoleSeeder` writes the three hub roles (`operador`, `ceo`, `equipe`) key 
 there is no "everything minus a list" left to subtract from. The protected all-keys role
 (`RoleService::ADMINISTRATOR_SLUG`) is `operador`.
 
+## Accounts another module provisions (rnc-2 F1, LOCAL)
+
+- **`Services/LinkedAccountService.php`** opens, re-passwords and closes an account for another
+  module's record — a partner's portal login (`users.partner_id`, role `parceiro`). The Partner
+  module decides when; the `users` and `sessions` writes happen here, because Auth owns them.
+- **A password it generates is returned once** (to be shown once) and stored only as the `hashed`
+  cast's hash — so it saves through `UserRepository::saveUser`, never the query-level `updateUser`.
+- **Changing the password or closing the account deletes the user's `sessions` rows**: with
+  `SESSION_DRIVER=database` a cookie handed out before finds no session and gets a 401 (plan AM5).
+  Without that, a revoked partner kept a working cookie until it expired.
+
 ## Domain
 
 Authentication, authorization, and the user/role/permission graph. Owns: `User` session

@@ -7,7 +7,9 @@ use Illuminate\Support\Facades\Schema;
 /*
  * The firm's network of specialists (rnc-1 R21): who a lead can be recommended to. `specialty` is
  * one of `PartnerSpecialty` (a string validated by the request, no enum column — AM11). A partner is
- * deactivated, never deleted: the trail keeps pointing at it. No login in Phase 1 (D7).
+ * deactivated, never deleted: the trail keeps pointing at it. Its portal login (rnc-2 R1–R2) is a
+ * `users` row with `partner_id`; `access_granted_at` / `access_revoked_at` (UTC) are only the
+ * current state — the history is `partner_access_events` (plan AM9).
  */
 return new class extends Migration
 {
@@ -22,6 +24,8 @@ return new class extends Migration
             $table->string('phone', 20)->nullable();
             $table->string('city', 80)->nullable();
             $table->boolean('active')->default(true);
+            $table->timestamp('access_granted_at')->nullable();
+            $table->timestamp('access_revoked_at')->nullable();
             $table->timestamps();
 
             $table->index(['firm_id', 'active']);

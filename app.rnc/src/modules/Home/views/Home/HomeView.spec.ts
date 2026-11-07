@@ -1,8 +1,17 @@
 import { createPinia, setActivePinia } from 'pinia';
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderWithPlugins } from '@/test/render';
 import { useUserStore } from '@UserModule';
 import HomeView from './HomeView.view.vue';
+
+const replace = vi.fn();
+
+vi.mock('vue-router', async (importOriginal) => ({
+  ...(await importOriginal<object>()),
+  useRouter: () => ({ replace }),
+}));
+
+beforeEach(() => replace.mockClear());
 
 const RouterLinkStub = { props: ['to'], template: '<a :data-to="JSON.stringify(to)"><slot /></a>' };
 
@@ -34,5 +43,19 @@ describe('HomeView', () => {
     const { queryAllByTestId } = renderAs(['home.read', 'leads.read', 'metrics.read']);
 
     expect(queryAllByTestId('workspace-card').map((card) => card.dataset.workspace)).toEqual(['team', 'ceo']);
+  });
+
+  // rnc-2 A4: every refused back-office route falls back to Home, so this is where a partner bounces.
+  it('sends a partner, who holds only the portal key, on to its portal and shows nothing', () => {
+    const { queryAllByTestId } = renderAs(['portal.access']);
+
+    expect(replace).toHaveBeenCalledWith({ name: 'portal-en' });
+    expect(queryAllByTestId('workspace-card')).toEqual([]);
+  });
+
+  it('keeps the operator, who holds the portal key too, in the back office', () => {
+    renderAs(['home.read', 'users.read', 'portal.access']);
+
+    expect(replace).not.toHaveBeenCalled();
   });
 });

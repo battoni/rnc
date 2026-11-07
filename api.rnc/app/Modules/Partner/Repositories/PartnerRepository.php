@@ -11,7 +11,7 @@ class PartnerRepository
     /** @return Collection<int, Partner> active first, then by name */
     public function findAllPartners(): Collection
     {
-        return Partner::query()->orderByDesc('active')->orderBy('name')->get();
+        return Partner::query()->with('account')->orderByDesc('active')->orderBy('name')->get();
     }
 
     /** @return Collection<int, Partner> */
@@ -29,6 +29,12 @@ class PartnerRepository
     public function findPartnerById(int $id): ?Partner
     {
         return Partner::query()->find($id);
+    }
+
+    /** The portal's partner (rnc-2 R4): of the current firm, and active. */
+    public function findActivePartnerById(int $id): ?Partner
+    {
+        return Partner::query()->where('active', true)->find($id);
     }
 
     /** @param  array<string, mixed>  $attributes */

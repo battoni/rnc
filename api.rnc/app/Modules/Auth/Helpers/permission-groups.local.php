@@ -7,6 +7,10 @@
  * hand them out once; each endpoint that needs one arrives in its own phase — pipeline and agenda
  * in F5, the bell in F4, partners and the trail in F6, metrics in F7, repricing and the client
  * import in F8. Who holds which is `RoleSeeder`'s table.
+ *
+ * Phase 2 (rnc-2 F1) declares its five keys at once, the same way: `portal.access` (the partner's
+ * portal, F1), `ledger.read` (the network ledger, F4), `fiscal.read` / `fiscal.import` (NF-e
+ * readiness and supplier credit, F6a–F8) and `radar.manage` (the Radar, F9). Later phases only grant.
  */
 
 return [
@@ -66,6 +70,39 @@ return [
         'permissions' => [
             ['labelKey' => 'rolesAndPermissions.permissions.manage', 'key' => 'repricing.manage', 'value' => false],
             ['labelKey' => 'rolesAndPermissions.permissions.import', 'key' => 'clients.import', 'value' => false],
+        ],
+    ],
+    [
+        'id' => 'portal',
+        'nameKey' => 'rolesAndPermissions.groups.portal',
+        'icon' => 'pi pi-briefcase',
+        'permissions' => [
+            ['labelKey' => 'rolesAndPermissions.permissions.access', 'key' => 'portal.access', 'value' => false],
+        ],
+    ],
+    [
+        'id' => 'ledger',
+        'nameKey' => 'rolesAndPermissions.groups.ledger',
+        'icon' => 'pi pi-wallet',
+        'permissions' => [
+            ['labelKey' => 'rolesAndPermissions.permissions.read', 'key' => 'ledger.read', 'value' => false],
+        ],
+    ],
+    [
+        'id' => 'fiscal',
+        'nameKey' => 'rolesAndPermissions.groups.fiscal',
+        'icon' => 'pi pi-file',
+        'permissions' => [
+            ['labelKey' => 'rolesAndPermissions.permissions.read', 'key' => 'fiscal.read', 'value' => false],
+            ['labelKey' => 'rolesAndPermissions.permissions.import', 'key' => 'fiscal.import', 'value' => false],
+        ],
+    ],
+    [
+        'id' => 'radar',
+        'nameKey' => 'rolesAndPermissions.groups.radar',
+        'icon' => 'pi pi-compass',
+        'permissions' => [
+            ['labelKey' => 'rolesAndPermissions.permissions.manage', 'key' => 'radar.manage', 'value' => false],
         ],
     ],
 ];

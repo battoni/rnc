@@ -1,7 +1,30 @@
 import type { ROUTING_BLOCK } from './enums';
 
+/** A partner's portal login (`PartnerAccessResource`, rnc-2 R2) — never with its password. */
+interface PartnerAccess {
+  active: boolean;
+  email: string | null;
+  granted_at: string | null;
+  partner_id: number;
+  revoked_at: string | null;
+  user_id: number | null;
+  username: string | null;
+}
+
+/** A login just created or a password just regenerated: the only answer that carries it. */
+interface IssuedPartnerAccess extends PartnerAccess {
+  password: string;
+}
+
+/** What `CreatePartnerAccessRequest` validates. */
+interface PartnerAccessPayload {
+  email: string;
+  username: string;
+}
+
 /** A partner of the registry (`PartnerResource`). */
 interface Partner {
+  access: PartnerAccess | null;
   active: boolean;
   city: string | null;
   email: string;
@@ -90,7 +113,10 @@ interface ReferralWritten {
 
 export type {
   CoveredItem,
+  IssuedPartnerAccess,
   Partner,
+  PartnerAccess,
+  PartnerAccessPayload,
   PartnerMatch,
   PartnerMatches,
   PartnerOption,

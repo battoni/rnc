@@ -7,6 +7,7 @@ use App\Helpers\Brazil\PhoneNumber;
 use App\Modules\Auth\Contracts\LoginCodeSender;
 use App\Modules\Auth\Senders\LogLoginCodeSender;
 use App\Modules\Firm\Services\CurrentFirm;
+use App\Modules\Partner\Services\CurrentPartner;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -82,6 +83,8 @@ class AppServiceProvider extends ServiceProvider
 
         // Scoped, not a singleton: the firm of one request must never be the next one's (AM6).
         $this->app->scoped(CurrentFirm::class);
+        // The portal's partner, the same way (rnc-2 D2): set per request by `ResolveCurrentPartner`.
+        $this->app->scoped(CurrentPartner::class);
     }
 
     /**

@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.7.0 — 2026-11-07
+
+### Added
+
+- rnc-2 F1: `users.partner_id` (nullable, unique, no foreign key — W25) and `partners.access_granted_at` / `access_revoked_at` folded into their `create_*` migrations; the new `partner_access_events` table; `RoleSeeder` writes the fourth role `parceiro` (`portal.access`) and gives `ceo` `ledger.read`; `PartnerUserSeeder` (local only) seeds `parceiro.1`…`parceiro.8`. Schema dumped before and after `migrate:fresh` and diffed: only those changes.
+
 ## 1.6.0 — 2026-09-22
 
 ### Added

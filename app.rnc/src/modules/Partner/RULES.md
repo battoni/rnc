@@ -1,5 +1,5 @@
 ---
-version: 1.0.0
+version: 1.1.0
 origin: rnc
 ---
 
@@ -40,7 +40,14 @@ routing panel `MLeadRouting` the Pipeline's lead detail mounts under the diagnos
 - **The score badge reads "92% · ERP/NF-e"** (`partners.routing.score`); a partner from
   `COVERED_SCORE` up covers something and wears the brand tint, the rest stay muted.
 
+- **"Acesso ao portal" (rnc-2 R2)** opens `MPartnerAccessForm` in its own `MMainDialog`, on an
+  active partner only (the API refuses an inactive one). The form owns the three calls; a
+  generated password lives only in that panel — shown once, with "Copiar" — and `onChanged` hands
+  the view the login WITHOUT it, so the row (and anything that keeps it) never holds a password.
+  Refusals are read by `code` (`PARTNER_ACCESS_ERROR_KEYS`), like the routing form's. Revoke is
+  reversible (create again), so no confirm popup.
+
 ## Known Gaps
 
-- **No partner portal** (Phase 2): the status stays `enviado`; the trail shows it as sent.
+- **The status still stays `enviado`** until the portal's transitions (rnc-2 F2–F3); the trail shows it as sent.
 - **The trail has no date range** — newest first and by partner only.

@@ -7,13 +7,16 @@ import { useLocalNavItems } from './navItems.local';
  * TheNavbar.spec proves that gate. What this proves is that every group declares one.
  */
 describe('useLocalNavItems', () => {
-  it('declares the three groups, in order, each with its gate', () => {
+  it('declares the three groups and the portal, in order, each with its gate', () => {
     const items = useLocalNavItems().value;
 
-    expect(items.map((item) => [item.label, item.routeName, item.permission])).toEqual([
-      ['navigation.team', 'team-home', 'leads.read'],
-      ['navigation.ceo', 'ceo-home', 'metrics.read'],
-      ['navigation.operator', 'operator-home', 'users.read'],
+    expect(items.map((item) => [item.label, item.routeName, item.permission, item.role])).toEqual([
+      ['navigation.team', 'team-home', 'leads.read', undefined],
+      ['navigation.ceo', 'ceo-home', 'metrics.read', undefined],
+      ['navigation.operator', 'operator-home', 'users.read', undefined],
+      // rnc-2 A4: the portal for a partner's login only — the key AND the role, so the operator,
+      // who holds every key, never sees it, and a partner holds none of the three groups' keys.
+      ['navigation.portal', 'portal', 'portal.access', 'parceiro'],
     ]);
   });
 

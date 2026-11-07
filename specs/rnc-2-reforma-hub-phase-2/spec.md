@@ -300,3 +300,7 @@ billing commissions.
 - C1 (plan, AM4): R16's access key is unique per firm + key + **client**, not per firm + key: a document
   between two portfolio clients is stored twice, once as each one's saída/entrada. A13's re-upload of
   such a document stores nothing and reports `duplicate` for each client row it already has.
+- C2 (F1, A1/AM5): a revoked user's live cookie gets **401 `Unauthenticated`**, not 401
+  `auth.accountInactive`: revoke deletes its `sessions` rows, so the cookie names no session and the
+  request is a guest's. `auth.accountInactive` is what its next login with the right password
+  answers. Either way the SPA's 401 clears the session; `PartnerAccessTest` asserts both.

@@ -1,4 +1,4 @@
-import type { Partner, PartnerMatches, Referral } from '../interfaces';
+import type { Partner, PartnerAccess, PartnerMatches, Referral } from '../interfaces';
 
 /* What the API answers for the network (rnc-1 F6), as the specs need it. */
 const MATCHES_FIXTURE: PartnerMatches = {
@@ -48,6 +48,7 @@ const REFERRAL_FIXTURE: Referral = {
 };
 
 const PARTNER_FIXTURE: Partner = {
+  access: null,
   active: true,
   city: 'Barueri-SP',
   email: 'contato3@parceiro.exemplo',
@@ -57,4 +58,15 @@ const PARTNER_FIXTURE: Partner = {
   specialty: 'erp_nfe',
 };
 
-export { MATCHES_FIXTURE, PARTNER_FIXTURE, REFERRAL_FIXTURE };
+/** An active portal login (rnc-2 R2), as `PartnerAccessResource` answers it — never with the password. */
+const PARTNER_ACCESS_FIXTURE: PartnerAccess = {
+  active: true,
+  email: 'portal3@parceiro.exemplo',
+  granted_at: '2026-11-09T13:00:00+00:00',
+  partner_id: 3,
+  revoked_at: null,
+  user_id: 21,
+  username: 'parceiro.3',
+};
+
+export { MATCHES_FIXTURE, PARTNER_ACCESS_FIXTURE, PARTNER_FIXTURE, REFERRAL_FIXTURE };

@@ -1,17 +1,19 @@
 ---
-version: 1.0.1
+version: 1.1.0
 origin: rnc
 ---
 # RULES — Partner Module
 
-> For AI agents. rnc-1 F6, 07/11/2026.
+> For AI agents. rnc-1 F6, 07/11/2026; rnc-2 F1 (partner access, the portal's first route).
 
 ## Domain
 
 The firm's network (R21–R23): the partner registry, the routing score of each partner against a
 lead's diagnostic, the referral — Franco recommending one lead to one partner, only with the lead's
 consent — and the trail of every referral. It owns `partners` and `referrals`; the lead's timeline
-line goes through `LeadService::recordReferral` (Lead owns `lead_events`).
+line goes through `LeadService::recordReferral` (Lead owns `lead_events`). From rnc-2 it also owns a
+partner's portal login — `partners.access_*_at` and `partner_access_events` — and the portal's
+`CurrentPartner` scope; the login's `users` row is written by Auth's `LinkedAccountService`.
 
 ## The routes (`routes/api.local.php`)
 
@@ -24,6 +26,10 @@ line goes through `LeadService::recordReferral` (Lead owns `lead_events`).
 | `GET leads/{id}/partner-matches` | `leads.read` | `{can_refer, blocked_reason, matches: [{partner, score, covers, referral}]}`, best first |
 | `POST leads/{id}/referrals` | `leads.update` | `{partner_id, message}` → `{referral, event}` (201); 422 `code: consent_required`, 409 `code: already_referred` |
 | `GET referrals?partner_id=&page=&per_page=` | `referrals.read` | the trail, newest first, paginated |
+| `POST partners/{id}/access` | `partners.manage` | `{username, email}` → the login with `password`, once (201); 409 `code: partner_access_exists` / `partner_inactive` |
+| `POST partners/{id}/access/password` | `partners.manage` | a new `password`, once; the login's sessions end; 404 `code: partner_access_missing` |
+| `DELETE partners/{id}/access` | `partners.manage` | the login deactivated, its sessions ended → the access as it is now; 404 `partner_access_missing` |
+| `GET portal/me` | `portal.access` + `portal` | `{partner: {id, name, specialty}, firm: {name, slug}}` |
 
 ## Intentional Decisions
 
@@ -57,15 +63,45 @@ line goes through `LeadService::recordReferral` (Lead owns `lead_events`).
   moves it.
 - **Another firm's partner, lead or referral is a 404 or absent** (`BelongsToFirm` on both tables, A1).
 
+### Partner access and the portal (rnc-2 F1, R1–R4, D1–D2)
+
+- **One login per partner, one `users` row** (`PartnerAccessService`): role `parceiro` (only
+  `portal.access`), `partner_id` set, and `firm_id` = the PARTNER's firm (AM1) — a login without a
+  firm would fall through `ResolveCurrentFirm` to the `X-Firm` header. A second active login is 409
+  `partner_access_exists`; a revoked one is reopened on the next grant (same user, the username may
+  stay), so `CreatePartnerAccessRequest`'s uniqueness ignores the partner's own row. An inactive
+  partner gets none (409 `partner_inactive`). `users.partner_id` is unique, so two grants racing
+  past the check meet the index and the loser gets the same 409.
+- **The password is generated and answered once** (`PartnerAccessResource::withPassword`, closed by
+  default); only its hash is stored. Regenerate and revoke delete the login's `sessions` rows and
+  revoke deactivates it, so its live cookie is a 401 on the next request and the right password then
+  answers `auth.accountInactive` (AM5). **Deactivating the partner closes its login** in the same
+  transaction (`PartnerService::update`).
+- **History is `partner_access_events`** — one `granted`/`revoked` row per change, UTC (AM9);
+  `partners.access_granted_at` / `access_revoked_at` are only the current state. The ledger (F4)
+  bills subscription months from the rows. The seeded logins get their granted row too.
+- **`CurrentPartner`** (scoped binding) is set by `App\Http\Middleware\ResolveCurrentPartner`, the
+  route alias `portal`, on every `portal/*` route and never globally: it loads the user's
+  `partner_id` through FirmScope and requires `active`, else 403 `portal.noPartner` — the operator
+  holds `portal.access` and is refused here. Portal code reads the partner from it, never from
+  the request.
+- **Every API route is classified** in `tests/Feature/Access/routeClasses.php` (public · portal ·
+  staff · shared, A2): a route added without a class fails `RouteMatrixTest`.
+
 ## Tables read from other modules
 
 `leads`, `lead_consents` (Lead, through `LeadRepository` and `Lead::latestConsent`); `users` (the
-referrer's name); `firms` (Franco's contact for the e-mail, through `CurrentFirm`).
+referrer's name; a partner's login through `Partner::account` and `CreatePartnerAccessRequest`'s
+uniqueness — written only by Auth's `LinkedAccountService`); `firms` (Franco's contact for the
+e-mail and the portal's firm name, through `CurrentFirm` / `BelongsToFirm::firm`).
 
 ## Known Gaps
 
-- **No partner login yet** (D7): the partner learns of a referral only by e-mail, and the status
-  never leaves `enviado` until the Phase 2 portal.
+*Retired 07/11/2026 (rnc-2 F1):* "No partner login yet (D7)". A partner now has a portal login
+(`POST partners/{id}/access`); the status still stays `enviado` until the portal moves it (F2).
+
+- **The portal answers only `GET portal/me` so far** (rnc-2 F1): the inbox, the transitions and the
+  SLA arrive in F2–F3; until then a partner signs in to a landing that names it.
 - **No SLA clock** (the demo's 24 business hours): the message asks for it, nothing measures it.
 - **The local seed's partners are placeholders** (`PartnerSeeder`, local only): production starts
   with an empty registry until Franco names its partners.

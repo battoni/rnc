@@ -46,6 +46,8 @@
       "@MetricsModule/*": ["./src/modules/Metrics/*"],
       "@PartnerModule": ["./src/modules/Partner"],
       "@PartnerModule/*": ["./src/modules/Partner/*"],
+      "@PortalModule": ["./src/modules/Portal"],
+      "@PortalModule/*": ["./src/modules/Portal/*"],
       "@RepricingModule": ["./src/modules/Repricing"],
       "@RepricingModule/*": ["./src/modules/Repricing/*"],
       "@PersonalizationModule": ["./src/modules/Personalization"],

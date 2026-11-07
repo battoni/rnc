@@ -15,7 +15,9 @@ use App\Modules\Diagnostic\Controllers\PublicDiagnosticController;
 use App\Modules\Firm\Controllers\PublicFirmController;
 use App\Modules\Metrics\Controllers\FunnelController;
 use App\Modules\Notification\Controllers\NotificationController;
+use App\Modules\Partner\Controllers\PartnerAccessController;
 use App\Modules\Partner\Controllers\PartnerController;
+use App\Modules\Partner\Controllers\PortalController;
 use App\Modules\Partner\Controllers\ReferralController;
 use App\Modules\Pipeline\Controllers\AgendaController;
 use App\Modules\Pipeline\Controllers\PipelineLeadController;
@@ -75,6 +77,19 @@ Route::get('partners/options', [PartnerController::class, 'options'])->middlewar
 Route::get('leads/{id}/partner-matches', [ReferralController::class, 'matches'])->middleware(['auth', 'permission:leads.read']);
 Route::post('leads/{id}/referrals', [ReferralController::class, 'store'])->middleware(['auth', 'permission:leads.update']);
 Route::get('referrals', [ReferralController::class, 'index'])->middleware(['auth', 'permission:referrals.read']);
+
+// A partner's portal login (rnc-2 F1, R2): created, its password regenerated or revoked from the
+// registry, behind the registry's own key. The password is in the create and regenerate answers only.
+Route::post('partners/{id}/access', [PartnerAccessController::class, 'store'])->middleware(['auth', 'permission:partners.manage']);
+Route::post('partners/{id}/access/password', [PartnerAccessController::class, 'regeneratePassword'])->middleware(['auth', 'permission:partners.manage']);
+Route::delete('partners/{id}/access', [PartnerAccessController::class, 'destroy'])->middleware(['auth', 'permission:partners.manage']);
+
+// The partner's portal (rnc-2 R3–R4, D2; plan AM1): every route `portal.access` AND `portal`
+// (`ResolveCurrentPartner`), which loads the signed-in user's partner inside its firm — the
+// operator holds the key and has no partner, so it is refused. Classified in
+// `tests/Feature/Access/routeClasses.php`, like every route (A2).
+$portal = ['auth', 'permission:portal.access', 'portal'];
+Route::get('portal/me', [PortalController::class, 'me'])->middleware($portal);
 
 // Reinaldo's funnel (rnc-1 F7, R24, AM8): the last 7 or 30 days behind `metrics.read` (ceo, operador).
 Route::get('metrics/funnel', [FunnelController::class, 'show'])->middleware(['auth', 'permission:metrics.read']);

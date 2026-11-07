@@ -20,6 +20,7 @@ uses(RefreshDatabase::class);
  *
  * The table is the plan review's AM8 (rnc-1, 07/11/2026): the team works the pipeline, Reinaldo
  * also runs the network, the numbers and the repricing, and the operator holds everything.
+ * rnc-2 F1 adds `parceiro` (R1): the portal key and nothing else, and Reinaldo's `ledger.read`.
  */
 
 beforeEach(fn () => $this->seed([FirmSeeder::class, RoleSeeder::class, SuperAdminSeeder::class]));
@@ -37,8 +38,12 @@ function seededRoleKeys(string $slug): array
 }
 
 describe('the seeded roles', function () {
-    it('are exactly the three of the product', function () {
-        expect(Role::pluck('slug')->sort()->values()->all())->toBe(['ceo', 'equipe', 'operador']);
+    it('are exactly the four of the product', function () {
+        expect(Role::pluck('slug')->sort()->values()->all())->toBe(['ceo', 'equipe', 'operador', 'parceiro']);
+    });
+
+    it('give a partner only the portal (rnc-2 R1)', function () {
+        expect(seededRoleKeys('parceiro'))->toBe(['portal.access']);
     });
 
     it('give the team only the pipeline', function () {
@@ -58,6 +63,7 @@ describe('the seeded roles', function () {
             'home.read',
             'leads.read',
             'leads.update',
+            'ledger.read',
             'metrics.read',
             'notifications.read',
             'partners.manage',
@@ -77,7 +83,7 @@ describe('the seeded roles', function () {
     });
 
     it('keep the staff directory and the permission matrix with the operator', function () {
-        foreach (['ceo', 'equipe'] as $slug) {
+        foreach (['ceo', 'equipe', 'parceiro'] as $slug) {
             expect(seededRoleKeys($slug))->not->toContain('users.read')
                 ->and(seededRoleKeys($slug))->not->toContain('permissions.update');
         }

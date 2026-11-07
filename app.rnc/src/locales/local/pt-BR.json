@@ -40,7 +40,8 @@
     "partners": "Parceiros",
     "trail": "Trilha",
     "metrics": "Métricas",
-    "repricing": "Reajuste"
+    "repricing": "Reajuste",
+    "portal": "Portal do parceiro"
   },
   "rolesAndPermissions": {
     "groups": {
@@ -51,10 +52,15 @@
       "referrals": "Trilha de encaminhamentos",
       "metrics": "Métricas",
       "repricing": "Reajuste de honorários",
-      "clients": "Carteira de clientes"
+      "clients": "Carteira de clientes",
+      "portal": "Portal do parceiro",
+      "ledger": "Extrato da rede",
+      "fiscal": "NF-e e fornecedores",
+      "radar": "Radar de oportunidades"
     },
     "permissions": {
-      "import": "Importar"
+      "import": "Importar",
+      "access": "Acessar"
     }
   },
   "site": {
@@ -683,6 +689,32 @@
       "loadFailed": "Não foi possível carregar a trilha.",
       "emptyTitle": "Nenhum encaminhamento ainda",
       "emptyText": "Quando a equipe encaminhar um lead a um parceiro, ele aparece aqui com a autorização registrada."
+    },
+    "portalAccess": "Acesso ao portal",
+    "access": {
+      "title": "Acesso ao portal",
+      "lede": "O parceiro entra com este usuário na mesma tela de login e vê só o portal dele.",
+      "username": "Usuário",
+      "usernameHint": "Letras, números e pontos, por exemplo parceiro.3.",
+      "email": "E-mail",
+      "required": "Obrigatório.",
+      "emailInvalid": "Digite um e-mail válido.",
+      "create": "Criar acesso",
+      "cancel": "Cancelar",
+      "current": "Entra como {username} · {email}",
+      "grantedAt": "Ativo desde {date}",
+      "regenerate": "Gerar nova senha",
+      "revoke": "Revogar acesso",
+      "revokedNote": "Acesso revogado. Crie de novo para dar ao parceiro uma nova senha.",
+      "passwordTitle": "Senha",
+      "passwordOnce": "Mostrada só agora: copie e envie ao parceiro. Ela não pode ser vista de novo.",
+      "copy": "Copiar",
+      "copied": "Copiada",
+      "done": "Concluir",
+      "exists": "Este parceiro já tem um acesso ativo.",
+      "missing": "Este parceiro não tem acesso ativo.",
+      "partnerInactive": "Reative o parceiro antes de dar um acesso a ele.",
+      "active": "Portal ativo"
     }
   },
   "metrics": {
@@ -885,5 +917,13 @@
     },
     "loadFailed": "Não foi possível carregar a carteira agora.",
     "retry": "Tentar de novo"
+  },
+  "portal": {
+    "title": "Portal do parceiro",
+    "greeting": "Olá, {name}",
+    "description": "Este é o portal de parceiros da {firm}. Os encaminhamentos que ela enviar para vocês aparecem aqui.",
+    "loadFailed": "Não foi possível carregar o portal.",
+    "retry": "Tentar de novo",
+    "noPartner": "Este acesso não está ligado a um parceiro."
   }
 }

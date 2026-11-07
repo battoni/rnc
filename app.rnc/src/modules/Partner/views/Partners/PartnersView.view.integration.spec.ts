@@ -9,7 +9,8 @@ import { server } from '@/test/msw/server';
 import { renderWithPlugins } from '@/test/render';
 import { useUserStore } from '@UserModule';
 import MAddEditPartnerForm from '../../components/molecules/MAddEditPartnerForm/MAddEditPartnerForm.vue';
-import { PARTNER_FIXTURE } from '../../test/fixtures';
+import MPartnerAccessForm from '../../components/molecules/MPartnerAccessForm/MPartnerAccessForm.vue';
+import { PARTNER_ACCESS_FIXTURE, PARTNER_FIXTURE } from '../../test/fixtures';
 import PartnersView from './PartnersView.view.vue';
 
 /*
@@ -51,7 +52,7 @@ function renderPartners() {
   );
 
   return renderWithPlugins(PartnersView, {
-    global: { components: { Button, InputText, MAddEditPartnerForm, Skeleton }, stubs: STUBS },
+    global: { components: { Button, InputText, MAddEditPartnerForm, MPartnerAccessForm, Skeleton }, stubs: STUBS },
     pinia,
   });
 }
@@ -87,7 +88,10 @@ beforeEach(() => {
       patched.push(body);
 
       return HttpResponse.json({ data: { ...PARTNER_FIXTURE, ...body } });
-    })
+    }),
+    http.post('http://localhost/partners/3/access', () =>
+      HttpResponse.json({ data: { ...PARTNER_ACCESS_FIXTURE, password: 'Kd83hfPq02LxZm4a' } }, { status: 201 })
+    )
   );
 });
 
@@ -147,5 +151,24 @@ describe('PartnersView', () => {
         'Inactive'
       )
     );
+  });
+
+  // rnc-2 F1, R2: "Acesso ao portal" on an active partner's row; the row then says the portal is on.
+  it('gives an active partner its portal login from the row, and the row says so', async () => {
+    renderPartners();
+
+    const rows = await screen.findAllByTestId('partner-row');
+
+    expect(within(rows[1]!).queryByTestId('partner-access')).toBeNull();
+
+    await fireEvent.click(within(rows[0]!).getByTestId('partner-access'));
+    await fireEvent.update(screen.getByTestId('access-username'), 'parceiro.3');
+    await fireEvent.submit(screen.getByTestId('access-form'));
+
+    expect((await screen.findByTestId('access-password')).textContent).toContain('Kd83hfPq02LxZm4a');
+    await waitFor(() =>
+      expect(within(screen.getAllByTestId('partner-row')[0]!).getByTestId('partner-portal')).toBeTruthy()
+    );
+    expect(screen.getAllByTestId('partner-row')[0]!.textContent).not.toContain('Kd83hfPq02LxZm4a');
   });
 });

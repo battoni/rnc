@@ -23,6 +23,8 @@ class PartnerResource extends JsonResource
             'phone' => $this->phone,
             'city' => $this->city,
             'active' => $this->active,
+            // The portal login (rnc-2 R2) — never its password, which only its own answer carries.
+            'access' => $this->account ? new PartnerAccessResource($this->resource) : null,
         ];
     }
 }

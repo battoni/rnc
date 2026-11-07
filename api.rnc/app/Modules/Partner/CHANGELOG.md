@@ -2,6 +2,17 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.1.0 — 2026-11-07
+
+### Added
+
+- A partner's portal login (rnc-2 F1, R1–R4, A1–A2; plan AM1, AM5, AM9): `POST partners/{id}/access`, `POST partners/{id}/access/password`, `DELETE partners/{id}/access` (`PartnerAccessController`, `PartnerAccessService`, `CreatePartnerAccessRequest`, `PartnerAccessResource`, `PartnerAccessException` with codes `partner_access_exists`, `partner_access_missing`, `partner_inactive`); `partners.access_granted_at` / `access_revoked_at`, the `partner_access_events` table (`PartnerAccessEvent`, `PartnerAccessEventType`); `Partner::account`; `PartnerResource` carries `access`.
+- The portal's scope: `CurrentPartner`, `ResolveCurrentPartner` (alias `portal`, 403 `portal.noPartner`) and `GET portal/me` (`PortalController`, `PortalMeResource`). Tested by `PartnerAccessTest`, `PortalMeTest`, `PartnerUserSeederTest` and `tests/Feature/Access/RouteMatrixTest`.
+
+### Changed
+
+- `PartnerService::update` closes the partner's login when it deactivates the partner.
+
 ## 1.0.1 — 2026-11-07
 
 ### Fixed

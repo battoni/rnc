@@ -1,5 +1,5 @@
 ---
-version: 3.2.0
+version: 3.3.0
 origin: pendulum
 based-on: 2.0.0
 ---
@@ -30,6 +30,12 @@ opens: Equipe (`team-home`), Reinaldo (`ceo-home`) and Operador (`operator-home`
   in F1; later phases add their own screens as routes and rail children. The team's landing
   (`team-home`) now redirects to its pipeline (F5) and Reinaldo's (`ceo-home`) to his metrics (F7),
   by path — Home imports nothing from Pipeline or Metrics.
+
+- **A partner never sees Home** (rnc-2 R3, A4): `HomeView` replaces itself with the portal when
+  `usePortalLanding().isPortalOnly` (`portal.access` and no `home.read`) and renders nothing. The
+  guard falls every refused route back to `home`, so this one redirect bounces a partner from the
+  whole back office; the operator holds both keys and stays. The portal is reached by route name
+  through `@PortalModule`'s barrel.
 
 _Retired 07/11/2026:_ "Placeholder home view — do not add features until the product home screen is
 designed". The product (rnc-1) designed it: a greeting and the person's workspaces.

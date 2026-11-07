@@ -4,6 +4,7 @@ use App\Http\Middleware\EnsureAccountActive;
 use App\Http\Middleware\EnsureUserPermission;
 use App\Http\Middleware\PreventIndexing;
 use App\Http\Middleware\ResolveCurrentFirm;
+use App\Http\Middleware\ResolveCurrentPartner;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -51,6 +52,8 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'permission' => EnsureUserPermission::class,
+            // The portal's partner (rnc-2 D2, plan AM1): on `portal/*` routes only, never global.
+            ResolveCurrentPartner::ALIAS => ResolveCurrentPartner::class,
         ]);
 
         /**

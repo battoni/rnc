@@ -1,0 +1,86 @@
+<?php
+
+/*
+ * Every API route of `routes/api.php` and `routes/api.local.php`, in one of four classes
+ * (rnc-2 A2; plan P10, AM2). `RouteMatrixTest` fails when a route is registered and missing here,
+ * or listed here and gone — a new route is classified in the phase that adds it.
+ *
+ *   public  no session: the site, sign-in, registration, the QA login-as (local and testing only)
+ *   portal  `permission:portal.access` + `portal`: the partner's own portal
+ *   staff   `auth` + a back-office key the role `parceiro` never holds
+ *   shared  any signed-in person, partner included: who am I, my name, sign out
+ *
+ * Keys are `METHOD uri`, without the `api/` prefix; HEAD is left out (it answers as GET).
+ */
+return [
+    // PUBLIC — the site and the doors into the app
+    'GET public/firm' => 'public',
+    'GET public/sectors' => 'public',
+    'GET public/sectors/{slug}' => 'public',
+    'POST public/events' => 'public',
+    'POST public/diagnostics' => 'public',
+    'POST public/diagnostics/{token}/cnpj' => 'public',
+    'PATCH public/diagnostics/{token}' => 'public',
+    'GET public/diagnostics/{token}/result' => 'public',
+    'GET public/diagnostics/{token}/simulation' => 'public',
+    'GET public/diagnostics/{token}/availability' => 'public',
+    'POST public/diagnostics/{token}/booking' => 'public',
+    'GET public/reports/{reportToken}' => 'public',
+    'POST auth/login' => 'public',
+    'GET auth/support-names' => 'public',
+    'POST auth/phone/code' => 'public',
+    'POST auth/phone/verify' => 'public',
+    'POST auth/register' => 'public',
+    'POST auth/email/code' => 'public',
+    'POST auth/email/verify' => 'public',
+    'GET qa/login-as/{username}' => 'public',
+
+    // SHARED — any signed-in person (AM2)
+    'GET auth/me' => 'shared',
+    'PATCH auth/me' => 'shared',
+    'POST auth/logout' => 'shared',
+
+    // PORTAL — the partner's (rnc-2)
+    'GET portal/me' => 'portal',
+
+    // STAFF — the back office
+    'GET auth/permission-groups' => 'staff',
+    'GET auth/roles' => 'staff',
+    'GET auth/roles/{id}' => 'staff',
+    'POST auth/roles' => 'staff',
+    'PATCH auth/roles/{id}' => 'staff',
+    'PATCH auth/roles/{id}/permissions' => 'staff',
+    'DELETE auth/roles/{id}' => 'staff',
+    'GET auth/users/check-username' => 'staff',
+    'GET auth/users' => 'staff',
+    'GET auth/users/{id}' => 'staff',
+    'POST auth/users' => 'staff',
+    'PATCH auth/users/{id}' => 'staff',
+    'PATCH auth/users/{id}/archive' => 'staff',
+    'DELETE auth/users/{id}' => 'staff',
+    'GET notifications' => 'staff',
+    'PATCH notifications/{id}/read' => 'staff',
+    'POST notifications/read-all' => 'staff',
+    'GET leads' => 'staff',
+    'GET leads/{id}' => 'staff',
+    'PATCH leads/{id}/stage' => 'staff',
+    'POST leads/{id}/notes' => 'staff',
+    'GET agenda' => 'staff',
+    'GET partners' => 'staff',
+    'POST partners' => 'staff',
+    'PATCH partners/{id}' => 'staff',
+    'GET partners/options' => 'staff',
+    'POST partners/{id}/access' => 'staff',
+    'POST partners/{id}/access/password' => 'staff',
+    'DELETE partners/{id}/access' => 'staff',
+    'GET leads/{id}/partner-matches' => 'staff',
+    'POST leads/{id}/referrals' => 'staff',
+    'GET referrals' => 'staff',
+    'GET metrics/funnel' => 'staff',
+    'GET repricing' => 'staff',
+    'GET repricing/{id}' => 'staff',
+    'GET repricing/{id}/letter' => 'staff',
+    'POST repricing/mark' => 'staff',
+    'POST clients/import' => 'staff',
+    'GET clients/import/template' => 'staff',
+];

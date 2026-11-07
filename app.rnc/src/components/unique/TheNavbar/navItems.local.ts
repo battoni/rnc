@@ -5,6 +5,7 @@ import { WORKSPACES } from '@HomeModule';
 import { METRICS_PERMISSIONS, METRICS_ROUTE_NAMES } from '@MetricsModule';
 import { PARTNER_PERMISSIONS, PARTNER_ROUTE_NAMES } from '@PartnerModule';
 import { PIPELINE_PERMISSIONS, PIPELINE_ROUTE_NAMES } from '@PipelineModule';
+import { PORTAL_PERMISSIONS, PORTAL_ROLE_SLUG, PORTAL_ROUTE_NAMES } from '@PortalModule';
 import { REPRICING_PERMISSIONS, REPRICING_ROUTE_NAMES } from '@RepricingModule';
 
 /**
@@ -106,20 +107,34 @@ const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
 };
 
 /**
+ * The partner's portal (rnc-2 R3, A4): a partner's whole rail. Gated on the key AND the role — the
+ * operator holds every key, `portal.access` included, and must never see a portal link; a partner
+ * holds none of the three groups' keys, so it sees only this (and the core Home, which sends it here).
+ */
+const PORTAL_ENTRY: NavItem = {
+  icon: 'pi pi-briefcase',
+  label: 'navigation.portal',
+  permission: PORTAL_PERMISSIONS.access,
+  role: PORTAL_ROLE_SLUG,
+  routeName: PORTAL_ROUTE_NAMES.home,
+};
+
+/**
  * The hub's rail (rnc-1 R3): Equipe · Reinaldo · Operador, in that order, each closed by the key
  * only its audience holds (`WORKSPACES`, plan AM8) — so the team sees one group, Reinaldo two and
  * the operator all three. Each is a link with a toggle (shape 3) once it has children.
  */
 function useLocalNavItems(): ComputedRef<NavItem[]> {
-  return computed<NavItem[]>(() =>
-    WORKSPACES.map((workspace) => ({
+  return computed<NavItem[]>(() => [
+    ...WORKSPACES.map((workspace) => ({
       children: WORKSPACE_CHILDREN[workspace.key],
       icon: workspace.icon,
       label: `navigation.${workspace.key}`,
       permission: workspace.permission,
       routeName: workspace.routeName,
-    }))
-  );
+    })),
+    PORTAL_ENTRY,
+  ]);
 }
 
 const localNavSettings: NavItem[] = [];

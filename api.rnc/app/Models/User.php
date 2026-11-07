@@ -6,6 +6,7 @@ use App\Modules\Auth\Enums\UserStatus;
 use App\Modules\Auth\Models\Role;
 use App\Modules\Auth\Models\UserPermission;
 use App\Modules\Firm\Models\Firm;
+use App\Modules\Partner\Models\Partner;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -19,8 +20,9 @@ use Illuminate\Notifications\Notifiable;
  * @property UserStatus|null $status Cast in `casts()`. Stated here because static analysis reads the
  *                                   column as a string and would call every `=== UserStatus::…`
  *                                   comparison dead code. Null only on a model not yet saved.
+ * @property int|null $partner_id The partner whose portal login this is (rnc-2 R1); null for staff.
  */
-#[Fillable(['name', 'last_name', 'username', 'role_id', 'firm_id', 'is_specialist', 'status', 'email', 'password',
+#[Fillable(['name', 'last_name', 'username', 'role_id', 'firm_id', 'partner_id', 'is_specialist', 'status', 'email', 'password',
     // These arrive with a registration. Outside this list `create()` discards them in
     // SILENCE — the pending row held the document and the date, and the account was born
     // without either.
@@ -37,6 +39,7 @@ class User extends Authenticatable
             'birth_date' => 'date',
             'email_verified_at' => 'datetime',
             'is_specialist' => 'boolean',
+            'partner_id' => 'integer',
             'password' => 'hashed',
             'status' => UserStatus::class,
         ];
@@ -56,6 +59,18 @@ class User extends Authenticatable
     public function firm(): BelongsTo
     {
         return $this->belongsTo(Firm::class);
+    }
+
+    /**
+     * The partner a portal login belongs to (rnc-2 R1). `Partner` is firm-scoped, so this resolves
+     * only inside the current firm — a login pointing at another firm's partner finds none
+     * (`ResolveCurrentPartner`, plan AM1).
+     *
+     * @return BelongsTo<Partner, $this>
+     */
+    public function partner(): BelongsTo
+    {
+        return $this->belongsTo(Partner::class);
     }
 
     public function userPermissions(): HasMany

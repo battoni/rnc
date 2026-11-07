@@ -31,6 +31,8 @@ class UserResource extends JsonResource
             // Which firm's hub this person works in, and whether a visitor can book them (rnc-1 R2).
             'firm_slug' => $user->firm?->slug,
             'is_specialist' => (bool) $user->is_specialist,
+            // The partner a portal login belongs to (rnc-2 R1); null for every staff account.
+            'partner_id' => $user->partner_id === null ? null : (int) $user->partner_id,
             'status' => $user->status->value ?? UserStatus::ACTIVE->value,
             'permissions' => $user->getAttribute('permissions') ?? [],
         ];

@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 2.6.0 — 2026-11-07
+
+### Added
+
+- `LinkedAccountService` (rnc-2 F1, R1–R2): the accounts another module provisions for its own records — a partner's portal login. `openAccount` creates or reopens the row with a generated password returned once, `resetPassword` and `closeAccount` delete the user's stored sessions so a live cookie is a 401 next (plan AM5). Partner never writes `users` itself.
+
 ## 2.5.0 — 2026-09-21
 
 ### Added

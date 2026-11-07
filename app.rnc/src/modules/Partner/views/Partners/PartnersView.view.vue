@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
-import type { Partner } from '../../interfaces';
+import type { Partner, PartnerAccess } from '../../interfaces';
 import { translateError } from '@Helpers';
 import { useUserStore } from '@UserModule';
 import { PARTNER_PERMISSIONS } from '../../constants';
@@ -14,6 +14,8 @@ import { GetPartnersService, UpdatePartnerService } from '../../services';
  * and "Editar" open the form; "Desativar" takes a partner out of routing at once and "Reativar"
  * brings it back — reversible, so no confirm popup. A partner is never deleted: the trail points
  * at it. The list is the whole registry (a firm's network is a few dozen at most), not a page.
+ * "Acesso ao portal" (rnc-2 R2) opens an active partner's login — create it, a new password,
+ * revoke — and the row then wears "Portal ativo"; a password stays inside that panel.
  */
 interface ToggleError {
   response?: { status?: number };
@@ -28,6 +30,8 @@ const userStore = useUserStore();
 const { t } = useI18n();
 const toast = useToast();
 
+const accessPartner = ref<Partner | null>(null);
+const accessVisible = ref(false);
 const dialogVisible = ref(false);
 const editingPartner = ref<Partner | null>(null);
 const hasFailed = ref(false);
@@ -61,6 +65,17 @@ function formatPhone(phone: string): string {
 }
 
 // EVENTS
+function onAccess(partner: Partner) {
+  accessPartner.value = partner;
+  accessVisible.value = true;
+}
+
+function onAccessChanged(access: PartnerAccess) {
+  const partner = partners.value.find((current) => current.id === access.partner_id);
+
+  if (partner) replacePartner({ ...partner, access });
+}
+
 function onCreate() {
   editingPartner.value = null;
   dialogVisible.value = true;
@@ -197,6 +212,14 @@ function onToggleFailed(failure: ToggleError) {
             >
               {{ partner.active ? $t('partners.active') : $t('partners.inactive') }}
             </span>
+
+            <span
+              v-if="partner.access?.active"
+              class="bg-primary-50 text-primary-950 rounded-sm px-2 py-0.5 text-xs font-semibold"
+              data-testid="partner-portal"
+            >
+              {{ $t('partners.access.active') }}
+            </span>
           </div>
 
           <span class="text-body text-sm">{{ $t(`partners.specialties.${partner.specialty}`) }}</span>
@@ -229,6 +252,16 @@ function onToggleFailed(failure: ToggleError) {
           />
 
           <Button
+            v-if="partner.active"
+            data-testid="partner-access"
+            icon="pi pi-key"
+            severity="secondary"
+            size="small"
+            :label="$t('partners.portalAccess')"
+            @click="onAccess(partner)"
+          />
+
+          <Button
             data-testid="partner-toggle"
             size="small"
             :icon="partner.active ? 'pi pi-ban' : 'pi pi-replay'"
@@ -252,6 +285,20 @@ function onToggleFailed(failure: ToggleError) {
           :partner="editingPartner"
           @onClose="dialogVisible = false"
           @onSuccess="onSaved"
+        />
+      </MMainDialog>
+
+      <MMainDialog
+        v-model:visible="accessVisible"
+        isFooterless
+        title="partners.access.title"
+      >
+        <MPartnerAccessForm
+          v-if="accessPartner"
+          :key="accessPartner.id"
+          :partner="accessPartner"
+          @onChanged="onAccessChanged"
+          @onClose="accessVisible = false"
         />
       </MMainDialog>
     </aside>

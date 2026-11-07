@@ -1,18 +1,29 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useRouter } from 'vue-router';
 import { getI18nRouteName } from '@Helpers';
+import { PORTAL_ROUTE_NAMES, usePortalLanding } from '@PortalModule';
 import { useUserStore } from '@UserModule';
 import { useWorkspaces } from '../../composables';
 
+/*
+ * The back office's landing (rnc-1). A partner's login (rnc-2 R3) is sent on to its portal at once
+ * and sees nothing of this: the router falls every refused back-office route back to Home, so
+ * this one redirect is what bounces a partner from all of them.
+ */
+const router = useRouter();
 const userStore = useUserStore();
 
+const { isPortalOnly } = usePortalLanding();
 const { workspaces } = useWorkspaces();
 
 const firstName = computed(() => userStore.user?.name ?? '');
+
+if (isPortalOnly.value) router.replace({ name: getI18nRouteName(PORTAL_ROUTE_NAMES.home) });
 </script>
 
 <template>
-  <TheLayout>
+  <TheLayout v-if="!isPortalOnly">
     <template #pageHeader>
       <ThePageHeader title="home.title" />
     </template>
