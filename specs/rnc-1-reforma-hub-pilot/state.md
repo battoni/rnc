@@ -79,3 +79,4 @@ Started: 2026-11-07
 - W26 F3: the theme draws every `label` mono and upper-case, so the consent read in capitals → `franco.css` sets a label wrapping a checkbox in sans, normal case (to reverse: delete the `label:has(.p-checkbox)` block).
 - W27 F3: what "não sei" and an early result do → `nao_sei` matches no regime rule (the sector and the always-rules still apply; the simulator uses the Presumido PIS/Cofins rate, as the demo did); the result only moves `lead_parcial → lead`, once (a `visitante` without contact stays `visitante`); a profile without sector, regime and band is a 422 `profile_incomplete` (to reverse: `LeadService::recordResultSeen`, `DiagnosticRule::appliesTo`). Spec C5.
 02:06 F3 done, attempt 1, d2a935f
+02:04 F4 started, attempt 1
