@@ -8,8 +8,8 @@ import { SiteRoutes } from '@SiteModule';
  * must not be sent to the login screen.
  */
 describe('SiteRoutes', () => {
-  it('serves the landing at the root', () => {
-    expect(SiteRoutes.map((route) => route.path)).toContain('/');
+  it('serves the landing, the sector pages and the CTA destination', () => {
+    expect(SiteRoutes.map((route) => route.path)).toEqual(['/', '/reforma/:slug', '/diagnostico']);
   });
 
   it('opens every site route to a signed-out visitor', () => {

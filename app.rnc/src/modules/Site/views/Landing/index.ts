@@ -1,1 +1,1 @@
-export { default as SiteRoutes } from './routes';
+export { default as LandingRoutes } from './routes';

@@ -46,3 +46,14 @@
   --canvas-overlay: none;
   --canvas-overlay-opacity: 0;
 }
+
+/*
+ * Prose in the sans face (rnc-1 F2 W13). battoni-dev sets paragraphs in its mono "technical voice"
+ * — Battoni Dev's tell, not Franco's: Franco's own sites set their text in a plain sans. Tags,
+ * badges and table headers keep the base's mono labels.
+ */
+p,
+.p-text,
+.p-paragraph {
+  font-family: var(--font-sans);
+}

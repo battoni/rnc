@@ -1,4 +1,5 @@
 import type { RouteRecordRaw } from 'vue-router';
+import { SITE_ROUTE_NAMES } from '../../constants';
 
 /*
  * The public site (rnc-1 D4, AM15). `isOpen` is the router's "answers everyone, signed in or not"
@@ -8,7 +9,7 @@ import type { RouteRecordRaw } from 'vue-router';
 const LandingRoutes: RouteRecordRaw[] = [
   {
     path: '/',
-    name: 'site-home',
+    name: SITE_ROUTE_NAMES.home,
     meta: { isOpen: true },
     component: () => import('./LandingView.view.vue'),
   },

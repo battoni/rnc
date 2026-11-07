@@ -5,11 +5,20 @@
  *
  * This file is required from routes/api.php, so register your feature-module routes here and
  * they survive every rnc update. Declare your own `use` imports (a required file does not
- * inherit the parent's). Example:
- *
- *   use App\Modules\Catalog\Controllers\ProductCategoryController;
- *   use Illuminate\Support\Facades\Route;
- *
- *   Route::get('catalog/product-categories', [ProductCategoryController::class, 'index'])
- *       ->middleware(['auth', 'permission:catalog.read']);
+ * inherit the parent's).
  */
+
+use App\Modules\Content\Controllers\PublicSectorPageController;
+use App\Modules\Firm\Controllers\PublicFirmController;
+use App\Modules\Tracking\Controllers\PublicEventController;
+use Illuminate\Support\Facades\Route;
+
+// PUBLIC SITE (rnc-1 F2) — no session needed. The firm is the `X-Firm` header's, or `franco`
+// (`ResolveCurrentFirm`); every answer goes through a `Public*` allow-list resource.
+Route::get('public/firm', [PublicFirmController::class, 'show']);
+Route::get('public/sectors', [PublicSectorPageController::class, 'index']);
+Route::get('public/sectors/{slug}', [PublicSectorPageController::class, 'show']);
+
+// Tracking (R7, AM2): 60 events a minute per address — a person browsing never meets it, a loop
+// does. Keyed by IP for a visitor (Laravel's `throttle:<max>,<minutes>` signature).
+Route::post('public/events', [PublicEventController::class, 'store'])->middleware('throttle:60,1');

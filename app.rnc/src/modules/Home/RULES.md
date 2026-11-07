@@ -29,7 +29,7 @@ opens: Equipe (`team-home`), Reinaldo (`ceo-home`) and Operador (`operator-home`
 - **One `WorkspaceView` for the three landings**, told apart by `meta.workspace`. Each is an empty
   state in F1; later phases add their own screens as routes and rail children.
 
-*Retired 07/11/2026:* "Placeholder home view — do not add features until the product home screen is
+_Retired 07/11/2026:_ "Placeholder home view — do not add features until the product home screen is
 designed". The product (rnc-1) designed it: a greeting and the person's workspaces.
 
 ## Do Not

@@ -53,15 +53,15 @@ Modules may import from other modules via their root alias. They must **not** re
 
 ## Current Modules
 
-| Module            | Alias                    | Domain                                                               |
-| ----------------- | ------------------------ | -------------------------------------------------------------------- |
-| `Auth`            | `@AuthModule`            | Authentication, roles, permissions                                   |
+| Module            | Alias                    | Domain                                                                      |
+| ----------------- | ------------------------ | --------------------------------------------------------------------------- |
+| `Auth`            | `@AuthModule`            | Authentication, roles, permissions                                          |
 | `Home`            | `@HomeModule`            | Back-office landing and the three workspaces (Equipe · Reinaldo · Operador) |
-| `Personalization` | `@PersonalizationModule` | Global UI preferences (dark mode, language, layout) — this browser only |
-| `Site`            | `@SiteModule`            | Franco's public site (open routes, `ThePublicLayout`)                |
-| `User`            | `@UserModule`            | User management, session state                                       |
+| `Personalization` | `@PersonalizationModule` | Global UI preferences (dark mode, language, layout) — this browser only     |
+| `Site`            | `@SiteModule`            | Franco's public site (open routes, `ThePublicLayout`)                       |
+| `User`            | `@UserModule`            | User management, session state                                              |
 
-*Retired 07/11/2026 (rnc-1 F1):* `Idea`, `Showcase` and `Tip` — bootstrap samples this product does
+_Retired 07/11/2026 (rnc-1 F1):_ `Idea`, `Showcase` and `Tip` — bootstrap samples this product does
 not use, removed with their tests, routes, aliases and locale keys.
 
 ## Do Not

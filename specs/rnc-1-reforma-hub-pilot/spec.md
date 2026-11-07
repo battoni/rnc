@@ -158,3 +158,5 @@ Everything in intent "Out of scope". No deploy, no real e-mail delivery, no SSR.
 
 ## Changes while building
 - C1 (F1, W3): the back office's landing is `/painel` (route `home`); `/` is the public site for everyone, signed in or not. The rail shows Equipe · Reinaldo · Operador by permission (`leads.read`, `metrics.read`, `users.read`), and Operador holds Usuários and Perfis.
+- C2 (F2, W12): until F3, every CTA of the site lands on `/diagnostico`, a placeholder that says the diagnostic opens soon and shows Franco's phone and mailbox. F3 replaces it under the same route.
+- C3 (F2, W15): R7's source mapping is concrete — paid `utm_medium` or an ad click id → pago; partner `utm_medium` → parceiro; any other UTM tag or an external referrer → orgânico; nothing → the visit's earlier source in this session, else direto. A visitor keeps the source of its first event.

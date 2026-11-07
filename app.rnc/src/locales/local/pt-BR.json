@@ -51,18 +51,169 @@
     }
   },
   "site": {
+    "nav": {
+      "home": "A Reforma",
+      "sectors": "Por setor",
+      "cta": "Diagnóstico gratuito",
+      "label": "Site da Reforma Tributária"
+    },
+    "cta": {
+      "primary": "Fazer o diagnóstico gratuito",
+      "start": "Começar agora"
+    },
+    "seo": {
+      "landingTitle": "Reforma Tributária 2026–2033: o que muda na sua empresa",
+      "landingDescription": "A CBS começa a ser cobrada em 01/01/2027. Veja o que muda de 2026 a 2033 e faça o diagnóstico gratuito da Reforma Tributária para a sua empresa.",
+      "diagnosticTitle": "Diagnóstico gratuito da Reforma Tributária",
+      "diagnosticDescription": "Em 5 minutos, as oportunidades e os riscos da Reforma Tributária para a sua empresa, com valores estimados."
+    },
+    "countdown": {
+      "label": "Faltam para a CBS",
+      "ariaLabel": "Tempo até a cobrança da CBS em 01/01/2027",
+      "days": "dias",
+      "hours": "horas",
+      "minutes": "min",
+      "seconds": "seg",
+      "started": "A CBS é cobrada desde 01/01/2027."
+    },
+    "weekdays": {
+      "d1": "Segunda",
+      "d2": "Terça",
+      "d3": "Quarta",
+      "d4": "Quinta",
+      "d5": "Sexta",
+      "d6": "Sábado",
+      "d7": "Domingo"
+    },
     "landing": {
-      "kicker": "Reforma Tributária",
-      "title": "A sua empresa pronta para a Reforma Tributária",
-      "lede": "A Franco Contabilidade acompanha cada etapa da transição, de 2026 a 2033."
+      "kicker": "Reforma Tributária · LC 214/2025",
+      "title": "A CBS começa a ser cobrada em 01/01/2027.",
+      "ask": "Sua empresa já sabe quanto isso muda?",
+      "lede": "Em 5 minutos o diagnóstico gratuito mostra as oportunidades e os riscos da Reforma para o seu negócio, com valores estimados. Um especialista explica o detalhe em uma reunião.",
+      "sectorsLink": "Ver o que muda no meu setor",
+      "proofLabel": "Por que a Franco",
+      "changesKicker": "O que muda",
+      "changesTitle": "Cinco mudanças que chegam ao caixa da sua empresa",
+      "timelineKicker": "Linha do tempo 2026–2033",
+      "timelineTitle": "Oito anos de transição. Cada um com uma conta diferente.",
+      "timelineLegacy": "ICMS e ISS ainda cobrados",
+      "timelineNew": "IBS no lugar",
+      "timelineShare": "{tenths}/10 do ICMS e do ISS",
+      "timelineGone": "ICMS e ISS extintos",
+      "newsChip": "Em discussão",
+      "news": "Entidades pediram o adiamento da cobrança da CBS para 2028 (notícia de 04/11/2026). Até haver mudança na lei, vale 01/01/2027.",
+      "sectorsKicker": "A Reforma no seu setor",
+      "sectorsTitle": "Cada setor tem as suas datas, alíquotas e exceções",
+      "sectorsFailed": "Não conseguimos carregar os setores agora.",
+      "retry": "Tentar de novo",
+      "closingTitle": "Comece pelo diagnóstico. A gente explica o resto.",
+      "closingText": "Ser Franco é estar ao seu lado: 35 anos ao lado de empresas de São Paulo.",
+      "proof": {
+        "years": "em São Paulo",
+        "clients": "clientes atendidos",
+        "iso": "qualidade certificada",
+        "network": "Rede Nacional de Contabilidade"
+      },
+      "changes": {
+        "cbs": {
+          "title": "CBS",
+          "text": "Federal, substitui PIS e Cofins."
+        },
+        "ibs": {
+          "title": "IBS",
+          "text": "Estadual e municipal, substitui ICMS e ISS, com gestão do Comitê Gestor."
+        },
+        "selective": {
+          "title": "Imposto Seletivo",
+          "text": "Sobre bens prejudiciais à saúde ou ao meio ambiente, a partir de 2027."
+        },
+        "splitPayment": {
+          "title": "Split payment",
+          "text": "O imposto é recolhido na liquidação do pagamento e mexe no caixa."
+        },
+        "credit": {
+          "title": "Crédito amplo",
+          "text": "Crédito financeiro sobre as compras, quando o imposto do fornecedor foi pago."
+        }
+      },
+      "years": {
+        "y2026": "Ano-teste: CBS 0,9% e IBS 0,1% destacados na nota, compensáveis com PIS/Cofins. Não vale para o Simples.",
+        "y2027": "CBS cobrada integralmente, PIS/Cofins extintos, Imposto Seletivo começa. IBS em 0,1%.",
+        "y2028": "IBS segue em 0,1% (0,05% estadual e 0,05% municipal).",
+        "y2029": "ICMS e ISS caem para 9/10 enquanto o IBS sobe.",
+        "y2030": "ICMS e ISS em 8/10.",
+        "y2031": "ICMS e ISS em 7/10.",
+        "y2032": "ICMS e ISS em 6/10; benefícios de ICMS compensados até aqui.",
+        "y2033": "ICMS e ISS extintos. IBS e CBS integrais."
+      },
+      "preview": {
+        "example": "Exemplo do resultado",
+        "badge": "Diagnóstico pronto",
+        "company": "Atlas Soluções em TI",
+        "profile": "Serviços · Simples Nacional",
+        "count": "oportunidades e 2 riscos encontrados",
+        "opportunity": "Oportunidade",
+        "risk": "Risco",
+        "foot": "Detalhe liberado na reunião com o especialista",
+        "action": "Escolher horário",
+        "scan": "Receita · Simples · CNAE consultados",
+        "meeting": "Reunião marcada",
+        "meetingWhen": "Qui, 14:00 · Mariana Toledo",
+        "rows": {
+          "credit": {
+            "title": "Crédito amplo sobre compras de serviços",
+            "value": "R$ 38 mil – 72 mil/ano"
+          },
+          "simples": {
+            "title": "Revisar a saída do Simples para vender a empresas",
+            "value": "R$ 21 mil – 55 mil/ano"
+          },
+          "split": {
+            "title": "Split payment: caixa recolhido na venda",
+            "value": "R$ 9 mil – 16 mil/mês"
+          }
+        }
+      }
+    },
+    "sector": {
+      "back": "Todos os setores",
+      "kicker": "A Reforma por setor",
+      "factsTitle": "O que já tem data",
+      "source": "Fonte",
+      "ctaTitle": "Quer saber o que isso significa para a sua empresa de {sector}?",
+      "ctaText": "O diagnóstico gratuito cruza o perfil da sua empresa com estas regras em 5 minutos.",
+      "others": "Outros setores",
+      "notFoundTitle": "Esta página de setor não existe",
+      "notFoundText": "Veja os setores que a Franco já explica.",
+      "failedTitle": "A página não carregou",
+      "failedText": "Verifique a conexão e tente de novo.",
+      "retry": "Tentar de novo"
+    },
+    "diagnostic": {
+      "kicker": "Diagnóstico gratuito",
+      "title": "O diagnóstico abre aqui em breve",
+      "text": "Enquanto isso, a equipe da Franco responde pelo telefone e pelo e-mail no horário de atendimento.",
+      "back": "Voltar para a Reforma"
     },
     "footer": {
       "tagline": "Contabilidade e consultoria empresarial em São Paulo há 35 anos.",
       "contact": "Contato",
       "hours": "Atendimento",
-      "hoursWeekdays": "Segunda a quinta, 8h às 18h",
-      "hoursFriday": "Sexta, 8h às 17h",
+      "credentials": "Credenciais",
+      "credentialsText": "ISO 9001:2015 · PQEC Sescon-SP · Rede Nacional de Contabilidade",
+      "disclaimer": "Os valores do site e do diagnóstico são estimativas, não cálculo fiscal.",
+      "hoursRange": "{days}, {from} às {to}",
+      "dayRange": "{first} a {last}",
       "copyright": "© {year} {name}"
+    },
+    "weekdaysInSentence": {
+      "d1": "segunda",
+      "d2": "terça",
+      "d3": "quarta",
+      "d4": "quinta",
+      "d5": "sexta",
+      "d6": "sábado",
+      "d7": "domingo"
     }
   }
 }

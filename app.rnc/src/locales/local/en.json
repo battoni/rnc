@@ -51,18 +51,169 @@
     }
   },
   "site": {
+    "nav": {
+      "home": "The reform",
+      "sectors": "By sector",
+      "cta": "Free diagnostic",
+      "label": "Tax reform site"
+    },
+    "cta": {
+      "primary": "Take the free diagnostic",
+      "start": "Start now"
+    },
+    "seo": {
+      "landingTitle": "Tax reform 2026–2033: what changes for your company",
+      "landingDescription": "CBS is charged from 01/01/2027. See what changes from 2026 to 2033 and take the free tax reform diagnostic for your company.",
+      "diagnosticTitle": "Free tax reform diagnostic",
+      "diagnosticDescription": "In 5 minutes, the tax reform's opportunities and risks for your company, with estimated values."
+    },
+    "countdown": {
+      "label": "Until CBS",
+      "ariaLabel": "Time until CBS is charged on 01/01/2027",
+      "days": "days",
+      "hours": "hours",
+      "minutes": "min",
+      "seconds": "sec",
+      "started": "CBS has been charged since 01/01/2027."
+    },
+    "weekdays": {
+      "d1": "Monday",
+      "d2": "Tuesday",
+      "d3": "Wednesday",
+      "d4": "Thursday",
+      "d5": "Friday",
+      "d6": "Saturday",
+      "d7": "Sunday"
+    },
     "landing": {
-      "kicker": "Tax reform",
-      "title": "Your company ready for the tax reform",
-      "lede": "Franco Contabilidade walks you through every step of the transition, from 2026 to 2033."
+      "kicker": "Tax reform · LC 214/2025",
+      "title": "CBS starts being charged on 01/01/2027.",
+      "ask": "Does your company know how much it changes?",
+      "lede": "In 5 minutes the free diagnostic shows the reform's opportunities and risks for your business, with estimated values. A specialist explains the detail in a meeting.",
+      "sectorsLink": "See what changes in my sector",
+      "proofLabel": "Why Franco",
+      "changesKicker": "What changes",
+      "changesTitle": "Five changes that reach your company's cash",
+      "timelineKicker": "Timeline 2026–2033",
+      "timelineTitle": "Eight years of transition. Each one with a different bill.",
+      "timelineLegacy": "ICMS and ISS still charged",
+      "timelineNew": "IBS in their place",
+      "timelineShare": "{tenths}/10 of ICMS and ISS",
+      "timelineGone": "ICMS and ISS abolished",
+      "newsChip": "Under discussion",
+      "news": "Business groups asked to delay CBS collection to 2028 (news of 04/11/2026). Until the law changes, 01/01/2027 stands.",
+      "sectorsKicker": "The reform in your sector",
+      "sectorsTitle": "Each sector has its own dates, rates and exceptions",
+      "sectorsFailed": "We could not load the sectors right now.",
+      "retry": "Try again",
+      "closingTitle": "Start with the diagnostic. We explain the rest.",
+      "closingText": "Being Franco is being by your side: 35 years beside São Paulo's companies.",
+      "proof": {
+        "years": "in São Paulo",
+        "clients": "clients served",
+        "iso": "certified quality",
+        "network": "National Accounting Network"
+      },
+      "changes": {
+        "cbs": {
+          "title": "CBS",
+          "text": "Federal, replaces PIS and Cofins."
+        },
+        "ibs": {
+          "title": "IBS",
+          "text": "State and municipal, replaces ICMS and ISS, run by the Managing Committee."
+        },
+        "selective": {
+          "title": "Selective tax",
+          "text": "On goods harmful to health or the environment, from 2027."
+        },
+        "splitPayment": {
+          "title": "Split payment",
+          "text": "The tax is collected when the payment settles, and it moves your cash."
+        },
+        "credit": {
+          "title": "Broad credit",
+          "text": "Financial credit on purchases, when the supplier's tax was paid."
+        }
+      },
+      "years": {
+        "y2026": "Test year: CBS 0.9% and IBS 0.1% shown on the invoice, offset against PIS/Cofins. Not for Simples.",
+        "y2027": "CBS charged in full, PIS/Cofins abolished, the selective tax starts. IBS at 0.1%.",
+        "y2028": "IBS stays at 0.1% (0.05% state and 0.05% municipal).",
+        "y2029": "ICMS and ISS fall to 9/10 while IBS rises.",
+        "y2030": "ICMS and ISS at 8/10.",
+        "y2031": "ICMS and ISS at 7/10.",
+        "y2032": "ICMS and ISS at 6/10; ICMS benefits compensated until here.",
+        "y2033": "ICMS and ISS abolished. Full IBS and CBS."
+      },
+      "preview": {
+        "example": "Example result",
+        "badge": "Diagnostic ready",
+        "company": "Atlas Soluções em TI",
+        "profile": "Services · Simples Nacional",
+        "count": "opportunities and 2 risks found",
+        "opportunity": "Opportunity",
+        "risk": "Risk",
+        "foot": "Detail unlocked in the meeting with the specialist",
+        "action": "Pick a time",
+        "scan": "Receita · Simples · CNAE checked",
+        "meeting": "Meeting booked",
+        "meetingWhen": "Thu, 14:00 · Mariana Toledo",
+        "rows": {
+          "credit": {
+            "title": "Broad credit on service purchases",
+            "value": "R$ 38k – 72k/year"
+          },
+          "simples": {
+            "title": "Review leaving Simples to sell to companies",
+            "value": "R$ 21k – 55k/year"
+          },
+          "split": {
+            "title": "Split payment: cash collected at the sale",
+            "value": "R$ 9k – 16k/month"
+          }
+        }
+      }
+    },
+    "sector": {
+      "back": "All sectors",
+      "kicker": "The reform by sector",
+      "factsTitle": "What already has a date",
+      "source": "Source",
+      "ctaTitle": "Want to know what this means for your {sector} company?",
+      "ctaText": "The free diagnostic matches your company's profile against these rules in 5 minutes.",
+      "others": "Other sectors",
+      "notFoundTitle": "This sector page does not exist",
+      "notFoundText": "See the sectors Franco already explains.",
+      "failedTitle": "The page did not load",
+      "failedText": "Check your connection and try again.",
+      "retry": "Try again"
+    },
+    "diagnostic": {
+      "kicker": "Free diagnostic",
+      "title": "The diagnostic opens here soon",
+      "text": "Meanwhile, Franco's team answers by phone and e-mail during opening hours.",
+      "back": "Back to the reform"
     },
     "footer": {
       "tagline": "Accounting and business consulting in São Paulo for 35 years.",
       "contact": "Contact",
       "hours": "Opening hours",
-      "hoursWeekdays": "Monday to Thursday, 8am to 6pm",
-      "hoursFriday": "Friday, 8am to 5pm",
+      "credentials": "Credentials",
+      "credentialsText": "ISO 9001:2015 · PQEC Sescon-SP · National Accounting Network",
+      "disclaimer": "The values on this site and in the diagnostic are estimates, not a tax calculation.",
+      "hoursRange": "{days}, {from} to {to}",
+      "dayRange": "{first} to {last}",
       "copyright": "© {year} {name}"
+    },
+    "weekdaysInSentence": {
+      "d1": "Monday",
+      "d2": "Tuesday",
+      "d3": "Wednesday",
+      "d4": "Thursday",
+      "d5": "Friday",
+      "d6": "Saturday",
+      "d7": "Sunday"
     }
   }
 }

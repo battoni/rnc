@@ -1,5 +1,5 @@
 ---
-version: 1.0.0
+version: 1.1.0
 origin: rnc
 ---
 # RULES — Firm Module
@@ -23,6 +23,13 @@ The tenants (D1): an accounting firm whose hub this is. Franco Contabilidade is 
 - **Commands** walk `CurrentFirm::forEachFirm()`; a queued job that received the model reads it
   with `withoutGlobalScope(FirmScope::class)` and nothing else does.
 
+## Public endpoint
+
+- **`GET /api/public/firm`** (`PublicFirmController`, rnc-1 F2) answers the request's firm — already
+  chosen by `ResolveCurrentFirm` — through `PublicFirmResource`, an allow-list: name, slug, brand,
+  address, phone, `phone_href` (`tel:+55…`, so the site never parses a phone), mailbox, hours. No id,
+  no timestamps. No firm (an empty database) is a 404.
+
 ## Intentional Decisions
 
 - **`users` is not firm-scoped.** Sign-in looks the username up before any firm is known; the user's
@@ -33,7 +40,8 @@ The tenants (D1): an accounting firm whose hub this is. Franco Contabilidade is 
 
 ## Known Gaps
 
-- **No business model uses `BelongsToFirm` yet** — F3's `Lead` is the first. Until then the scope is
-  proven on a test-only table (`tests/Feature/Firm/FirmScopeTest.php`, A1) and `phpstan.neon.dist`
-  carries a `trait.unused` entry that F3 must delete.
+- **The first models on `BelongsToFirm` are F2's** `SectorPage`, `Visitor` and `TrackingEvent`; the
+  scope itself is proven on a test-only table (`tests/Feature/Firm/FirmScopeTest.php`, A1). (This
+  line used to say F3's `Lead` would be the first and kept a `trait.unused` PHPStan entry until then;
+  F2 deleted the entry.)
 - **No firm admin screen.** Firms are seeded; a second firm is a seeder row until Phase 3.

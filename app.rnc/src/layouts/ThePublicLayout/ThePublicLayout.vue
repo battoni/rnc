@@ -1,32 +1,153 @@
 <script setup lang="ts">
-import { FIRM_PUBLIC_CONTACT } from '@Constants';
+import { computed, onMounted } from 'vue';
+import type { DeepReadonly } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
+import type { PublicFirmHours } from '@SiteModule';
+import { SECTOR_GRID_ANCHOR, SITE_ROUTE_NAMES, TRACKING_EVENT_TYPE, usePublicFirm, useTracking } from '@SiteModule';
+
+/*
+ * The public site's shell (rnc-1 R3, R5): Franco's header with the CTA, and the footer with the
+ * public contact, the hours and the credentials — all read from `GET /api/public/firm`, so a second
+ * firm (Phase 3) is a row, not a build.
+ */
+const { firm, load } = usePublicFirm();
+const { push } = useRouter();
+const { t } = useI18n();
+const { track } = useTracking();
 
 const CURRENT_YEAR = new Date().getFullYear();
+const NAV_LINKS = [
+  { key: 'home', to: { name: SITE_ROUTE_NAMES.home } },
+  { key: 'sectors', to: { hash: `#${SECTOR_GRID_ANCHOR}`, name: SITE_ROUTE_NAMES.home } },
+] as const;
+
+const hoursLines = computed(() => (firm.value?.business_hours ?? []).map(formatHours));
+
+onMounted(onComponentMount);
+
+// HELPERS
+function formatDays(weekdays: readonly number[]): string {
+  const names = weekdays.map((weekday) => t(`site.weekdays.d${weekday}`));
+  const first = weekdays[0] ?? 0;
+  const isRange = weekdays.length > 2 && weekdays.every((weekday, index) => weekday === first + index);
+
+  // The last day of a range sits mid-sentence: "Segunda a quinta", never "Segunda a Quinta".
+  const last = t(`site.weekdaysInSentence.d${weekdays[weekdays.length - 1]}`);
+
+  return isRange ? t('site.footer.dayRange', { first: names[0], last }) : names.join(', ');
+}
+
+function formatHours(hours: DeepReadonly<PublicFirmHours>): string {
+  return t('site.footer.hoursRange', {
+    days: formatDays(hours.weekdays),
+    from: formatTime(hours.from),
+    to: formatTime(hours.to),
+  });
+}
+
+function formatTime(time: string): string {
+  const [hour = '0', minute = '00'] = time.split(':');
+
+  return minute === '00' ? `${Number(hour)}h` : `${Number(hour)}h${minute}`;
+}
+
+// EVENTS
+function onComponentMount() {
+  load();
+}
+
+function onDiagnosticClick() {
+  track(TRACKING_EVENT_TYPE.CTA);
+
+  push({ name: SITE_ROUTE_NAMES.diagnostic });
+}
 </script>
 
 <template>
-  <div class="bg-canvas text-body flex min-h-dvh w-full flex-col">
-    <header class="border-line border-b">
-      <div class="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-5 py-4">
+  <div class="bg-canvas text-body flex min-h-dvh w-full flex-col overflow-x-clip">
+    <header class="border-line bg-canvas/90 sticky top-0 z-20 border-b backdrop-blur">
+      <div class="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-5 py-3">
+        <!-- `exact-active-class` empty: the theme's glowing bar marks the back office's rail, not the site.
+             Each logo sits in its own span, because ALogo's own `inline-flex` outvotes a `hidden`. -->
         <RouterLink
-          class="touch-target text-xl"
-          :to="{ name: 'site-home' }"
+          class="touch-target shrink-0 text-lg sm:text-xl"
+          exact-active-class=""
+          :to="{ name: SITE_ROUTE_NAMES.home }"
         >
-          <ALogo />
+          <span class="sm:hidden">
+            <ALogo variant="min" />
+          </span>
+
+          <span class="hidden sm:inline">
+            <ALogo />
+          </span>
         </RouterLink>
+
+        <nav
+          class="hidden items-center gap-6 text-sm font-semibold md:flex"
+          :aria-label="$t('site.nav.label')"
+        >
+          <RouterLink
+            v-for="link in NAV_LINKS"
+            class="touch-target text-muted hover:text-heading"
+            exact-active-class="text-heading"
+            :key="link.key"
+            :to="link.to"
+          >
+            {{ $t(`site.nav.${link.key}`) }}
+          </RouterLink>
+        </nav>
+
+        <div class="flex min-w-0 items-center gap-3">
+          <a
+            v-if="firm?.phone_href"
+            class="touch-target text-muted hover:text-heading hidden text-sm font-semibold lg:inline"
+            :href="firm.phone_href"
+          >
+            {{ firm.phone }}
+          </a>
+
+          <button
+            class="touch-target bg-primary-500 text-primary-contrast hover:bg-primary-600 focus-visible:outline-primary-500 motion-quick rounded-md px-4 py-2.5 text-sm font-semibold whitespace-nowrap transition focus-visible:outline-2 focus-visible:outline-offset-2"
+            data-testid="header-cta"
+            type="button"
+            @click="onDiagnosticClick"
+          >
+            {{ $t('site.nav.cta') }}
+          </button>
+        </div>
       </div>
+
+      <nav
+        class="border-line flex justify-center gap-8 border-t px-5 py-2 text-sm font-semibold md:hidden"
+        :aria-label="$t('site.nav.label')"
+      >
+        <RouterLink
+          v-for="link in NAV_LINKS"
+          class="touch-target text-muted hover:text-heading"
+          exact-active-class="text-heading"
+          :key="link.key"
+          :to="link.to"
+        >
+          {{ $t(`site.nav.${link.key}`) }}
+        </RouterLink>
+      </nav>
     </header>
 
-    <main class="mx-auto flex w-full max-w-6xl flex-1 flex-col px-5 py-10">
+    <main class="flex w-full flex-1 flex-col">
       <slot />
     </main>
 
-    <footer class="bg-panel border-line border-t">
-      <div class="mx-auto grid w-full max-w-6xl gap-6 px-5 py-8 text-sm md:grid-cols-3">
-        <div class="flex flex-col gap-2">
+    <footer
+      class="bg-panel border-line border-t"
+      data-testid="site-footer"
+    >
+      <div class="mx-auto grid w-full max-w-6xl gap-8 px-5 py-12 text-sm sm:grid-cols-2 lg:grid-cols-4">
+        <div class="flex flex-col gap-3">
           <ALogo class="text-lg" />
 
-          <p class="text-muted">
+          <p class="text-muted leading-relaxed">
             {{ $t('site.footer.tagline') }}
           </p>
         </div>
@@ -36,21 +157,25 @@ const CURRENT_YEAR = new Date().getFullYear();
             {{ $t('site.footer.contact') }}
           </span>
 
-          <span>{{ FIRM_PUBLIC_CONTACT.address }}</span>
+          <template v-if="firm">
+            <span v-if="firm.address">{{ firm.address }}</span>
 
-          <a
-            class="touch-target hover:text-heading underline-offset-4 hover:underline"
-            :href="FIRM_PUBLIC_CONTACT.phoneHref"
-          >
-            {{ FIRM_PUBLIC_CONTACT.phone }}
-          </a>
+            <a
+              v-if="firm.phone_href"
+              class="touch-target hover:text-heading self-start underline-offset-4 hover:underline"
+              :href="firm.phone_href"
+            >
+              {{ firm.phone }}
+            </a>
 
-          <a
-            class="touch-target hover:text-heading underline-offset-4 hover:underline"
-            :href="`mailto:${FIRM_PUBLIC_CONTACT.mailbox}`"
-          >
-            {{ FIRM_PUBLIC_CONTACT.mailbox }}
-          </a>
+            <a
+              v-if="firm.mailbox"
+              class="touch-target hover:text-heading self-start break-all underline-offset-4 hover:underline"
+              :href="`mailto:${firm.mailbox}`"
+            >
+              {{ firm.mailbox }}
+            </a>
+          </template>
         </address>
 
         <div class="text-muted flex flex-col gap-2">
@@ -58,13 +183,32 @@ const CURRENT_YEAR = new Date().getFullYear();
             {{ $t('site.footer.hours') }}
           </span>
 
-          <span>{{ $t('site.footer.hoursWeekdays') }}</span>
-
-          <span>{{ $t('site.footer.hoursFriday') }}</span>
-
-          <span class="mt-auto">
-            {{ $t('site.footer.copyright', { year: CURRENT_YEAR, name: FIRM_PUBLIC_CONTACT.name }) }}
+          <span
+            v-for="line in hoursLines"
+            :key="line"
+          >
+            {{ line }}
           </span>
+        </div>
+
+        <div class="text-muted flex flex-col gap-2">
+          <span class="text-heading font-semibold">
+            {{ $t('site.footer.credentials') }}
+          </span>
+
+          <span class="leading-relaxed">
+            {{ $t('site.footer.credentialsText') }}
+          </span>
+        </div>
+      </div>
+
+      <div class="border-line border-t">
+        <div
+          class="text-muted mx-auto flex w-full max-w-6xl flex-col gap-2 px-5 py-5 text-xs sm:flex-row sm:justify-between"
+        >
+          <span>{{ $t('site.footer.disclaimer') }}</span>
+
+          <span>{{ $t('site.footer.copyright', { year: CURRENT_YEAR, name: firm?.name ?? '' }) }}</span>
         </div>
       </div>
     </footer>
