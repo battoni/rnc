@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.0.1 — 2026-11-07
+
+### Fixed
+
+- `ReferralService::refer` catches `UniqueConstraintViolationException` instead of comparing the SQLSTATE with `23000` (PostgreSQL's `23505` answered 500 instead of 409 `already_referred`); `ReferralsTest` now reaches the catch through a repository double (rnc-1 review).
+
 ## 1.0.0 — 2026-11-07
 
 ### Added

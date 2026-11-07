@@ -124,6 +124,42 @@ describe('starting (step 1)', function () {
         expect(LeadEvent::query()->where('lead_id', $lead->id)->pluck('type')->all())->toBe(['diagnostico.inicio']);
     });
 
+    /* A restart (or a loop) must not pile empty visitantes on the board: the open one is started again. */
+    it('starts the open visitante of the same visitor again instead of a new row', function () {
+        Http::fake(['*' => Http::response([], 404)]);
+        $first = startDiagnostic(['sector' => 'saude']);
+        $this->postJson("/api/public/diagnostics/{$first}/cnpj", ['cnpj' => VALID_CNPJ])->assertOk();
+        expect(leadOf($first)->cnpj)->toBe(VALID_CNPJ);
+
+        $second = startDiagnostic(['path' => 'cnpj', 'sector' => 'comercio', 'source' => 'organico', 'medium' => null]);
+
+        $lead = Lead::withoutGlobalScopes()->sole();
+
+        expect($second)->toBe($first)
+            ->and($lead->stage)->toBe('visitante')
+            ->and($lead->path)->toBe('cnpj')
+            ->and($lead->last_step)->toBe('empresa')
+            ->and($lead->profile['sector'])->toBe('comercio')
+            ->and($lead->cnpj)->toBeNull()
+            ->and($lead->source)->toBe('pago')
+            ->and(LeadEvent::query()->where('lead_id', $lead->id)->where('type', 'diagnostico.inicio')->count())->toBe(1);
+    });
+
+    it('opens a new lead when the visitor has none open', function (Closure $before, array $overrides) {
+        $first = startDiagnostic();
+        $before($first);
+
+        $second = startDiagnostic($overrides);
+
+        expect($second)->not->toBe($first)
+            ->and(Lead::withoutGlobalScopes()->count())->toBe(2);
+    })->with([
+        'another visitor' => [fn (string $token) => null, ['visitor' => (string) Str::uuid()]],
+        'no visitor id at all' => [fn (string $token) => Lead::withoutGlobalScopes()->where('token', $token)->update(['visitor_uuid' => null]), ['visitor' => null]],
+        'the first already left contact' => [fn (string $token) => test()->patchJson("/api/public/diagnostics/{$token}", contactPayload())->assertOk(), []],
+        'the first token expired' => [fn (string $token) => Lead::withoutGlobalScopes()->where('token', $token)->update(['token_expires_at' => now()->subMinute()]), []],
+    ]);
+
     it('refuses a path, a source or a sector it does not know', function () {
         $this->postJson('/api/public/diagnostics', ['path' => 'chat', 'source' => 'tv', 'sector' => 'mineracao'])
             ->assertUnprocessable()

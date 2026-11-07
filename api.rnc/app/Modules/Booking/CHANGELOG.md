@@ -1,5 +1,16 @@
 # Changelog — Booking Module
 
+## 1.2.0 — 2026-11-07
+
+### Changed
+
+- `BookingCalendar` counts today among the 10 working days and offers only slots at least 2 hours away (`LEAD_TIME_MINUTES`); `slotsOf` takes the clock (rnc-1 review, W57).
+- `BookMeetingRequest` wants `starts_at` as ISO-8601 with an offset or `Z`; a time without its zone is a 422 on the field.
+
+### Fixed
+
+- `BookingService::reserve` catches `UniqueConstraintViolationException` instead of comparing the SQLSTATE with `23000` — PostgreSQL's `23505` answered 500 instead of 409 `slot_taken`. Tests: the insert-meets-the-index case (real index and a pgsql double), the offset formats, today's lead time, Easter 2027 in `HolidaysTest`.
+
 ## 1.1.0 — 2026-11-07
 
 ### Added

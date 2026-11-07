@@ -16,7 +16,7 @@ use App\Modules\Lead\Services\LeadService;
 use App\Modules\Notification\Notifications\MeetingBookedNotification;
 use App\Modules\Notification\Services\TeamNotifier;
 use Carbon\CarbonImmutable;
-use Illuminate\Database\QueryException;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
@@ -27,8 +27,6 @@ use Illuminate\Support\Facades\Mail;
  */
 class BookingService
 {
-    private const INTEGRITY_CONSTRAINT_VIOLATION = '23000';
-
     /** The e-mails are pt-BR whatever the API's default locale is (AM15). */
     private const MAIL_LOCALE = 'pt_BR';
 
@@ -42,7 +40,7 @@ class BookingService
     ) {}
 
     /**
-     * The next 10 working days of every specialist, booked slots left out, and the one indicated for
+     * The next 10 working days (today counted, 2 hours of notice) of every specialist, booked slots left out, and the one indicated for
      * the profile (the demo's `suggestedSpecialist()`). Null for an unknown token.
      *
      * @return array{suggested_specialist_id: int|null, specialists: list<array{specialist: Specialist, suggested: bool, days: list<array{date: string, weekday: int, slots: list<CarbonImmutable>}>}>}|null
@@ -58,7 +56,8 @@ class BookingService
         $specialists = $this->specialistRepository->findAllSpecialistsWithHours();
         $focus = SpecialistFocus::forProfile($lead->profile);
         $suggested = $specialists->firstWhere('focus', $focus->value) ?? $specialists->first();
-        $days = $this->calendar->workingDays(CarbonImmutable::now());
+        $now = CarbonImmutable::now();
+        $days = $this->calendar->workingDays($now);
         $booked = $days === [] ? [] : $this->appointmentRepository->findBookedStartsBySpecialist(
             $specialists->modelKeys(),
             $days[0],
@@ -70,7 +69,7 @@ class BookingService
             'specialists' => $specialists->map(fn (Specialist $specialist) => [
                 'specialist' => $specialist,
                 'suggested' => $specialist->id === $suggested?->id,
-                'days' => $this->calendar->slotsOf($specialist, $days, $booked[$specialist->id] ?? []),
+                'days' => $this->calendar->slotsOf($specialist, $now, $days, $booked[$specialist->id] ?? []),
             ])->values()->all(),
         ];
     }
@@ -136,11 +135,7 @@ class BookingService
 
                 return $appointment->setRelation('specialist', $specialist);
             });
-        } catch (QueryException $exception) {
-            if ($exception->getCode() !== self::INTEGRITY_CONSTRAINT_VIOLATION) {
-                throw $exception;
-            }
-
+        } catch (UniqueConstraintViolationException) {
             throw $this->appointmentRepository->hasAppointmentOfLead($lead) ? BookingException::alreadyBooked() : BookingException::slotTaken();
         }
     }

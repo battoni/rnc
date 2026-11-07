@@ -10,6 +10,7 @@ use App\Modules\Lead\Models\LeadEvent;
 use App\Modules\Partner\Mail\ReferralSent;
 use App\Modules\Partner\Models\Partner;
 use App\Modules\Partner\Models\Referral;
+use App\Modules\Partner\Repositories\ReferralRepository;
 use Carbon\CarbonImmutable;
 use Database\Seeders\FirmSeeder;
 use Database\Seeders\LocalUsersSeeder;
@@ -247,6 +248,41 @@ describe('a referral (R22, A12)', function () {
 
         expect(Referral::withoutGlobalScopes()->count())->toBe(1);
     });
+
+    /* Two clicks in flight: the pre-check misses the other's row, the unique (lead, partner) index refuses. */
+    it('answers 409 already_referred when the insert meets the unique index the pre-check missed', function (bool $postgres) {
+        $lead = routingLead(true);
+        $member = routingPerson('equipe');
+        $payload = ['partner_id' => $this->partners['erp_nfe']->id, 'message' => 'Indicação.'];
+
+        // Bound before the first request: the router keeps the controller (and its service) it built.
+        $this->app->instance(ReferralRepository::class, new class($postgres) extends ReferralRepository
+        {
+            public function __construct(private bool $postgres) {}
+
+            public function existsReferralOfLeadToPartner(Lead $lead, int $partnerId): bool
+            {
+                return false;
+            }
+
+            public function createReferral(array $attributes): Referral
+            {
+                $taken = Referral::query()->where('lead_id', $attributes['lead_id'])->where('partner_id', $attributes['partner_id'])->exists();
+
+                return $this->postgres && $taken ? throw postgresUniqueViolation('referrals') : parent::createReferral($attributes);
+            }
+        });
+
+        $this->actingAs($member)->postJson("/api/leads/{$lead->id}/referrals", $payload)->assertCreated();
+
+        $this->actingAs($member)->postJson("/api/leads/{$lead->id}/referrals", $payload)->assertConflict()->assertJsonPath('code', 'already_referred');
+
+        expect(Referral::withoutGlobalScopes()->count())->toBe(1)
+            ->and(LeadEvent::query()->where('lead_id', $lead->id)->where('type', 'encaminhamento.enviado')->count())->toBe(1);
+    })->with([
+        'the real index (SQLite says 23000)' => [false],
+        'PostgreSQL says 23505' => [true],
+    ]);
 
     it('refuses an inactive partner, another firm\'s partner and an empty message', function () {
         $lead = routingLead(true);

@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.0.1 — 2026-11-07
+
+### Added
+
+- Tests only: the agenda's opening week on the São Paulo clock (Friday 22:00 and Sunday 23:00 BRT across the UTC day), and the search's literal `%`/`_` (rnc-1 review).
+
 ## 1.0.0 — 2026-11-07
 
 ### Added

@@ -46,7 +46,9 @@ class LeadService
 
     /**
      * Step 1: a `visitante` with no personal data (AM13), and its token. Null when the request has
-     * no firm to create it in.
+     * no firm to create it in. A visitor who already has an open `visitante` (no contact yet, token
+     * live) starts that one again — its path and answers reset, its token, first touch and timeline
+     * kept — so a restart or a loop on one browser does not pile empty cards on the board.
      *
      * @param  array{path: string, visitor_uuid: string|null, source: string, medium: string|null, sector: string|null}  $start
      */
@@ -57,6 +59,17 @@ class LeadService
         }
 
         $now = Carbon::now();
+        $open = $start['visitor_uuid'] === null ? null : $this->leadRepository->findOpenVisitanteOfVisitor($start['visitor_uuid'], $now);
+
+        if ($open) {
+            return $this->leadRepository->updateLead($open, [
+                'path' => $start['path'],
+                'last_step' => LeadStep::Empresa->value,
+                'profile' => [...self::EMPTY_PROFILE, 'sector' => $start['sector']],
+                'company' => null,
+                'cnpj' => null,
+            ]);
+        }
 
         return DB::transaction(function () use ($start, $now) {
             $lead = $this->leadRepository->createLead([

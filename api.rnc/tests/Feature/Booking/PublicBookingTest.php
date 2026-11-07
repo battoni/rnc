@@ -5,6 +5,7 @@ use App\Modules\Auth\Models\Role;
 use App\Modules\Booking\Mail\BookingConfirmed;
 use App\Modules\Booking\Models\Appointment;
 use App\Modules\Booking\Models\Specialist;
+use App\Modules\Booking\Repositories\AppointmentRepository;
 use App\Modules\Firm\Models\Firm;
 use App\Modules\Lead\Models\Lead;
 use App\Modules\Lead\Models\LeadEvent;
@@ -26,8 +27,9 @@ use Illuminate\Support\Str;
  *   GET  /api/public/diagnostics/{token}/availability   the specialists' free 30-min slots, next 10 working days
  *   POST /api/public/diagnostics/{token}/booking        books one → `reuniao_marcada`, the e-mail, the bell
  *
- * The clock is Thursday 19/11/2026 10:00 in São Paulo: tomorrow is Consciência Negra (20/11) and
- * then a weekend, so the first bookable day is Monday 23/11, and the tenth working day is 04/12.
+ * The clock is Thursday 19/11/2026 10:00 in São Paulo. Today is offered from noon on — a slot needs
+ * 2 hours of notice (W57) — tomorrow is Consciência Negra (20/11) and then a weekend, so the next
+ * day is Monday 23/11, and the tenth working day, today counted, is 03/12.
  */
 const BOOKING_ZONE = 'America/Sao_Paulo';
 
@@ -77,7 +79,7 @@ beforeEach(function () {
 afterEach(fn () => CarbonImmutable::setTestNow());
 
 describe('availability (R15, A9)', function () {
-    it('offers each specialist the next 10 working days in 30-minute slots of their hours', function () {
+    it('offers each specialist the next 10 working days, today counted, in 30-minute slots of their hours', function () {
         $lead = bookableLead();
 
         $availability = $this->getJson("/api/public/diagnostics/{$lead->token}/availability")->assertOk()->json('data');
@@ -90,12 +92,12 @@ describe('availability (R15, A9)', function () {
         expect($mariana['name'])->toBe('Mariana Toledo')
             ->and($mariana['area'])->toBe('Tributário · Reforma')
             ->and(array_column($mariana['days'], 'date'))->toBe([
-                '2026-11-23', '2026-11-24', '2026-11-25', '2026-11-26', '2026-11-27',
-                '2026-11-30', '2026-12-01', '2026-12-02', '2026-12-03', '2026-12-04',
+                '2026-11-19', '2026-11-23', '2026-11-24', '2026-11-25', '2026-11-26',
+                '2026-11-27', '2026-11-30', '2026-12-01', '2026-12-02', '2026-12-03',
             ]);
 
-        $monday = $mariana['days'][0];
-        $friday = $mariana['days'][4];
+        $monday = $mariana['days'][1];
+        $friday = $mariana['days'][5];
 
         expect($monday['slots'])->toHaveCount(20)
             ->and($monday['slots'][0])->toBe('2026-11-23T08:00:00-03:00')
@@ -104,6 +106,22 @@ describe('availability (R15, A9)', function () {
             ->and($friday['slots'])->toHaveCount(18)
             ->and(end($friday['slots']))->toBe('2026-11-27T16:30:00-03:00');
     });
+
+    it('offers today only the slots at least 2 hours away', function (string $now, ?string $first, int $count) {
+        CarbonImmutable::setTestNow(CarbonImmutable::parse($now, BOOKING_ZONE));
+
+        $availability = $this->getJson('/api/public/diagnostics/'.bookableLead()->token.'/availability')->assertOk()->json('data');
+        $today = specialistAnswer($availability, specialistNamed('mariana.toledo')->id)['days'][0];
+
+        expect($today['date'])->toBe('2026-11-19')
+            ->and($today['slots'][0] ?? null)->toBe($first)
+            ->and($today['slots'])->toHaveCount($count);
+    })->with([
+        'at 10:00 the first is 12:00' => ['2026-11-19 10:00', '2026-11-19T12:00:00-03:00', 12],
+        'at 10:01 the first is 12:30' => ['2026-11-19 10:01', '2026-11-19T12:30:00-03:00', 11],
+        'at 06:00 the day is whole' => ['2026-11-19 06:00', '2026-11-19T08:00:00-03:00', 20],
+        'at 16:00 nothing is left' => ['2026-11-19 16:00', null, 0],
+    ]);
 
     it('has no slot on a holiday or a weekend', function () {
         $lead = bookableLead();
@@ -143,8 +161,8 @@ describe('availability (R15, A9)', function () {
         ])->assertCreated();
 
         $availability = $this->getJson('/api/public/diagnostics/'.bookableLead(['email' => 'outro@exemplo.com'])->token.'/availability')->json('data');
-        $monday = specialistAnswer($availability, $carlos->id)['days'][0]['slots'];
-        $marianaMonday = specialistAnswer($availability, specialistNamed('mariana.toledo')->id)['days'][0]['slots'];
+        $monday = specialistAnswer($availability, $carlos->id)['days'][1]['slots'];
+        $marianaMonday = specialistAnswer($availability, specialistNamed('mariana.toledo')->id)['days'][1]['slots'];
 
         expect($monday)->toHaveCount(19)
             ->not->toContain('2026-11-23T09:00:00-03:00')
@@ -208,6 +226,48 @@ describe('booking (R16, AM5, AM13)', function () {
             ->and($second->refresh()->stage)->toBe('lead');
     });
 
+    /*
+     * The pre-check above answers the slow visitor; the unique (specialist, starts_at) index answers
+     * the one whose check ran while the other's insert was in flight. The double lets the check
+     * miss a row that exists, so the insert is what refuses.
+     */
+    it('answers 409 slot_taken when the insert meets the unique index the pre-check missed', function (bool $postgres) {
+        $carlos = specialistNamed('carlos.prado');
+        $slot = ['specialist_id' => $carlos->id, 'starts_at' => slotAt('2026-11-23 10:00')];
+
+        // Bound before the first request: the router keeps the controller (and its service) it built.
+        $this->app->instance(AppointmentRepository::class, new class($postgres) extends AppointmentRepository
+        {
+            public function __construct(private bool $postgres) {}
+
+            public function isAppointmentSlotTaken(Specialist $specialist, CarbonImmutable $startsAt): bool
+            {
+                return false;
+            }
+
+            public function createAppointment(array $attributes): Appointment
+            {
+                $taken = Appointment::query()->where('specialist_id', $attributes['specialist_id'])->exists();
+
+                return $this->postgres && $taken ? throw postgresUniqueViolation('appointments') : parent::createAppointment($attributes);
+            }
+        });
+
+        $this->postJson('/api/public/diagnostics/'.bookableLead()->token.'/booking', $slot)->assertCreated();
+
+        $second = bookableLead(['email' => 'segundo@exemplo.com']);
+
+        $this->postJson("/api/public/diagnostics/{$second->token}/booking", $slot)
+            ->assertStatus(409)
+            ->assertJsonPath('code', 'slot_taken');
+
+        expect(Appointment::withoutGlobalScopes()->count())->toBe(1)
+            ->and($second->refresh()->stage)->toBe('lead');
+    })->with([
+        'the real index (SQLite says 23000)' => [false],
+        'PostgreSQL says 23505' => [true],
+    ]);
+
     it('refuses a slot the agenda does not offer (422 slot_unavailable)', function (string $local) {
         $this->postJson('/api/public/diagnostics/'.bookableLead()->token.'/booking', [
             'specialist_id' => specialistNamed('mariana.toledo')->id,
@@ -221,8 +281,9 @@ describe('booking (R16, AM5, AM13)', function () {
         'before the hours' => ['2026-11-23 07:30'],
         'the Friday close' => ['2026-11-27 17:00'],
         'off the half hour' => ['2026-11-23 10:15'],
-        'today' => ['2026-11-19 15:00'],
-        'past the tenth working day' => ['2026-12-07 10:00'],
+        'today, under 2 hours away' => ['2026-11-19 11:30'],
+        'today, already past' => ['2026-11-19 09:00'],
+        'past the tenth working day' => ['2026-12-04 10:00'],
     ]);
 
     it('refuses a specialist of another firm as unknown', function () {
@@ -272,6 +333,24 @@ describe('booking (R16, AM5, AM13)', function () {
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['specialist_id', 'starts_at']);
     });
+
+    /* A time without its offset would be read as the server's guess of a zone: refused as a format error, not a missing slot. */
+    it('wants the start as ISO-8601 with its offset, as the availability gave it', function (string $startsAt, bool $accepted) {
+        $response = $this->postJson('/api/public/diagnostics/'.bookableLead()->token.'/booking', [
+            'specialist_id' => specialistNamed('carlos.prado')->id,
+            'starts_at' => $startsAt,
+        ]);
+
+        $accepted ? $response->assertCreated() : $response->assertUnprocessable()->assertJsonValidationErrors(['starts_at']);
+    })->with([
+        'with the São Paulo offset' => ['2026-11-23T10:00:00-03:00', true],
+        'in UTC with Z' => ['2026-11-23T13:00:00Z', true],
+        'in UTC with +00:00' => ['2026-11-23T13:00:00+00:00', true],
+        'without an offset' => ['2026-11-23T10:00:00', false],
+        'a date and time with a space' => ['2026-11-23 10:00', false],
+        'a date only' => ['2026-11-23', false],
+        'an impossible date with an offset' => ['2026-02-30T10:00:00-03:00', false],
+    ]);
 
     it('answers 404 for an unknown token', function () {
         $this->postJson('/api/public/diagnostics/'.str_repeat('x', 48).'/booking', [

@@ -13,6 +13,12 @@ class BookMeetingRequest extends FormRequest
 {
     private const EMAIL_MAX_LENGTH = 255;
 
+    /**
+     * ISO-8601 with an offset or `Z`, as the availability answers it: a time without its zone would
+     * be read in UTC and refused as a missing slot, which tells the visitor the wrong thing.
+     */
+    private const ISO_8601_WITH_OFFSET = '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:\d{2})$/';
+
     public function authorize(): bool
     {
         return true;
@@ -22,7 +28,7 @@ class BookMeetingRequest extends FormRequest
     {
         return [
             'specialist_id' => ['required', 'integer'],
-            'starts_at' => ['required', 'string', 'date'],
+            'starts_at' => ['required', 'string', 'regex:'.self::ISO_8601_WITH_OFFSET, 'date'],
             'email' => ['nullable', 'string', 'email', 'max:'.self::EMAIL_MAX_LENGTH],
         ];
     }

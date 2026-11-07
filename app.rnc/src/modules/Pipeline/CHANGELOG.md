@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.1.1 — 2026-11-07
+
+### Added
+
+- Tests only: `AgendaView` — "Esta semana" asks the API for no week, and on a São Paulo weekend (Sunday 23:00 BRT included, already Monday in UTC) the screen still asks for none, so the weekend rule stays the API's (rnc-1 review).
+
 ## 1.1.0 — 2026-11-07
 
 ### Added

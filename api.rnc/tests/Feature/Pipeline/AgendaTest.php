@@ -104,6 +104,19 @@ it('opens on the coming week on a weekend, when no week is asked', function () {
         ->and($this->actingAs(agendaReader())->getJson('/api/agenda?week=2026-11-21')->assertOk()->json('data.week_start'))->toBe('2026-11-16');
 });
 
+/* The weekend is São Paulo's, not UTC's: Friday 22:00 BRT is already Saturday in UTC, Sunday 23:00 BRT already Monday. */
+it('decides the opening week on the São Paulo clock', function (string $utc, string $weekStart) {
+    CarbonImmutable::setTestNow(CarbonImmutable::parse($utc, 'UTC'));
+
+    expect($this->actingAs(agendaReader())->getJson('/api/agenda')->assertOk()->json('data.week_start'))->toBe($weekStart);
+})->with([
+    'Friday 22:00 BRT (Saturday 01:00 UTC) stays this week' => ['2026-11-21 01:00', '2026-11-16'],
+    'Saturday 21:30 BRT opens the coming week' => ['2026-11-22 00:30', '2026-11-23'],
+    'Sunday 10:00 BRT opens the coming week' => ['2026-11-22 13:00', '2026-11-23'],
+    'Sunday 23:00 BRT (Monday 02:00 UTC) opens the coming week' => ['2026-11-23 02:00', '2026-11-23'],
+    'Monday 00:30 BRT is this week' => ['2026-11-23 03:30', '2026-11-23'],
+]);
+
 it('refuses a week that is not a date', function () {
     $this->actingAs(agendaReader())->getJson('/api/agenda?week=amanha')->assertUnprocessable()->assertJsonValidationErrors('week');
 });

@@ -115,13 +115,21 @@ test.describe('the landing', () => {
   });
 });
 
+/** A3 asks for ≥ 3 dated facts per sector page: the seeder may grow, the floor may not drop. */
+async function expectAtLeastThreeFacts(page: Page) {
+  const facts = page.getByTestId('sector-fact');
+
+  await expect(facts.nth(2)).toBeVisible();
+  expect(await facts.count()).toBeGreaterThanOrEqual(3);
+}
+
 test.describe('the sector pages', () => {
   for (const sector of SECTORS) {
     test(`/reforma/${sector.slug} renders its dated facts, the CTA and its own title`, async ({ page }) => {
       await page.goto(`/reforma/${sector.slug}`);
 
       await expect(page.getByRole('heading', { level: 1 })).toHaveText(`Reforma Tributária para ${sector.article}`);
-      await expect(page.getByTestId('sector-fact')).toHaveCount(3);
+      await expectAtLeastThreeFacts(page);
       await expect(page.getByTestId('sector-fact').first()).toContainText('2026');
       await expect(page.getByTestId('sector-cta')).toBeVisible();
       await expect(page).toHaveTitle(`Reforma Tributária em ${sector.label}: o que muda · Franco Contabilidade`);
@@ -161,7 +169,7 @@ test.describe('on a phone and on a desktop', () => {
       expect(cta!.x + cta!.width).toBeLessThanOrEqual(width);
 
       await page.goto('/reforma/industria');
-      await expect(page.getByTestId('sector-fact')).toHaveCount(3);
+      await expectAtLeastThreeFacts(page);
       expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
     });
   }

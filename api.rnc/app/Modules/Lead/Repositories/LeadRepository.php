@@ -13,6 +13,8 @@ use Illuminate\Support\Carbon;
 /** Every read is firm-scoped by `BelongsToFirm`: another firm's token is simply not found. */
 class LeadRepository
 {
+    private const LIKE_ESCAPE = '!';
+
     /** @param  array<string, mixed>  $attributes */
     public function createLead(array $attributes): Lead
     {
@@ -29,6 +31,17 @@ class LeadRepository
     public function findLeadByLiveReportToken(string $reportToken, Carbon $now): ?Lead
     {
         return Lead::query()->where('report_token', $reportToken)->where('report_expires_at', '>', $now)->first();
+    }
+
+    /** The newest lead of this visitor still at `visitante` with a live token, in the current firm. */
+    public function findOpenVisitanteOfVisitor(string $visitorUuid, Carbon $now): ?Lead
+    {
+        return Lead::query()
+            ->where('visitor_uuid', $visitorUuid)
+            ->where('stage', LeadStage::Visitante->value)
+            ->where('token_expires_at', '>', $now)
+            ->latest('id')
+            ->first();
     }
 
     public function findLeadById(int $id): ?Lead
@@ -97,6 +110,9 @@ class LeadRepository
     /**
      * The search box (R18): a piece of the company, the contact's name or e-mail, or of the CNPJ's
      * digits. `like` is portable SQL (AM11) and ignores the case of ASCII letters on both engines.
+     * `%` and `_` typed by the person are literal: SQLite has no default LIKE escape and MySQL's is
+     * a backslash that its string literals also eat, so the escape is `!`, named in an explicit
+     * `ESCAPE` clause that SQLite, MySQL and PostgreSQL read the same way.
      *
      * @param  Builder<Lead>  $query
      * @return Builder<Lead>
@@ -109,13 +125,14 @@ class LeadRepository
             return $query;
         }
 
-        $pattern = '%'.addcslashes($term, '%_\\').'%';
+        $pattern = '%'.str_replace([self::LIKE_ESCAPE, '%', '_'], [self::LIKE_ESCAPE.self::LIKE_ESCAPE, self::LIKE_ESCAPE.'%', self::LIKE_ESCAPE.'_'], $term).'%';
         $digits = preg_replace('/\D+/', '', $term) ?? '';
+        $like = " like ? escape '".self::LIKE_ESCAPE."'";
 
-        return $query->where(function (Builder $where) use ($pattern, $digits) {
-            $where->where('company', 'like', $pattern)
-                ->orWhere('contact_name', 'like', $pattern)
-                ->orWhere('email', 'like', $pattern);
+        return $query->where(function (Builder $where) use ($pattern, $digits, $like) {
+            $where->whereRaw('company'.$like, [$pattern])
+                ->orWhereRaw('contact_name'.$like, [$pattern])
+                ->orWhereRaw('email'.$like, [$pattern]);
 
             if ($digits !== '') {
                 $where->orWhere('cnpj', 'like', '%'.$digits.'%');

@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.0.1 — 2026-11-07
+
+### Added
+
+- Tests only: `POST public/diagnostics` reuses the visitor's open `visitante` and opens a new lead otherwise (rnc-1 review; the behaviour is Lead's).
+
 ## 1.0.0 — 2026-11-07
 
 ### Added

@@ -108,6 +108,23 @@ describe('the board (R18)', function () {
         expect(collect($columns)->flatMap(fn (array $column) => array_column($column['items'], 'company'))->sort()->values()->all())
             ->toBe(['Oficina Lua', 'Padaria Sol']);
     });
+
+    it('reads % and _ in the search as plain characters, on every engine', function (string $search, array $found) {
+        pipelineLead(['company' => 'Desconto 100% Ltda']);
+        pipelineLead(['company' => 'Desconto 1000 Ltda']);
+        pipelineLead(['company' => 'Loja A_B']);
+        pipelineLead(['company' => 'Loja AXB']);
+        pipelineLead(['company' => 'Bar Ponto!Final']);
+
+        $columns = $this->actingAs(pipelineMember())->getJson('/api/leads?search='.rawurlencode($search))->assertOk()->json('data.columns');
+
+        expect(collect($columns)->flatMap(fn (array $column) => array_column($column['items'], 'company'))->sort()->values()->all())
+            ->toBe($found);
+    })->with([
+        'a percent sign' => ['100%', ['Desconto 100% Ltda']],
+        'an underscore' => ['A_B', ['Loja A_B']],
+        'the escape character' => ['o!F', ['Bar Ponto!Final']],
+    ]);
 });
 
 describe('the lead detail (R19)', function () {

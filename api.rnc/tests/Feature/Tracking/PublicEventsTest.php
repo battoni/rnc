@@ -6,6 +6,7 @@ use App\Modules\Tracking\Models\TrackingEvent;
 use App\Modules\Tracking\Models\Visitor;
 use Database\Seeders\FirmSeeder;
 use Database\Seeders\SectorPageSeeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 /*
@@ -63,6 +64,33 @@ describe('recording an event', function () {
         expect(Visitor::withoutGlobalScopes()->count())->toBe(1)
             ->and(Visitor::withoutGlobalScopes()->value('source'))->toBe('pago')
             ->and(TrackingEvent::withoutGlobalScopes()->orderBy('id')->pluck('type')->all())->toBe(['visit', 'cta']);
+    });
+
+    /*
+     * Two first beacons of one visitor in parallel: both read "no visitor", the other request's
+     * insert lands between this one's read and its insert. The `creating` hook plays the other
+     * request; the unique (firm, uuid) index refuses this insert and the winner's row is reused.
+     */
+    it('reuses the row of a parallel first beacon instead of failing on the unique index', function () {
+        Visitor::creating(function (Visitor $visitor) {
+            DB::table('visitors')->insertOrIgnore([
+                'firm_id' => $this->franco->id,
+                'uuid' => $visitor->uuid,
+                'source' => 'organico',
+                'medium' => null,
+                'first_seen_at' => now(),
+                'last_seen_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        });
+
+        $this->postJson('/api/public/events', eventPayload())->assertCreated();
+
+        $visitor = Visitor::withoutGlobalScopes()->sole();
+
+        expect($visitor->source)->toBe('organico')
+            ->and(TrackingEvent::withoutGlobalScopes()->sole()->visitor_id)->toBe($visitor->id);
     });
 
     it('accepts an event without a sector or a medium', function () {

@@ -1,5 +1,5 @@
 ---
-version: 1.1.0
+version: 1.4.0
 origin: rnc
 ---
 # RULES — Lead Module
@@ -48,5 +48,10 @@ them and writes the team's notes — through this module's service.
 ## Known Gaps
 
 - **No retention rule** for leads and consents until LGPD retention is decided.
-- **A visitor can start many leads** (each path choice after a restart is a new `visitante`); F5's
-  kanban may need to fold empty visitantes.
+- **Bot traffic still creates visitantes**: `POST public/diagnostics` reuses the open `visitante`
+  of the same `visitor_uuid` (no new row), but a script that sends a fresh UUID per call — or none
+  — gets one empty `visitante` per call, up to the 20/min/IP throttle. No captcha or proof of work
+  yet; the board's Visitante column and the funnel's diagnostic step can be inflated that way.
+- ~~A visitor can start many leads~~ — retired 07/11/2026 (rnc-1 review): a restart on the same
+  browser now starts its open `visitante` again (`LeadService::startLead`), so only the bot case
+  above remains.

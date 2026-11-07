@@ -40,3 +40,12 @@ it('answers whether a day is a holiday, whatever the time of day', function () {
         ->and(Holidays::isHoliday(CarbonImmutable::parse('2026-11-19', 'America/Sao_Paulo')))->toBeFalse()
         ->and(Holidays::isHoliday(CarbonImmutable::parse('2026-12-24', 'America/Sao_Paulo')))->toBeFalse();
 });
+
+it('places the four Easter-based holidays by their offsets (Easter 2027 is 28/03)', function () {
+    expect(array_values(array_diff(Holidays::forYear(2027), ['2027-01-01', '2027-04-21', '2027-05-01', '2027-09-07', '2027-10-12', '2027-11-02', '2027-11-15', '2027-11-20', '2027-12-25'])))->toBe([
+        '2027-02-08', // Carnaval Monday, Easter − 48
+        '2027-02-09', // Carnaval Tuesday, Easter − 47
+        '2027-03-26', // Good Friday, Easter − 2
+        '2027-05-27', // Corpus Christi, Easter + 60
+    ]);
+});

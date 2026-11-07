@@ -4,7 +4,7 @@ namespace App\Modules\Tracking\Repositories;
 
 use App\Modules\Tracking\Models\TrackingEvent;
 use App\Modules\Tracking\Models\Visitor;
-use Illuminate\Database\QueryException;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Carbon;
 
 class TrackingRepository
@@ -28,7 +28,7 @@ class TrackingRepository
 
         try {
             return Visitor::query()->create([...$firstTouch, 'uuid' => $uuid, 'first_seen_at' => $at, 'last_seen_at' => $at]);
-        } catch (QueryException $exception) {
+        } catch (UniqueConstraintViolationException $exception) {
             return Visitor::query()->where('uuid', $uuid)->first() ?? throw $exception;
         }
     }

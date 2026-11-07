@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.1.1 — 2026-11-07
+
+### Fixed
+
+- `TrackingRepository::findOrCreateVisitorByUuid` catches only `UniqueConstraintViolationException` when a parallel first beacon wins the insert, and the race is tested (`PublicEventsTest`, rnc-1 review).
+
 ## 1.1.0 — 2026-11-07
 
 ### Changed

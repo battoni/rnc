@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use App\Modules\Auth\Models\UserPermission;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -72,4 +73,29 @@ function userWithPermissions(array $permissionKeys): User
     }
 
     return $user;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Database errors
+|--------------------------------------------------------------------------
+|
+| A unique violation as PostgreSQL reports it (SQLSTATE 23505). SQLite and MySQL say 23000, so a
+| catch that compares the code with '23000' passes every SQLite test and answers 500 on pgsql:
+| a repository double throws this to prove the catch keys on the exception class, not the code.
+|
+*/
+
+function postgresUniqueViolation(string $table): UniqueConstraintViolationException
+{
+    $pdo = new class('SQLSTATE[23505]: Unique violation: duplicate key value violates unique constraint') extends PDOException
+    {
+        public function __construct(string $message)
+        {
+            parent::__construct($message);
+            $this->code = '23505';
+        }
+    };
+
+    return new UniqueConstraintViolationException('pgsql', "insert into \"{$table}\"", [], $pdo);
 }

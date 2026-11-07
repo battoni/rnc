@@ -1,5 +1,5 @@
 ---
-version: 1.1.0
+version: 1.2.0
 origin: rnc
 ---
 # RULES — Booking Module
@@ -30,12 +30,19 @@ horário acabou de ser reservado"), `slot_unavailable` 422 (not a slot the agend
   stored in UTC by the `UtcDateTime` cast — `APP_TIMEZONE` is São Paulo, and Eloquent's own
   `datetime` would write local time. The API answers ISO-8601 with the offset. Queries compare
   UTC strings with Carbon bounds, never raw SQL (AM11).
-- **The calendar is pure** (`BookingCalendar`): from tomorrow, 10 days Monday–Friday that are not
-  in `Holidays` (fixed list + Carnaval, Sexta-feira Santa and Corpus Christi from Easter by Meeus);
-  a slot is 30 minutes that end by closing. A booked start is left out of the availability.
+- **The calendar is pure** (`BookingCalendar`): 10 days Monday–Friday that are not in `Holidays`
+  (fixed list + Carnaval, Sexta-feira Santa and Corpus Christi from Easter by Meeus), today
+  counted; a slot is 30 minutes that end by closing and start at least 2 hours from now
+  (`LEAD_TIME_MINUTES`), so today offers only what is still bookable (late in the day, nothing).
+  A booked start is left out of the availability. (Until the review of 07/11/2026 the window
+  started tomorrow: a visitor finishing the diagnostic in the morning could not book that
+  afternoon — W57.)
 - **The unique (specialist, starts_at) index is the lock** (R16). The service checks first for a
   calm answer, and a constraint error from a race becomes the same 409; the unique `lead_id` makes
-  one meeting per lead.
+  one meeting per lead. The catch is `UniqueConstraintViolationException`, never a SQLSTATE
+  compare: MySQL and SQLite say `23000`, PostgreSQL `23505`.
+- **`starts_at` arrives as the availability gave it**: ISO-8601 with an offset or `Z`
+  (`BookMeetingRequest`). A time without its zone is a 422 on the field, not a `slot_unavailable`.
 - **The suggested specialist** is `SpecialistFocus::forProfile()` — the demo's
   `suggestedSpecialist()`: Simples → `simples`, indústria → `industria`, Real → `real`, else `geral`;
   the first specialist with that focus, else the first one.

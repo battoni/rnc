@@ -2,6 +2,16 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.4.0 — 2026-11-07
+
+### Changed
+
+- `LeadService::startLead` starts the visitor's open `visitante` (same `visitor_uuid`, live token) again instead of a new row: path, step and answers reset, token, first touch and timeline kept; `LeadRepository::findOpenVisitanteOfVisitor` (rnc-1 review). The bot case is a Known Gap.
+
+### Fixed
+
+- `LeadRepository::searched` escapes `%`, `_` and `!` with `!` in an explicit `ESCAPE '!'` — the backslash escape without a clause matched nothing on SQLite and depended on MySQL's string escaping. Tested by `PipelineLeadsTest` (`100%`, `A_B`).
+
 ## 1.3.0 — 2026-11-07
 
 ### Added

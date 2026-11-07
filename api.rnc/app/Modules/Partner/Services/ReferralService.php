@@ -17,7 +17,7 @@ use App\Modules\Partner\Models\Partner;
 use App\Modules\Partner\Models\Referral;
 use App\Modules\Partner\Repositories\PartnerRepository;
 use App\Modules\Partner\Repositories\ReferralRepository;
-use Illuminate\Database\QueryException;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -32,8 +32,6 @@ use Illuminate\Validation\ValidationException;
 class ReferralService
 {
     private const MAIL_LOCALE = 'pt_BR';
-
-    private const INTEGRITY_CONSTRAINT_VIOLATION = '23000';
 
     private const PARTNER_UNAVAILABLE = 'partners.routing.partnerUnavailable';
 
@@ -131,11 +129,7 @@ class ReferralService
 
                 return ['referral' => $row, 'event' => $event];
             });
-        } catch (QueryException $exception) {
-            if ($exception->getCode() !== self::INTEGRITY_CONSTRAINT_VIOLATION) {
-                throw $exception;
-            }
-
+        } catch (UniqueConstraintViolationException) {
             throw ReferralException::alreadyReferred();
         }
 
