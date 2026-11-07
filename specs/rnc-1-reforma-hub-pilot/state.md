@@ -107,3 +107,4 @@ Started: 2026-11-07
 - W39 F5: the board's size → all seven columns in one answer, each with its full count and its 60 most recently touched cards; the search reaches the rest (to reverse: `PipelineService::COLUMN_LIMIT` or per-column pages). Spec C8.
 - W40 F5: the agenda week → Monday–Friday in São Paulo holding the date asked, the coming week on a weekend, ◀ ▶ unlimited plus "Esta semana", every booked meeting shown with its lead's stage, a lost one too (not the demo's three rolling weeks) (to reverse: `AgendaService::openingMonday`). Spec C8.
 - W41 F5: the local pipeline → a deterministic `PipelineSeeder` (no faker), 40 leads relative to today, phones `55 11 9000-0NNN`, e-mails `@…exemplo.com.br`, CNPJs on root `90…` with valid check digits, refuses production (to reverse: drop it from `seeders.local.php`).
+03:20 F5 done, attempt 1, fdee149
