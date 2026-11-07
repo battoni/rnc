@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.17.0 — 2026-11-07
+
+### Added
+
+- rnc-3 F8: `RoleSeeder` grants Reinaldo `briefing.read` (his briefing and the 07:00 e-mail); the team has none.
+
 ## 1.16.0 — 2026-11-07
 
 ### Added

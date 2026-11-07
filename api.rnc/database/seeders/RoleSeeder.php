@@ -34,6 +34,7 @@ use Illuminate\Database\Seeder;
  * Reforma assistant) and Reinaldo `assistant.manage` (write and retire notes, the gaps); reviewing a
  * note is a specialist's, by `users.is_specialist`, not a key (AM4). F6 gives Reinaldo
  * `contracts.manage` (the contract alert, its import and "Cláusula incluída"); the team has none.
+ * F8 gives Reinaldo `briefing.read` (his briefing and the 07:00 e-mail); the team has none.
  *
  * Re-running the seeder rewrites the four matrices to exactly this table. A key added to a role
  * is a line here, and `SeededRolesTest` states the result.
@@ -61,6 +62,7 @@ class RoleSeeder extends Seeder
         'assistant.manage',
         'fiscal.import',
         'contracts.manage',
+        'briefing.read',
     ];
 
     public const PARCEIRO_KEYS = [

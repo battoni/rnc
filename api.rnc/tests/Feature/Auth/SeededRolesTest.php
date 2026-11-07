@@ -61,11 +61,12 @@ describe('the seeded roles', function () {
         ]);
     });
 
-    it('give Reinaldo the team keys plus the network, the numbers, the repricing, the channel, the knowledge base and the contract alert', function () {
+    it('give Reinaldo the team keys plus the network, the numbers, the repricing, the channel, the knowledge base, the contract alert and the briefing', function () {
         expect(seededRoleKeys('ceo'))->toBe([
             'agenda.read',
             'assistant.ask',
             'assistant.manage',
+            'briefing.read',
             'channel.read',
             'clients.import',
             'contracts.manage',
@@ -95,7 +96,7 @@ describe('the seeded roles', function () {
 
     it("keep Phase 3's keys with the operator until their own phase grants them (rnc-3 R28)", function () {
         $phase3 = ['brands.manage', 'channel.read', 'channel.manage', 'assistant.ask', 'assistant.manage', 'contracts.manage', 'briefing.read'];
-        $granted = ['ceo' => ['assistant.ask', 'assistant.manage', 'channel.read', 'contracts.manage'], 'equipe' => ['assistant.ask'], 'parceiro' => []];
+        $granted = ['ceo' => ['assistant.ask', 'assistant.manage', 'briefing.read', 'channel.read', 'contracts.manage'], 'equipe' => ['assistant.ask'], 'parceiro' => []];
 
         expect(seededRoleKeys('operador'))->toContain(...$phase3);
 
@@ -117,6 +118,12 @@ describe('the seeded roles', function () {
     it('give Reinaldo the contract alert and keep it from the team (rnc-3 F6, R18)', function () {
         expect(seededRoleKeys('ceo'))->toContain('contracts.manage')
             ->and(seededRoleKeys('equipe'))->not->toContain('contracts.manage');
+    });
+
+    it('give Reinaldo the briefing and keep it from the team and the partner (rnc-3 F8, R23)', function () {
+        expect(seededRoleKeys('ceo'))->toContain('briefing.read')
+            ->and(seededRoleKeys('equipe'))->not->toContain('briefing.read')
+            ->and(seededRoleKeys('parceiro'))->not->toContain('briefing.read');
     });
 
     it('keep the staff directory and the permission matrix with the operator', function () {

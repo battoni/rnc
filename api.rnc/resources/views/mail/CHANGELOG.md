@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.1.0 — 2026-11-07
+
+### Added
+
+- `daily-briefing.blade.php` and its `-text` twin (rnc-3 F8, R27): Reinaldo's 07:00 briefing — the four figures two by two, the day's actions with their links, the next meetings, the referrals by SLA and the button to `/reinaldo`; `lang/{pt_BR,en}/mail.php` → `briefing.*`; preview `/mail-preview/daily-briefing`.
+
 ## 1.0.0 — 2026-09-05
 
 ### Added

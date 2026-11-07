@@ -120,6 +120,8 @@ return [
     'POST contracts/import' => 'staff',
     'GET contracts/template' => 'staff',
     'POST contracts/{id}/clause' => 'staff',
+    // STAFF — Phase 3 (rnc-3): F8 Reinaldo's briefing, `briefing.read`
+    'GET briefing' => 'staff',
     'POST fiscal/imports' => 'staff',
     'GET fiscal/imports' => 'staff',
     'GET fiscal/readiness' => 'staff',

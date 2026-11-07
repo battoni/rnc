@@ -6,6 +6,9 @@ use App\Mail\EmailVerificationCodeMail;
 use App\Modules\Booking\DTOs\MeetingMailDTO;
 use App\Modules\Booking\Mail\BookingConfirmed;
 use App\Modules\Booking\Mail\MeetingReminder;
+use App\Modules\Briefing\DTOs\BriefingMailDTO;
+use App\Modules\Briefing\Helpers\ActionPicker;
+use App\Modules\Briefing\Mail\DailyBriefingMail;
 use App\Modules\Partner\DTOs\ReferralMailDTO;
 use App\Modules\Partner\Mail\ReferralSent;
 use Carbon\CarbonImmutable;
@@ -52,6 +55,10 @@ class MailPreviewController extends Controller
                 'label' => 'Network — a referral to a partner (company and Franco\'s contact, never the lead\'s)',
                 'make' => fn (): Mailable => (new ReferralSent($this->sampleReferral()))->locale('pt_BR'),
             ],
+            'daily-briefing' => [
+                'label' => 'Briefing — Reinaldo\'s 07:00 e-mail on business days (rnc-3 F8)',
+                'make' => fn (): Mailable => (new DailyBriefingMail($this->sampleBriefing()))->locale('pt_BR'),
+            ],
         ];
     }
 
@@ -89,6 +96,34 @@ class MailPreviewController extends Controller
             firmPhone: '11 3732-5500',
             firmMailbox: 'contato@exemplo.com.br',
             firmAddress: 'Av. Corifeu de Azevedo Marques, 2333, Butantã, São Paulo-SP',
+        );
+    }
+
+    /** A Thursday's briefing as the seed would give it (invented names, rnc-3 F8). */
+    private function sampleBriefing(): BriefingMailDTO
+    {
+        return new BriefingMailDTO(
+            firstName: 'Reinaldo',
+            firmName: (string) config('rnc.brand.name'),
+            frontendUrl: (string) config('rnc.frontend_url'),
+            briefing: [
+                'as_of' => '2026-11-19T07:00:00-03:00',
+                'leads' => ['last_7_days' => 23, 'last_24_hours' => 4],
+                'meetings' => ['count' => 6, 'today' => 2, 'window_end' => '2026-11-26', 'next' => [
+                    ['lead_id' => 1, 'company' => 'Clínica Horizonte', 'starts_at' => '2026-11-19T10:30:00-03:00', 'specialist' => 'Juliana Reis'],
+                    ['lead_id' => 2, 'company' => 'Padaria Sol', 'starts_at' => '2026-11-19T15:00:00-03:00', 'specialist' => 'Mariana Toledo'],
+                ]],
+                'referrals' => ['count' => 7, 'by_state' => ['ok' => 3, 'atencao' => 2, 'estourado' => 2], 'goal_hours' => 24, 'more' => 2, 'top' => [
+                    ['id' => 1, 'lead_id' => 3, 'company' => 'Metalúrgica Aço Forte', 'partner' => ['id' => 1, 'name' => 'Andrade Advocacia (exemplo)'], 'state' => 'estourado', 'hours' => 31.5],
+                    ['id' => 2, 'lead_id' => 4, 'company' => 'Consultoria Prisma', 'partner' => ['id' => 2, 'name' => 'Margem Certa (exemplo)'], 'state' => 'atencao', 'hours' => 14],
+                ]],
+                'pipeline' => ['count' => 12, 'range_cents' => [32_400_000, 86_400_000], 'stages' => []],
+                'actions' => [
+                    ['kind' => ActionPicker::SLA_BREACHED, 'params' => ['partner' => 'Andrade Advocacia (exemplo)', 'company' => 'Metalúrgica Aço Forte', 'hours' => 31.5, 'goal_hours' => 24], 'to' => '/reinaldo/trilha?parceiro=1'],
+                    ['kind' => ActionPicker::MEETINGS_TODAY, 'params' => ['count' => 2], 'to' => '/equipe/agenda'],
+                    ['kind' => ActionPicker::PROPOSALS, 'params' => ['count' => 3, 'range_cents' => [5_400_000, 10_800_000]], 'to' => '/equipe/pipeline?etapa=proposta'],
+                ],
+            ],
         );
     }
 

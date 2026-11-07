@@ -7,6 +7,7 @@ use App\Modules\Auth\Models\Role;
 use App\Modules\Channel\Models\ChannelFirm;
 use App\Modules\Firm\Models\Firm;
 use App\Modules\Firm\Models\FirmBrand;
+use App\Modules\Lead\Models\Lead;
 use App\Modules\Partner\Models\Partner;
 use App\Modules\Portfolio\Models\Client;
 use App\Modules\Portfolio\Models\ClientContract;
@@ -307,5 +308,33 @@ describe('F6 contracts (A25)', function () {
             ->and($alert['summary']['total'])->toBe(1)
             ->and(ClientContract::withoutGlobalScopes()->findOrFail($theirs->id)->has_reforma_clause)->toBeFalse()
             ->and(ClientContract::withoutGlobalScopes()->where('client_id', $theirClient->id)->count())->toBe(1);
+    });
+});
+
+/** F8 — Reinaldo's briefing (`briefing.read`, ceo + operador: R23, R28). */
+describe('F8 briefing (A25)', function () {
+    it('refuses a partner with 403', function () {
+        $this->actingAs(phase3Partner())->getJson('/api/briefing')->assertForbidden();
+    });
+
+    it('refuses the team with 403', function () {
+        $this->actingAs(phase3Person('equipe'))->getJson('/api/briefing')->assertForbidden();
+    });
+
+    it('asks a guest to sign in', function () {
+        $this->getJson('/api/briefing')->assertUnauthorized();
+    });
+
+    it("lets Reinaldo and the operator read it, and counts none of firm B's leads, meetings or referrals", function () {
+        $firmB = Firm::factory()->create(['slug' => 'firma-b']);
+        Lead::factory()->create(['firm_id' => $firmB->id, 'stage' => 'proposta']);
+        Lead::factory()->create(['firm_id' => $this->franco->id, 'stage' => 'proposta']);
+
+        $briefing = $this->actingAs(phase3Person('ceo'))->getJson('/api/briefing')->assertOk()->json('data');
+        $this->actingAs(phase3Person('operador'))->getJson('/api/briefing')->assertOk();
+
+        expect($briefing['leads']['last_7_days'])->toBe(1)
+            ->and($briefing['pipeline']['count'])->toBe(1)
+            ->and($briefing['referrals']['count'])->toBe(0);
     });
 });

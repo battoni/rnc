@@ -13,6 +13,7 @@ use App\Modules\Assistant\Controllers\AssistantController;
 use App\Modules\Assistant\Controllers\NoteController;
 use App\Modules\Booking\Controllers\PublicBookingController;
 use App\Modules\Booking\Controllers\PublicReportController;
+use App\Modules\Briefing\Controllers\BriefingController;
 use App\Modules\Channel\Controllers\ChannelController;
 use App\Modules\Content\Controllers\PublicSectorPageController;
 use App\Modules\Diagnostic\Controllers\PublicDiagnosticController;
@@ -179,6 +180,10 @@ Route::get('contracts', [ContractController::class, 'index'])->middleware($contr
 Route::post('contracts/import', [ContractController::class, 'import'])->middleware([...$contracts, 'throttle:10,1,contracts-import']);
 Route::get('contracts/template', [ContractController::class, 'template'])->middleware($contracts);
 Route::post('contracts/{id}/clause', [ContractController::class, 'clause'])->whereNumber('id')->middleware($contracts);
+// Reinaldo's briefing (rnc-3 F8, R23–R25): the day's leads, meetings, referrals by SLA, the open
+// pipeline's fee range and the three actions, in one read behind `briefing.read` (ceo, operador).
+// The same payload is the 07:00 e-mail (`briefing:send`, routes/console.php).
+Route::get('briefing', [BriefingController::class, 'show'])->middleware(['auth', 'permission:briefing.read']);
 // NF-e import (rnc-2 F6a–F6b, R15–R17, D14): one XML or a ZIP, and the firm's batches, behind
 // `fiscal.import` (ceo, operador); the upload 10 a minute on its own limiter. The raw files stay on
 // the private disk; no route serves them (A15).
