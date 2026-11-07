@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.14.0 — 2026-11-07
+
+### Added
+
+- `briefing/briefing.spec.ts` (rnc-3 F9, R26, A23): with the clock fixed at 09:15 São Paulo, `/reinaldo` lands on "Briefing do dia" ("Bom dia, Reinaldo", the KPIs, the actions, the countdown, the panels); each action button lands on its screen — the trail filtered by `?parceiro=` (its request carries `partner_id`), the agenda, the board outlined at `?etapa=proposta` and `?etapa=lead_parcial` (in view at 390), the Radar; 390 and 1440 with no sideways scroll or console error; every word at 4.5:1 in light and dark (colours read through a canvas).
+
 ## 1.13.0 — 2026-11-07
 
 ### Added

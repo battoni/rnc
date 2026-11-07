@@ -1,7 +1,7 @@
 ---
-version: 1.2.0
+version: 1.2.1
 origin: rnc
-based-on: 1.2.0
+based-on: 1.2.1
 ---
 # RULES — Briefing Module
 
@@ -91,7 +91,9 @@ Partner and Portfolio, each through the models' own `BelongsToFirm` scope.
 *Retired 07/11/2026 (rnc-3 F6b):* "The Radar's action waits for rnc-2" — rnc-2's Radar is merged and
 `ActionPicker` has the fifth kind `radar` (W81).
 
-- **The screens the actions open read no filter yet** (W83): `?parceiro=` on the trail and
-  `?etapa=` on the pipeline are honoured by F9's screen work, not by F8.
+*Retired 07/11/2026 (rnc-3 F9):* "The screens the actions open read no filter yet" — the trail
+honours `?parceiro=` and the board `?etapa=` (W83; app Partner and Pipeline RULES), and the SPA's
+"Briefing do dia" (app Briefing module) writes the sentences.
+
 - **No e-mail opt-out.** Every active ceo gets it on every business day; a preference waits for a
   person who asks.

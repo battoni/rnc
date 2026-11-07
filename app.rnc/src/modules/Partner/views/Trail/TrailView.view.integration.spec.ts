@@ -15,10 +15,11 @@ import TrailView from './TrailView.view.vue';
  * rnc-2 F3 (R10, A8): each row shows where the partner took it — status, SLA, the value once closed.
  */
 const requested: URL[] = [];
+const route = vi.hoisted(() => ({ hash: '', params: {}, query: {} as Record<string, string> }));
 
 vi.mock('vue-router', async (importOriginal) => ({
   ...(await importOriginal<object>()),
-  useRoute: () => ({ hash: '', params: {}, query: {} }),
+  useRoute: () => route,
   useRouter: () => ({ push: vi.fn() }),
 }));
 
@@ -55,6 +56,7 @@ function renderTrail() {
 
 beforeEach(() => {
   requested.length = 0;
+  route.query = {};
   server.use(
     http.get('http://localhost/referrals', ({ request }) => {
       const url = new URL(request.url);
@@ -104,6 +106,25 @@ describe('TrailView', () => {
     await waitFor(() => expect(requested[requested.length - 1]?.searchParams.get('partner_id')).toBe('3'));
     expect(requested[requested.length - 1]?.searchParams.get('page')).toBe('1');
     await waitFor(() => expect(screen.getAllByTestId('trail-row')).toHaveLength(1));
+  });
+
+  it('opens filtered by `?parceiro=` — the briefing\'s "Cobrar <parceiro>" (rnc-3 F9, W83)', async () => {
+    route.query = { parceiro: '3' };
+    renderTrail();
+
+    await screen.findAllByTestId('trail-row');
+
+    expect(requested[0]?.searchParams.get('partner_id')).toBe('3');
+    expect(screen.getAllByTestId('trail-row')).toHaveLength(1);
+  });
+
+  it.each(['abc', '2.5', '0'])('ignores a `?parceiro=%s`, which is not an id', async (parceiro) => {
+    route.query = { parceiro };
+    renderTrail();
+
+    await screen.findAllByTestId('trail-row');
+
+    expect(requested[0]?.searchParams.get('partner_id')).toBeNull();
   });
 
   it('says so when the trail is empty', async () => {

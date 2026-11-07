@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.4.0 — 2026-11-07
+
+### Added
+
+- The board honours `?etapa=<stage>` (rnc-3 F9, W83): the named column is outlined and scrolled into view. Tested by `PipelineView.view.integration.spec.ts` (`?etapa=` block) and `e2e/briefing/briefing.spec.ts`.
+
 ## 1.3.0 — 2026-11-07
 
 ### Added

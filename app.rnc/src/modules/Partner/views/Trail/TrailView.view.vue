@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { useRoute } from 'vue-router';
 import type { PartnerOption, Referral } from '../../interfaces';
 import { usePaginatedList } from '@Composables';
 import { formatReal, getI18nRouteName } from '@Helpers';
@@ -13,11 +14,14 @@ import { GetPartnerOptionsService, GetReferralsService } from '../../services';
  * read it, and when), by whom and when, and where it stands — the status the partner moved it to
  * from its portal, its first-contact SLA chip and, once closed, the contract value (rnc-2 R10).
  * Filterable by partner, inactive ones included: the history keeps them. Reinaldo and the operator
- * only (`referrals.read`).
+ * only (`referrals.read`). `?parceiro=<id>` opens it already filtered — the briefing's "Cobrar
+ * <parceiro>" lands here (rnc-3 F9, W83).
  */
 const CLOSED_STATUS = 'fechado';
 
-const partnerId = ref<number | null>(null);
+const route = useRoute();
+
+const partnerId = ref<number | null>(partnerFromQuery(route.query.parceiro));
 const partnerOptions = ref<PartnerOption[]>([]);
 
 const { items, load, loadFailed, loading, onPage, page, perPage, total } = usePaginatedList<Referral>(
@@ -28,6 +32,13 @@ const { items, load, loadFailed, loading, onPage, page, perPage, total } = usePa
 onMounted(onOpen);
 
 // HELPERS
+/** A positive id from `?parceiro=`, or no filter: anything else in the address is ignored, not an error. */
+function partnerFromQuery(value: unknown): number | null {
+  const id = Number(Array.isArray(value) ? value[0] : value);
+
+  return Number.isInteger(id) && id > 0 ? id : null;
+}
+
 function formatMoment(at: string): string {
   return new Intl.DateTimeFormat('pt-BR', {
     day: '2-digit',

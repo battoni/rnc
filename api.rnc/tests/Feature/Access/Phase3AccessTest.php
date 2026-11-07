@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use App\Modules\Assistant\Models\AssistantAsk;
 use App\Modules\Assistant\Models\AssistantNote;
 use App\Modules\Assistant\Models\AssistantQuestion;
 use App\Modules\Auth\Models\Role;
@@ -193,6 +194,23 @@ describe('F4 assistant (A25)', function () {
         expect($slugs)->not->toContain('deles')
             ->and(AssistantNote::withoutGlobalScopes()->findOrFail($theirs->id)->status)->toBe('revisada');
     });
+
+    it("offers none of firm B's notes as a chip and lists none of firm B's asks as a gap (F9)", function () {
+        $firmB = Firm::factory()->create(['slug' => 'firma-b']);
+        $theirs = AssistantNote::factory()->create(['firm_id' => $firmB->id, 'slug' => 'deles', 'question' => 'Pergunta da firma B?']);
+        AssistantAsk::withoutGlobalScopes()->forceCreate([
+            'firm_id' => $firmB->id, 'user_id' => phase3Person('equipe')->id, 'question' => 'Pergunta sem nota da firma B',
+            'normalised' => 'pergunta sem nota da firma b', 'note_id' => null, 'at' => now(),
+        ]);
+        $operator = phase3Person('operador');
+
+        $chips = collect($this->actingAs($operator)->getJson('/api/assistant/suggestions')->assertOk()->json('data'))->pluck('id');
+        $gaps = collect($this->actingAs($operator)->getJson('/api/assistant/gaps')->assertOk()->json('data'))->pluck('normalised');
+
+        expect($chips)->toContain($this->note->id)
+            ->and($chips)->not->toContain($theirs->id)
+            ->and($gaps)->not->toContain('pergunta sem nota da firma b');
+    });
 });
 
 /** F5 — the questions' inbox and the answer (`assistant.ask`; who sees and answers is the service's: R14). */
@@ -317,21 +335,39 @@ describe('F6 contracts (A25)', function () {
             ->and(ClientContract::withoutGlobalScopes()->findOrFail($theirs->id)->has_reforma_clause)->toBeFalse()
             ->and(ClientContract::withoutGlobalScopes()->where('client_id', $theirClient->id)->count())->toBe(1);
     });
+
+    it("lists none of firm B's legal partners in the picker (F9)", function () {
+        $firmB = Firm::factory()->create(['slug' => 'firma-b']);
+        $ours = Partner::withoutGlobalScopes()->create([
+            'firm_id' => $this->franco->id, 'name' => 'Andrade (exemplo)', 'specialty' => 'advocacia_tributaria', 'email' => 'andrade@parceiro.exemplo', 'active' => true,
+        ]);
+        Partner::withoutGlobalScopes()->create([
+            'firm_id' => $firmB->id, 'name' => 'Advocacia da Firma B', 'specialty' => 'advocacia_tributaria', 'email' => 'adv@firmab.exemplo', 'active' => true,
+        ]);
+
+        $ids = collect($this->actingAs(phase3Person('ceo'))->getJson('/api/contracts/legal-partners')->assertOk()->json('data'))->pluck('id');
+
+        expect($ids->all())->toBe([$ours->id]);
+    });
 });
 
 /** F8 — Reinaldo's briefing (`briefing.read`, ceo + operador: R23, R28). */
+dataset('phase 3 briefing routes', [
+    'GET briefing' => ['GET', '/api/briefing'],
+]);
+
 describe('F8 briefing (A25)', function () {
-    it('refuses a partner with 403', function () {
-        $this->actingAs(phase3Partner())->getJson('/api/briefing')->assertForbidden();
-    });
+    it('refuses a partner with 403', function (string $method, string $uri) {
+        $this->actingAs(phase3Partner())->json($method, $uri)->assertForbidden();
+    })->with('phase 3 briefing routes');
 
-    it('refuses the team with 403', function () {
-        $this->actingAs(phase3Person('equipe'))->getJson('/api/briefing')->assertForbidden();
-    });
+    it('refuses the team with 403', function (string $method, string $uri) {
+        $this->actingAs(phase3Person('equipe'))->json($method, $uri)->assertForbidden();
+    })->with('phase 3 briefing routes');
 
-    it('asks a guest to sign in', function () {
-        $this->getJson('/api/briefing')->assertUnauthorized();
-    });
+    it('asks a guest to sign in', function (string $method, string $uri) {
+        $this->json($method, $uri)->assertUnauthorized();
+    })->with('phase 3 briefing routes');
 
     it("lets Reinaldo and the operator read it, and counts none of firm B's leads, meetings or referrals", function () {
         $firmB = Firm::factory()->create(['slug' => 'firma-b']);
@@ -345,4 +381,33 @@ describe('F8 briefing (A25)', function () {
             ->and($briefing['pipeline']['count'])->toBe(1)
             ->and($briefing['referrals']['count'])->toBe(0);
     });
+});
+
+/*
+ * F9 — A25 complete (plan AM14): every route served by a Phase 3 controller is a row of one of this
+ * file's datasets, so it has its partner, team and guest lines by name. A route added to one of these
+ * controllers without a row here fails this test, not a later review.
+ */
+const PHASE3_CONTROLLERS = [
+    'App\Modules\Firm\Controllers\BrandController@',
+    'App\Modules\Channel\Controllers\ChannelController@',
+    'App\Modules\Assistant\Controllers\AssistantController@',
+    'App\Modules\Assistant\Controllers\NoteController@',
+    'App\Modules\Portfolio\Controllers\ContractController@',
+    'App\Modules\Partner\Controllers\ContractReferralController@',
+    'App\Modules\Briefing\Controllers\BriefingController@',
+];
+
+it("names every route of Phase 3's controllers in a dataset of this file (A25 complete)", function () {
+    $source = (string) file_get_contents(__FILE__);
+
+    $phase3 = collect(app('router')->getRoutes()->getRoutes())
+        ->filter(fn ($route) => array_filter(PHASE3_CONTROLLERS, fn (string $prefix) => str_starts_with($route->getActionName(), $prefix)) !== [])
+        ->map(fn ($route) => array_values(array_diff($route->methods(), ['HEAD']))[0].' '.substr($route->uri(), strlen('api/')))
+        ->values();
+
+    $unnamed = $phase3->reject(fn (string $key) => str_contains($source, "'{$key}' => ['"))->values()->all();
+
+    expect($phase3)->toHaveCount(26)
+        ->and($unnamed)->toBe([]);
 });

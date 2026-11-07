@@ -82,10 +82,12 @@ describe('useLocalNavItems', () => {
     expect(knowledgeFor(false, ['assistant.ask'])).toEqual([]);
   });
 
-  it("puts the metrics, the partner registry, the trail, the network ledger, the repricing, the RNC channel, the XML import, the Radar and the contract alert in Reinaldo's group, each behind its own key (AM8)", () => {
+  it("puts the daily briefing first, then the metrics, the partner registry, the trail, the network ledger, the repricing, the RNC channel, the XML import, the Radar and the contract alert in Reinaldo's group, each behind its own key (AM8)", () => {
     const ceo = useLocalNavItems().value[1];
 
     expect(ceo?.children?.map((child) => [child.routeName, child.permission])).toEqual([
+      // rnc-3 F9 (R26): "Briefing do dia" — `briefing.read` (ceo), Reinaldo's landing.
+      ['briefing', 'briefing.read'],
       ['metrics', 'metrics.read'],
       ['partners', 'partners.manage'],
       ['referral-trail', 'referrals.read'],

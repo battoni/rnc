@@ -161,6 +161,8 @@ export default defineConfig(({ mode }) => {
         '@DiagnosticModule/*': getPath('./src/modules/Diagnostic/*'),
         '@FiscalModule': getPath('./src/modules/Fiscal'),
         '@FiscalModule/*': getPath('./src/modules/Fiscal/*'),
+        '@BriefingModule': getPath('./src/modules/Briefing'),
+        '@BriefingModule/*': getPath('./src/modules/Briefing/*'),
         '@ContractsModule': getPath('./src/modules/Contracts'),
         '@ContractsModule/*': getPath('./src/modules/Contracts/*'),
         '@RadarModule': getPath('./src/modules/Radar'),

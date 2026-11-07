@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
 import type { ContractAlert, ContractAlertRow, ContractImportResult, LegalPartner } from '../../interfaces';
+import { vCountUp } from '@Directives';
 import { formatReal } from '@Helpers';
 import { GetContractsService, GetLegalPartnersService, MarkContractClauseService } from '../../services';
 

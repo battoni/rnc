@@ -52,7 +52,8 @@
     "suppliers": "Supplier credit",
     "invoices": "Invoices",
     "radar": "Portfolio radar",
-    "contracts": "Contract alert"
+    "contracts": "Contract alert",
+    "briefing": "Daily briefing"
   },
   "rolesAndPermissions": {
     "groups": {
@@ -1790,5 +1791,74 @@
         "clausula_reforma": "Reforma clause"
       }
     }
+  },
+  "briefing": {
+    "title": "Daily briefing",
+    "greeting": {
+      "morning": "Good morning, {name}",
+      "afternoon": "Good afternoon, {name}",
+      "night": "Good evening, {name}"
+    },
+    "lede": "Briefing for {day}: what came in, what is booked and what needs you.",
+    "mailNote": "It also arrives by e-mail at 7am on business days.",
+    "kpis": {
+      "label": "Today's figures",
+      "leads": "New leads · 7 days",
+      "leadsSub": "{count} in the last 24h",
+      "meetings": "Meetings · next 5 business days",
+      "meetingsSub": "{count} today",
+      "referrals": "Referrals awaiting contact",
+      "referralsSub": "{breached} past the SLA · {warning} at risk",
+      "pipeline": "Open pipeline",
+      "pipelineSub": "{count} deals · estimated annual fee (portfolio range)",
+      "noBase": "no portfolio base"
+    },
+    "actions": {
+      "title": "Today's 3 actions",
+      "empty": "Nothing needs you urgently today.",
+      "sla_breached": "Chase {partner}: {company} has waited {hours} business hours for a first contact (target {goal}h).",
+      "meetings_today": "Prepare today's {count} meeting with the specialists. | Prepare today's {count} meetings with the specialists.",
+      "proposals": "Close {count} open proposal: {range}/year in fees. | Close {count} open proposals: {range}/year in fees.",
+      "proposals_no_range": "Close {count} open proposal. | Close {count} open proposals.",
+      "partial_leads": "Call {count} partial lead: left a contact and stopped mid-diagnostic. | Call {count} partial leads: left a contact and stopped mid-diagnostic.",
+      "radar": "Radar: {count} portfolio client with “{title}”, {range}/year. | Radar: {count} portfolio clients with “{title}”, {range}/year.",
+      "radar_monthly": "Radar: {count} portfolio client with “{title}”, {range}/month. | Radar: {count} portfolio clients with “{title}”, {range}/month.",
+      "go": {
+        "sla_breached": "See partner",
+        "meetings_today": "Open agenda",
+        "proposals": "See pipeline",
+        "partial_leads": "Call list",
+        "radar": "Open Radar"
+      }
+    },
+    "countdown": {
+      "title": "Reform: CBS in force in",
+      "ariaLabel": "Time until 01/01/2027, 00:00 São Paulo time",
+      "days": "days",
+      "hours": "hours",
+      "minutes": "min",
+      "seconds": "sec",
+      "started": "CBS in force since 01/01/2027",
+      "caption": "01/01/2027: the CBS is charged and PIS/Cofins end (LC 214/2025; gov.br/fazenda, read on 05/11/2026).",
+      "postponed": "Industry bodies have asked to delay the CBS to 2028 (news of 04/11/2026, still under discussion): the countdown follows the law as it stands."
+    },
+    "meetings": {
+      "title": "Upcoming meetings",
+      "empty": "No meetings in the next 5 business days.",
+      "more": "and {count} more.",
+      "anonymous": "Unnamed company"
+    },
+    "referrals": {
+      "title": "Referrals and the {goal} business-hour SLA",
+      "empty": "No referral awaiting a first contact.",
+      "more": "and {count} more."
+    },
+    "stages": {
+      "title": "Pipeline by stage",
+      "count": "{count} deal | {count} deals",
+      "perYear": "{range}/year"
+    },
+    "loadFailed": "The briefing could not be loaded.",
+    "retry": "Try again"
   }
 }

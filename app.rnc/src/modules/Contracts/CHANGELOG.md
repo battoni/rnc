@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.0.1 — 2026-11-07
+
+### Fixed
+
+- `ContractsView` imports `vCountUp` from `@Directives`: the "Encaminhados ao jurídico" figure named `v-count-up` without importing it, so Vue warned "Failed to resolve directive" and the figure never rolled (found building rnc-3 F9; directives are not global).
+
 ## 1.0.0 — 2026-11-07
 
 ### Added

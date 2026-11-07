@@ -3,6 +3,7 @@ import type { ComputedRef } from 'vue';
 import type { NavItem } from './interfaces';
 import { ASSISTANT_PERMISSIONS, ASSISTANT_ROUTE_NAMES } from '@AssistantModule';
 import { BRANDS_PERMISSIONS, BRANDS_ROUTE_NAMES } from '@BrandsModule';
+import { BRIEFING_PERMISSIONS, BRIEFING_ROUTE_NAMES } from '@BriefingModule';
 import { CHANNEL_PERMISSIONS, CHANNEL_ROUTE_NAMES } from '@ChannelModule';
 import { CONTRACTS_PERMISSIONS, CONTRACTS_ROUTE_NAMES } from '@ContractsModule';
 import { FISCAL_PERMISSIONS, FISCAL_ROUTE_NAMES } from '@FiscalModule';
@@ -100,6 +101,13 @@ const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
     },
   ],
   ceo: [
+    // rnc-3 F9: the daily briefing, first — Reinaldo's landing (R26).
+    {
+      icon: 'pi pi-sun',
+      label: 'navigation.briefing',
+      permission: BRIEFING_PERMISSIONS.read,
+      routeName: BRIEFING_ROUTE_NAMES.briefing,
+    },
     {
       icon: 'pi pi-chart-line',
       label: 'navigation.metrics',

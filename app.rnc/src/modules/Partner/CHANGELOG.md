@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.4.0 — 2026-11-07
+
+### Added
+
+- The trail honours `?parceiro=<id>` on open (rnc-3 F9, W83), so the briefing's breached-SLA action lands on the partner's referrals. Tested by `TrailView.view.integration.spec.ts`.
+
 ## 1.3.0 — 2026-11-07
 
 ### Added

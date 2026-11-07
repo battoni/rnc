@@ -46,6 +46,7 @@ describe('the partner network is never named', () => {
   it('reads every module of the hub, the partner portal included', () => {
     const MODULES = [
       'Brands',
+      'Briefing',
       'Contracts',
       'Diagnostic',
       'Fiscal',

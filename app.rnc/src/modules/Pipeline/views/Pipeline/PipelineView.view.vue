@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
+import { useRoute } from 'vue-router';
 import type { LeadCard, LeadMove, PendingLostMove } from '../../interfaces';
-import { getI18nRouteName, translateError } from '@Helpers';
+import { getI18nRouteName, prefersReducedMotionHelper, translateError } from '@Helpers';
 import { useUserStore } from '@UserModule';
 import { useLeadBoard, useLeadFormat } from '../../composables';
 import {
@@ -22,7 +23,9 @@ import { MoveLeadStageService } from '../../services';
  * dragging it to another column — each move a line on the lead's timeline with who and how.
  * Perdido asks for the reason first. The board scrolls sideways inside its own frame, never the page.
  * "Marca" (rnc-3 R4) narrows it to the leads of one face of Franco — the main brand or a sub-brand —
- * and stays off for a firm with no sub-brand.
+ * and stays off for a firm with no sub-brand. `?etapa=<stage>` opens the board on that column,
+ * scrolled into view and outlined — the briefing's "Fechar N propostas" and "Ligar para N leads
+ * parciais" land here (rnc-3 F9, W83); the board still shows every column.
  */
 interface MoveError {
   response?: { status?: number };
@@ -32,13 +35,17 @@ interface MoveError {
 const HTTP_UNPROCESSABLE = 422;
 const TOAST_LIFE_MS = 3500;
 
+const STAGES = Object.values(LEAD_STAGE) as string[];
+
 const userStore = useUserStore();
+const route = useRoute();
 
 const { t } = useI18n();
 const toast = useToast();
 const { stageLabel } = useLeadFormat();
 const { appliedSearch, applyMove, brands, columns, findCard, hasFailed, isLoading, load } = useLeadBoard();
 
+const board = ref<HTMLElement | null>(null);
 const brand = ref<string | null>(null);
 const dialogVisible = ref(false);
 const dropStage = ref<LEAD_STAGE | null>(null);
@@ -48,6 +55,11 @@ const search = ref('');
 
 const canReadAgenda = computed(() => userStore.hasPermission(PIPELINE_PERMISSIONS.agenda));
 const canUpdate = computed(() => userStore.hasPermission(PIPELINE_PERMISSIONS.update));
+const focusedStage = computed(() => {
+  const stage = Array.isArray(route.query.etapa) ? route.query.etapa[0] : route.query.etapa;
+
+  return typeof stage === 'string' && STAGES.includes(stage) ? stage : null;
+});
 const isEmptySearch = computed(() => appliedSearch.value !== '' && columns.value.every((column) => column.count === 0));
 
 const brandOptions = computed(() => [
@@ -63,6 +75,7 @@ let searchTimer: ReturnType<typeof setTimeout> | null = null;
 
 watch(search, onSearchInput);
 watch(brand, onBrandChange);
+watch(() => columns.value.length > 0, onBoardShown);
 
 onMounted(() => load(''));
 onBeforeUnmount(() => searchTimer && clearTimeout(searchTimer));
@@ -101,11 +114,28 @@ function onMoved(from: LEAD_STAGE, move: LeadMove) {
   });
 }
 
+/** The column `?etapa=` names, brought into view inside the board's own sideways scroll. */
+function scrollToFocusedStage() {
+  const column = board.value?.querySelector(`[data-stage="${focusedStage.value}"]`);
+
+  column?.scrollIntoView?.({
+    behavior: prefersReducedMotionHelper() ? 'auto' : 'smooth',
+    block: 'nearest',
+    inline: 'start',
+  });
+}
+
 function isLeadDrag(event: DragEvent): boolean {
   return Boolean(event.dataTransfer?.types.includes(LEAD_DRAG_TYPE));
 }
 
 // EVENTS
+function onBoardShown(shown: boolean) {
+  if (!shown || !focusedStage.value) return;
+
+  nextTick(scrollToFocusedStage);
+}
+
 function onBrandChange(value: string | null) {
   load(appliedSearch.value, value);
 }
@@ -265,6 +295,7 @@ function onLostSaved(move: LeadMove) {
         <div
           class="flex w-0 min-w-full snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pt-1 pb-4"
           data-testid="board"
+          ref="board"
           role="region"
           tabindex="0"
           :aria-busy="isLoading"
@@ -284,11 +315,14 @@ function onLostSaved(move: LeadMove) {
             v-for="column in columns"
             data-testid="column"
             :key="column.stage"
+            :aria-current="focusedStage === column.stage ? 'true' : undefined"
             :aria-label="stageLabel(column.stage)"
             :class="[
               'bg-panel-muted flex w-[16.5rem] shrink-0 snap-start flex-col gap-3 rounded-lg p-3 transition-shadow sm:w-[17rem]',
               dropStage === column.stage ? 'ring-primary-400 ring-2' : '',
+              dropStage !== column.stage && focusedStage === column.stage ? 'ring-primary-500 ring-2' : '',
             ]"
+            :data-focused="focusedStage === column.stage ? 'true' : undefined"
             :data-stage="column.stage"
             @dragleave="onColumnDragLeave($event, column.stage)"
             @dragover="onColumnDragOver($event, column.stage)"

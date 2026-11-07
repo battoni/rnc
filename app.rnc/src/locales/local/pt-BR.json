@@ -52,7 +52,8 @@
     "suppliers": "Crédito de fornecedores",
     "invoices": "Notas fiscais",
     "radar": "Radar da carteira",
-    "contracts": "Alerta de contratos"
+    "contracts": "Alerta de contratos",
+    "briefing": "Briefing do dia"
   },
   "rolesAndPermissions": {
     "groups": {
@@ -1790,5 +1791,74 @@
         "clausula_reforma": "Cláusula da Reforma"
       }
     }
+  },
+  "briefing": {
+    "title": "Briefing do dia",
+    "greeting": {
+      "morning": "Bom dia, {name}",
+      "afternoon": "Boa tarde, {name}",
+      "night": "Boa noite, {name}"
+    },
+    "lede": "Briefing de {day}: o que entrou, o que está marcado e o que precisa de você.",
+    "mailNote": "Chega também por e-mail às 7h, nos dias úteis.",
+    "kpis": {
+      "label": "Indicadores do dia",
+      "leads": "Novos leads · 7 dias",
+      "leadsSub": "{count} nas últimas 24h",
+      "meetings": "Reuniões · próximos 5 dias úteis",
+      "meetingsSub": "{count} hoje",
+      "referrals": "Indicações aguardando contato",
+      "referralsSub": "{breached} com SLA estourado · {warning} em atenção",
+      "pipeline": "Pipeline em aberto",
+      "pipelineSub": "{count} negócios · honorário anual estimado (faixa da carteira)",
+      "noBase": "sem base na carteira"
+    },
+    "actions": {
+      "title": "As 3 ações de hoje",
+      "empty": "Nada pede você com urgência hoje.",
+      "sla_breached": "Cobrar {partner}: {company} está há {hours}h úteis sem primeiro contato (meta {goal}h).",
+      "meetings_today": "Preparar {count} reunião de hoje com os especialistas. | Preparar {count} reuniões de hoje com os especialistas.",
+      "proposals": "Fechar {count} proposta em aberto: {range}/ano em honorários. | Fechar {count} propostas em aberto: {range}/ano em honorários.",
+      "proposals_no_range": "Fechar {count} proposta em aberto. | Fechar {count} propostas em aberto.",
+      "partial_leads": "Ligar para {count} lead parcial: deixou o contato e parou no meio do diagnóstico. | Ligar para {count} leads parciais: deixaram o contato e pararam no meio do diagnóstico.",
+      "radar": "Radar: {count} cliente da carteira com “{title}”, {range}/ano. | Radar: {count} clientes da carteira com “{title}”, {range}/ano.",
+      "radar_monthly": "Radar: {count} cliente da carteira com “{title}”, {range}/mês. | Radar: {count} clientes da carteira com “{title}”, {range}/mês.",
+      "go": {
+        "sla_breached": "Ver parceiro",
+        "meetings_today": "Abrir agenda",
+        "proposals": "Ver pipeline",
+        "partial_leads": "Lista de ligação",
+        "radar": "Abrir Radar"
+      }
+    },
+    "countdown": {
+      "title": "Reforma: CBS em vigor em",
+      "ariaLabel": "Tempo até 01/01/2027, 00:00 de São Paulo",
+      "days": "dias",
+      "hours": "horas",
+      "minutes": "min",
+      "seconds": "seg",
+      "started": "CBS em vigor desde 01/01/2027",
+      "caption": "01/01/2027: a CBS passa a ser cobrada e PIS/Cofins saem (LC 214/2025; gov.br/fazenda, lida em 05/11/2026).",
+      "postponed": "Entidades pediram o adiamento da cobrança da CBS para 2028 (notícia de 04/11/2026, ainda em discussão): a contagem segue a data da lei hoje."
+    },
+    "meetings": {
+      "title": "Próximas reuniões",
+      "empty": "Nenhuma reunião nos próximos 5 dias úteis.",
+      "more": "e mais {count}.",
+      "anonymous": "Empresa sem nome"
+    },
+    "referrals": {
+      "title": "Indicações e SLA de {goal}h úteis",
+      "empty": "Nenhuma indicação aguardando o primeiro contato.",
+      "more": "e mais {count}."
+    },
+    "stages": {
+      "title": "Pipeline por etapa",
+      "count": "{count} negócio | {count} negócios",
+      "perYear": "{range}/ano"
+    },
+    "loadFailed": "Não foi possível carregar o briefing.",
+    "retry": "Tentar de novo"
   }
 }

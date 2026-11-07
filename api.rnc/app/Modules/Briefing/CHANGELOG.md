@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.2.1 — 2026-11-07
+
+### Changed
+
+- RULES: the Known Gap "the screens the actions open read no filter yet" is retired — rnc-3 F9 made the trail honour `?parceiro=` and the board `?etapa=`, and built the screen (app Briefing module). No code change here.
+
 ## 1.2.0 — 2026-11-07
 
 ### Changed

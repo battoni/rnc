@@ -7,7 +7,7 @@ import InputIcon from 'primevue/inputicon';
 import InputText from 'primevue/inputtext';
 import Skeleton from 'primevue/skeleton';
 import Textarea from 'primevue/textarea';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { server } from '@/test/msw/server';
 import { renderWithPlugins } from '@/test/render';
 import { useUserStore } from '@UserModule';
@@ -27,6 +27,13 @@ const API = 'http://localhost/leads';
 const moves: { body: Record<string, unknown>; id: string }[] = [];
 
 const boardRequests: URLSearchParams[] = [];
+const route = vi.hoisted(() => ({ hash: '', params: {}, query: {} as Record<string, string> }));
+
+vi.mock('vue-router', async (importOriginal) => ({
+  ...(await importOriginal<object>()),
+  useRoute: () => route,
+  useRouter: () => ({ push: vi.fn() }),
+}));
 
 const STUBS = {
   // A native select with Select's contract: jsdom cannot open PrimeVue's overlay.
@@ -77,6 +84,7 @@ function countOf(stage: LEAD_STAGE): string {
 }
 
 beforeEach(() => {
+  route.query = {};
   moves.length = 0;
   boardRequests.length = 0;
   server.use(
@@ -249,5 +257,60 @@ describe('PipelineView — the brand filter', () => {
     await screen.findAllByTestId('lead-card');
 
     expect(screen.queryByTestId('pipeline-brand')).toBeNull();
+  });
+});
+
+/*
+ * `?etapa=` (rnc-3 F9, W83): the briefing's "Fechar N propostas" and "Ligar para N leads parciais"
+ * open the board on that column — scrolled into view inside the board and outlined — with every
+ * other column still there. A stage the board does not have is ignored.
+ */
+describe('PipelineView ?etapa=', () => {
+  const scrolled: { stage: string | undefined; options: ScrollIntoViewOptions | undefined }[] = [];
+  const original = HTMLElement.prototype.scrollIntoView;
+
+  beforeEach(() => {
+    scrolled.length = 0;
+    HTMLElement.prototype.scrollIntoView = function (this: HTMLElement, options?: boolean | ScrollIntoViewOptions) {
+      scrolled.push({ options: options as ScrollIntoViewOptions, stage: this.dataset.stage });
+    };
+  });
+
+  afterEach(() => {
+    HTMLElement.prototype.scrollIntoView = original;
+  });
+
+  it('opens on the proposta column, outlined and scrolled into view', async () => {
+    route.query = { etapa: 'proposta' };
+    renderBoard();
+
+    await screen.findAllByTestId('lead-card');
+    await waitFor(() => expect(scrolled.map((call) => call.stage)).toEqual(['proposta']));
+
+    expect(column(LEAD_STAGE.PROPOSTA).dataset.focused).toBe('true');
+    expect(column(LEAD_STAGE.PROPOSTA).getAttribute('aria-current')).toBe('true');
+    expect(column(LEAD_STAGE.LEAD).dataset.focused).toBeUndefined();
+    expect(screen.getAllByTestId('column')).toHaveLength(7);
+    expect(scrolled[0]?.options).toMatchObject({ block: 'nearest', inline: 'start' });
+  });
+
+  it('opens on the lead_parcial column', async () => {
+    route.query = { etapa: 'lead_parcial' };
+    renderBoard();
+
+    await screen.findAllByTestId('lead-card');
+    await waitFor(() => expect(scrolled.map((call) => call.stage)).toEqual(['lead_parcial']));
+
+    expect(column(LEAD_STAGE.LEAD_PARCIAL).dataset.focused).toBe('true');
+  });
+
+  it.each(['qualquer', 'proposta"]'])('ignores `?etapa=%s`, a stage the board does not have', async (etapa) => {
+    route.query = { etapa };
+    renderBoard();
+
+    await screen.findAllByTestId('lead-card');
+
+    expect(screen.getAllByTestId('column').filter((element) => element.dataset.focused)).toHaveLength(0);
+    expect(scrolled).toEqual([]);
   });
 });

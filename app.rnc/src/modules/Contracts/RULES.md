@@ -1,7 +1,7 @@
 ---
-version: 1.0.0
+version: 1.0.1
 origin: rnc
-based-on: 1.0.0
+based-on: 1.0.1
 ---
 
 # RULES — Contracts Module

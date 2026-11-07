@@ -44,6 +44,8 @@
       "@NotificationModule/*": ["./src/modules/Notification/*"],
       "@FiscalModule": ["./src/modules/Fiscal"],
       "@FiscalModule/*": ["./src/modules/Fiscal/*"],
+      "@BriefingModule": ["./src/modules/Briefing"],
+      "@BriefingModule/*": ["./src/modules/Briefing/*"],
       "@ContractsModule": ["./src/modules/Contracts"],
       "@ContractsModule/*": ["./src/modules/Contracts/*"],
       "@RadarModule": ["./src/modules/Radar"],

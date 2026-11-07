@@ -1,5 +1,5 @@
 ---
-version: 1.3.0
+version: 1.4.0
 origin: rnc
 ---
 
@@ -45,6 +45,11 @@ The team's screens (R18–R20): the board (`/equipe/pipeline`, route `pipeline`)
 - **The "Marca" filter's options come with the board** (`GET leads` → `brands`), not from
   `GET brands`, which is `brands.manage` — the team holds `leads.read` only. `main` is the main
   brand's word (`MAIN_BRAND_FILTER`); null asks for every brand (rnc-3 R4, AM13).
+- **`?etapa=<stage>` focuses a column, it does not filter the board** (rnc-3 F9, W83): the briefing's
+  "Fechar N propostas" and "Ligar para N leads parciais" land on the board with that column outlined
+  (`data-focused`, `aria-current`) and scrolled into view inside the board's own sideways scroll
+  (`smooth`, `auto` under reduced motion). Every column stays: the team moves cards across them. A
+  value that is not a `LEAD_STAGE` is ignored — it never reaches `querySelector`.
 
 ## Known Gaps
 

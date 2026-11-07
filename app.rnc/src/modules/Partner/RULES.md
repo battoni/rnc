@@ -1,5 +1,5 @@
 ---
-version: 1.3.0
+version: 1.4.0
 origin: rnc
 ---
 
@@ -38,6 +38,9 @@ ledger (`/reinaldo/extrato`, `network-ledger`, `ledger.read`): `GET ledger`, `PA
   filter goes back to page 1.
 - **The trail links the company to the lead detail by route name** (`PIPELINE_ROUTE_NAMES.lead`,
   celer-05) and never shows the lead's contact data.
+- **`?parceiro=<id>` opens the trail filtered** (rnc-3 F9, W83): the briefing's "Cobrar <parceiro>"
+  lands there. Only a positive integer filters; anything else opens the whole trail. The filter
+  is read once on open — changing it later does not rewrite the address.
 - **The score badge reads "92% · ERP/NF-e"** (`partners.routing.score`); a partner from
   `COVERED_SCORE` up covers something and wears the brand tint, the rest stay muted.
 

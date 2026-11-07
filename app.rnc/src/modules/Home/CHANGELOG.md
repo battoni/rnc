@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 3.4.0 — 2026-11-07
+
+### Changed
+
+- `/reinaldo` (`/ceo`, `ceo-home`) lands on "Briefing do dia" (`/reinaldo/briefing`) instead of the metrics (rnc-3 F9, R26, A23). Tested by `views/Workspace/routes.spec.ts` (new) and `e2e/briefing/briefing.spec.ts`.
+
 ## 3.3.0 — 2026-11-07
 
 ### Changed
