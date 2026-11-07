@@ -1,5 +1,12 @@
 # Changelog — Booking Module
 
+## 1.3.0 — 2026-11-07
+
+### Changed
+
+- The confirmation and the reminder are signed by the lead's sub-brand (rnc-3 F1, R3) and sent from that name at the firm's own mailbox (`MeetingMailDTO::$firmMailbox`, `sender()`). Test: `BrandLeadTest` (A3).
+
+
 ## 1.2.0 — 2026-11-07
 
 ### Changed

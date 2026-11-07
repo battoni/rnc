@@ -11,7 +11,8 @@ use App\Modules\Lead\Models\Lead;
 
 /**
  * The values a meeting e-mail prints (plan AM6): read now, inside the request or the command's
- * firm, so the queued Mailable carries values and never queries on its own.
+ * firm, so the queued Mailable carries values and never queries on its own. A lead started under a
+ * sub-brand is written to and signed by that brand (rnc-3 R3), from the firm's own mailbox.
  */
 class MeetingMailBuilder
 {
@@ -37,9 +38,10 @@ class MeetingMailBuilder
             opportunities: $diagnosis['opportunities'],
             risks: $diagnosis['risks'],
             reportUrl: config('rnc.frontend_url').'/relatorio/'.$lead->report_token,
-            firmName: $firm->name ?? (string) config('rnc.brand.name'),
+            firmName: $lead->brand->name ?? $firm->name ?? (string) config('rnc.brand.name'),
             firmAddress: $firm?->address,
             firmPhone: $firm?->phone,
+            firmMailbox: $firm?->mailbox,
         );
     }
 }

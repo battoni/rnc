@@ -38,6 +38,8 @@ class LeadDetailResource extends JsonResource
             'lost_reason' => $lead->lost_reason,
             'path' => $lead->path,
             'channel' => $lead->channel,
+            // The sub-brand chip (rnc-3 R4): null for the main brand.
+            'brand' => $lead->brand ? ['id' => $lead->brand->id, 'short_name' => $lead->brand->short_name] : null,
             'source' => $lead->source,
             'medium' => $lead->medium,
             'profile' => $lead->profile,

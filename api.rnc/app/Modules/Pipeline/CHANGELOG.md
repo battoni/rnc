@@ -2,6 +2,13 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.1.0 — 2026-11-07
+
+### Added
+
+- The board's brand filter `GET leads?brand=<slug|main>` (rnc-3 F1, R4, AM13; unknown or another firm's slug 422 `brands.notFound`) and the brand chip `brand {id, short_name}` on `LeadCardResource` and `LeadDetailResource`. Test: `BrandFilterTest` (A4, the Pest half).
+
+
 ## 1.0.1 — 2026-11-07
 
 ### Added

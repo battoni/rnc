@@ -1,7 +1,9 @@
 <?php
 
 use App\Modules\Booking\Models\Appointment;
+use App\Modules\Firm\Models\FirmBrand;
 use App\Modules\Lead\Models\Lead;
+use App\Modules\Lead\Models\LeadConsent;
 use App\Modules\Lead\Models\LeadEvent;
 use Carbon\CarbonImmutable;
 use Database\Seeders\DatabaseSeeder;
@@ -54,4 +56,18 @@ it('seeds no lead on a production database', function () {
     app(DatabaseSeeder::class)->setContainer(app())->__invoke();
 
     expect(Lead::withoutGlobalScopes()->count())->toBe(0);
+});
+
+it("starts about one lead in ten under each of Franco's sub-brands (rnc-3 R29)", function () {
+    $this->seed();
+
+    $express = FirmBrand::withoutGlobalScopes()->where('slug', 'express')->sole();
+    $prime = FirmBrand::withoutGlobalScopes()->where('slug', 'prime')->sole();
+    $leads = Lead::withoutGlobalScopes()->get();
+    $primeConsent = LeadConsent::query()->whereIn('lead_id', $leads->where('brand_id', $prime->id)->pluck('id'))->value('text');
+
+    expect($leads->where('brand_id', $express->id)->count())->toBeGreaterThanOrEqual(3)->toBeLessThanOrEqual(5)
+        ->and($leads->where('brand_id', $prime->id)->count())->toBeGreaterThanOrEqual(3)->toBeLessThanOrEqual(5)
+        ->and($leads->whereNull('brand_id')->count())->toBeGreaterThan($leads->count() * 3 / 4)
+        ->and($primeConsent)->toContain('Franco Prime Contabilidade');
 });

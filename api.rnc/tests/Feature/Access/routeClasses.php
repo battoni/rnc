@@ -83,4 +83,10 @@ return [
     'POST repricing/mark' => 'staff',
     'POST clients/import' => 'staff',
     'GET clients/import/template' => 'staff',
+
+    // STAFF — Phase 3 (rnc-3): F1 the sub-brands, `brands.manage`
+    'GET brands' => 'staff',
+    'PATCH brands/{id}' => 'staff',
+    'POST brands/{id}/activate' => 'staff',
+    'POST brands/{id}/deactivate' => 'staff',
 ];

@@ -7,6 +7,7 @@ use App\Modules\Booking\Models\Appointment;
 use App\Modules\Booking\Repositories\AppointmentRepository;
 use App\Modules\Diagnostic\DTOs\DiagnosticProfileDTO;
 use App\Modules\Diagnostic\Services\RulesEngine;
+use App\Modules\Firm\Services\BrandService;
 use App\Modules\Lead\Enums\LeadStage;
 use App\Modules\Lead\Models\Lead;
 use App\Modules\Lead\Models\LeadEvent;
@@ -31,21 +32,24 @@ class PipelineService
         private LeadService $leadService,
         private AppointmentRepository $appointmentRepository,
         private RulesEngine $rulesEngine,
+        private BrandService $brandService,
     ) {}
 
     /**
-     * One column per stage in the board's order, each with its count and its newest cards.
+     * One column per stage in the board's order, each with its count and its newest cards — of one
+     * brand when the filter names one (rnc-3 R4; the request refused an unknown slug).
      *
      * @return list<array{stage: string, count: int, items: list<array{lead: Lead, opportunities: int, risks: int, meeting: Appointment|null}>}>
      */
     public function board(LeadBoardFilterDTO $filter): array
     {
-        $counts = $this->leadRepository->countLeadsByStage($filter->search);
+        $brandId = $filter->brand === null ? null : $this->brandService->brandIdForFilter($filter->brand);
+        $counts = $this->leadRepository->countLeadsByStage($filter->search, $brandId);
         $stages = $filter->stage !== null ? [LeadStage::from($filter->stage)] : LeadStage::boardOrder();
         $columns = [];
 
         foreach ($stages as $stage) {
-            $leads = $this->leadRepository->findLeadsOfStage($stage, $filter->search, self::COLUMN_LIMIT);
+            $leads = $this->leadRepository->findLeadsOfStage($stage, $filter->search, self::COLUMN_LIMIT, $brandId);
 
             $columns[] = ['stage' => $stage->value, 'count' => $counts[$stage->value] ?? 0, 'items' => $this->cards($leads)];
         }

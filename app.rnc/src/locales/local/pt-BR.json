@@ -56,11 +56,17 @@
       "portal": "Portal do parceiro",
       "ledger": "Extrato da rede",
       "fiscal": "NF-e e fornecedores",
-      "radar": "Radar de oportunidades"
+      "radar": "Radar de oportunidades",
+      "brands": "Submarcas",
+      "channel": "Canal RNC",
+      "assistant": "Assistente da Reforma",
+      "contracts": "Alerta de contratos",
+      "briefing": "Briefing do dia"
     },
     "permissions": {
       "import": "Importar",
-      "access": "Acessar"
+      "access": "Acessar",
+      "ask": "Perguntar"
     }
   },
   "site": {

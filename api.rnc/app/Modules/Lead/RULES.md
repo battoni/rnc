@@ -1,5 +1,5 @@
 ---
-version: 1.4.0
+version: 1.5.0
 origin: rnc
 ---
 # RULES — Lead Module
@@ -41,6 +41,14 @@ them and writes the team's notes — through this module's service.
 - **Every contact submission writes a consent row (AM12)**, given true or false — the box starts
   unticked — with `ConsentTerms::TEXT`, `VERSION` 1, `via = formulario` and `given_at`. No IP, no
   user agent. A new wording is a new version; the stored text is the text read.
+- **A lead's brand is fixed at creation (rnc-3 R4)**: `brand_id` is the `CurrentBrand` of the
+  diagnostic's start (null = the main brand), written once by `startLead` — never by a later step,
+  and kept when the same visitor starts again under another brand — like `channel`. No foreign key:
+  `firm_brands` is the Firm module's. The board's filter passes `Lead::MAIN_BRAND` (0) for "only the
+  main brand"; ids start at 1.
+- **The consent names the visitor's brand (rnc-3 R3)**: `ConsentTerms::textFor($lead->brand?->name)`
+  — the main brand's words are `TEXT`, unchanged, so the version stays 1; the network is Franco's
+  under every brand.
 - **The visitor is kept by UUID** (`visitor_uuid`), not a foreign key to Tracking's `visitors`: the
   diagnostic may start before the visit's beacon lands, and the two meet on (firm, uuid).
 - **Children carry no firm column** (`lead_consents`, `lead_events`): they belong to their lead.

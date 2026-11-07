@@ -6,6 +6,7 @@ use App\Helpers\Brazil\AddressColumns;
 use App\Helpers\Brazil\PhoneNumber;
 use App\Modules\Auth\Contracts\LoginCodeSender;
 use App\Modules\Auth\Senders\LogLoginCodeSender;
+use App\Modules\Firm\Services\CurrentBrand;
 use App\Modules\Firm\Services\CurrentFirm;
 use App\Modules\Partner\Services\CurrentPartner;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -85,6 +86,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->scoped(CurrentFirm::class);
         // The portal's partner, the same way (rnc-2 D2): set per request by `ResolveCurrentPartner`.
         $this->app->scoped(CurrentPartner::class);
+        // The public site's sub-brand, the same way (rnc-3 R2): set per request by `ResolveCurrentBrand`.
+        $this->app->scoped(CurrentBrand::class);
     }
 
     /**

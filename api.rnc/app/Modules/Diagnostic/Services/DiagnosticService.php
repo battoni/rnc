@@ -8,6 +8,7 @@ use App\Modules\Diagnostic\DTOs\DiagnosticProfileDTO;
 use App\Modules\Diagnostic\DTOs\StartDiagnosticDTO;
 use App\Modules\Diagnostic\DTOs\UpdateDiagnosticDTO;
 use App\Modules\Diagnostic\Exceptions\DiagnosticException;
+use App\Modules\Firm\Services\CurrentBrand;
 use App\Modules\Lead\Models\Lead;
 use App\Modules\Lead\Services\LeadService;
 
@@ -23,6 +24,7 @@ class DiagnosticService
         private LeadService $leadService,
         private CnpjLookup $cnpjLookup,
         private RulesEngine $rulesEngine,
+        private CurrentBrand $currentBrand,
     ) {}
 
     public function start(StartDiagnosticDTO $dto): ?Lead
@@ -33,6 +35,8 @@ class DiagnosticService
             'source' => $dto->source,
             'medium' => $dto->medium,
             'sector' => $dto->sector,
+            // The sub-brand of this visit (rnc-3 R4), stored once at the start.
+            'brand_id' => $this->currentBrand->id(),
         ]);
     }
 

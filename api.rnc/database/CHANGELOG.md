@@ -3,6 +3,13 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.8.0 — 2026-11-07
+
+### Added
+
+- rnc-3 F1: the `firm_brands` table (sequence `300001`, kept apart from Phase 2's migrations) and `leads.brand_id` (nullable, indexed, no foreign key) folded into `create_leads_table`; `FirmBrandFactory`; `BrandSeeder` (local only) seeds Franco Express and Franco Prime from the demo; `PipelineSeeder` starts the 4th and 8th lead of every ten under them, with the brand's consent words; `RoleSeeder` documents Phase 3's seven keys (operator only until their phases). Schema dumped before and after `migrate:fresh` and diffed: only those changes.
+
+
 ## 1.7.0 — 2026-11-07
 
 ### Added

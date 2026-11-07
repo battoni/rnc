@@ -315,4 +315,4 @@ operator's cross-firm console; provisioning an RNC firm as a tenant; any model-b
 contract files; tracking events by brand (the funnel stays per firm).
 
 ## Changes while building
-- None yet.
+- C1 (F1, 07/11, owner away — W25): R2's 404 `brands.notFound` for an unknown or inactive `X-Brand` holds on every public site route (`public/firm`, sectors, diagnostics, booking, report), not only `public/firm`; `POST public/events` alone falls back to the main brand. Reason: the SPA sends `X-Brand` on every public call and clears the stored brand on that 404 (R2), so each call must be able to answer it.

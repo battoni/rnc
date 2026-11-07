@@ -8,8 +8,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * A tenant: the accounting firm whose hub this is. Franco Contabilidade is firm 1; the RNC firms and
- * the Express/Prime sub-brands of Phase 3 are more rows of this table, not more deploys.
+ * A tenant: the accounting firm whose hub this is. Franco Contabilidade is firm 1; another firm is
+ * another row, not another deploy. Its own look is the main brand; Express and Prime are its
+ * sub-brands (`FirmBrand`, rnc-3 D1), not firms.
  *
  * @property int $id
  * @property string $name

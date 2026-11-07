@@ -4,6 +4,7 @@ use App\Models\User;
 use App\Modules\Auth\Models\UserPermission;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 /*
@@ -20,6 +21,13 @@ use Tests\TestCase;
 pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)
     ->in('Feature');
+
+/*
+| No test reaches the network (rnc-3 plan P7, AM18; A27). A request no test faked throws
+| `StrayRequestException` instead of leaving the machine — whether or not the test file names
+| `Http::`. Unit tests boot no application, so they cannot reach it through the client at all.
+*/
+pest()->beforeEach(fn () => Http::preventStrayRequests())->in('Feature');
 
 /*
 |--------------------------------------------------------------------------

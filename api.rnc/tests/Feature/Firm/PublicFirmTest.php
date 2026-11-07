@@ -16,9 +16,13 @@ describe('GET /api/public/firm', function () {
             ->assertExactJson(['data' => [
                 'name' => 'Franco Contabilidade',
                 'slug' => 'franco',
+                'brand' => null,
                 'logo_text' => 'Franco Contabilidade',
+                'short_name' => null,
+                'tagline' => null,
                 'brand_primary' => '#00375a',
                 'brand_accent' => '#14c3ff',
+                'proof' => null,
                 'address' => 'Av. Corifeu de Azevedo Marques, 2333, 1º e 2º andares, Butantã, São Paulo-SP',
                 'phone' => '11 3732-5500',
                 'phone_href' => 'tel:+551137325500',

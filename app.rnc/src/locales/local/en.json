@@ -56,11 +56,17 @@
       "portal": "Partner portal",
       "ledger": "Network ledger",
       "fiscal": "NF-e and suppliers",
-      "radar": "Opportunity radar"
+      "radar": "Opportunity radar",
+      "brands": "Sub-brands",
+      "channel": "RNC channel",
+      "assistant": "Reforma assistant",
+      "contracts": "Contract alert",
+      "briefing": "Daily briefing"
     },
     "permissions": {
       "import": "Import",
-      "access": "Access"
+      "access": "Access",
+      "ask": "Ask"
     }
   },
   "site": {

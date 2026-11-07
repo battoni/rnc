@@ -10,6 +10,7 @@ use App\Modules\Booking\Services\BookingCalendar;
 use App\Modules\Diagnostic\DTOs\DiagnosticProfileDTO;
 use App\Modules\Diagnostic\Services\RulesEngine;
 use App\Modules\Firm\Models\Firm;
+use App\Modules\Firm\Models\FirmBrand;
 use App\Modules\Firm\Services\CurrentFirm;
 use App\Modules\Lead\Enums\LeadEventType;
 use App\Modules\Lead\Enums\LeadStage;
@@ -101,6 +102,12 @@ class PipelineSeeder extends Seeder
 
     private const TOKEN_LENGTH = 48;
 
+    /**
+     * About one lead in ten under each sub-brand (rnc-3 R29): the position in every ten that starts
+     * under Express or Prime (`BrandSeeder`); the rest are the main brand's.
+     */
+    private const BRAND_EVERY_TENTH = [3 => BrandSeeder::EXPRESS_SLUG, 7 => BrandSeeder::PRIME_SLUG];
+
     private const LINK_DAYS = 30;
 
     public function run(CurrentFirm $currentFirm, RulesEngine $rulesEngine): void
@@ -124,12 +131,14 @@ class PipelineSeeder extends Seeder
         $team = User::query()->whereIn('username', self::TEAM)->orderBy('id')->get()->values();
         $specialists = Specialist::query()->with('user')->where('firm_id', $firm->id)->orderBy('id')->get()->values();
         $upcoming = $this->upcomingSlots($now, max(1, $specialists->count()));
+        $brands = FirmBrand::query()->whereIn('slug', array_values(self::BRAND_EVERY_TENTH))->get()->keyBy('slug');
         $index = 0;
         $booked = 0;
 
         foreach (self::STAGE_SIZES as $stage => $size) {
             for ($position = 0; $position < $size; $position++, $index++) {
-                $lead = $this->createLead($firm, LeadStage::from($stage), $index, $now);
+                $brand = $brands->get(self::BRAND_EVERY_TENTH[$index % 10] ?? '');
+                $lead = $this->createLead($firm, LeadStage::from($stage), $index, $now, $brand);
                 $member = $team->isEmpty() ? null : $team[$index % $team->count()];
                 $specialist = $specialists->isEmpty() ? null : $specialists[$index % $specialists->count()];
 
@@ -142,7 +151,7 @@ class PipelineSeeder extends Seeder
         }
     }
 
-    private function createLead(Firm $firm, LeadStage $stage, int $index, CarbonImmutable $now): Lead
+    private function createLead(Firm $firm, LeadStage $stage, int $index, CarbonImmutable $now, ?FirmBrand $brand): Lead
     {
         $isVisitor = $stage === LeadStage::Visitante;
         $isPartial = $stage === LeadStage::LeadParcial;
@@ -180,6 +189,7 @@ class PipelineSeeder extends Seeder
             'channel' => ConsentTerms::VIA_FORM,
             'source' => self::SOURCES[$index % count(self::SOURCES)],
             'medium' => null,
+            'brand_id' => $brand?->id,
             'created_at' => $createdAt,
             'updated_at' => $createdAt,
         ])->save();
@@ -206,7 +216,7 @@ class PipelineSeeder extends Seeder
 
         $consent = $index % 3 !== 2;
         $last = $at->addMinutes(2);
-        LeadConsent::query()->create(['lead_id' => $lead->id, 'text' => ConsentTerms::TEXT, 'version' => ConsentTerms::VERSION, 'given' => $consent, 'via' => ConsentTerms::VIA_FORM, 'given_at' => $last]);
+        LeadConsent::query()->create(['lead_id' => $lead->id, 'text' => ConsentTerms::textFor($lead->brand?->name), 'version' => ConsentTerms::VERSION, 'given' => $consent, 'via' => ConsentTerms::VIA_FORM, 'given_at' => $last]);
         $this->event($lead, LeadEventType::ContactCaptured, ['consent' => $consent], $last);
         $last = $last->addMinutes(3);
         $this->event($lead, LeadEventType::StepReached, ['step' => LeadStep::Perfil->value], $last);

@@ -2,6 +2,17 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.5.0 — 2026-11-07
+
+### Added
+
+- `leads.brand_id` (rnc-3 F1, R4; nullable, indexed, no foreign key — folded into `create_leads_table`): written once by `LeadService::startLead` from the request's `CurrentBrand`, never by a later step, and kept when the same visitor starts again. `Lead::brand()`, `Lead::MAIN_BRAND`. `LeadRepository`: the board's brand filter (`findLeadsOfStage`, `countLeadsByStage`), the brand eager-loaded on a column and the detail, `countLeadsByBrand()` in one grouped query. Tests: `BrandLeadTest` (A3), `BrandFilterTest` (A4).
+
+### Changed
+
+- `ConsentTerms::textFor(?brandName)`: under a sub-brand the consent names it ("Autorizo a Franco Prime Contabilidade a me apresentar…"); the main brand keeps `TEXT`, so `VERSION` stays 1. `recordContact` stores, and `PublicLeadResource` shows, the lead's brand's words.
+
+
 ## 1.4.0 — 2026-11-07
 
 ### Changed

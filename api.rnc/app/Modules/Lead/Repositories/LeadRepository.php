@@ -46,17 +46,20 @@ class LeadRepository
 
     public function findLeadById(int $id): ?Lead
     {
-        return Lead::query()->with('latestConsent')->find($id);
+        return Lead::query()->with(['latestConsent', 'brand'])->find($id);
     }
 
     /**
-     * One column of the board: the most recently touched leads of a stage, up to a ceiling.
+     * One column of the board: the most recently touched leads of a stage, up to a ceiling, with
+     * their brand loaded once for the whole column (rnc-3 R4).
      *
+     * @param  int|null  $brandId  a brand's id, `Lead::MAIN_BRAND` for the main brand, null for all
      * @return Collection<int, Lead>
      */
-    public function findLeadsOfStage(LeadStage $stage, ?string $search, int $limit): Collection
+    public function findLeadsOfStage(LeadStage $stage, ?string $search, int $limit, ?int $brandId = null): Collection
     {
-        return $this->searched(Lead::query(), $search)
+        return $this->branded($this->searched(Lead::query(), $search), $brandId)
+            ->with('brand')
             ->where('stage', $stage->value)
             ->orderByDesc('updated_at')
             ->orderByDesc('id')
@@ -65,14 +68,31 @@ class LeadRepository
     }
 
     /** @return array<string, int> how many leads each stage holds, by its slug */
-    public function countLeadsByStage(?string $search): array
+    public function countLeadsByStage(?string $search, ?int $brandId = null): array
     {
-        return $this->searched(Lead::query(), $search)
+        return $this->branded($this->searched(Lead::query(), $search), $brandId)
             ->toBase()
             ->selectRaw('stage, count(*) as total')
             ->groupBy('stage')
             ->pluck('total', 'stage')
             ->map(fn (mixed $total) => (int) $total)
+            ->all();
+    }
+
+    /**
+     * How many leads each brand holds, in one grouped query (rnc-3 R5): the main brand's under
+     * `Lead::MAIN_BRAND`, a sub-brand's under its id. A brand with no lead is absent.
+     *
+     * @return array<int, int>
+     */
+    public function countLeadsByBrand(): array
+    {
+        return Lead::query()
+            ->toBase()
+            ->selectRaw('brand_id, count(*) as total')
+            ->groupBy('brand_id')
+            ->get()
+            ->mapWithKeys(fn (object $row) => [(int) ($row->brand_id ?? Lead::MAIN_BRAND) => (int) $row->total])
             ->all();
     }
 
@@ -105,6 +125,22 @@ class LeadRepository
     public function hasLeadEvent(Lead $lead, string $type): bool
     {
         return $lead->events()->where('type', $type)->exists();
+    }
+
+    /**
+     * The board's brand filter (rnc-3 R4): null leaves every brand, `Lead::MAIN_BRAND` keeps the
+     * leads with no sub-brand, an id keeps that brand's.
+     *
+     * @param  Builder<Lead>  $query
+     * @return Builder<Lead>
+     */
+    private function branded(Builder $query, ?int $brandId): Builder
+    {
+        return match ($brandId) {
+            null => $query,
+            Lead::MAIN_BRAND => $query->whereNull('brand_id'),
+            default => $query->where('brand_id', $brandId),
+        };
     }
 
     /**

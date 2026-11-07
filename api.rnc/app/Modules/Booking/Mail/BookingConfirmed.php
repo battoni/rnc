@@ -22,7 +22,7 @@ class BookingConfirmed extends Mailable implements ShouldQueue
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: __('mail.booking.subject', ['when' => $this->meeting->when()]));
+        return new Envelope(from: $this->meeting->sender(), subject: __('mail.booking.subject', ['when' => $this->meeting->when()]));
     }
 
     public function content(): Content

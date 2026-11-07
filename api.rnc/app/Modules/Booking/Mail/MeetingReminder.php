@@ -18,7 +18,7 @@ class MeetingReminder extends Mailable implements ShouldQueue
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: __('mail.reminder.subject', ['when' => $this->meeting->when()]));
+        return new Envelope(from: $this->meeting->sender(), subject: __('mail.reminder.subject', ['when' => $this->meeting->when()]));
     }
 
     public function content(): Content

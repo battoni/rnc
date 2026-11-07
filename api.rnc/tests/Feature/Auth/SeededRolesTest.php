@@ -21,6 +21,7 @@ uses(RefreshDatabase::class);
  * The table is the plan review's AM8 (rnc-1, 07/11/2026): the team works the pipeline, Reinaldo
  * also runs the network, the numbers and the repricing, and the operator holds everything.
  * rnc-2 F1 adds `parceiro` (R1): the portal key and nothing else, and Reinaldo's `ledger.read`.
+ * rnc-3 F1 declares Phase 3's seven keys: the operator's only, until each phase grants its own.
  */
 
 beforeEach(fn () => $this->seed([FirmSeeder::class, RoleSeeder::class, SuperAdminSeeder::class]));
@@ -80,6 +81,16 @@ describe('the seeded roles', function () {
             ->all();
 
         expect(seededRoleKeys('operador'))->toBe($expected);
+    });
+
+    it("keep Phase 3's keys with the operator until their own phase grants them (rnc-3 R28)", function () {
+        $phase3 = ['brands.manage', 'channel.read', 'channel.manage', 'assistant.ask', 'assistant.manage', 'contracts.manage', 'briefing.read'];
+
+        expect(seededRoleKeys('operador'))->toContain(...$phase3);
+
+        foreach (['ceo', 'equipe', 'parceiro'] as $slug) {
+            expect(array_intersect(seededRoleKeys($slug), $phase3))->toBe([]);
+        }
     });
 
     it('keep the staff directory and the permission matrix with the operator', function () {

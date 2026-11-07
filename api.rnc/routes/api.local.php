@@ -8,10 +8,12 @@
  * inherit the parent's).
  */
 
+use App\Http\Middleware\ResolveCurrentBrand;
 use App\Modules\Booking\Controllers\PublicBookingController;
 use App\Modules\Booking\Controllers\PublicReportController;
 use App\Modules\Content\Controllers\PublicSectorPageController;
 use App\Modules\Diagnostic\Controllers\PublicDiagnosticController;
+use App\Modules\Firm\Controllers\BrandController;
 use App\Modules\Firm\Controllers\PublicFirmController;
 use App\Modules\Metrics\Controllers\FunnelController;
 use App\Modules\Notification\Controllers\NotificationController;
@@ -28,29 +30,34 @@ use Illuminate\Support\Facades\Route;
 
 // PUBLIC SITE (rnc-1 F2) — no session needed. The firm is the `X-Firm` header's, or `franco`
 // (`ResolveCurrentFirm`); every answer goes through a `Public*` allow-list resource.
-Route::get('public/firm', [PublicFirmController::class, 'show']);
-Route::get('public/sectors', [PublicSectorPageController::class, 'index']);
-Route::get('public/sectors/{slug}', [PublicSectorPageController::class, 'show']);
+// Every public route also reads the sub-brand (rnc-3 R2, D2): `X-Brand`, inside that firm only
+// (`ResolveCurrentBrand`). An unknown or inactive slug is 404 `brands.notFound`, except on the events
+// beacon, which falls back to the main brand so a stale tab never loses its analytics (AM21).
+$brand = ResolveCurrentBrand::ALIAS;
+$brandFallback = ResolveCurrentBrand::ALIAS.':'.ResolveCurrentBrand::FALLBACK;
+Route::get('public/firm', [PublicFirmController::class, 'show'])->middleware($brand);
+Route::get('public/sectors', [PublicSectorPageController::class, 'index'])->middleware($brand);
+Route::get('public/sectors/{slug}', [PublicSectorPageController::class, 'show'])->middleware($brand);
 
 // Tracking (R7, AM2): 60 events a minute per address — a person browsing never meets it, a loop
 // does. Keyed by IP for a visitor (Laravel's `throttle:<max>,<minutes>` signature).
-Route::post('public/events', [PublicEventController::class, 'store'])->middleware('throttle:60,1');
+Route::post('public/events', [PublicEventController::class, 'store'])->middleware(['throttle:60,1', $brandFallback]);
 
 // The diagnostic (rnc-1 F3, plan AM3/AM10): by lead token, never by id. Each limiter has its own
 // prefix (the third argument): Laravel's plain `throttle:N,M` keys by address alone, so without it
 // these routes and the events above would share one counter. The CNPJ lookup is the tight one —
 // each call reaches BrasilAPI — at 10 a minute per address.
-Route::post('public/diagnostics', [PublicDiagnosticController::class, 'store'])->middleware('throttle:20,1,diagnostic-start');
-Route::post('public/diagnostics/{token}/cnpj', [PublicDiagnosticController::class, 'lookupCnpj'])->middleware('throttle:10,1,cnpj-lookup');
-Route::patch('public/diagnostics/{token}', [PublicDiagnosticController::class, 'update'])->middleware('throttle:60,1,diagnostic');
-Route::get('public/diagnostics/{token}/result', [PublicDiagnosticController::class, 'result'])->middleware('throttle:60,1,diagnostic');
-Route::get('public/diagnostics/{token}/simulation', [PublicDiagnosticController::class, 'simulation'])->middleware('throttle:60,1,diagnostic');
+Route::post('public/diagnostics', [PublicDiagnosticController::class, 'store'])->middleware(['throttle:20,1,diagnostic-start', $brand]);
+Route::post('public/diagnostics/{token}/cnpj', [PublicDiagnosticController::class, 'lookupCnpj'])->middleware(['throttle:10,1,cnpj-lookup', $brand]);
+Route::patch('public/diagnostics/{token}', [PublicDiagnosticController::class, 'update'])->middleware(['throttle:60,1,diagnostic', $brand]);
+Route::get('public/diagnostics/{token}/result', [PublicDiagnosticController::class, 'result'])->middleware(['throttle:60,1,diagnostic', $brand]);
+Route::get('public/diagnostics/{token}/simulation', [PublicDiagnosticController::class, 'simulation'])->middleware(['throttle:60,1,diagnostic', $brand]);
 
 // Booking (rnc-1 F4, R15–R17): the slot picker on the same lead token, and the "Relatório de
 // Impacto" on its own token (AM4). A booking is a write a loop could lean on: 10 a minute.
-Route::get('public/diagnostics/{token}/availability', [PublicBookingController::class, 'availability'])->middleware('throttle:60,1,diagnostic');
-Route::post('public/diagnostics/{token}/booking', [PublicBookingController::class, 'store'])->middleware('throttle:10,1,booking');
-Route::get('public/reports/{reportToken}', [PublicReportController::class, 'show'])->middleware('throttle:60,1,report');
+Route::get('public/diagnostics/{token}/availability', [PublicBookingController::class, 'availability'])->middleware(['throttle:60,1,diagnostic', $brand]);
+Route::post('public/diagnostics/{token}/booking', [PublicBookingController::class, 'store'])->middleware(['throttle:10,1,booking', $brand]);
+Route::get('public/reports/{reportToken}', [PublicReportController::class, 'show'])->middleware(['throttle:60,1,report', $brand]);
 
 // The back office's bell (R17): a person's own notifications, behind `notifications.read` (AM8).
 $bell = ['auth', 'permission:notifications.read'];
@@ -103,3 +110,12 @@ Route::get('repricing/{id}/letter', [RepricingController::class, 'letter'])->mid
 Route::post('repricing/mark', [RepricingController::class, 'mark'])->middleware(['auth', 'permission:repricing.manage']);
 Route::post('clients/import', [ClientImportController::class, 'store'])->middleware(['auth', 'permission:clients.import']);
 Route::get('clients/import/template', [ClientImportController::class, 'template'])->middleware(['auth', 'permission:clients.import']);
+
+// The sub-brands console (rnc-3 F1, R5, D3): Franco's main brand and its Express/Prime, each with its
+// lead count, the edit (colours held to 4,5:1 white on the primary) and the switch — the operator's
+// alone, behind `brands.manage`. Another firm's brand is a 404.
+$brands = ['auth', 'permission:brands.manage'];
+Route::get('brands', [BrandController::class, 'index'])->middleware($brands);
+Route::patch('brands/{id}', [BrandController::class, 'update'])->middleware($brands);
+Route::post('brands/{id}/activate', [BrandController::class, 'activate'])->middleware($brands);
+Route::post('brands/{id}/deactivate', [BrandController::class, 'deactivate'])->middleware($brands);

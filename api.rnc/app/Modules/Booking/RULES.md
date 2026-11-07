@@ -1,5 +1,5 @@
 ---
-version: 1.2.0
+version: 1.3.0
 origin: rnc
 ---
 # RULES — Booking Module
@@ -60,11 +60,21 @@ horário acabou de ser reservado"), `slot_unavailable` 422 (not a slot the agend
 - **The team's reads (F5)**: `findAppointmentsOfLeads` (the board's booked cards) and
   `findAppointmentsBetween` (the agenda week) serve the Pipeline module, which owns no table.
 
+- **A brand's lead hears from its brand (rnc-3 R3)**: `MeetingMailBuilder` signs the confirmation
+  and the reminder with the lead's sub-brand name (the firm's when none), and both are sent from
+  that name at the **firm's own mailbox** (`MeetingMailDTO::sender()`; `mail.from` when the firm has
+  none). Address and phone stay the firm's.
+
 ## Tables read from other modules
 
 `leads` (Lead), through `LeadService`; `users` (the specialist's name, through `Specialist::user`).
 
 ## Known Gaps
+
+- **The sender is the firm's mailbox (rnc-3 R3, A3), on a domain nobody verified.** Locally mail is
+  `log`; before `MAIL_MAILER=resend`, the firm's mailbox domain (`franco-rnc.com.br`) must be verified
+  at Resend or listed in `MAIL_VERIFIED_DOMAINS` — `MailSenderTest` checks only `MAIL_FROM_ADDRESS` —
+  or the sender goes back to `mail.from` with the firm's mailbox as reply-to.
 
 - **No screen edits a specialist's hours or flags a new specialist** — the seeder is the source; a
   member flagged `is_specialist` later has no hours until it runs again.

@@ -50,7 +50,10 @@ class LeadService
      * live) starts that one again — its path and answers reset, its token, first touch and timeline
      * kept — so a restart or a loop on one browser does not pile empty cards on the board.
      *
-     * @param  array{path: string, visitor_uuid: string|null, source: string, medium: string|null, sector: string|null}  $start
+     * `brand_id` is the sub-brand the visitor is on (rnc-3 R4), written once here and never by a later
+     * step — like `channel`. A visitor who starts again keeps the brand the lead was born under.
+     *
+     * @param  array{path: string, visitor_uuid: string|null, source: string, medium: string|null, sector: string|null, brand_id: int|null}  $start
      */
     public function startLead(array $start): ?Lead
     {
@@ -83,6 +86,7 @@ class LeadService
                 'channel' => self::FORM_CHANNEL,
                 'source' => $start['source'],
                 'medium' => $start['medium'],
+                'brand_id' => $start['brand_id'],
             ]);
 
             $this->leadRepository->createLeadEvent($lead, LeadEventType::DiagnosticStarted->value, ['path' => $start['path']], $now);
@@ -148,7 +152,7 @@ class LeadService
             ]);
 
             $this->leadRepository->createLeadConsent($lead, [
-                'text' => ConsentTerms::TEXT,
+                'text' => ConsentTerms::textFor($lead->brand?->name),
                 'version' => ConsentTerms::VERSION,
                 'given' => $contact->consent,
                 'via' => ConsentTerms::VIA_FORM,

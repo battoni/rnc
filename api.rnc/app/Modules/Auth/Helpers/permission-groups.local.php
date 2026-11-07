@@ -11,6 +11,11 @@
  * Phase 2 (rnc-2 F1) declares its five keys at once, the same way: `portal.access` (the partner's
  * portal, F1), `ledger.read` (the network ledger, F4), `fiscal.read` / `fiscal.import` (NF-e
  * readiness and supplier credit, F6a–F8) and `radar.manage` (the Radar, F9). Later phases only grant.
+ *
+ * Phase 3 (rnc-3 F1, R28) declares its seven keys at once too: `brands.manage` (the sub-brands, F1),
+ * `channel.read` / `channel.manage` (the RNC channel, F3a), `assistant.ask` / `assistant.manage` (the
+ * Reforma assistant, F4), `contracts.manage` (the contract alert, F6) and `briefing.read` (Reinaldo's
+ * briefing, F8). The operator holds them at once; each is granted to ceo or equipe in its own phase.
  */
 
 return [
@@ -103,6 +108,48 @@ return [
         'icon' => 'pi pi-compass',
         'permissions' => [
             ['labelKey' => 'rolesAndPermissions.permissions.manage', 'key' => 'radar.manage', 'value' => false],
+        ],
+    ],
+    [
+        'id' => 'brands',
+        'nameKey' => 'rolesAndPermissions.groups.brands',
+        'icon' => 'pi pi-palette',
+        'permissions' => [
+            ['labelKey' => 'rolesAndPermissions.permissions.manage', 'key' => 'brands.manage', 'value' => false],
+        ],
+    ],
+    [
+        'id' => 'channel',
+        'nameKey' => 'rolesAndPermissions.groups.channel',
+        'icon' => 'pi pi-share-alt',
+        'permissions' => [
+            ['labelKey' => 'rolesAndPermissions.permissions.read', 'key' => 'channel.read', 'value' => false],
+            ['labelKey' => 'rolesAndPermissions.permissions.manage', 'key' => 'channel.manage', 'value' => false],
+        ],
+    ],
+    [
+        'id' => 'assistant',
+        'nameKey' => 'rolesAndPermissions.groups.assistant',
+        'icon' => 'pi pi-comments',
+        'permissions' => [
+            ['labelKey' => 'rolesAndPermissions.permissions.ask', 'key' => 'assistant.ask', 'value' => false],
+            ['labelKey' => 'rolesAndPermissions.permissions.manage', 'key' => 'assistant.manage', 'value' => false],
+        ],
+    ],
+    [
+        'id' => 'contracts',
+        'nameKey' => 'rolesAndPermissions.groups.contracts',
+        'icon' => 'pi pi-file-edit',
+        'permissions' => [
+            ['labelKey' => 'rolesAndPermissions.permissions.manage', 'key' => 'contracts.manage', 'value' => false],
+        ],
+    ],
+    [
+        'id' => 'briefing',
+        'nameKey' => 'rolesAndPermissions.groups.briefing',
+        'icon' => 'pi pi-sun',
+        'permissions' => [
+            ['labelKey' => 'rolesAndPermissions.permissions.read', 'key' => 'briefing.read', 'value' => false],
         ],
     ],
 ];

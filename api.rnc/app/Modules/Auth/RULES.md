@@ -11,7 +11,9 @@ based-on: 2.9.0
 
 - `Helpers/permission-groups.local.php` — groups a project adds (appended to the core ones). LOCAL:
   the sync never touches it. In rnc it holds the hub's keys (leads, agenda, notifications,
-  partners, referrals, metrics, repricing).
+  partners, referrals, metrics, repricing), Phase 2's (portal, ledger, fiscal, radar) and Phase 3's
+  seven (rnc-3 F1: brands, channel, assistant, contracts, briefing) — declared before the screens
+  that use them, held by the operator alone until their phase grants them.
 
 *Retired 07/11/2026 (rnc-1 F1):* `manager-exclusions.local.php`, `user-exclusions.local.php` and
 `ManagerSeeder`. They shaped the bootstrap's `manager` and `user` roles, which this product does not

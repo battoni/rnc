@@ -1,5 +1,5 @@
 ---
-version: 1.0.1
+version: 1.1.0
 origin: rnc
 ---
 # RULES — Pipeline Module
@@ -16,7 +16,7 @@ Booking's and writes through `LeadService`.
 
 | Route | Permission | What |
 | --- | --- | --- |
-| `GET leads?search=&stage=` | `leads.read` | one column per stage in board order, its count and its newest 60 cards |
+| `GET leads?search=&stage=&brand=` | `leads.read` | one column per stage in board order, its count and its newest 60 cards; `brand` is `main` or a sub-brand slug of the firm (rnc-3 AM13), any other 422 `brands.notFound` |
 | `GET leads/{id}` | `leads.read` | the lead detail: contact, profile, full diagnostic (detail + rule), consent, meeting, timeline, notes |
 | `PATCH leads/{id}/stage` | `leads.update` | `{stage, reason?, via?}` → `{lead: card, event}` |
 | `POST leads/{id}/notes` | `leads.update` | `{text}` → the timeline line (201) |
@@ -41,12 +41,16 @@ Booking's and writes through `LeadService`.
   detail update granularly.
 - **The agenda shows every booked meeting**, perdido leads included with their stage: the slot is
   still taken in the availability, and hiding it would hide why.
+- **The brand chip (rnc-3 R4)**: the card and the detail carry `brand {id, short_name}`, null for
+  the main brand, loaded once per column (`with('brand')`), never per card. A deactivated brand is
+  still a filter: its leads exist.
 - **Another firm's lead is a 404** (`BelongsToFirm` on `leads` and `appointments`).
 
 ## Tables read from other modules
 
 `leads`, `lead_events`, `lead_consents` (Lead, through `LeadRepository`); `appointments`,
-`specialists` (Booking, through `AppointmentRepository`); `users` (the names on the timeline and the
+`specialists` (Booking, through `AppointmentRepository`); `firm_brands` (Firm, through
+`BrandService::brandIdForFilter` and the lead's `brand` relation); `users` (the names on the timeline and the
 specialists).
 
 ## Known Gaps

@@ -24,6 +24,10 @@ use Illuminate\Database\Seeder;
  * Phase 2's other keys are declared from rnc-2 F1 on (the operator holds them at once) and granted
  * to Reinaldo in their own phase: `ledger.read` now, `fiscal.*` and `radar.manage` with F6a–F9.
  *
+ * Phase 3's seven keys (rnc-3 F1, R28) are declared from rnc-3 F1 on — the operator holds them, and
+ * `brands.manage` stays the operator's alone (D3); the channel, assistant, contracts and briefing
+ * keys are granted to Reinaldo and the team in their own phases (F3a, F4, F6, F8).
+ *
  * Re-running the seeder rewrites the four matrices to exactly this table. A key added to a role
  * is a line here, and `SeededRolesTest` states the result.
  */

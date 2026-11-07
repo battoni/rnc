@@ -39,6 +39,9 @@ return new class extends Migration
             $table->string('channel', 20);
             $table->string('source', 20);
             $table->string('medium', 60)->nullable();
+            // The sub-brand the diagnostic was started under (rnc-3 R4): null is the main brand. Fixed at
+            // creation like `channel`. The `firm_brands` row is the Firm module's, so no foreign key.
+            $table->unsignedBigInteger('brand_id')->nullable()->index();
             $table->timestamps();
 
             $table->index(['firm_id', 'stage']);

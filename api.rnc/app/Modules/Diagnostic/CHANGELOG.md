@@ -2,6 +2,13 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.1.0 — 2026-11-07
+
+### Changed
+
+- The diagnostic's start stores the request's sub-brand on the lead (rnc-3 F1, R4), and every public diagnostic route reads `X-Brand` (`ResolveCurrentBrand`). Test: `BrandLeadTest` (A3).
+
+
 ## 1.0.1 — 2026-11-07
 
 ### Added

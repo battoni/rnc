@@ -1,5 +1,6 @@
 <?php
 
+use Database\Seeders\BrandSeeder;
 use Database\Seeders\ClientSeeder;
 use Database\Seeders\LocalUsersSeeder;
 use Database\Seeders\MetricsSeeder;
@@ -28,6 +29,10 @@ $this->call(LocalUsersSeeder::class);
 // Every `is_specialist` member's weekly hours, from the firm's business hours (rnc-1 R15). After
 // the people, so the four specialists exist; on production it finds none until one is flagged.
 $this->call(SpecialistSeeder::class);
+
+// Franco's sub-brands (rnc-3 F1): Express and Prime with the demo's colours, taglines and proof —
+// local only (refuses production), before the pipeline that starts a few leads under each.
+$this->call(BrandSeeder::class);
 
 // The team's board and agenda (rnc-1 F5): 40 invented leads over 30 days, a few booked meetings —
 // local only (refuses production), after the specialists it books.

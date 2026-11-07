@@ -1,5 +1,5 @@
 ---
-version: 1.0.1
+version: 1.1.0
 origin: rnc
 ---
 # RULES — Diagnostic Module
@@ -44,6 +44,10 @@ routes a visitor walks, all by lead token. Owns no table: every write to the lea
   is an allow-list of kind, title and range. The detail is the team's (F5).
 - **`nao_sei` is a regime answer** that matches no regime rule; the simulator then uses the
   Presumido PIS/Cofins rate, as the demo did for anything but Real.
+
+- **The start records the visit's sub-brand (rnc-3 R4)**: `DiagnosticService::start` hands
+  `CurrentBrand::id()` to `LeadService::startLead`, the only time it is written. Every public
+  diagnostic route carries the `brand` middleware: a stale `X-Brand` is 404 `brands.notFound`.
 
 ## Tables read from other modules
 

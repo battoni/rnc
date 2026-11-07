@@ -28,6 +28,8 @@ class LeadCardResource extends JsonResource
             'last_step' => $lead->last_step,
             'sector' => $lead->profile['sector'] ?? null,
             'channel' => $lead->channel,
+            // The sub-brand chip (rnc-3 R4): null for the main brand.
+            'brand' => $lead->brand ? ['id' => $lead->brand->id, 'short_name' => $lead->brand->short_name] : null,
             'source' => $lead->source,
             'has_contact' => $lead->hasContact(),
             'opportunities' => $this->resource['opportunities'],
