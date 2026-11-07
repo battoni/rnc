@@ -46,4 +46,4 @@ Started: 2026-11-07
 - W9 F1: where the operator reaches users and roles → the Operador rail group carries Usuários and Perfis as children (they also stay in the settings footer; to reverse: drop `OPERATOR_CHILDREN` in `navItems.local.ts`).
 - W10 F1: Franco's public contact is needed by the footer before F2's `GET /api/public/firm` exists → a constant `FIRM_PUBLIC_CONTACT` in `@Constants`, to be replaced in F2 (to reverse: F2 does).
 - W11 F1: AM1 lists `VITE_API_URL=http://localhost:8000`, but the SPA appends endpoints to it without `/api` (the browser's login went to `/auth/login` and failed CORS) → `VITE_API_URL=http://localhost:8000/api` (verified: the four seeded people sign in through the SPA in Chromium against the real API, each lands on `/painel` with its rail — operador 3 groups, ceo 2, equipe 1 — and no console error; to reverse: none, it is the bootstrap's contract).
-LOGLINE
+00:53 F1 done, attempt 1, cd32dd4
