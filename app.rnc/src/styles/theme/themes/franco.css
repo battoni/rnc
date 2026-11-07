@@ -69,3 +69,30 @@ label:has(.p-checkbox) {
   letter-spacing: normal;
   text-transform: none;
 }
+
+/*
+ * Paper is light, whatever the screen's scheme (rnc-1 R17/R26: the repricing letter and the impact
+ * report are printed or saved as PDF). The browser drops backgrounds when printing but keeps the
+ * text colours, so the dark scheme's chalk #d9d9d6 printed at 1.4:1 on white and its fog #888b8d at
+ * 3.4:1. In print the role tokens go back to the light set above (`@theme`, battoni-dev's section 4)
+ * and the root says `color-scheme: light`, for every page that prints. Same specificity as the dark
+ * block and later in the cascade, so it wins only on paper; the screen is untouched. The brand word
+ * goes back to the navy, 12.4:1 on white.
+ */
+@media print {
+  :root,
+  [data-theme='dark'] {
+    color-scheme: light;
+
+    --color-canvas: #ffffff;
+    --color-panel: var(--color-surface-50);
+    --color-panel-muted: var(--color-surface-100);
+    --color-heading: var(--color-ink-900);
+    --color-body: var(--color-ink-900);
+    --color-muted: var(--color-surface-800);
+    --color-subtle: var(--color-surface-600);
+    --color-line: var(--color-surface-200);
+    --color-line-strong: var(--color-surface-300);
+    --color-primary-text: var(--color-primary-500);
+  }
+}

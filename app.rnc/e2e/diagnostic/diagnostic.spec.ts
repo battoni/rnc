@@ -1,5 +1,6 @@
 import type { Page } from '@playwright/test';
 import { expect, seedLanguage, test } from '../fixtures/auth';
+import { emulateDarkPrint, readPrintedSheet } from '../fixtures/print';
 
 /*
  * The diagnostic (rnc-1 F3–F4, R9–R17) with the API mocked: the quiz from step 1 to the locked
@@ -164,6 +165,26 @@ test('walks the quiz from step 1 to the locked result and the specialist CTA', a
   await expect(page.getByTestId('report-company')).toHaveText('Clínica Horizonte');
   await expect(page.getByTestId('report-meeting')).toContainText('Juliana Reis');
   await expect(page.getByTestId('sim-year')).toHaveCount(8);
+});
+
+// A visitor saves the report as PDF from whatever scheme the screen is in; paper is white (R17).
+test('prints the report as a light document while the screen is dark', async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await page.goto(`/relatorio/${REPORT_TOKEN}`);
+  await expect(page.getByTestId('impact-report')).toBeVisible();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+
+  await emulateDarkPrint(page);
+
+  const sheet = await readPrintedSheet(page, '[data-testid="impact-report"]');
+
+  expect(sheet.measured).toBeGreaterThan(20);
+  expect(sheet.faintText).toEqual([]);
+  expect(sheet.sheetLuminance === null || sheet.sheetLuminance > 0.8).toBe(true);
+  expect(sheet.rootColorScheme).toBe('light');
+
+  await page.emulateMedia({ media: 'screen' });
+  await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(10, 10, 9)');
 });
 
 test('says calmly that a dead report link expired', async ({ page }) => {

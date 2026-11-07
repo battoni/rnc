@@ -103,24 +103,28 @@ function onPrint() {
           class="bg-panel shadow-lift overflow-hidden rounded-xl print:rounded-none print:shadow-none"
           data-testid="impact-report"
         >
-          <header class="bg-primary-950 flex flex-col gap-4 p-6 sm:flex-row sm:items-end sm:justify-between sm:p-8">
+          <header
+            class="bg-primary-950 print:border-primary-500 flex flex-col gap-4 p-6 sm:flex-row sm:items-end sm:justify-between sm:p-8 print:border-b-2 print:bg-transparent"
+          >
             <div class="flex min-w-0 flex-col gap-2">
-              <span class="text-primary-300 text-xs font-semibold tracking-widest uppercase">
+              <span class="text-primary-300 print:text-primary-500 text-xs font-semibold tracking-widest uppercase">
                 {{ firm?.name ?? $t('diagnostic.report.kicker') }}
               </span>
 
-              <h1 class="text-primary-50 text-2xl font-bold tracking-tight text-balance sm:text-3xl">
+              <h1
+                class="text-primary-50 print:text-primary-500 text-2xl font-bold tracking-tight text-balance sm:text-3xl"
+              >
                 {{ $t('diagnostic.report.title') }}
               </h1>
             </div>
 
             <div class="flex min-w-0 flex-col gap-1 sm:items-end sm:text-right">
-              <span class="text-primary-200 text-xs font-semibold tracking-widest uppercase">
+              <span class="text-primary-200 print:text-muted text-xs font-semibold tracking-widest uppercase">
                 {{ $t('diagnostic.report.issuedFor') }}
               </span>
 
               <strong
-                class="text-primary-50 text-lg break-words"
+                class="text-primary-50 print:text-heading text-lg break-words"
                 data-testid="report-company"
               >
                 {{ report.company }}
