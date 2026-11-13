@@ -14,7 +14,7 @@
       "Bash(git log*)",
       "Bash(git add*)",
       "Bash(git commit*)",
-      "Bash(git checkout*)",
+      "Bash(git checkout -- *)",
       "Bash(git branch*)",
       "Bash(git push*)",
       "Bash(git pull*)",
@@ -22,6 +22,8 @@
       "Bash(grep*)",
       "Bash(find*)",
       "Bash(mysql *)",
+      "Bash(rtk make wt-*)",
+      "Bash(make wt-*)",
       "Bash(for *)"
     ],
     "deny": []
