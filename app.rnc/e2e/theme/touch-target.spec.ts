@@ -108,7 +108,14 @@ test.describe('with a coarse pointer', () => {
       await page.goto('/personalization');
       await page.getByRole('button').first().waitFor();
 
-      const size = await page.evaluate(() => {
+      /*
+       * The default button's width is its label's, and the label is in Figtree, which loads with
+       * `font-display: swap`: measured before it arrives, "Sign in" is 76px in the fallback font
+       * against 74.8 in Figtree, and the two contexts each raced it on their own (2 in 100 runs).
+       * Layout is forced first so the label's font is requested, then `document.fonts.ready` is
+       * the moment every requested face has loaded.
+       */
+      const size = await page.evaluate(async () => {
         const probe = document.createElement('button');
 
         probe.className = 'p-button p-component p-button-icon-only p-button-sm';
@@ -121,6 +128,8 @@ test.describe('with a coarse pointer', () => {
         standard.className = 'p-button p-component';
         standard.innerHTML = '<span class="p-button-label">Sign in</span>';
         document.body.appendChild(standard);
+        standard.getBoundingClientRect();
+        await document.fonts.ready;
 
         const box = probe.getBoundingClientRect();
         const standardBox = standard.getBoundingClientRect();

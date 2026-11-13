@@ -3,6 +3,20 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.16.0 — 2026-11-13
+
+### Fixed
+- `theme/touch-target.spec.ts` (port of boanerges-14 F4): "the drawn size is the same under a finger and under a mouse" waits for the webfont before measuring (`document.fonts.ready` after a forced layout), so its default button's "Sign in" label is never measured in the fallback face in one context and in Figtree in the other.
+### Added
+- RULES "Measuring text": a size that depends on text waits for its font.
+
+## 1.15.0 — 2026-11-13
+
+### Changed
+- `playwright.config.ts` (port of boanerges-14 F3): locally the port is `E2E_PORT` (from `make e2e`), and a run without it fails at load naming `make e2e`; CI keeps 5173. `webServer` never reuses a running server, so a taken port fails before the first test. Reporter `line` + `html` with `open: 'never'`, so a run always exits. `failOnFlakyTests` locally: a test that passed only on retry fails the run.
+### Removed
+- The `E2E_NO_WEBSERVER` and `E2E_BASE_URL` overrides, and the RULES bullets that ran the suite on another port with them.
+
 ## 1.14.0 — 2026-11-07
 
 ### Added
