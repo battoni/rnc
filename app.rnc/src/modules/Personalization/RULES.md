@@ -10,8 +10,8 @@ based-on: 1.0.0
 
 ## Purpose
 
-Global interface preferences for this device: colour scheme, language, full-width layout, a pinned
-menu button, and contextual tips. One page (`PersonalizationView`) and one card
+Global interface preferences for this device: colour scheme, language, full-width layout and a pinned
+menu button. One page (`PersonalizationView`) and one card
 (`MPersonalizationVisualCard`).
 
 ## Intentional Decisions

@@ -5,10 +5,13 @@ namespace App\Modules\Auth\Repositories;
 use App\Models\User;
 use App\Modules\Auth\Enums\UserStatus;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\LazyCollection;
 
 class UserRepository
 {
+    private const SESSIONS_TABLE = 'sessions';
+
     public function __construct(
         private User $model
     ) {}
@@ -123,6 +126,34 @@ class UserRepository
     public function updateUser(int $id, array $data): bool
     {
         return $this->model->where('id', $id)->update($data) > 0;
+    }
+
+    /** The portal login of a partner (rnc-2 R1), active or revoked — at most one per partner. */
+    public function findUserByPartnerId(int $partnerId): ?User
+    {
+        return $this->model->newQuery()->where('partner_id', $partnerId)->latest('id')->first();
+    }
+
+    /**
+     * Fill and save through the model, so its casts run — `updateUser` is a query update and would
+     * store a password in clear.
+     *
+     * @param  array<string, mixed>  $attributes
+     */
+    public function saveUser(User $user, array $attributes): User
+    {
+        $user->fill($attributes)->save();
+
+        return $user;
+    }
+
+    /**
+     * Every stored session of the user (`SESSION_DRIVER=database`, the `sessions` table): a cookie
+     * already handed out finds nothing on its next request.
+     */
+    public function deleteUserSessions(int $userId): void
+    {
+        DB::table(self::SESSIONS_TABLE)->where('user_id', $userId)->delete();
     }
 
     public function deleteUser(int $id): bool

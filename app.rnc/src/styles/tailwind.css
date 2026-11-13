@@ -94,6 +94,11 @@
   /* Air drag, not gravity. Loose matter loses speed almost immediately and then
      drifts. Only particles use this. */
   --motion-ease-drift: cubic-bezier(0.12, 0.6, 0.25, 1);
+
+  /* The interval between one sibling's entrance and the next's. Not a fifth duration — each
+     sibling still takes `settle` — only how far apart a row of cards starts. Under reduced motion
+     it is nothing, so the row arrives as one step instead of a queue of near-instant ones. */
+  --motion-stagger: 55ms;
 }
 
 /* Everything collapses to one near-instant step. Not zero: a cut with no
@@ -106,6 +111,7 @@
     --motion-quick: var(--motion-instant);
     --motion-calm: var(--motion-instant);
     --motion-settle: var(--motion-instant);
+    --motion-stagger: 0ms;
   }
 }
 
@@ -131,4 +137,12 @@
 
 @utility motion-ease-drift {
   transition-timing-function: var(--motion-ease-drift);
+}
+
+/* The brand as a WORD, on whatever ground the scheme gives it: `--color-primary-text` where the
+   theme declares it (franco: the cyan on the dark panel, 9.0:1), the main step otherwise (theme
+   RULES, "`--color-primary-text`"). A template consumes this, never a `dark:` pair of ramp steps:
+   the ramp step that reads on a dark ground is the theme's to name. */
+@utility text-brand-word {
+  color: var(--color-primary-text, var(--color-primary-500));
 }

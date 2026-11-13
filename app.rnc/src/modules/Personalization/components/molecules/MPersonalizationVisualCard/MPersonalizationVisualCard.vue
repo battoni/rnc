@@ -7,7 +7,7 @@ import useUiStore, { useColorSchemeStore } from '@Stores';
 
 const colorSchemeStore = useColorSchemeStore();
 const uiStore = useUiStore();
-const { isFullscreen, isMenuButtonPinned, isTutorEnabled } = storeToRefs(uiStore);
+const { isFullscreen, isMenuButtonPinned } = storeToRefs(uiStore);
 const { isDark } = storeToRefs(colorSchemeStore);
 
 const { availableLocales, currentLocale, setLocale } = useLocale();
@@ -18,7 +18,6 @@ const darkModeInputId = `${cardId}-dark-mode`;
 const languageInputId = `${cardId}-language`;
 const fullWidthInputId = `${cardId}-full-width`;
 const pinMenuInputId = `${cardId}-pin-menu`;
-const tutorInputId = `${cardId}-tutor`;
 
 const isDarkMode = computed({
   get: () => isDark.value,
@@ -47,11 +46,6 @@ const isMenuPinned = computed({
   set: (value: boolean) => {
     if (value !== isMenuButtonPinned.value) uiStore.toggleMenuButtonPinned();
   },
-});
-
-const isTutorOn = computed({
-  get: () => isTutorEnabled.value,
-  set: (value: boolean) => uiStore.setTutorEnabled(value),
 });
 </script>
 
@@ -143,23 +137,6 @@ const isTutorOn = computed({
           v-model="isMenuPinned"
           :aria-label="$t('personalization.visualCard.pinMenuButton')"
           :inputId="pinMenuInputId"
-        />
-      </div>
-
-      <div class="flex items-center justify-between gap-4">
-        <label
-          class="text-muted flex min-w-0 items-center gap-3 text-sm"
-          :for="tutorInputId"
-        >
-          <span class="pi pi-lightbulb text-heading text-base" />
-
-          <span>{{ $t('personalization.visualCard.tutor') }}</span>
-        </label>
-
-        <ToggleSwitch
-          v-model="isTutorOn"
-          :aria-label="$t('personalization.visualCard.tutor')"
-          :inputId="tutorInputId"
         />
       </div>
     </div>

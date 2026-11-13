@@ -4,3 +4,15 @@
 # Example:
 #   seed-demo:
 #   	cd api.myproject && php artisan db:seed --class=DemoSeeder
+
+# rnc-1 F1 — the local stack (plan AM1): one host, `localhost`, never 127.0.0.1 beside it.
+.PHONY: serve-api serve-app fresh-seed
+
+serve-api: ## api.rnc — the API on http://localhost:8000 (php artisan serve; Valet is not used)
+	cd api.rnc && php artisan serve --host=localhost --port=8000
+
+serve-app: ## app.rnc — the SPA on http://localhost:5173 (Node 24: `nvm use` first)
+	cd app.rnc && npm run dev
+
+fresh-seed: ## api.rnc — rebuild the local SQLite database (database/database.sqlite, gitignored) and seed Franco, the roles and the team
+	cd api.rnc && touch database/database.sqlite && php artisan migrate:fresh --seed

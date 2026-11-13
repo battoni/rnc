@@ -1,0 +1,33 @@
+# Changelog — Portal Module
+
+All notable changes to this unit are documented here. Versioned with SemVer.
+
+## 1.3.0 — 2026-11-07
+
+### Added
+
+- A contract referral's summary on `MPortalReferralCard` (rnc-3 F7, R21, AM20): kind, end year, "sem cláusula da Reforma" and the annual value as the API's band ("R$ 1 mi – R$ 2 mi por ano", "a partir de" on the top band) — never the exact value; `PortalReferral.contract` (`PortalContractSummary`). Tested by `MPortalReferralCard.spec.ts` and `e2e/contracts/contracts.spec.ts`.
+
+## 1.2.1 — 2026-11-07
+
+### Fixed
+
+- A staff login (the operator holds `portal.access`) opening `/parceiro` saw "Não foi possível carregar os seus encaminhamentos" with a retry that could never work: the 403 `portal.noPartner` is now read and answered "Este acesso não está ligado a um parceiro.". A firm phone arrives as E.164 from the API and shows as "+55 (11) 3732-5500", dialled as `tel:+551137325500`. Tested by `PortalInboxView.view.integration.spec.ts` and `MPortalReferralCard.spec.ts`.
+
+## 1.2.0 — 2026-11-07
+
+### Added
+
+- The partner's statement (rnc-2 F4, R11, A9's Vitest half): `PortalStatementView` at `/parceiro/extrato` (`/partner/statement`, route `portal-statement`) — the month's lines, "Total devido à {firm}", the current model's rule and "valor a conferir — sem cobrança automática", ◀ ▶ by month; `useLedgerMonth` / `shiftMonth` (shared with Partner's ledger); `LEDGER_MODEL`, `STATEMENT_LINE_KIND`; `GetPortalStatementService`; the inbox links to the statement. Tested by `PortalStatementView.view.integration.spec.ts`, `useLedgerMonth.spec.ts`, `routes.spec.ts` and `PortalInboxView.view.integration.spec.ts`.
+
+## 1.1.0 — 2026-11-07
+
+### Added
+
+- The partner's inbox (rnc-2 F3, R5–R8, A8's Vitest half): `PortalInboxView` (replaces F1's `PortalHomeView` at `/parceiro`) with the KPIs Novos · Em andamento · Fechados · SLA estourado and "Próximas reuniões" from the list; `MPortalReferralCard` (profile, covered items, score, message, SLA, contact once accepted, the moves of its status); `MReferralMeetingForm` and `MReferralCloseForm` in the view's `MMainDialog`; `MSlaChip` (shared with Partner's routing panel and trail); `REFERRAL_STATUS`, `SLA_STATE`; services `GetPortalReferralsService`, `TransitionReferralService`. Tested by `PortalInboxView.view.integration.spec.ts`, `MPortalReferralCard.spec.ts`, `MReferralMeetingForm.spec.ts`, `MReferralCloseForm.spec.ts`, `MSlaChip.spec.ts` and `e2e/portal/inbox.spec.ts`.
+
+## 1.0.0 — 2026-11-07
+
+### Added
+
+- The partner's portal (rnc-2 F1, R3, A4): routes `/parceiro` and `/partner` behind `portal.access`, `PortalHomeView` naming the partner and the firm (`GetPortalMeService`), `usePortalLanding` (Home's redirect), the rail's portal entry (`navItems.local.ts`, key and role `parceiro`). Tested by `routes.spec.ts`, `PortalHomeView.view.integration.spec.ts`, `navItems.local.spec.ts`, `HomeView.spec.ts` and `e2e/portal/access.spec.ts`.

@@ -3,6 +3,9 @@
 use App\Http\Middleware\EnsureAccountActive;
 use App\Http\Middleware\EnsureUserPermission;
 use App\Http\Middleware\PreventIndexing;
+use App\Http\Middleware\ResolveCurrentBrand;
+use App\Http\Middleware\ResolveCurrentFirm;
+use App\Http\Middleware\ResolveCurrentPartner;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -40,6 +43,8 @@ return Application::configure(basePath: dirname(__DIR__))
         // signed out on its next request, not when its session happens to expire.
         $middleware->api(append: [
             EnsureAccountActive::class,
+            // After the user resolves: a signed-in person's firm wins over any `X-Firm` header.
+            ResolveCurrentFirm::class,
         ]);
 
         $middleware->web(append: [
@@ -48,6 +53,10 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'permission' => EnsureUserPermission::class,
+            // The portal's partner (rnc-2 D2, plan AM1): on `portal/*` routes only, never global.
+            ResolveCurrentPartner::ALIAS => ResolveCurrentPartner::class,
+            // The public site's sub-brand (rnc-3 R2, D2): on `public/*` routes only, never global.
+            ResolveCurrentBrand::ALIAS => ResolveCurrentBrand::class,
         ]);
 
         /**

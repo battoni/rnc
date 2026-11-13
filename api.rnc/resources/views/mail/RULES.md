@@ -1,5 +1,5 @@
 ---
-version: 1.0.0
+version: 1.1.0
 origin: pendulum
 based-on: 1.0.0
 ---
@@ -37,7 +37,10 @@ fills `@section('body')`.
   so a band painted from the theme leaves a faint seam around it.
 - **The asset is cropped to the glyph.** In the app's tile the mark occupies 27% of the
   width; at a header's 40px that is a 10px speck beside 19px text.
-- **The footer says why the message arrived.** An e-mail that does not explain itself reads
+- **No logo file → the initial in a tile** (`config('rnc.brand.logo')` empty, rnc-1 F4): Franco's
+  mark is text (W6), so the band draws its first letter on the accent, as text.
+- **The footer says why the message arrived** — `@section('footer_reason')` when the reason is not
+  an account (the booking e-mails: "porque agendou uma reunião"). An e-mail that does not explain itself reads
   as spam even when the person asked for it.
 
 ## Preview

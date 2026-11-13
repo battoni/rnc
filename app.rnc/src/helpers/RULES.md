@@ -1,5 +1,5 @@
 ---
-version: 1.12.0
+version: 1.13.0
 origin: pendulum
 based-on: 1.12.0
 ---
@@ -23,21 +23,22 @@ Shared pure utility functions with no Vue reactivity. Helpers are plain TypeScri
 
 ## Current Helpers
 
-| File                                   | Purpose                                                                                                                          |
-| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `afterLogin.helper.ts`                 | `intendedPathFrom` (the `?redirect=` to follow) and `loginWithReturnTo` (the login path carrying it)                             |
-| `attachAuthGuard.helper.ts`            | Registers a global router `beforeEach` guard that checks auth state                                                              |
-| `bodyScrollLock.helper.ts`             | Toggles `overflow-hidden` on `document.body`                                                                                     |
-| `routeAccess.helper.ts`                | `isPublicRoute` / `isOpenRoute` / `isReachableSignedOut` — who may see a route, read from its meta, for both guards              |
-| `routeId.helper.ts`                    | `toRouteId` — a route param/query value as the integer id the API sends (`NaN` when it names nothing)                            |
-| `slotContent.helper.ts`                | `hasSlotContent` — did a slot's rendered nodes actually draw anything (a false `v-if` leaves a Comment, a `<template>` a Fragment)   |
-| `withExternalLinks.helper.ts`          | `withExternalLinks` — every `<a>` in sanitised rich text gets `target="_blank" rel="noopener noreferrer"`, as a pair; idempotent |
-| `localDate.helper.ts`                  | `toLocalDateString` / `toLocalDateTimeString` / `fromDayMonthYear` — a day on the person's own calendar                          |
-| `sentenceCase.helper.ts`               | Capitalizes the first character of a localized `Intl` label — never CSS `capitalize`                                             |
-| `i18n/attachLocalePathGuard.helper.ts` | Rewrites EN↔PT route names so the URL matches the active locale                                                                  |
-| `i18n/getI18nRouteName.helper.ts`      | Resolves a localized route name with fallback to base name                                                                       |
-| `i18n/getLoginPath.helper.ts`          | Locale-aware login path (`/entrar` vs `/login`)                                                                                  |
-| `i18n/translateError.helper.ts`        | Translates an error string via i18n; falls back to `errors.unexpected` template                                                  |
+| File                                   | Purpose                                                                                                                            |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `afterLogin.helper.ts`                 | `intendedPathFrom` (the `?redirect=` to follow) and `loginWithReturnTo` (the login path carrying it)                               |
+| `attachAuthGuard.helper.ts`            | Registers a global router `beforeEach` guard that checks auth state                                                                |
+| `bodyScrollLock.helper.ts`             | Toggles `overflow-hidden` on `document.body`                                                                                       |
+| `routeAccess.helper.ts`                | `isPublicRoute` / `isOpenRoute` / `isReachableSignedOut` — who may see a route, read from its meta, for both guards                |
+| `routeId.helper.ts`                    | `toRouteId` — a route param/query value as the integer id the API sends (`NaN` when it names nothing)                              |
+| `slotContent.helper.ts`                | `hasSlotContent` — did a slot's rendered nodes actually draw anything (a false `v-if` leaves a Comment, a `<template>` a Fragment) |
+| `withExternalLinks.helper.ts`          | `withExternalLinks` — every `<a>` in sanitised rich text gets `target="_blank" rel="noopener noreferrer"`, as a pair; idempotent   |
+| `localDate.helper.ts`                  | `toLocalDateString` / `toLocalDateTimeString` / `fromDayMonthYear` — a day on the person's own calendar                            |
+| `sentenceCase.helper.ts`               | Capitalizes the first character of a localized `Intl` label — never CSS `capitalize`                                               |
+| `prefersReducedMotion.helper.ts`       | `prefersReducedMotionHelper` — the system's reduced-motion preference, read when asked, `false` without `matchMedia`               |
+| `i18n/attachLocalePathGuard.helper.ts` | Rewrites EN↔PT route names so the URL matches the active locale                                                                    |
+| `i18n/getI18nRouteName.helper.ts`      | Resolves a localized route name with fallback to base name                                                                         |
+| `i18n/getLoginPath.helper.ts`          | Locale-aware login path (`/entrar` vs `/login`)                                                                                    |
+| `i18n/translateError.helper.ts`        | Translates an error string via i18n; falls back to `errors.unexpected` template                                                    |
 
 ## Adding a localized route means adding its pair (CRITICAL)
 

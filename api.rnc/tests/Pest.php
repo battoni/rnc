@@ -1,8 +1,12 @@
 <?php
 
 use App\Models\User;
+use App\Modules\Auth\Models\Role;
 use App\Modules\Auth\Models\UserPermission;
+use App\Modules\Firm\Models\Firm;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 /*
@@ -19,6 +23,13 @@ use Tests\TestCase;
 pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)
     ->in('Feature');
+
+/*
+| No test reaches the network (rnc-3 plan P7, AM18; A27). A request no test faked throws
+| `StrayRequestException` instead of leaving the machine — whether or not the test file names
+| `Http::`. Unit tests boot no application, so they cannot reach it through the client at all.
+*/
+pest()->beforeEach(fn () => Http::preventStrayRequests())->in('Feature');
 
 /*
 |--------------------------------------------------------------------------
@@ -74,20 +85,44 @@ function userWithPermissions(array $permissionKeys): User
     return $user;
 }
 
-/** Reads the board and can post to it — the ordinary member of the product's audience. */
-function ideaContributor(): User
+/**
+ * A member of a firm in one of the seeded roles (`RoleSeeder` must have run), for the Reforma
+ * assistant's tests (rnc-3 F4): six files ask "who is acting" — a specialist, the team, Reinaldo,
+ * the operator, another firm's specialist.
+ *
+ * @param  array<string, mixed>  $attributes
+ */
+function assistantPerson(string $role, bool $specialist = false, ?Firm $firm = null, array $attributes = []): User
 {
-    return userWithPermissions(['ideas.read', 'ideas.create']);
+    return User::factory()->create([
+        'firm_id' => ($firm ?? Firm::where('slug', 'franco')->firstOrFail())->id,
+        'role_id' => Role::where('slug', $role)->value('id'),
+        'is_specialist' => $specialist,
+        ...$attributes,
+    ]);
 }
 
-/** Runs the board: status, the public note, hiding, merging. */
-function ideaMaintainer(): User
-{
-    return userWithPermissions(['ideas.read', 'ideas.create', 'ideas.manage']);
-}
+/*
+|--------------------------------------------------------------------------
+| Database errors
+|--------------------------------------------------------------------------
+|
+| A unique violation as PostgreSQL reports it (SQLSTATE 23505). SQLite and MySQL say 23000, so a
+| catch that compares the code with '23000' passes every SQLite test and answers 500 on pgsql:
+| a repository double throws this to prove the catch keys on the exception class, not the code.
+|
+*/
 
-/** Writes the changelog. Reads the board because an entry can credit the idea that started it. */
-function newsWriter(): User
+function postgresUniqueViolation(string $table): UniqueConstraintViolationException
 {
-    return userWithPermissions(['ideas.read', 'news.manage']);
+    $pdo = new class('SQLSTATE[23505]: Unique violation: duplicate key value violates unique constraint') extends PDOException
+    {
+        public function __construct(string $message)
+        {
+            parent::__construct($message);
+            $this->code = '23505';
+        }
+    };
+
+    return new UniqueConstraintViolationException('pgsql', "insert into \"{$table}\"", [], $pdo);
 }

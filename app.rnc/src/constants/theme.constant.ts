@@ -6,7 +6,7 @@ import { COLOR_SCHEME } from '@Enums';
  * `@ActiveTheme` Vite alias, so both stay in sync from one place. Used here for
  * non-CSS concerns (e.g. picking brand assets).
  */
-const ACTIVE_THEME = import.meta.env.VITE_ACTIVE_THEME || 'battoni-dev';
+const ACTIVE_THEME = import.meta.env.VITE_ACTIVE_THEME || 'franco';
 
 /**
  * Default color scheme when the user has no stored preference.
@@ -58,9 +58,6 @@ const NAV_EXPANDED_GROUPS_STORAGE_KEY = 'app.rnc:nav-expanded-groups';
 /** localStorage key for full-width layout preference. */
 const FULLSCREEN_STORAGE_KEY = 'app.rnc:fullscreen';
 
-/** localStorage key for contextual tutor tips visibility. */
-const TUTOR_STORAGE_KEY = 'app.rnc:tutor-enabled';
-
 export {
   ACTIVE_THEME,
   COLOR_SCHEME_STORAGE_KEY,
@@ -71,5 +68,4 @@ export {
   MOBILE_BREAKPOINT_PX,
   NAV_COLLAPSED_STORAGE_KEY,
   NAV_EXPANDED_GROUPS_STORAGE_KEY,
-  TUTOR_STORAGE_KEY,
 };

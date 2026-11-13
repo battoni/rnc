@@ -5,7 +5,6 @@ use App\Modules\Auth\Helpers\PermissionGroupsHelper;
 use App\Modules\Auth\Models\Role;
 use App\Modules\Auth\Models\RolePermission;
 use App\Modules\Auth\Models\UserPermission;
-use Database\Seeders\ManagerSeeder;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -173,55 +172,55 @@ describe('PATCH /api/auth/roles/{id}/permissions', function () {
         $role = createRole('Admin');
 
         $this->actingAs($actor)->patchJson("/api/auth/roles/{$role->id}/permissions", [
-            'permissions' => ['tips.manage' => true],
+            'permissions' => ['leads.update' => true],
         ])
             ->assertStatus(422)
             ->assertJsonPath('errors.permissions.0', 'rolesAndPermissions.cannotGrantUnheldPermission');
 
         $this->assertDatabaseMissing('role_permissions', [
             'role_id' => $role->id,
-            'permission_key' => 'tips.manage',
+            'permission_key' => 'leads.update',
             'value' => true,
         ]);
     });
 
     /*
      * The administrator is the root of the grant cap: nobody can hand out a key they do not hold,
-     * so a key that leaves this role can never come back. A manager without `design.read` could
-     * untick it here and lock the design surface for everybody, the administrator included.
+     * so a key that leaves this role can never come back. A role editor without `referrals.read` could
+     * untick it here and lock the trail for everybody, the administrator included.
      */
     it('refuses to take a key off the administrator, whoever asks', function () {
         $this->seed(RoleSeeder::class);
-        $administrator = Role::where('slug', 'administrator')->firstOrFail();
+        $administrator = Role::where('slug', 'operador')->firstOrFail();
 
         $manager = actingAsWithRole(['permissions.read', 'permissions.update']);
         $everything = User::factory()->create(['role_id' => $administrator->id]);
 
         foreach ([$manager, $everything] as $actor) {
             $this->actingAs($actor)
-                ->patchJson("/api/auth/roles/{$administrator->id}/permissions", ['permissions' => ['design.read' => false]])
+                ->patchJson("/api/auth/roles/{$administrator->id}/permissions", ['permissions' => ['referrals.read' => false]])
                 ->assertStatus(422)
                 ->assertJsonPath('errors.permissions.0', 'rolesAndPermissions.administratorKeepsEveryKey');
         }
 
-        expect(RolePermission::where('role_id', $administrator->id)->where('permission_key', 'design.read')->value('value'))->toBeTruthy();
+        expect(RolePermission::where('role_id', $administrator->id)->where('permission_key', 'referrals.read')->value('value'))->toBeTruthy();
     });
 
     it('restores an administrator matrix that already lost a key', function () {
         /*
-         * The state the bug left behind: `design.read` gone from the administrator, and the
+         * The state the bug left behind: `referrals.read` gone from the administrator, and the
          * administrator therefore unable to grant it back under the cap. Granting TO this role is
          * exempt from the cap, and any save writes the whole catalogue back.
          */
         $this->seed(RoleSeeder::class);
-        $administrator = Role::where('slug', 'administrator')->firstOrFail();
-        RolePermission::where('role_id', $administrator->id)->where('permission_key', 'design.read')->update(['value' => false]);
-        RolePermission::where('role_id', $administrator->id)->where('permission_key', 'tips.manage')->delete();
+        $administrator = Role::where('slug', 'operador')->firstOrFail();
+        RolePermission::where('role_id', $administrator->id)->where('permission_key', 'referrals.read')->update(['value' => false]);
+        RolePermission::where('role_id', $administrator->id)->where('permission_key', 'leads.update')->delete();
 
         $owner = User::factory()->create(['role_id' => $administrator->id]);
 
         $this->actingAs($owner)
-            ->patchJson("/api/auth/roles/{$administrator->id}/permissions", ['permissions' => ['design.read' => true]])
+            ->patchJson("/api/auth/roles/{$administrator->id}/permissions", ['permissions' => ['referrals.read' => true]])
             ->assertOk();
 
         $declaredKeys = collect(PermissionGroupsHelper::getPermissionGroupsStructure())
@@ -236,10 +235,10 @@ describe('PATCH /api/auth/roles/{id}/permissions', function () {
     it('still lets a key be taken off any other role', function () {
         $actor = actingAsWithRole(['permissions.update']);
         $role = createRole('Moderators');
-        RolePermission::create(['role_id' => $role->id, 'permission_key' => 'design.read', 'value' => true]);
+        RolePermission::create(['role_id' => $role->id, 'permission_key' => 'referrals.read', 'value' => true]);
 
         $this->actingAs($actor)
-            ->patchJson("/api/auth/roles/{$role->id}/permissions", ['permissions' => ['design.read' => false]])
+            ->patchJson("/api/auth/roles/{$role->id}/permissions", ['permissions' => ['referrals.read' => false]])
             ->assertOk();
     });
 
@@ -300,12 +299,12 @@ describe('DELETE /api/auth/roles/{id}', function () {
 // Seeded roles
 // ---------------------------------------------------------------------------
 
-describe('the seeded member role', function () {
+describe('the seeded team role', function () {
     it('has no say over roles, or every key it is denied would be one grant away', function () {
-        $this->seed(ManagerSeeder::class);
+        $this->seed(RoleSeeder::class);
 
         $keys = RolePermission::query()
-            ->where('role_id', Role::where('slug', 'user')->value('id'))
+            ->where('role_id', Role::where('slug', 'equipe')->value('id'))
             ->pluck('permission_key')
             ->all();
 

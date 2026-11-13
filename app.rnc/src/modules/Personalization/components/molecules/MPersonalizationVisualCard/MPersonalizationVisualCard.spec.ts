@@ -2,12 +2,7 @@ import type { Component } from 'vue';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { VueWrapper } from '@vue/test-utils';
 import { mountWithPlugins } from '@/test/mount';
-import {
-  COLOR_SCHEME_STORAGE_KEY,
-  FULLSCREEN_STORAGE_KEY,
-  MENU_BUTTON_PINNED_STORAGE_KEY,
-  TUTOR_STORAGE_KEY,
-} from '@Constants';
+import { COLOR_SCHEME_STORAGE_KEY, FULLSCREEN_STORAGE_KEY, MENU_BUTTON_PINNED_STORAGE_KEY } from '@Constants';
 import { COLOR_SCHEME } from '@Enums';
 
 let MPersonalizationVisualCard: Component;
@@ -51,7 +46,6 @@ const global = {
 describe('MPersonalizationVisualCard', () => {
   beforeEach(() => {
     localStorage.clear();
-    delete document.documentElement.dataset.tutor;
   });
 
   it('renders the visual preferences card with all toggle labels', () => {
@@ -62,7 +56,6 @@ describe('MPersonalizationVisualCard', () => {
     expect(wrapper.text()).toContain('Dark mode');
     expect(wrapper.text()).toContain('Full screen');
     expect(wrapper.text()).toContain('Pin the menu button');
-    expect(wrapper.text()).toContain('Contextual tips');
   });
 
   // A card is rounded-lg; xl is for a modal or a full-bleed container (lifeshifter-482).
@@ -106,7 +99,6 @@ describe('MPersonalizationVisualCard', () => {
     await setToggle(wrapper, 'Dark mode', true);
     await setToggle(wrapper, 'Full screen', true);
     await setToggle(wrapper, 'Pin the menu button', true);
-    await setToggle(wrapper, 'Contextual tips', false);
 
     expect(colorSchemeStore.isDark).toBe(true);
     expect(localStorage.getItem(COLOR_SCHEME_STORAGE_KEY)).toBe(COLOR_SCHEME.DARK);
@@ -114,9 +106,6 @@ describe('MPersonalizationVisualCard', () => {
     expect(localStorage.getItem(FULLSCREEN_STORAGE_KEY)).toBe('1');
     expect(uiStore.isMenuButtonPinned).toBe(true);
     expect(localStorage.getItem(MENU_BUTTON_PINNED_STORAGE_KEY)).toBe('1');
-    expect(uiStore.isTutorEnabled).toBe(false);
-    expect(localStorage.getItem(TUTOR_STORAGE_KEY)).toBe('0');
-    expect(document.documentElement.dataset.tutor).toBe('off');
   });
 
   it('unpinning the menu button brings a collapsed rail back', async () => {

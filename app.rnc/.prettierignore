@@ -10,9 +10,3 @@ coverage/
 .DS_Store
 *.log 
 
-# Generated, and gated by its own check. `build-features.mjs` writes this file and
-# `--check` compares byte for byte against what the generator would write now, so letting
-# Prettier reformat it makes two gates in the same `make pre-commit` disagree: sanitize
-# rewrites it, the catalogue check then fails, and CI goes red on a tree someone just
-# "cleaned". A generated artifact is formatted by its generator or by nothing.
-src/modules/Showcase/views/Features/features.generated.json

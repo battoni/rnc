@@ -33,12 +33,9 @@ Main authenticated application layout. Composes `TheNavbar` with a scrollable co
 
 - **`MMainDialog`**: depends on `transform-[translateZ(0)]` on `<main>` and the `main-scroll` class. Changing either breaks dialog scoping and scroll lock.
 - **`TheNavbar`**: auto-imported, always rendered. This layout is only for authenticated routes.
-- **Module overlays mounted here, once, for the whole app**: `OIdeaCaptureDialog` (Idea) and
-  `OTipEditDialog` (Tip). Both are opened from a store, from anywhere — an idea from the navbar, a
-  tip from whatever screen renders the `<ATip>` — so neither can live inside the screen that
-  triggers it. **This is a real dependency in the wrong direction: a module's organism mounted by
-  a layout.** It is recorded here because nothing else records it — a missing mount renders
-  nothing and throws nothing, and the button that opens it simply does nothing.
+- **App-wide overlays go in `TheLocalOverlays.local.vue`**, mounted once below the content. The
+  bootstrap's `OIdeaCaptureDialog` and `OTipEditDialog` were mounted here directly; both left with
+  the Idea and Tip modules (rnc-1 F1), and with them the layout's only dependency on a module.
 
 ## Do Not
 

@@ -14,15 +14,15 @@ const TOP_LEVEL_GROUPS = {
   navigation: 'component', // TheNavbar
   theme: 'component', // AColorSchemeToggle
   auth: 'module',
-  features: 'module',
+  home: 'module', // modules/Home (rnc-1)
   finance: 'module',
-  ideas: 'module',
-  news: 'module',
   notFound: 'module', // views/NotFound
+  partners: 'module', // modules/Partner (rnc-1)
   personalization: 'module',
+  pipeline: 'module', // modules/Pipeline (rnc-1)
+  portal: 'module', // modules/Portal (rnc-2)
   rolesAndPermissions: 'module',
-  showcase: 'module',
-  tips: 'module',
+  site: 'module', // modules/Site (rnc-1)
   users: 'module',
 };
 

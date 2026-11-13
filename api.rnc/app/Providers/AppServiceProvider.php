@@ -4,8 +4,13 @@ namespace App\Providers;
 
 use App\Helpers\Brazil\AddressColumns;
 use App\Helpers\Brazil\PhoneNumber;
+use App\Modules\Assistant\Contracts\ReformaAnswerer;
+use App\Modules\Assistant\Drivers\CuratedNotesAnswerer;
 use App\Modules\Auth\Contracts\LoginCodeSender;
 use App\Modules\Auth\Senders\LogLoginCodeSender;
+use App\Modules\Firm\Services\CurrentBrand;
+use App\Modules\Firm\Services\CurrentFirm;
+use App\Modules\Partner\Services\CurrentPartner;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -23,6 +28,15 @@ class AppServiceProvider extends ServiceProvider
      */
     private const LOGIN_CODE_SENDERS = [
         'log' => LogLoginCodeSender::class,
+    ];
+
+    /**
+     * Name => class for `assistant.driver` (rnc-3 R16, D9). `curated` — Franco's reviewed notes,
+     * matched by words — is the only one: no model, no embedding, no outward client. An unknown name
+     * stops the app at boot rather than falling back to an answerer nobody chose.
+     */
+    private const ASSISTANT_DRIVERS = [
+        'curated' => CuratedNotesAnswerer::class,
     ];
 
     /*
@@ -56,26 +70,12 @@ class AppServiceProvider extends ServiceProvider
     private const SUPPORT_NAMES_REQUESTS_PER_MINUTE = 10;
 
     /*
-     * The board's write ceiling. Five an hour is far above what a person with something to say
-     * ever needs and far below what filling a public list requires — and it is counted per
-     * ACCOUNT, not per address, because the endpoint is already behind auth and the account is
-     * the thing that can be muted.
-     */
-    private const IDEA_WRITES_PER_HOUR = 5;
-
-    /*
-     * Commenting is deliberately looser than posting: a thread is a conversation, and a person
-     * answering three people in a row is not abuse.
-     */
-    private const IDEA_COMMENTS_PER_HOUR = 40;
-
-    /*
      * Route parameters that only ever carry an integer id. Constrained app-wide so a literal
-     * segment (`ideas/options`) is reached whatever the declaration order — `routes/api.local.php`
-     * is required AFTER the core routes, and without this `ideas/{id}` swallows the word and
+     * segment (`leads/options`) is reached whatever the declaration order — `routes/api.local.php`
+     * is required AFTER the core routes, and without this `leads/{id}` swallows the word and
      * `show(int $id)` answers a 500. A new numeric parameter name goes here.
      */
-    private const NUMERIC_ROUTE_PARAMETERS = ['id', 'historyId'];
+    private const NUMERIC_ROUTE_PARAMETERS = ['id'];
 
     /**
      * Register any application services.
@@ -92,6 +92,15 @@ class AppServiceProvider extends ServiceProvider
 
             return $app->make($senderClass);
         });
+
+        $this->app->bind(ReformaAnswerer::class, fn ($app) => $app->make(self::assistantDriver()));
+
+        // Scoped, not a singleton: the firm of one request must never be the next one's (AM6).
+        $this->app->scoped(CurrentFirm::class);
+        // The portal's partner, the same way (rnc-2 D2): set per request by `ResolveCurrentPartner`.
+        $this->app->scoped(CurrentPartner::class);
+        // The public site's sub-brand, the same way (rnc-3 R2): set per request by `ResolveCurrentBrand`.
+        $this->app->scoped(CurrentBrand::class);
     }
 
     /**
@@ -109,12 +118,15 @@ class AppServiceProvider extends ServiceProvider
         View::composer('mail.*', function ($view) {
             $view->with([
                 'accent' => config('rnc.brand.accent'),
-                'brandLogo' => public_path(config('rnc.brand.logo')),
+                'brandLogo' => config('rnc.brand.logo') ? public_path(config('rnc.brand.logo')) : null,
                 'brandName' => config('rnc.brand.name'),
                 'frontendUrl' => config('rnc.frontend_url'),
                 'ink' => config('rnc.brand.ink'),
             ]);
         });
+
+        // An unknown assistant driver fails here, at boot, not on the first question (rnc-3 R16).
+        self::assistantDriver();
 
         Route::patterns(array_fill_keys(self::NUMERIC_ROUTE_PARAMETERS, '[0-9]+'));
 
@@ -122,6 +134,14 @@ class AppServiceProvider extends ServiceProvider
 
         // `$table->addressColumns()` / `localityColumns()` — Brazil's address block (Helpers/Brazil).
         AddressColumns::register();
+    }
+
+    /** @return class-string<ReformaAnswerer> the class `config('assistant.driver')` names */
+    private static function assistantDriver(): string
+    {
+        $driver = (string) config('assistant.driver');
+
+        return self::ASSISTANT_DRIVERS[$driver] ?? throw new InvalidArgumentException("Unknown assistant driver [{$driver}].");
     }
 
     /**
@@ -211,14 +231,6 @@ class AppServiceProvider extends ServiceProvider
 
         RateLimiter::for('support-names', function (Request $request) {
             return Limit::perMinute(self::SUPPORT_NAMES_REQUESTS_PER_MINUTE)->by('support-names|ip|'.$request->ip());
-        });
-
-        RateLimiter::for('ideas', function (Request $request) {
-            return [Limit::perHour(self::IDEA_WRITES_PER_HOUR)->by('ideas|user|'.$request->user()?->id)];
-        });
-
-        RateLimiter::for('idea-comments', function (Request $request) {
-            return [Limit::perHour(self::IDEA_COMMENTS_PER_HOUR)->by('idea-comments|user|'.$request->user()?->id)];
         });
     }
 }

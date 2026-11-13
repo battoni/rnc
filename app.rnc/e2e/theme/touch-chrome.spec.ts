@@ -23,7 +23,7 @@ const GROWTH = 6;
 const FLOOR = 44;
 const MIN_GAP = 12;
 
-const DESIGN_USER = { ...mockUser, permissions: [...mockUser.permissions, 'design.read'] };
+const DESIGN_USER = mockUser;
 
 const PEOPLE = Array.from({ length: 5 }, (_, index) => ({
   ...mockUser,
@@ -210,7 +210,7 @@ test('the pager buttons are 44px and 12px apart under a finger', async ({ page }
 
 test("the drawer's child rows are 44px tall", async ({ page }) => {
   await signIn(page);
-  await page.goto('/');
+  await page.goto('/painel');
   await page.locator('.mobile-navbar-root button').first().click();
 
   const drawer = page.locator('[data-pc-name="drawer"]');
@@ -249,34 +249,3 @@ test('the close buttons of the drawer and of the sheet are 44px', async ({ page 
 
   expectThumbSized(await measure(page, '.main-dialog-root .p-dialog-close-button'));
 });
-
-for (const width of [390, 800]) {
-  test(`list row actions are 44px and apart under a finger, ${width}px`, async ({ page }) => {
-    await page.setViewportSize({ width, height: 1000 });
-    await signIn(page);
-    await page.goto('/components');
-    await expect(page.getByRole('button', { name: 'Details' }).first()).toBeVisible();
-
-    // The showcase draws every list organism, the CRUD one with edit and delete.
-    const controls = await measure(
-      page,
-      ['Details', 'Edit', 'Delete', 'Archive', 'More actions']
-        .map((name) => `main button[aria-label="${name}"]`)
-        .join(', ')
-    );
-
-    expect(controls.length).toBeGreaterThanOrEqual(8);
-
-    expectThumbSized(controls);
-
-    const rows = new Map<number, Measured[]>();
-
-    for (const control of controls) {
-      const top = Math.round(control.top);
-
-      rows.set(top, [...(rows.get(top) ?? []), control]);
-    }
-
-    for (const row of rows.values()) expectApart(row);
-  });
-}

@@ -53,15 +53,17 @@ Modules may import from other modules via their root alias. They must **not** re
 
 ## Current Modules
 
-| Module            | Alias                    | Domain                                                               |
-| ----------------- | ------------------------ | -------------------------------------------------------------------- |
-| `Auth`            | `@AuthModule`            | Authentication, roles, permissions                                   |
-| `Home`            | `@HomeModule`            | Dashboard and marketing views                                        |
-| `Idea`            | `@IdeaModule`            | Idea board and News (`ideas.*` permissions)                          |
-| `Personalization` | `@PersonalizationModule` | Global UI preferences (dark mode, layout, tutor) — this browser only |
-| `Showcase`        | `@ShowcaseModule`        | Design system pages: brand, components, features (`design.read`)     |
-| `Tip`             | `@TipModule`             | Contextual tips and their management screen (`tips.read`)            |
-| `User`            | `@UserModule`            | User management, session state                                       |
+| Module            | Alias                    | Domain                                                                      |
+| ----------------- | ------------------------ | --------------------------------------------------------------------------- |
+| `Auth`            | `@AuthModule`            | Authentication, roles, permissions                                          |
+| `Diagnostic`      | `@DiagnosticModule`      | The public Reforma diagnostic at `/diagnostico` (open, `ThePublicLayout`)   |
+| `Home`            | `@HomeModule`            | Back-office landing and the three workspaces (Equipe · Reinaldo · Operador) |
+| `Personalization` | `@PersonalizationModule` | Global UI preferences (dark mode, language, layout) — this browser only     |
+| `Site`            | `@SiteModule`            | Franco's public site (open routes, `ThePublicLayout`)                       |
+| `User`            | `@UserModule`            | User management, session state                                              |
+
+_Retired 07/11/2026 (rnc-1 F1):_ `Idea`, `Showcase` and `Tip` — bootstrap samples this product does
+not use, removed with their tests, routes, aliases and locale keys.
 
 ## Do Not
 

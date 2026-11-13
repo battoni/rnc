@@ -1,60 +1,48 @@
 ---
-version: 2.0.0
+version: 3.4.0
 origin: pendulum
 based-on: 2.0.0
 ---
 
 # RULES — Home Module
 
-> For AI agents. Last updated: 2026-09-09.
+> For AI agents. Last updated: 2026-11-07 (rnc-1 F1).
 
 ## Domain
 
-The authenticated landing view, and any top-level view that belongs to no specific domain module.
-
-## What belongs here
-
-- Top-level authenticated views that don't belong to a specific domain module
-
-## What does NOT belong here
-
-- **A demo screen.** See below — this module used to carry one and it is the reason for the 2.0.0.
-- User or auth features
-- Anything with its own entity, API and more than one view — that is a module of its own
+The back office's landing (`/painel`, route name `home`) and the three workspace landings the rail
+opens: Equipe (`team-home`), Reinaldo (`ceo-home`) and Operador (`operator-home`).
 
 ## Public Barrel
 
-Exports only `views` (route configs). No shared components, stores, or services — all data in this module is currently local state.
-
-## Current Views & Status
-
-| View       | Status      | Notes                                  |
-| ---------- | ----------- | -------------------------------------- |
-| `HomeView` | Placeholder | No content yet; pending product design |
-
-## A prototype view is not a bootstrap feature (CRITICAL)
-
-`FinanceView` lived here for months: a wallet dashboard with seeded balances, its own routes, a
-navigation entry, a tip anchor, a seeded tip, and a locale namespace. None of it was real — the
-data was local state and no backend was ever coming. It was removed in 2.0.0, and every derived
-project had been deleting it by hand.
-
-**Do not add a screen here to demonstrate a component.** The place to show a component working is
-the Showcase module, which exists for exactly that and costs a project nothing to delete as a
-whole. A demo dressed as a feature acquires the things features have — a route, a nav item, an
-anchor, translations, tests naming it as an ungated screen — and each one is a thread somebody has
-to pull later, in every project that inherited it.
-
-The wallet components themselves (`MWalletCard`, `OWalletTransactions`) survive in the Showcase,
-which is where they always belonged. They still read `finance.transactions.*` from the locales;
-that namespace is now theirs and no longer a module's.
+`views` (route configs `HomeRoutes`, `WorkspaceRoutes`), `composables` (`useWorkspaces`,
+`visibleWorkspaces`), `constants` (`WORKSPACES`), types.
 
 ## Intentional Decisions
 
-- **No store**: Home views manage local state only. If persistent state is needed, add `store.ts` at that point.
-- **No module alias configured yet**: Home is not yet exposed as `@HomeModule` — import route configs directly from the barrel if needed.
+- **`WORKSPACES` is the role table read through permissions** (plan AM8): `leads.read` opens Equipe,
+  `metrics.read` Reinaldo, `users.read` Operador. The rail (`TheNavbar/navItems.local.ts`), the cards
+  on `HomeView` and the routes' `meta.permission` all read the same keys. Never gate on a role slug.
+- **`home` left `/` to the public site** (AM15) and keeps its literal name — the guards and the login
+  screens push `{ name: 'home' }`. It carries no `meta.permission` on purpose: a refused navigation
+  is redirected to `home`, so a key on it would loop.
+- **One `WorkspaceView` for the landings**, told apart by `meta.workspace`. Each was an empty state
+  in F1; later phases add their own screens as routes and rail children. The team's landing
+  (`team-home`) now redirects to its pipeline (F5) and Reinaldo's (`ceo-home`) to his daily
+  briefing (rnc-3 F9, R26), by path — Home imports nothing from Pipeline or Briefing. _Retired
+  07/11/2026 (rnc-3 F9):_ "Reinaldo's landing redirects to his metrics (F7)" — R26 made "Briefing do
+  dia" the screen he opens on; the metrics stay a rail child. The group itself stays on
+  `metrics.read`: every role holding it (ceo, operador) holds `briefing.read` (RoleSeeder).
+
+- **A partner never sees Home** (rnc-2 R3, A4): `HomeView` replaces itself with the portal when
+  `usePortalLanding().isPortalOnly` (`portal.access` and no `home.read`) and renders nothing. The
+  guard falls every refused route back to `home`, so this one redirect bounces a partner from the
+  whole back office; the operator holds both keys and stays. The portal is reached by route name
+  through `@PortalModule`'s barrel.
+
+_Retired 07/11/2026:_ "Placeholder home view — do not add features until the product home screen is
+designed". The product (rnc-1) designed it: a greeting and the person's workspaces.
 
 ## Do Not
 
-- **Do not add business features to `HomeView`** until the product home screen is designed.
-- **Do not re-add a prototype dashboard here.** Build it in the project that needs it, not in the bootstrap every project inherits.
+- **Do not add a prototype screen here** to demonstrate a component — build it where it is used.

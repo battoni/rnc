@@ -9,7 +9,7 @@ export const mockUser = {
   last_name: 'Smith',
   username: 'alice',
   role: 'Admin',
-  role_slug: 'administrator',
+  role_slug: 'operador',
   status: 'active',
   permissions: ['users.read', 'users.create', 'users.update', 'users.archive', 'users.delete'],
 };

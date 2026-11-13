@@ -33,6 +33,7 @@ const moduleAliases = [
   'Assets',
   'Composables',
   'Constants',
+  'Directives',
   'Enums',
   'Helpers',
   'Interfaces',
@@ -53,12 +54,24 @@ moduleAliases.forEach((moduleName) => {
 });
 
 const moduleSubAliases = [
+  { alias: 'AssistantModule', path: './src/modules/Assistant' },
   { alias: 'AuthModule', path: './src/modules/Auth' },
+  { alias: 'BrandsModule', path: './src/modules/Brands' },
+  { alias: 'ChannelModule', path: './src/modules/Channel' },
+  { alias: 'DiagnosticModule', path: './src/modules/Diagnostic' },
+  { alias: 'FiscalModule', path: './src/modules/Fiscal' },
+  { alias: 'BriefingModule', path: './src/modules/Briefing' },
+  { alias: 'ContractsModule', path: './src/modules/Contracts' },
+  { alias: 'RadarModule', path: './src/modules/Radar' },
+  { alias: 'NotificationModule', path: './src/modules/Notification' },
   { alias: 'HomeModule', path: './src/modules/Home' },
-  { alias: 'IdeaModule', path: './src/modules/Idea' },
+  { alias: 'MetricsModule', path: './src/modules/Metrics' },
+  { alias: 'PartnerModule', path: './src/modules/Partner' },
+  { alias: 'PortalModule', path: './src/modules/Portal' },
+  { alias: 'RepricingModule', path: './src/modules/Repricing' },
   { alias: 'PersonalizationModule', path: './src/modules/Personalization' },
-  { alias: 'ShowcaseModule', path: './src/modules/Showcase' },
-  { alias: 'TipModule', path: './src/modules/Tip' },
+  { alias: 'PipelineModule', path: './src/modules/Pipeline' },
+  { alias: 'SiteModule', path: './src/modules/Site' },
   { alias: 'UserModule', path: './src/modules/User' },
 ];
 

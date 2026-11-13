@@ -2,7 +2,7 @@ import { computed, ref } from 'vue';
 
 /**
  * Whether the app is doing something the person is waiting on — a navigation resolving, a request
- * in flight. One shared signal, module-scoped like `useSingleTip`: ephemeral session state, never
+ * in flight. One shared signal, module-scoped: ephemeral session state, never
  * persisted, deliberately not a store so it stays free of everything else the stores carry.
  *
  * Two feeds, two shapes, because they fail differently:

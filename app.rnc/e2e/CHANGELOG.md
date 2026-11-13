@@ -3,6 +3,45 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.14.0 — 2026-11-07
+
+### Added
+
+- `briefing/briefing.spec.ts` (rnc-3 F9, R26, A23): with the clock fixed at 09:15 São Paulo, `/reinaldo` lands on "Briefing do dia" ("Bom dia, Reinaldo", the KPIs, the actions, the countdown, the panels); each action button lands on its screen — the trail filtered by `?parceiro=` (its request carries `partner_id`), the agenda, the board outlined at `?etapa=proposta` and `?etapa=lead_parcial` (in view at 390), the Radar; 390 and 1440 with no sideways scroll or console error; every word at 4.5:1 in light and dark (colours read through a canvas).
+
+## 1.13.0 — 2026-11-07
+
+### Added
+
+- `contracts/contracts.spec.ts` (rnc-3 F7, R18–R22, A20; R21): Reinaldo sends the most exposed contract to Andrade and the row says "Com Andrade", a client without consent keeps the button disabled with its reason, "Cláusula incluída" asked on the row takes it off the list even below the fold at 390, the import names the lines it left out; the partner's portal shows the contract with its value band; 390 and 1440 with no sideways scroll or console error; the state words at 4.5:1 in light and dark.
+
+## 1.12.0 — 2026-11-07
+
+### Added
+
+- `assistant/assistant.spec.ts` (rnc-3 F5, R12, R13, A14): Patrícia asks the CBS question and reads the reviewed note with its rule, "lida em 05/11/2026" and "revisado por Mariana Toledo em 05/11/2026" at 390 in light and 1440 in dark with no sideways scroll; an unknown question shows the fixed sentence and goes to the specialist she picks; the assistant is in the team's rail.
+
+## 1.11.0 — 2026-11-07
+
+### Added
+
+- `channel/channel.spec.ts` (rnc-3 F3b, R8, R9, A9): the operator advances Litoral and the hero follows the board the move answers (R$ 1.575 → R$ 2.100 a month), the move naming its target; Reinaldo's screen has no button, no "R$ 3.500" and no "pela plataforma" at 390 in light and 1440 in dark, with no sideways scroll; the channel is in his rail.
+
+## 1.10.0 — 2026-11-07
+
+### Added
+
+- `site/brands.spec.ts` (rnc-3 F2, A2, A6): `?marca=express` re-themes the site over Franco's phone, a reload keeps it, `?marca=franco` drops it, a refused brand lands on Franco; the preview banner only on `previa=1`; under Express and Prime, in both schemes, the brand-painted pairs read at 4,5:1 (colours read back through a canvas, since the theme mixes in `oklab`), and nothing scrolls sideways at 390 or 1440.
+
+## 1.9.0 — 2026-11-07
+
+### Added
+
+- `E2E_PORT` (default 5173) sets the port of the managed dev server, its readiness `url` and
+  `baseURL`, and the server starts with `--strictPort`. A second checkout of the repo on the same
+  machine ran its suite against the first checkout's server on 5173, because `reuseExistingServer`
+  takes whatever answers there.
+
 ## 1.8.2 — 2026-09-22
 
 ### Fixed

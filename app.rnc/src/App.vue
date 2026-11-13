@@ -2,10 +2,9 @@
 import { onMounted } from 'vue';
 import { RouterView } from 'vue-router';
 import { useLocaleFromQuery } from '@Composables';
-import useUiStore, { useColorSchemeStore } from '@Stores';
+import { useColorSchemeStore } from '@Stores';
 
 const colorSchemeStore = useColorSchemeStore();
-const uiStore = useUiStore();
 
 // `?locale=` is read here, once: the app has exactly one router and one global locale.
 useLocaleFromQuery();
@@ -15,7 +14,6 @@ onMounted(onComponentMount);
 // EVENTS
 function onComponentMount() {
   colorSchemeStore.init();
-  uiStore.init();
 }
 </script>
 

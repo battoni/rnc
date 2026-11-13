@@ -42,7 +42,7 @@ test.describe('primary contrast', () => {
     await page.route('**/auth/me**', (route) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: mockUser }) })
     );
-    await page.goto('/');
+    await page.goto('/painel');
 
     const declarations = await page.evaluate(() => {
       const found: string[] = [];
@@ -87,7 +87,7 @@ test.describe('primary contrast', () => {
     await page.route('**/auth/me**', (route) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: mockUser }) })
     );
-    await page.goto('/');
+    await page.goto('/painel');
 
     const measured = await page.evaluate(() => {
       const probe = document.createElement('span');
@@ -140,7 +140,7 @@ for (const scheme of ['light', 'dark'] as const) {
     await page.route('**/auth/me**', (route) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: mockUser }) })
     );
-    await page.goto('/');
+    await page.goto('/painel');
 
     const pairs = await page.evaluate(
       ({ grounds, schemeName, tiers }) => {
@@ -267,15 +267,17 @@ const BRAND_TEXT_PAIRS: [string, string][] = [
   ['--p-highlight-focus-color', '--p-highlight-focus-background'],
 ];
 
-const DESIGN_USER = { ...mockUser, permissions: [...mockUser.permissions, 'design.read'] };
+// The preset's variables are global: any signed-in screen resolves them (the gallery that used to
+// host this left with the Showcase module, rnc-1 F1).
+const DESIGN_USER = mockUser;
 
 async function openComponents(page: Page) {
   await seedAuthSession(page);
   await page.route('**/auth/me**', (route) =>
     route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: DESIGN_USER }) })
   );
-  await page.goto('/components');
-  await page.getByRole('tab').first().waitFor();
+  await page.goto('/painel');
+  await page.locator('main').first().waitFor();
 }
 
 for (const scheme of ['light', 'dark'] as const) {
@@ -295,6 +297,39 @@ for (const scheme of ['light', 'dark'] as const) {
       resolved.map((pair) => ({ ...pair, background: pair.background === 'canvas' ? canvas : pair.background })),
       scheme
     );
+  });
+}
+
+/*
+ * The state words in their own tint, and the body text on the muted panel (rnc-2, W91).
+ *
+ * The state palettes do not flip with the scheme, so a chip (`bg-danger-50 text-danger-800`) reads
+ * the same in both — but only as a pair: the screens' own contrast tests (chat, Fiscal, Radar) reach
+ * the pairs they render, and the Portal, Ledger, Partner and Pipeline chips are measured nowhere
+ * else. Every tint pair a screen writes is listed here, so a palette change fails once, at the token.
+ */
+const STATE_TINT_PAIRS: [string, string][] = [
+  ['--color-danger-800', '--color-danger-50'],
+  ['--color-success-800', '--color-success-50'],
+  ['--color-success-800', '--color-success-100'],
+  ['--color-info-800', '--color-info-50'],
+  ['--color-warn-800', '--color-warn-50'],
+  ['--color-warn-800', '--color-warn-100'],
+  ['--color-warn-900', '--color-warn-50'],
+  ['--color-primary-950', '--color-primary-50'],
+  ['--color-primary-950', '--color-primary-100'],
+  ['--color-body', '--color-panel-muted'],
+  ['--color-heading', '--color-panel-muted'],
+];
+
+for (const scheme of ['light', 'dark'] as const) {
+  test(`every state tint pair and the muted panel's text clear 4.5:1, ${scheme}`, async ({ page }) => {
+    await openComponents(page);
+
+    const resolved = await resolvePairs(page, scheme, STATE_TINT_PAIRS);
+
+    expect(resolved).toHaveLength(STATE_TINT_PAIRS.length);
+    expectReadable(resolved, scheme);
   });
 }
 
@@ -329,21 +364,6 @@ async function renderedPairs(page: Page, selector: string) {
       background: ground(element),
     }));
   }, selector);
-}
-
-for (const scheme of ['light', 'dark'] as const) {
-  test(`badges and the active tab read on what they render on, ${scheme}`, async ({ page }) => {
-    await openComponents(page);
-    await stillTransitions(page);
-    await page.evaluate((name) => document.documentElement.setAttribute('data-theme', name), scheme);
-
-    const badges = await renderedPairs(page, '[data-pc-name="badge"]');
-    const activeTab = await renderedPairs(page, '[role="tab"][aria-selected="true"]');
-
-    expect(badges.length, 'the showcase renders its badges').toBeGreaterThanOrEqual(4);
-    expect(activeTab).toHaveLength(1);
-    expectReadable([...badges, ...activeTab], scheme);
-  });
 }
 
 /*
@@ -428,7 +448,7 @@ for (const scheme of ['light', 'dark'] as const) {
     await page.route('**/auth/me**', (route) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: DESIGN_USER }) })
     );
-    await page.goto('/');
+    await page.goto('/painel');
     await page.locator('.mobile-navbar-root button').first().click();
 
     const drawer = page.locator('[data-pc-name="drawer"]');

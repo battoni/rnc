@@ -24,6 +24,18 @@ return new class extends Migration
             // `roles` is created first (its migration sorts before this one) so the key lives here,
             // in the table's only description, rather than in a later ALTER.
             $table->foreignId('role_id')->nullable()->constrained()->nullOnDelete();
+            // The firm the person works for (D1). Nullable only for the bootstrap's own tests and
+            // self-registration; every seeded account of the product belongs to a firm, and a firm
+            // with people cannot be deleted from under them.
+            $table->foreignId('firm_id')->nullable()->constrained()->restrictOnDelete();
+            // A team member a visitor can book a meeting with (R2, R15).
+            $table->boolean('is_specialist')->default(false);
+            // The partner whose portal login this is (rnc-2 R1, D1); null for every staff account.
+            // No foreign key: `partners` belongs to the Partner module and is created later, and a
+            // cross-module id carries none (rnc-1 W25). Unique: a partner has ONE login row — a
+            // revoke deactivates it and a regrant reopens it — so the index is what answers two
+            // grants racing (`PartnerAccessService`, 409). Many NULLs are allowed on every driver.
+            $table->unsignedBigInteger('partner_id')->nullable()->unique();
             $table->enum('status', UserStatus::values())->default(UserStatus::ACTIVE->value);
             $table->string('password');
             $table->timestamp('email_verified_at')->nullable();

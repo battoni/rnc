@@ -3,6 +3,95 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.20.0 — 2026-11-07
+
+### Changed
+
+- rnc-3 F6b (R20, D11, D15): `create_referrals_table` gains `contract_id` (nullable, indexed, no foreign key — Portfolio's id, W25) and `subject_key` (string 40, default `lead`); the unique pair becomes `(lead_id, partner_id, subject_key)`. `ContractSeeder`'s doc names the 5 at-risk contracts its draw puts on clients without consent (`ContractAlertTest` holds ≥ 5).
+
+## 1.19.0 — 2026-11-07
+
+### Added
+
+- rnc-3 F8: `RoleSeeder` grants Reinaldo `briefing.read` (his briefing and the 07:00 e-mail); the team has none.
+
+## 1.18.0 — 2026-11-07
+
+### Added
+
+- rnc-3 F6a: the `client_contracts` table (sequence `300007`; unique per firm, client, kind, start and end; `clause_marked_by` an id without a foreign key — W25); `ContractSeeder` (local only, after `ClientSeeder`) seeds the demo's 40 contracts on `ClientSeeder`'s invented clients only (AM10), deterministic (Mt19937 seeded 2033), about 30 % with the clause, none marked; `RoleSeeder` grants Reinaldo `contracts.manage`.
+
+## 1.17.0 — 2026-11-07
+
+### Added
+
+- rnc-3 F4: the `assistant_notes`, `assistant_questions` and `assistant_asks` tables (sequence `300004`–`300006`; people and notes are ids without a foreign key — W25); `AssistantNoteFactory` (a served note); `AssistantNoteSeeder` (local only) seeds the demo's ten notes word for word, each citing its `facts.md` §2 lines, read 05/11/2026, reviewed 1–5 days back by the four seeded specialists and written by Reinaldo — `credito-simples` a rascunho (§2 unverified) — plus two open questions from Patrícia to Mariana and Carlos; a person missing from the seeded staff stops the seed (AM10); `RoleSeeder` grants the team and Reinaldo `assistant.ask` and Reinaldo `assistant.manage`.
+
+## 1.16.0 — 2026-11-07
+
+### Added
+
+- rnc-3 F3a: the `channel_firms` and `channel_firm_events` tables (sequence `300002`–`300003`; the event's `user_id` has no foreign key — W25); `ChannelFirmFactory`; `ChannelSeeder` (local only) seeds the demo's six "(exemplo)" RNC firms, three ativo, on the default fee and share, 5–90 days into their stage; `RoleSeeder` grants Reinaldo `channel.read` (`channel.manage` stays the operator's).
+
+## 1.15.0 — 2026-11-07
+
+### Changed
+
+- rnc-2 F10 (R27, D13): `create_leads_table` gains `client_id` (nullable, no foreign key — Portfolio's id) and a unique `(firm_id, client_id)` (folded, D15; schema diffed before and after on SQLite: only the column and the index).
+
+## 1.14.0 — 2026-11-07
+
+### Changed
+
+- rnc-2 F9 (R28): `create_clients_table` gains `partner_consent` (nullable bool), `partner_consent_at` (UTC) and `partner_consent_via` (folded, D15; schema diffed before and after: only the three columns). `ClientSeeder` gives ~85 % of the 500 clients consent `via contrato` (a second seeded generator, profiles and fees unchanged). `RoleSeeder` gives `ceo` `radar.manage`.
+
+## 1.13.0 — 2026-11-07
+
+### Added
+
+- rnc-2 F7: `create_client_events_table` (Portfolio's client timeline — firm, client, user without a foreign key, type, data json, `at` UTC).
+
+### Changed
+
+- `RoleSeeder`: the team (`equipe`) — and so Reinaldo — gets `fiscal.read` (NF-e readiness and supplier credit, D14); `SeededRolesTest` states it.
+
+## 1.12.0 — 2026-11-07
+
+### Added
+
+- rnc-2 F6b: `NfeSeeder` (local only — refuses production and `testing`, plan AM7): it clears `storage/app/private/nfe/<firm id>/`, then imports 90 days of invented NF-e for the first 40 Presumido/Real clients (15–60 sales, 10–40 purchases each; the demo's readiness tiers and `SIMPLES_SHARE_BY_BAND`) through `NfeImporter`, one `folder` batch per client, and prints the counts and its time; called from `seeders.local.php` after `ClientSeeder`. `seeders/Support/NfeXmlBuilder` (the invented NF-e XML, shared with the Fiscal tests — F6a's hand-written fixtures moved onto it) and `GeneratedNfeSource`.
+
+## 1.11.0 — 2026-11-07
+
+### Added
+
+- rnc-2 F6a: the Fiscal module's `nfe_imports` (one batch: who, how, files, stored, refused json, at UTC) and `nfe_documents` (one NF-e per client: unique `(firm_id, access_key, client_id)` — spec C1 — and an index on `(firm_id, client_id, direction, issued_at)`; `client_id` with no foreign key, W25) as new `create_*` migrations (`000015`, `000016`); `RoleSeeder` gives `ceo` `fiscal.import`. `.schema` dumped before and after `migrate` and diffed: the two new tables and their indexes, nothing else.
+
+## 1.10.0 — 2026-11-07
+
+### Changed
+
+- rnc-2 F5: `PipelineSeeder` starts one lead in eight in the chat (`channel = chat`, consent `via = chat`, ~12 %, the demo's weight); `LeadFactory` names its channel by `LeadChannel`.
+
+## 1.9.0 — 2026-11-07
+
+### Added
+
+- rnc-2 F4: `firms` gains `partner_money_model` (default `comissao`), `partner_commission_rate_bp` (1000) and `partner_monthly_fee_cents` (49000); `referrals` gains an index on `(firm_id, closed_at)` — both folded into their `create_*` migrations (D15). `.schema firms` and `.schema referrals` diffed before and after `migrate:fresh`: the three columns and the index, nothing else.
+
+## 1.8.0 — 2026-11-07
+
+### Added
+
+- rnc-3 F1: the `firm_brands` table (sequence `300001`, kept apart from Phase 2's migrations) and `leads.brand_id` (nullable, indexed, no foreign key) folded into `create_leads_table`; `FirmBrandFactory`; `BrandSeeder` (local only) seeds Franco Express and Franco Prime from the demo; `PipelineSeeder` starts the 4th and 8th lead of every ten under them, with the brand's consent words; `RoleSeeder` documents Phase 3's seven keys (operator only until their phases). Schema dumped before and after `migrate:fresh` and diffed: only those changes.
+- rnc-2 F2: `referrals` gains `status_at`, `status_by` (no foreign key — W25), `contacted_at`, `meeting_at`, `deal_value_cents`, `closed_at` and an index on `(partner_id, status)`, folded into its `create_*` migration (D15). `PartnerSeeder` (local only) seeds the demo's twelve referrals (`REFERRAL_PLAN`: 3 `enviado` at 3/15/30 business hours, 4 `fechado` priced by band) with one `encaminhamento.status` line per step. `.schema referrals` read after `migrate:fresh`: the six columns and the index, nothing else.
+
+## 1.7.0 — 2026-11-07
+
+### Added
+
+- rnc-2 F1: `users.partner_id` (nullable, unique, no foreign key — W25) and `partners.access_granted_at` / `access_revoked_at` folded into their `create_*` migrations; the new `partner_access_events` table; `RoleSeeder` writes the fourth role `parceiro` (`portal.access`) and gives `ceo` `ledger.read`; `PartnerUserSeeder` (local only) seeds `parceiro.1`…`parceiro.8`. Schema dumped before and after `migrate:fresh` and diffed: only those changes.
+
 ## 1.6.0 — 2026-09-22
 
 ### Added

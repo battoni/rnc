@@ -36,6 +36,10 @@ interface User {
   username: string;
   role: string;
   role_slug?: string;
+  /** The firm whose hub this person works in (rnc-1). */
+  firm_slug?: string | null;
+  /** A team member a visitor can book (rnc-1 R2). */
+  is_specialist?: boolean;
   status?: Status | string;
   permissions?: string[];
   profile_picture?: string;

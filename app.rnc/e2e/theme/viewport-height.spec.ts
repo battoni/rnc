@@ -18,7 +18,7 @@ test('#app follows the visible viewport, not the height of html and body', async
   await page.route('**/auth/me**', (route) =>
     route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: mockUser }) })
   );
-  await page.goto('/');
+  await page.goto('/painel');
   await page.locator('#app').waitFor();
 
   const measured = await page.evaluate(() => {

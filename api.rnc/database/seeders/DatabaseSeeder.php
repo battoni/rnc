@@ -14,10 +14,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call(FirmSeeder::class);
         $this->call(RoleSeeder::class);
         $this->call(SuperAdminSeeder::class);
-        $this->call(ManagerSeeder::class);
-        $this->call(TipSeeder::class);
 
         // Project-owned seeders (LOCAL) — runs in this scope, so $this->call(...) is available.
         // The cortex sync never touches seeders.local.php, so feature seeders survive updates.

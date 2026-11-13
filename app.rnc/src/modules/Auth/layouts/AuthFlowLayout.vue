@@ -22,7 +22,10 @@ withDefaults(
       </div>
 
       <div class="relative">
-        <ABrandMark class="text-primary-contrast h-14 w-auto" />
+        <ALogo
+          class="text-primary-contrast text-3xl"
+          tone="inherit"
+        />
       </div>
 
       <div class="relative flex flex-col gap-6">
@@ -67,7 +70,7 @@ withDefaults(
         <div class="flex w-full max-w-[400px] flex-col">
           <div class="mb-4 flex justify-center">
             <ALogo
-              class="w-14"
+              class="text-2xl"
               variant="min"
             />
           </div>

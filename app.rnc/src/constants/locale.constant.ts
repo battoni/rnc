@@ -4,7 +4,7 @@ import { UI_LOCALE } from '@Enums';
 /** `?locale=pt-BR` on any route. A public site hands a reader off to the app with it. */
 const LOCALE_QUERY_PARAM = 'locale';
 
-/** Namespaced like the other preferences (`app.rnc:color-scheme`, `app.rnc:tutor-enabled`). */
+/** Namespaced like the other preferences (`app.rnc:color-scheme`, `app.rnc:fullscreen`). */
 const LOCALE_STORAGE_KEY = 'app.rnc:locale';
 
 const UI_LOCALES: UiLocaleOption[] = [

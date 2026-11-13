@@ -147,15 +147,11 @@ function buildRouter() {
       blankRoute('trends-en', '/trends'),
       blankRoute('projects-en', '/projects'),
       blankRoute('project-en', '/projects/:id'),
-      blankRoute('news-en', '/news'),
-      blankRoute('ideas-en', '/ideas'),
-      blankRoute('tips-en', '/tips'),
+      blankRoute('team-home-en', '/team'),
+      blankRoute('ceo-home-en', '/ceo'),
+      blankRoute('operator-home-en', '/operator'),
       blankRoute('users-en', '/users'),
       blankRoute('roles-and-permissions-en', '/roles'),
-      blankRoute('brand-en', '/brand'),
-      blankRoute('components-en', '/components'),
-      blankRoute('features-en', '/features'),
-      blankRoute('showcase-en', '/showcase'),
       blankRoute('personalization-en', '/personalization'),
     ],
   });
@@ -317,66 +313,6 @@ describe('TheNavbar — permissions and roles', () => {
 
     expect(labels).toContain('navigation.users');
     expect(labels).not.toContain('navigation.roles');
-  });
-
-  it('shows the design surface to whoever holds design.read, and to nobody else', async () => {
-    const { userStore, wrapper } = mountNavbar();
-
-    userStore.setUserAndPermissions(PLAIN_USER as never, []);
-    await wrapper.vm.$nextTick();
-
-    expect(labelsOf(wrapper.findComponent(desktopStub).props('itemsWithRoutes'))).not.toContain('navigation.design');
-
-    // A PERMISSION, not a role: the administrator's slug alone opens nothing, and a plain account
-    // holding the key sees the group. That is what lets the owner hand these pages to somebody.
-    userStore.setUserAndPermissions(SUPERADMIN as never, []);
-    await wrapper.vm.$nextTick();
-
-    expect(labelsOf(wrapper.findComponent(desktopStub).props('itemsWithRoutes'))).not.toContain('navigation.design');
-
-    userStore.setUserAndPermissions(PLAIN_USER as never, ['design.read']);
-    await wrapper.vm.$nextTick();
-
-    expect(labelsOf(wrapper.findComponent(desktopStub).props('itemsWithRoutes'))).toContain('navigation.design');
-  });
-
-  /**
-   * The gate is the permission and only the permission. It used to be `role_slug ===
-   * 'administrator'`, which meant the owner could not hand these pages to anyone from the
-   * permissions tab — the point of moving it. A superadmin without the key sees no Design.
-   */
-  it('does not hand the design surface to an account that merely holds permissions', async () => {
-    const { userStore, wrapper } = mountNavbar();
-
-    userStore.setUserAndPermissions(PLAIN_USER as never, ['users.read', 'permissions.read', 'ideas.read']);
-    await wrapper.vm.$nextTick();
-
-    expect(labelsOf(wrapper.findComponent(desktopStub).props('itemsWithRoutes'))).not.toContain('navigation.design');
-  });
-
-  /** Brand, Components and Showcase are one subject, so they are one group — and the group has
-   *  no page of its own, which is what makes its row a toggle rather than a link. */
-  it('gathers brand, components and showcase under a group with no route of its own', async () => {
-    const { userStore, wrapper } = mountNavbar();
-
-    userStore.setUserAndPermissions(SUPERADMIN as never, ['design.read']);
-    await wrapper.vm.$nextTick();
-
-    const design = wrapper
-      .findComponent(desktopStub)
-      .props('itemsWithRoutes')
-      .find((item: { label: string }) => item.label === 'navigation.design');
-
-    expect(design.route).toBeUndefined();
-    expect(design.key).toBe('navigation.design');
-    expect(labelsOf(design.children)).toEqual([
-      'navigation.brand',
-      'navigation.components',
-      'navigation.features',
-      'navigation.showcase',
-    ]);
-    // The settings footer keeps the account's own entries and renders flat links only.
-    expect(labelsOf(wrapper.findComponent(desktopStub).props('settingsWithRoutes'))).toEqual([]);
   });
 
   it('resolves the localized path for every item but home', async () => {

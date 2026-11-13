@@ -2,34 +2,56 @@ import { describe, expect, it } from 'vitest';
 import { mountWithPlugins } from '@/test/mount';
 import ALogo from './ALogo.vue';
 
+/*
+ * Franco's mark is a text logo (rnc-1): the wordmark "Franco Contabilidade" in `full`, the "F" tile
+ * in `min`. No image to load, so it can never be missing, and its colour comes from tokens.
+ */
 describe('ALogo', () => {
-  it('renders an img element', () => {
+  it('writes the firm name in full', () => {
     const wrapper = mountWithPlugins(ALogo);
-    expect(wrapper.find('img').exists()).toBe(true);
+
+    expect(wrapper.text()).toBe('Franco Contabilidade');
   });
 
-  it('has descriptive alt text', () => {
-    const wrapper = mountWithPlugins(ALogo);
-    expect(wrapper.find('img').attributes('alt')).toBeTruthy();
+  it('reads the min tile as the product name, not as a letter', () => {
+    const tile = mountWithPlugins(ALogo, { props: { variant: 'min' } }).find('[role="img"]');
+
+    expect(tile.attributes('aria-label')).toBe('Franco Contabilidade');
+    expect(tile.text()).toBe('F');
   });
 
-  it('defaults to the full variant', () => {
-    const wrapper = mountWithPlugins(ALogo);
-    expect(wrapper.props('variant')).toBe('full');
+  // `text-brand-word`, never a ramp step: `text-primary-500` was navy on the dark scheme's
+  // near-black header (1.6:1), and which step reads on a dark ground is the theme's call.
+  it('paints the brand as a word, or inherits the parent colour', () => {
+    expect(mountWithPlugins(ALogo).classes()).toContain('text-brand-word');
+    expect(mountWithPlugins(ALogo).classes()).not.toContain('text-primary-500');
+    expect(mountWithPlugins(ALogo, { props: { tone: 'inherit' } }).classes()).not.toContain('text-brand-word');
   });
 
-  it('accepts the min variant', () => {
-    const wrapper = mountWithPlugins(ALogo, { props: { variant: 'min' } });
-    expect(wrapper.props('variant')).toBe('min');
+  it('carries no image', () => {
+    expect(mountWithPlugins(ALogo).find('img').exists()).toBe(false);
   });
 
-  it('uses a different image source for full vs min variant', () => {
-    const wrapperFull = mountWithPlugins(ALogo, { props: { variant: 'full' } });
-    const wrapperMin = mountWithPlugins(ALogo, { props: { variant: 'min' } });
+  // rnc-3 R3: the public site under a sub-brand writes that brand's name, in the same mark.
+  it("writes a sub-brand's name when given one, the first word in the heavier weight", () => {
+    const wrapper = mountWithPlugins(ALogo, { props: { name: 'Franco Express Contabilidade' } });
 
-    const fullSrc = wrapperFull.find('img').attributes('src');
-    const minSrc = wrapperMin.find('img').attributes('src');
+    expect(wrapper.text()).toBe('Franco Express Contabilidade');
+    expect(wrapper.find('.font-normal').text()).toBe('Express Contabilidade');
 
-    expect(fullSrc).not.toBe(minSrc);
+    const tile = mountWithPlugins(ALogo, { props: { name: 'Franco Express Contabilidade', variant: 'min' } }).find(
+      '[role="img"]'
+    );
+
+    expect(tile.attributes('aria-label')).toBe('Franco Express Contabilidade');
+    expect(tile.text()).toBe('F');
+  });
+
+  // rnc-3 review S5: a one-word brand has no lighter half, so no empty span trails the word.
+  it('writes a one-word name without an empty second half', () => {
+    const wrapper = mountWithPlugins(ALogo, { props: { name: 'Alfa' } });
+
+    expect(wrapper.text()).toBe('Alfa');
+    expect(wrapper.find('.font-normal').exists()).toBe(false);
   });
 });

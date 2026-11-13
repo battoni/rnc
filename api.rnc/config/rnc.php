@@ -18,7 +18,7 @@ return [
     |
     */
 
-    'frontend_url' => rtrim((string) env('FRONTEND_URL', 'https://app.rnc.test:5173'), '/'),
+    'frontend_url' => rtrim((string) env('FRONTEND_URL', 'http://localhost:5173'), '/'),
 
     /*
     |--------------------------------------------------------------------------
@@ -36,7 +36,7 @@ return [
     */
 
     'brand' => [
-        'name' => env('BRAND_NAME', 'rnc'),
+        'name' => env('BRAND_NAME', 'Franco Contabilidade'),
 
         /*
          * These are sampled from the LOGO FILE, not from the theme CSS, and the difference
@@ -46,8 +46,8 @@ return [
          * faint seam around it. The band takes the asset's colour and the tile disappears
          * into it.
          */
-        'accent' => env('BRAND_ACCENT', '#bfe021'),
-        'ink' => env('BRAND_INK', '#141313'),
+        'accent' => env('BRAND_ACCENT', '#14c3ff'),
+        'ink' => env('BRAND_INK', '#00375a'),
 
         /*
          * The mark, embedded in the message rather than linked. A linked image needs a
@@ -55,11 +55,14 @@ return [
          * mail. Relative to `public/`, so a project drops its own file in and changes
          * nothing else.
          *
+         * Empty means "no logo file": the band shows the brand's initial in an accent tile
+         * instead (rnc-1 F4 — Franco's mark is text, W6). Set BRAND_LOGO to a path to use one.
+         *
          * Cropped to the glyph on purpose. The app's logo tile is a 500px square in which
          * the mark occupies 27% of the width — at a header's 40px that leaves a 10px glyph
          * beside 19px text, which reads as a speck rather than a logo.
          */
-        'logo' => env('BRAND_LOGO', 'logo/png/logo-brand-mark.png'),
+        'logo' => env('BRAND_LOGO') ?: null,
     ],
 
 ];

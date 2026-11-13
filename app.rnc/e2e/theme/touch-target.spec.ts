@@ -191,55 +191,6 @@ test.describe('with a coarse pointer', () => {
     expect(tooSmall, JSON.stringify(tooSmall, null, 1)).toEqual([]);
   });
 
-  /*
-   * The default-size controls: a `.p-button` without `size="small"` is drawn 40–42px tall, a Select
-   * or MultiSelect 40px, and a dialog's close button 40×40 (VIS-18: "Sign in", "Continue",
-   * "Confirm", the filters on /ideas, the X of every dialog). The growth used to cover only
-   * `.p-button-sm`. They grow 2px — enough to clear 44 without reaching a neighbour 8px away.
-   * Measured on the real controls the showcase renders, with the growth the browser computed.
-   */
-  test('default-size buttons, selects and multiselects clear 44px once the growth is counted', async ({ page }) => {
-    await signIn(page);
-    await page.route('**/auth/me**', (route) =>
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ data: { ...mockUser, permissions: [...mockUser.permissions, 'design.read'] } }),
-      })
-    );
-    await page.goto('/components');
-    await page.locator('main .p-select').first().waitFor();
-
-    const measured = await page.evaluate(() =>
-      [...document.querySelectorAll('main .p-button:not(.p-button-sm), main .p-select, main .p-multiselect')]
-        .filter((element) => element.getBoundingClientRect().width > 0)
-        .map((element) => {
-          const box = element.getBoundingClientRect();
-          const style = window.getComputedStyle(element);
-          const overlay = window.getComputedStyle(element, '::before');
-          // An absolute box is placed from the padding box, so the border eats part of the inset.
-          const growth =
-            overlay.content !== 'none' && overlay.position === 'absolute'
-              ? Math.max(-parseFloat(overlay.top) - parseFloat(style.borderTopWidth), 0)
-              : 0;
-
-          return {
-            what: `${element.className.toString().slice(0, 50)} "${element.textContent?.trim().slice(0, 16)}"`,
-            kind: element.matches('.p-select, .p-multiselect') ? 'select' : 'button',
-            width: box.width + growth * 2,
-            height: box.height + growth * 2,
-          };
-        })
-    );
-
-    expect(measured.filter((control) => control.kind === 'select').length).toBeGreaterThanOrEqual(2);
-    expect(measured.filter((control) => control.kind === 'button').length).toBeGreaterThanOrEqual(2);
-
-    const tooSmall = measured.filter((control) => control.width < 44 || control.height < 44);
-
-    expect(tooSmall, JSON.stringify(tooSmall, null, 1)).toEqual([]);
-  });
-
   test("a dialog's close button clears 44px once the growth is counted", async ({ page }) => {
     await signIn(page);
     await page.goto('/personalization');

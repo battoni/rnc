@@ -1,5 +1,5 @@
 ---
-version: 1.1.1
+version: 1.2.0
 origin: pendulum
 based-on: 1.1.1
 ---
@@ -26,6 +26,11 @@ based-on: 1.1.1
   `effectivePermissions` merge reads `role?->permissions` and `permissions` — both must be
   loadable.
 - Uses `HasApiTokens` (Sanctum), `HasFactory`, `Notifiable`.
+- **`partner_id` and `partner()`** (rnc-2 R1): a partner's portal login points at its Partner.
+  `Partner` is firm-scoped, so the relation resolves only inside the current firm — a login
+  pointing at another firm's partner finds none (`ResolveCurrentPartner`, plan AM1). No foreign key:
+  `partners` is created later and belongs to the Partner module (rnc-1 W25). Unique (one login row
+  per partner, reopened on regrant); staff rows hold null.
 
 ## Do Not
 

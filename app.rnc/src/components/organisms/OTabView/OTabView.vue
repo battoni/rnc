@@ -11,7 +11,6 @@ interface OTabDescriptor {
   content?: () => VNode[];
   icon?: string;
   key: string;
-  tipKey?: string;
   title: string;
   to?: RouteLocationRaw;
 }
@@ -67,7 +66,6 @@ function extractTabs(nodes: VNode[]): OTabDescriptor[] {
       actions: panelSlots.actions,
       content: panelSlots.default,
       icon: readPanelProp(panelProps, 'icon'),
-      tipKey: readPanelProp(panelProps, 'tipKey'),
       title: readPanelProp(panelProps, 'title') as string,
       to: panelProps.to as RouteLocationRaw | undefined,
     };
@@ -96,9 +94,9 @@ function isTabPanel(node: VNode): boolean {
  * A panel prop by its camelCase name, accepting the kebab-case attribute too.
  *
  * `OTabPanel` is never mounted, so its attributes are read straight off `vnode.props` — and Vue
- * normalises `tip-key` into `tipKey` only for a component that is actually instantiated. A
- * single-word prop never shows this; `tip-key` in a template arrived as undefined and the tab
- * rendered no tip at all.
+ * normalises a kebab-case attribute into its camelCase prop only for a component that is actually
+ * instantiated. A single-word prop never shows this; a two-word one written in kebab case in a
+ * template arrived as undefined.
  */
 function readPanelProp(panelProps: Record<string, unknown>, name: string): string | undefined {
   const kebabName = name.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
@@ -136,14 +134,6 @@ function resolveTabKey(panelProps: Record<string, unknown>, index: number): stri
             />
 
             <span>{{ $t(tab.title) }}</span>
-
-            <span
-              v-if="tab.tipKey"
-              @click.stop
-              @keydown.stop
-            >
-              <ATip :tipKey="tab.tipKey" />
-            </span>
 
             <span
               v-if="tab.actions"

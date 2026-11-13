@@ -1,0 +1,98 @@
+/**
+ * ============================================================
+ * FRANCO — Franco Contabilidade's hub (rnc-1)
+ *
+ * Derived from battoni-dev (styles/theme/RULES.md, "Derive"): the same role mapping, relief and
+ * identity selectors, with Franco's colours. Navy #00375a is the brand action (primary-500); the
+ * cyan #14c3ff of the brand sits on the same hue (≈200°) and is the ramp's 300, used as the
+ * highlight and as the brand WORD on dark grounds.
+ *
+ * Measured (WCAG relative luminance):
+ *   - white on primary-500 #00375a: 12.4:1 — the filled-button label (floor 4.5:1);
+ *   - primary-500 as text on the light canvas #ffffff: 12.4:1, on the panel #f3f4f3: 11.4:1;
+ *   - primary-300 #14c3ff as text on the dark panel #141413: 9.0:1, so the focused label and
+ *     links stay readable where navy would not (navy on #141413 is 1.5:1).
+ * The ink and surface ramps are battoni-dev's neutrals, so `muted` / `subtle` keep the floors
+ * measured there (e2e/theme/contrast.spec.ts runs against this theme).
+ * ============================================================
+ */
+@import './battoni-dev.css';
+
+@theme {
+  --color-primary-50: #e7f8ff;
+  --color-primary-100: #c4eeff;
+  --color-primary-200: #8fe0ff;
+  --color-primary-300: #14c3ff; /* the brand cyan */
+  --color-primary-400: #0a8fc7;
+  --color-primary-500: #00375a; /* MAIN — the brand navy */
+  --color-primary-600: #002f4d;
+  --color-primary-700: #002740;
+  --color-primary-800: #001f33;
+  --color-primary-900: #001726;
+  --color-primary-950: #000f19;
+
+  /* White on navy: 12.4:1. */
+  --color-primary-contrast: #ffffff;
+}
+
+[data-theme='dark'] {
+  --color-primary-contrast: #ffffff;
+  /* The brand as a word on a dark ground: the cyan, 9.0:1 on the dark panel. */
+  --color-primary-text: var(--color-primary-300);
+}
+
+/* The base's canvas tile is drawn in lime; Franco's canvas is flat. */
+:root {
+  --canvas-overlay: none;
+  --canvas-overlay-opacity: 0;
+}
+
+/*
+ * Prose in the sans face (rnc-1 F2 W13). battoni-dev sets paragraphs in its mono "technical voice"
+ * — Battoni Dev's tell, not Franco's: Franco's own sites set their text in a plain sans. Tags,
+ * badges and table headers keep the base's mono labels.
+ */
+p,
+.p-text,
+.p-paragraph {
+  font-family: var(--font-sans);
+}
+
+/*
+ * A label that wraps a checkbox is a sentence, not a field caption (rnc-1 F3): the diagnostic's
+ * consent and its two yes/no questions. battoni-dev draws every `label` in its mono, upper-case
+ * caption, and a consent read in capitals is a wall. This sits outside a layer like the rule it
+ * answers, so a utility class could not have outvoted it.
+ */
+label:has(.p-checkbox) {
+  font-family: var(--font-sans);
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+/*
+ * Paper is light, whatever the screen's scheme (rnc-1 R17/R26: the repricing letter and the impact
+ * report are printed or saved as PDF). The browser drops backgrounds when printing but keeps the
+ * text colours, so the dark scheme's chalk #d9d9d6 printed at 1.4:1 on white and its fog #888b8d at
+ * 3.4:1. In print the role tokens go back to the light set above (`@theme`, battoni-dev's section 4)
+ * and the root says `color-scheme: light`, for every page that prints. Same specificity as the dark
+ * block and later in the cascade, so it wins only on paper; the screen is untouched. The brand word
+ * goes back to the navy, 12.4:1 on white.
+ */
+@media print {
+  :root,
+  [data-theme='dark'] {
+    color-scheme: light;
+
+    --color-canvas: #ffffff;
+    --color-panel: var(--color-surface-50);
+    --color-panel-muted: var(--color-surface-100);
+    --color-heading: var(--color-ink-900);
+    --color-body: var(--color-ink-900);
+    --color-muted: var(--color-surface-800);
+    --color-subtle: var(--color-surface-600);
+    --color-line: var(--color-surface-200);
+    --color-line-strong: var(--color-surface-300);
+    --color-primary-text: var(--color-primary-500);
+  }
+}

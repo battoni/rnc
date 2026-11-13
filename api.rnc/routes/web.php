@@ -1,21 +1,11 @@
 <?php
 
 use App\Http\Controllers\MailPreviewController;
-use App\Modules\Idea\Controllers\NewsShareController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 });
-
-/*
- * The share link for a News entry. PUBLIC on purpose, and deliberately short — it is typed into
- * a chat, read by a crawler, and clicked by a person, in that order.
- *
- * Only the preview is public: headline, standfirst and cover. The article needs a session, which
- * is why this hands the reader to the app rather than rendering the body here.
- */
-Route::get('/n/{id}', [NewsShareController::class, 'show'])->whereNumber('id')->name('news.share');
 
 /*
  * Looking at the e-mails without sending them.

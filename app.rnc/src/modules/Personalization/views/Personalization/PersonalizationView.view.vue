@@ -1,11 +1,7 @@
 <template>
   <TheLayout>
     <template #pageHeader>
-      <ThePageHeader title="personalization.title">
-        <template #titleSuffix>
-          <ATip tip-key="personalization.appearance" />
-        </template>
-      </ThePageHeader>
+      <ThePageHeader title="personalization.title" />
     </template>
 
     <div class="flex flex-col gap-6">

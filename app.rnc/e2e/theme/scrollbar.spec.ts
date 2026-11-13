@@ -17,7 +17,7 @@ test('every scroll surface gets the themed thumb over a canvas track, and scroll
   await page.route('**/auth/me**', (route) =>
     route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: mockUser }) })
   );
-  await page.goto('/');
+  await page.goto('/painel');
 
   const measured = await page.evaluate(() => {
     const resolve = (value: string) => {

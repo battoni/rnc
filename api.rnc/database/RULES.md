@@ -1,5 +1,5 @@
 ---
-version: 1.6.0
+version: 1.20.0
 origin: pendulum
 based-on: 1.6.0
 ---
@@ -45,6 +45,14 @@ based-on: 1.6.0
   Σ taken`), never decremented — a second run must not count twice.
 - Seeders look roles up by **slug** (`where('slug', 'super-admin')`), matching the
   backend-owned slug convention.
+- **A seeder that imports through a module's service keeps model events on, and the service stamps
+  `firm_id` itself.** `DatabaseSeeder` runs under `WithoutModelEvents`, so `BelongsToFirm`'s `creating`
+  event never fires inside the seed chain: `NfeSeeder` (rnc-2 F6b) goes through `NfeImporter`, which
+  writes `firm_id` explicitly. A slow or file-writing seeder also refuses the `testing` environment
+  (`NfeSeeder`, plan AM7): `SeedShapeTest` and others run the whole chain.
+- **`seeders/Support/` holds builders shared by seeders and tests** (`NfeXmlBuilder`, the invented
+  NF-e XML; `GeneratedNfeSource`): one shape for a seeded document and a tested one. Hostile fixtures
+  (entity attacks, forged ZIPs) stay in `tests/Support/`.
 
 ## Factories
 

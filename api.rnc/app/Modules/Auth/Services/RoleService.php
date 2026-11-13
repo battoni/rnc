@@ -18,7 +18,7 @@ use Illuminate\Validation\ValidationException;
 class RoleService
 {
     /** The role that holds every key. Deleting it would leave nobody able to grant anything back. */
-    public const ADMINISTRATOR_SLUG = 'administrator';
+    public const ADMINISTRATOR_SLUG = 'operador';
 
     public const ADMINISTRATOR_KEEPS_EVERY_KEY = 'rolesAndPermissions.administratorKeepsEveryKey';
 

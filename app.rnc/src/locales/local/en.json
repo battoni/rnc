@@ -1,1 +1,1863 @@
-{}
+{
+  "auth": {
+    "brand": {
+      "domain": "franco-rnc.com.br",
+      "headline": "The reform is coming.\nFranco is ready.",
+      "tag": "Tax reform",
+      "tagline": "Franco Contabilidade's hub to walk every client through the 2026–2033 transition."
+    }
+  },
+  "home": {
+    "title": "Home",
+    "greeting": "Hello, {name}",
+    "description": "Pick where to work today. Each area shows only what your role can open.",
+    "open": "Open",
+    "emptyTitle": "Nothing here yet",
+    "workspaces": {
+      "team": {
+        "title": "Team",
+        "description": "Lead pipeline, meeting agenda and notifications.",
+        "upcoming": "The pipeline, each lead's file and the team's agenda arrive here."
+      },
+      "ceo": {
+        "title": "Reinaldo",
+        "description": "Funnel metrics, partner network, referral trail and fee repricing.",
+        "upcoming": "Metrics, partners, the trail and fee repricing arrive here."
+      },
+      "operator": {
+        "title": "Operator",
+        "description": "The hub's users, profiles and permissions.",
+        "upcoming": "Running the hub: users and profiles live in the settings menu."
+      }
+    }
+  },
+  "navigation": {
+    "team": "Team",
+    "ceo": "Reinaldo",
+    "operator": "Operator",
+    "pipeline": "Pipeline",
+    "agenda": "Agenda",
+    "partners": "Partners",
+    "trail": "Trail",
+    "metrics": "Metrics",
+    "repricing": "Repricing",
+    "portal": "Partner portal",
+    "brands": "Brands",
+    "channel": "RNC channel",
+    "assistant": "Reforma assistant",
+    "knowledge": "Knowledge base",
+    "ledger": "Network ledger",
+    "statement": "Statement",
+    "readiness": "Invoice readiness",
+    "suppliers": "Supplier credit",
+    "invoices": "Invoices",
+    "radar": "Portfolio radar",
+    "contracts": "Contract alert",
+    "briefing": "Daily briefing"
+  },
+  "rolesAndPermissions": {
+    "groups": {
+      "leads": "Leads",
+      "agenda": "Agenda",
+      "notifications": "Notifications",
+      "partners": "Partners",
+      "referrals": "Referral trail",
+      "metrics": "Metrics",
+      "repricing": "Fee repricing",
+      "clients": "Client portfolio",
+      "portal": "Partner portal",
+      "ledger": "Network ledger",
+      "fiscal": "NF-e and suppliers",
+      "radar": "Opportunity radar",
+      "brands": "Sub-brands",
+      "channel": "RNC channel",
+      "assistant": "Reforma assistant",
+      "contracts": "Contract alert",
+      "briefing": "Daily briefing"
+    },
+    "permissions": {
+      "import": "Import",
+      "access": "Access",
+      "ask": "Ask"
+    }
+  },
+  "site": {
+    "nav": {
+      "home": "The reform",
+      "sectors": "By sector",
+      "cta": "Free diagnostic",
+      "label": "Tax reform site"
+    },
+    "cta": {
+      "primary": "Take the free diagnostic",
+      "start": "Start now"
+    },
+    "seo": {
+      "landingTitle": "Tax reform 2026–2033: what changes for your company",
+      "landingDescription": "CBS is charged from 01/01/2027. See what changes from 2026 to 2033 and take the free tax reform diagnostic for your company.",
+      "diagnosticTitle": "Free tax reform diagnostic",
+      "diagnosticDescription": "In 5 minutes, the tax reform's opportunities and risks for your company, with estimated values."
+    },
+    "countdown": {
+      "label": "Until CBS",
+      "ariaLabel": "Time until CBS is charged on 01/01/2027",
+      "days": "days",
+      "hours": "hours",
+      "minutes": "min",
+      "seconds": "sec",
+      "started": "CBS has been charged since 01/01/2027."
+    },
+    "weekdays": {
+      "d1": "Monday",
+      "d2": "Tuesday",
+      "d3": "Wednesday",
+      "d4": "Thursday",
+      "d5": "Friday",
+      "d6": "Saturday",
+      "d7": "Sunday"
+    },
+    "landing": {
+      "kicker": "Tax reform · LC 214/2025",
+      "title": "CBS starts being charged on 01/01/2027.",
+      "ask": "Does your company know how much it changes?",
+      "lede": "In 5 minutes the free diagnostic shows the reform's opportunities and risks for your business, with estimated values. A specialist explains the detail in a meeting.",
+      "sectorsLink": "See what changes in my sector",
+      "proofLabel": "Why Franco",
+      "changesKicker": "What changes",
+      "changesTitle": "Five changes that reach your company's cash",
+      "timelineKicker": "Timeline 2026–2033",
+      "timelineTitle": "Eight years of transition. Each one with a different bill.",
+      "timelineLegacy": "ICMS and ISS still charged",
+      "timelineNew": "IBS in their place",
+      "timelineShare": "{tenths}/10 of ICMS and ISS",
+      "timelineGone": "ICMS and ISS abolished",
+      "newsChip": "Under discussion",
+      "news": "Business groups asked to delay CBS collection to 2028 (news of 04/11/2026). Until the law changes, 01/01/2027 stands.",
+      "sectorsKicker": "The reform in your sector",
+      "sectorsTitle": "Each sector has its own dates, rates and exceptions",
+      "sectorsFailed": "We could not load the sectors right now.",
+      "retry": "Try again",
+      "closingTitle": "Start with the diagnostic. We explain the rest.",
+      "closingText": "Being Franco is being by your side: 35 years beside São Paulo's companies.",
+      "proof": {
+        "years": "in São Paulo",
+        "clients": "clients served",
+        "iso": "certified quality",
+        "network": "National Accounting Network"
+      },
+      "changes": {
+        "cbs": {
+          "title": "CBS",
+          "text": "Federal, replaces PIS and Cofins."
+        },
+        "ibs": {
+          "title": "IBS",
+          "text": "State and municipal, replaces ICMS and ISS, run by the Managing Committee."
+        },
+        "selective": {
+          "title": "Selective tax",
+          "text": "On goods harmful to health or the environment, from 2027."
+        },
+        "splitPayment": {
+          "title": "Split payment",
+          "text": "The tax is collected when the payment settles, and it moves your cash."
+        },
+        "credit": {
+          "title": "Broad credit",
+          "text": "Financial credit on purchases, when the supplier's tax was paid."
+        }
+      },
+      "years": {
+        "y2026": "Test year: CBS 0.9% and IBS 0.1% shown on the invoice, offset against PIS/Cofins. Not for Simples.",
+        "y2027": "CBS charged in full, PIS/Cofins abolished, the selective tax starts. IBS at 0.1%.",
+        "y2028": "IBS stays at 0.1% (0.05% state and 0.05% municipal).",
+        "y2029": "ICMS and ISS fall to 9/10 while IBS rises.",
+        "y2030": "ICMS and ISS at 8/10.",
+        "y2031": "ICMS and ISS at 7/10.",
+        "y2032": "ICMS and ISS at 6/10; ICMS benefits compensated until here.",
+        "y2033": "ICMS and ISS abolished. Full IBS and CBS."
+      },
+      "preview": {
+        "example": "Example result",
+        "badge": "Diagnostic ready",
+        "company": "Atlas Soluções em TI",
+        "profile": "Services · Simples Nacional",
+        "count": "opportunities and 2 risks found",
+        "opportunity": "Opportunity",
+        "risk": "Risk",
+        "foot": "Detail unlocked in the meeting with the specialist",
+        "action": "Pick a time",
+        "scan": "Receita · Simples · CNAE checked",
+        "meeting": "Meeting booked",
+        "meetingWhen": "Thu, 14:00 · Mariana Toledo",
+        "rows": {
+          "credit": {
+            "title": "Broad credit on service purchases",
+            "value": "R$ 38k – 72k/year"
+          },
+          "simples": {
+            "title": "Review leaving Simples to sell to companies",
+            "value": "R$ 21k – 55k/year"
+          },
+          "split": {
+            "title": "Split payment: cash collected at the sale",
+            "value": "R$ 9k – 16k/month"
+          }
+        }
+      }
+    },
+    "sector": {
+      "back": "All sectors",
+      "kicker": "The reform by sector",
+      "factsTitle": "What already has a date",
+      "source": "Source",
+      "ctaTitle": "Want to know what this means for your {sector} company?",
+      "ctaText": "The free diagnostic matches your company's profile against these rules in 5 minutes.",
+      "others": "Other sectors",
+      "notFoundTitle": "This sector page does not exist",
+      "notFoundText": "See the sectors Franco already explains.",
+      "failedTitle": "The page did not load",
+      "failedText": "Check your connection and try again.",
+      "retry": "Try again"
+    },
+    "footer": {
+      "tagline": "Accounting and business consulting in São Paulo for 35 years.",
+      "contact": "Contact",
+      "hours": "Opening hours",
+      "credentials": "Credentials",
+      "credentialsText": "ISO 9001:2015 · PQEC Sescon-SP · National Accounting Network",
+      "disclaimer": "The values on this site and in the diagnostic are estimates, not a tax calculation.",
+      "hoursRange": "{days}, {from} to {to}",
+      "dayRange": "{first} to {last}",
+      "copyright": "© {year} {name}"
+    },
+    "weekdaysInSentence": {
+      "d1": "Monday",
+      "d2": "Tuesday",
+      "d3": "Wednesday",
+      "d4": "Thursday",
+      "d5": "Friday",
+      "d6": "Saturday",
+      "d7": "Sunday"
+    },
+    "preview": {
+      "banner": "Preview: the site as {name} appears to visitors."
+    }
+  },
+  "diagnostic": {
+    "kicker": "Free Reform diagnostic",
+    "lede": "In 5 minutes, the opportunities and risks of the Tax Reform for your company, with estimated values. Start with the CNPJ or answer a few questions.",
+    "titles": {
+      "empresa": "Free Reform diagnostic",
+      "contato": "Where do we send the result?",
+      "perfil": "Company profile",
+      "faturamento": "Revenue and operations",
+      "resultado": "Your result",
+      "agendar": "Book a specialist",
+      "agendado": "Meeting confirmed"
+    },
+    "progress": {
+      "label": "Step {current} of {total}",
+      "company": "Your company",
+      "profile": "Profile",
+      "revenue": "Revenue",
+      "result": "Result"
+    },
+    "path": {
+      "cnpjTitle": "I have the CNPJ",
+      "cnpjText": "We fill in the legal name, sector, size and regime for you.",
+      "quizTitle": "I don't have the CNPJ",
+      "quizText": "Answer a few quick questions about the company.",
+      "switchToQuiz": "No CNPJ: answer the questionnaire",
+      "switchToCnpj": "I have the CNPJ"
+    },
+    "cnpj": {
+      "label": "Company CNPJ",
+      "placeholder": "Type the 14 digits",
+      "lookup": "Look up",
+      "invalid": "This CNPJ does not check out. Check the 14 digits and try again.",
+      "sequenceTitle": "Checking Receita · Simples · CNAE",
+      "sources": {
+        "receita": {
+          "name": "Receita Federal (CNPJ)",
+          "what": "legal name, CNAE and size"
+        },
+        "simples": {
+          "name": "Simples Nacional",
+          "what": "regime option"
+        },
+        "cnae": {
+          "name": "CNAE",
+          "what": "activity sector"
+        }
+      },
+      "lineStatus": {
+        "done": "ok",
+        "running": "checking…",
+        "waiting": "queued"
+      },
+      "fallback": "We could not look this CNPJ up right now. No problem: the questionnaire takes the same time.",
+      "fallbackAction": "Answer the questionnaire",
+      "company": "Legal name",
+      "cnae": "CNAE",
+      "sector": "Sector",
+      "porte": "Size",
+      "regime": "Regime",
+      "unknown": "Not informed",
+      "askedNext": "Choose below"
+    },
+    "fields": {
+      "sector": "Sector",
+      "regime": "Tax regime",
+      "b2b": "How much of the sales goes to companies (B2B)",
+      "b2bHint": "Companies buying in the regular regime start looking at the credit your invoice carries.",
+      "b2bOption": "{value}%",
+      "band": "Annual revenue",
+      "incentivos": "I have ICMS tax incentives",
+      "exporta": "I export goods or services"
+    },
+    "sectors": {
+      "comercio": "Commerce",
+      "industria": "Industry",
+      "servicos": "Services",
+      "saude": "Health",
+      "educacao": "Education",
+      "agro": "Agribusiness"
+    },
+    "regimes": {
+      "simples": "Simples Nacional",
+      "presumido": "Lucro Presumido",
+      "real": "Lucro Real",
+      "nao_sei": "I don't know"
+    },
+    "bands": {
+      "b1": "Up to R$ 360 thousand/year",
+      "b2": "R$ 360 thousand to 4.8 million/year",
+      "b3": "R$ 4.8 to 30 million/year",
+      "b4": "R$ 30 to 300 million/year",
+      "b5": "Over R$ 300 million/year"
+    },
+    "contact": {
+      "lede": "Who do we send the result to? A specialist can go through each item with you.",
+      "company": "Company",
+      "name": "Your name",
+      "phone": "WhatsApp or phone",
+      "email": "E-mail",
+      "hint": "One of the two is enough. Your data stays with Franco and is not shared without your permission.",
+      "consentOptional": "Optional: you get the result either way."
+    },
+    "actions": {
+      "continue": "Continue",
+      "confirmCompany": "That's right, continue",
+      "seeResult": "See my result",
+      "restart": "Start the diagnostic over",
+      "back": "Back to the reform"
+    },
+    "errors": {
+      "unavailable": "Could not save right now. Try again in a moment.",
+      "notStarted": "The diagnostic has not started. Choose how you want to answer.",
+      "companyStep": "Choose the sector and the regime to continue.",
+      "contact": "Give the company and one contact: WhatsApp/phone or e-mail.",
+      "contactInvalid": "Check the phone and the e-mail: one of them does not look valid.",
+      "profileStep": "Choose the sector, the regime and how much of the sales goes to companies.",
+      "revenueStep": "Choose the revenue band to see the result."
+    },
+    "result": {
+      "summary": "We found {opportunities} and {risks}",
+      "opportunities": "no opportunities | 1 opportunity | {n} opportunities",
+      "risks": "no risks | 1 risk | {n} risks",
+      "profile": "Profile: {profile}. Values estimated from the revenue band; not a tax calculation.",
+      "opportunity": "Opportunity",
+      "risk": "Risk",
+      "locked": "Detail unlocked in the meeting with the specialist",
+      "estimate": "estimate",
+      "b2bShare": "{value}% B2B"
+    },
+    "simulator": {
+      "title": "Impact simulator 2026–2033",
+      "lede": "How the burden on revenue changes year by year: PIS/Cofins, ICMS and ISS leave, CBS and IBS come in. From {first} in 2026 to {last} in 2033 · estimate with reference rates, not a tax calculation.",
+      "chartLabel": "Estimated burden per year: {years}",
+      "leaving": "(leaves)",
+      "coming": "(comes in)",
+      "simplesNote": "On the Simples Nacional the burden stays inside the DAS; the chart shows the regular regime, the comparison for companies selling to other companies that consider leaving the DAS for IBS/CBS.",
+      "splitTitle": "Split payment on cash",
+      "splitText": "IBS and CBS leave at the payment of the sale, before the monthly due date: working capital the company goes without for about a month."
+    },
+    "schedule": {
+      "title": "The details of each item are with the specialist",
+      "text": "In 30 minutes, online or at Franco, they explain the numbers behind each value and the action plan. The meeting is free.",
+      "action": "Book a specialist"
+    },
+    "booking": {
+      "intro": "Choose who will see you and when. It is {minutes} minutes, online or at Franco's office, to open each item and the action plan. Slots over the next 10 working days.",
+      "specialists": "Specialist",
+      "suggested": "Recommended for your profile",
+      "days": "Day",
+      "slots": "Time",
+      "slotsOf": "Times on {day}",
+      "slotCount": "no slot | 1 slot | {n} slots",
+      "noSlots": "This day has no free slot. Choose another day or another specialist.",
+      "email": "Your e-mail",
+      "emailHint": "The confirmation and the Impact Report link go to this address.",
+      "confirm": "Confirm {meeting}",
+      "chooseSlot": "Choose a time",
+      "meetingLabel": "{weekday}, {day} at {time}",
+      "loading": "Loading the specialists' agenda…",
+      "errors": {
+        "chooseSlot": "Choose a time before confirming.",
+        "email": "Enter a valid e-mail: the confirmation and the Impact Report go to it.",
+        "slotTaken": "That time has just been booked. Choose another one.",
+        "slotUnavailable": "That time is no longer on the agenda. Choose another one.",
+        "alreadyBooked": "This diagnostic already has a meeting booked. Franco's team will contact you for any change.",
+        "unavailable": "We could not reach the agenda right now. Try again in a moment."
+      },
+      "confirmed": {
+        "with": "with {specialist}",
+        "length": "{minutes} minutes, online or at Franco's office.",
+        "sent": "We sent the confirmation to your e-mail with the Impact Report link, and a reminder the day before.",
+        "found": "{company} · {opportunities} and {risks} to discuss.",
+        "openReport": "Open the Impact Report",
+        "addToCalendar": "Add to your calendar"
+      }
+    },
+    "report": {
+      "kicker": "Impact Report",
+      "title": "Tax Reform Impact Report",
+      "issuedFor": "Prepared for",
+      "print": "Print or save as PDF",
+      "nextStep": "Next step",
+      "meeting": "Meeting {meeting} with {specialist}",
+      "legal": "Values estimated from the revenue band and reference rates (LC 214/2025 and amendments). Not a tax calculation or an opinion: the specialist confirms each item with the company's data.",
+      "loading": "Loading the report…",
+      "missingTitle": "This link has expired or was not found",
+      "missingText": "The Impact Report stays available for 30 days after the booking. Take the diagnostic again or talk to Franco's team.",
+      "missingAction": "Take the diagnostic",
+      "seoTitle": "Tax Reform Impact Report",
+      "seoDescription": "The Tax Reform diagnostic result, with the 2026–2033 simulator."
+    },
+    "chat": {
+      "toggle": {
+        "label": "How do you want to answer",
+        "form": "Form",
+        "chat": "Chat with us"
+      },
+      "who": "Franco reception",
+      "note": "Every answer fills the same diagnostic as the form. You can switch to the form mid-way and come back: nothing is lost.",
+      "logLabel": "Conversation with Franco's reception",
+      "repliesLabel": "Quick replies",
+      "send": "Send",
+      "typing": "The reception is typing…",
+      "greeting": "Hi! I am Franco's virtual reception. In 5 minutes I show what the Tax Reform changes for your company and what it may be worth.",
+      "resumed": "I see you already started on the form. Let's pick up where you stopped.",
+      "advanced": "I see you moved on in the form. Let's pick up where you stopped.",
+      "notUnderstood": "I did not understand. Choose one of the options below.",
+      "contactInvalid": "I could not read that contact. Can you send a full e-mail or a phone with the area code?",
+      "asks": {
+        "path": "To start: do you have the company's CNPJ at hand?",
+        "cnpj": "Type the CNPJ. I check Receita Federal, Simples Nacional and CNAE and fill in the rest.",
+        "lookupRunning": "Checking Receita · Simples · CNAE…",
+        "lookupFound": "Found it: {name}, {sector}, {regime}. Is that right?",
+        "lookupFoundNoRegime": "Found it: {name}, {sector}. Is that right? I will ask the regime next.",
+        "lookupUnavailable": "I could not check this CNPJ right now. No problem: the questionnaire is a few questions and the result is the same.",
+        "sector": "Which sector is the company in?",
+        "regime": "And its tax regime today?",
+        "company": "Who do I send the result to? What is the company's name?",
+        "name": "And your name?",
+        "contact": "What is your WhatsApp, phone or e-mail? One is enough. Your data stays with Franco and is not shared without your permission.",
+        "consent": "One more, optional: when the diagnostic calls for it, may I introduce you to a specialist of Franco's network? \"{text}\" You get the result either way.",
+        "b2b": "How much of your sales goes to other companies (B2B)? The rest is end consumers.",
+        "band": "What is the annual revenue band?",
+        "incentivos": "Does the company have ICMS tax incentives?",
+        "exporta": "Last one: do you export goods or services?"
+      },
+      "replies": {
+        "hasCnpj": "I have the CNPJ",
+        "noCnpj": "I don't have the CNPJ",
+        "confirmCompany": "Yes, that's right",
+        "useQuiz": "Use the questionnaire",
+        "otherCnpj": "Try another CNPJ",
+        "authorize": "I authorise",
+        "decline": "I'd rather not",
+        "yes": "Yes",
+        "no": "No"
+      },
+      "inputs": {
+        "cnpj": "CNPJ",
+        "cnpjPlaceholder": "CNPJ, with or without punctuation",
+        "company": "Company",
+        "companyPlaceholder": "Company name",
+        "name": "Your name",
+        "namePlaceholder": "Your name",
+        "contact": "Contact",
+        "contactPlaceholder": "WhatsApp, phone or e-mail",
+        "answer": "Your answer",
+        "answerPlaceholder": "Or type your answer"
+      },
+      "result": {
+        "specialist": "A Franco specialist explains each item, free of charge. Choose a time:",
+        "simulator": "See the 2026–2033 simulator for my case"
+      }
+    }
+  },
+  "notifications": {
+    "bell": "Notifications",
+    "bellUnread": "Notifications: {count} unread",
+    "title": "Notifications",
+    "empty": "Nothing new here. When a lead leaves a contact or books a meeting, it shows up here.",
+    "markRead": "Mark as read",
+    "markAllRead": "Mark all as read",
+    "kinds": {
+      "new_lead": "{company} left a contact in the diagnostic",
+      "meeting_booked": "{company} booked a meeting with {specialist} for {when}",
+      "assistant_question": "{askedBy} handed you: “{question}”",
+      "assistant_answer": "{answeredBy} answered: “{question}”",
+      "assistant_note_expiring": "Your review of “{question}” is served until {expiresOn}.",
+      "referral_status_aceito": "{partner} accepted the referral of {company}",
+      "referral_status_recusado": "{partner} declined the referral of {company}",
+      "referral_status_fechado": "{partner} closed a {value} contract with {company}"
+    },
+    "kindTitles": {
+      "new_lead": "New lead",
+      "meeting_booked": "Meeting booked",
+      "assistant_question": "Question for a specialist",
+      "assistant_answer": "Specialist answer",
+      "assistant_note_expiring": "Review runs out in 7 days",
+      "referral_status_aceito": "Partner accepted",
+      "referral_status_recusado": "Partner declined",
+      "referral_status_fechado": "Partner closed a contract"
+    },
+    "unknownCompany": "A company"
+  },
+  "pipeline": {
+    "title": "Lead pipeline",
+    "lede": "Every business owner who came through the site, from anonymous visitor to client. Drag a card or use ◀ ▶.",
+    "searchLabel": "Search leads",
+    "searchPlaceholder": "Company, contact, e-mail or CNPJ",
+    "boardLabel": "Pipeline board",
+    "emptyColumn": "No leads here.",
+    "emptySearch": "No lead found for “{search}”.",
+    "loadFailed": "The pipeline could not be loaded.",
+    "retry": "Try again",
+    "moreInColumn": "+{count} in search",
+    "moved": "{company}: {from} → {to}",
+    "notFound": "Lead not found.",
+    "sameStage": "The lead is already in that stage.",
+    "lostReasonRequired": "Say why the lead was lost.",
+    "anonymous": "Anonymous visitor",
+    "noContact": "No contact yet",
+    "stoppedAt": "Stopped at: {step}",
+    "findings": "{opportunities} · {risks}",
+    "meetingOn": "Meeting {when} · {specialist}",
+    "openAgenda": "Open agenda",
+    "stages": {
+      "visitante": "Visitor",
+      "lead_parcial": "Partial lead",
+      "lead": "Lead",
+      "reuniao_marcada": "Meeting booked",
+      "proposta": "Proposal",
+      "cliente": "Client",
+      "perdido": "Lost"
+    },
+    "steps": {
+      "empresa": "company",
+      "contato": "contact",
+      "perfil": "profile",
+      "faturamento": "revenue",
+      "resultado": "result"
+    },
+    "sources": {
+      "organico": "Organic",
+      "pago": "Paid",
+      "parceiro": "Partner",
+      "direto": "Direct"
+    },
+    "card": {
+      "moveBack": "Move back to {stage}",
+      "moveForward": "Move forward to {stage}",
+      "markLost": "Mark as lost",
+      "open": "Open {company}"
+    },
+    "lost": {
+      "title": "Mark as lost",
+      "lede": "Why was {company} lost? The reason stays on the lead and its timeline.",
+      "reasonLabel": "Reason",
+      "reasonPlaceholder": "E.g. renewed with their current accountant for a year.",
+      "cancel": "Cancel",
+      "confirm": "Mark as lost"
+    },
+    "lead": {
+      "title": "Lead detail",
+      "back": "Pipeline",
+      "since": "Arrived on {date} · source {source}",
+      "moveTo": "Move to",
+      "loadFailed": "The lead could not be loaded.",
+      "missingTitle": "Lead not found",
+      "missingText": "It may have been removed or belong to another firm.",
+      "lostBecause": "Lost: {reason}",
+      "contact": {
+        "title": "Contact",
+        "call": "Call",
+        "whatsapp": "WhatsApp",
+        "email": "E-mail",
+        "none": "The visitor has not left a contact yet."
+      },
+      "profile": {
+        "title": "Profile",
+        "company": "Company",
+        "cnpj": "CNPJ",
+        "contactName": "Contact",
+        "phone": "Phone",
+        "email": "E-mail",
+        "sector": "Sector",
+        "regime": "Regime",
+        "band": "Revenue",
+        "b2b": "B2B sales",
+        "incentivos": "ICMS incentives",
+        "exporta": "Exports",
+        "path": "Path",
+        "source": "Source",
+        "yes": "yes",
+        "no": "no",
+        "empty": "—",
+        "paths": {
+          "cnpj": "by CNPJ",
+          "quiz": "by questionnaire"
+        }
+      },
+      "diagnosis": {
+        "title": "Diagnostic",
+        "summary": "{opportunities} and {risks}",
+        "staffOnly": "The team sees the detail the visitor only gets in the meeting.",
+        "rule": "Rule: {rule}",
+        "estimate": "estimate",
+        "incomplete": "Incomplete diagnostic: the profile stopped before the result.",
+        "opportunity": "Opportunity",
+        "risk": "Risk"
+      },
+      "consent": {
+        "title": "Consent",
+        "given": "Agreed to be introduced to partners",
+        "refused": "Did not agree to be introduced to partners",
+        "none": "No answer yet: the visitor did not reach the contact step.",
+        "when": "On {date} · version {version} · {via}",
+        "vias": {
+          "formulario": "site form"
+        }
+      },
+      "meeting": {
+        "title": "Meeting",
+        "none": "No meeting booked.",
+        "with": "{when} with {specialist}"
+      },
+      "notes": {
+        "title": "Team notes",
+        "label": "New note",
+        "placeholder": "E.g. call on Monday, talk to the partner.",
+        "save": "Save note",
+        "empty": "No notes yet.",
+        "saved": "Note saved."
+      },
+      "timeline": {
+        "title": "Timeline",
+        "visitor": "visitor",
+        "by": "by {name}",
+        "events": {
+          "diagnosticStarted": "Started the diagnostic ({path})",
+          "cnpjLookedUp": "Looked up the CNPJ",
+          "contactCaptured": "Left company and contact",
+          "stepReached": "Moved on to the “{step}” step",
+          "resultSeen": "Saw the result: {opportunities} and {risks}",
+          "meetingBooked": "Booked a meeting with {specialist} for {when}",
+          "stageChanged": "{from} → {to}",
+          "stageLost": "{from} → {to}: {reason}",
+          "noteAdded": "Note: {text}",
+          "unknown": "Event {type}",
+          "referralSent": "Referred to {partner} ({score}%)"
+        },
+        "vias": {
+          "botao": "button",
+          "arrastar": "dragged",
+          "ficha": "from the detail"
+        }
+      }
+    },
+    "agenda": {
+      "title": "Week agenda",
+      "lede": "Meetings booked through the site, by specialist. Each booking blocks the slot at once.",
+      "previous": "Previous week",
+      "next": "Next week",
+      "today": "This week",
+      "range": "{from} to {to}",
+      "count": "no meetings | 1 meeting | {count} meetings",
+      "empty": "No meetings.",
+      "loadFailed": "The agenda could not be loaded."
+    },
+    "noDiagnosis": "No diagnostic yet",
+    "brandFilter": {
+      "label": "Brand",
+      "all": "All brands",
+      "main": "Main brand",
+      "inactive": "{name} (inactive)"
+    },
+    "brandChip": "{name} lead",
+    "channels": {
+      "formulario": "Form",
+      "chat": "Chat",
+      "carteira": "Portfolio"
+    },
+    "channelLabel": "Channel: {channel}"
+  },
+  "partners": {
+    "title": "Partners",
+    "lede": "Franco's network of specialists: {active} of {total} active ones receive referrals. A deactivated partner leaves routing and stays in the trail.",
+    "add": "New partner",
+    "edit": "Edit",
+    "deactivate": "Deactivate",
+    "reactivate": "Reactivate",
+    "active": "Active",
+    "inactive": "Inactive",
+    "saved": "{name} saved.",
+    "deactivated": "{name} deactivated: no longer offered in routing.",
+    "reactivated": "{name} reactivated.",
+    "loadFailed": "The partners could not be loaded.",
+    "retry": "Try again",
+    "emptyTitle": "No partners yet",
+    "emptyText": "Add the network's first specialist to refer leads to it.",
+    "notFound": "Partner not found.",
+    "specialties": {
+      "advocacia_tributaria": "Tax law",
+      "recuperacao_creditos": "Credit recovery",
+      "erp_nfe": "ERP/e-invoicing",
+      "credito_capital_giro": "Credit and working capital",
+      "seguros_beneficios": "Insurance and benefits",
+      "societario_sucessao": "Corporate and succession",
+      "precificacao_controladoria": "Pricing and controllership",
+      "certificado_digital": "Digital certificate"
+    },
+    "statuses": {
+      "enviado": "Sent",
+      "aceito": "Accepted",
+      "contato": "In contact",
+      "reuniao": "Meeting",
+      "proposta": "Proposal",
+      "fechado": "Closed",
+      "recusado": "Declined"
+    },
+    "form": {
+      "newTitle": "New partner",
+      "editTitle": "Edit partner",
+      "name": "Name",
+      "namePlaceholder": "E.g. Andrade Tax Law",
+      "specialty": "Specialty",
+      "specialtyPlaceholder": "Choose the specialty",
+      "email": "E-mail",
+      "emailHint": "Referrals are sent to this address.",
+      "phone": "Phone",
+      "city": "City",
+      "required": "Required.",
+      "emailInvalid": "Type a valid e-mail.",
+      "cancel": "Cancel",
+      "saveNew": "Add partner",
+      "saveEdit": "Save changes"
+    },
+    "routing": {
+      "title": "Refer to the network",
+      "lede": "Each partner with how well it fits this lead's diagnostic. Franco stays the lead's owner: the partner talks to the company through Franco.",
+      "score": "{score}% · {specialty}",
+      "refer": "Refer",
+      "referredOn": "Referred on {date}",
+      "coversLabel": "Diagnostic items the partner solves",
+      "coversNothing": "No item of this diagnostic in its specialty.",
+      "empty": "No active partner in the network. Reinaldo adds partners under Partners.",
+      "loadFailed": "The partners for this lead could not be loaded.",
+      "messageLabel": "Message to {partner}",
+      "defaultMessage": "Franco recommends {company}. Could you make the first contact within 24 business hours?",
+      "privacyNote": "The partner receives the company's name, the diagnostic and Franco's contact — never the lead's phone or e-mail.",
+      "messageRequired": "Write the message to the partner.",
+      "cancel": "Cancel",
+      "send": "Send referral",
+      "sent": "Referred to {partner}. The partner received the e-mail.",
+      "consentRequired": "This lead did not consent to being introduced to partners: the referral was not sent.",
+      "alreadyReferred": "This lead was already referred to this partner.",
+      "partnerUnavailable": "This partner is no longer active in the network.",
+      "blocked": {
+        "consent_missing": "No consent: the lead has not answered the request to be introduced to partners yet. No referral goes out without it.",
+        "consent_refused": "No consent: the lead did not agree to be introduced to partners. No referral goes out without it."
+      },
+      "closedValue": "Closed · {value}"
+    },
+    "trail": {
+      "title": "Referral trail",
+      "heading": "No referrals | 1 referral in the trail | {n} referrals in the trail",
+      "lede": "Every referral of the network: who was recommended, to whom, with which consent, by whom and when. No referral goes out without a recorded consent.",
+      "filterLabel": "Partner",
+      "filterAll": "All partners",
+      "inactiveOption": "{name} (inactive)",
+      "score": "{score}% fit",
+      "consentGiven": "Consented on {date} · version {version}",
+      "by": "by {name}",
+      "loadFailed": "The trail could not be loaded.",
+      "emptyTitle": "No referrals yet",
+      "emptyText": "When the team refers a lead to a partner, it shows here with the recorded consent.",
+      "closedValue": "1st-year contract: {value}"
+    },
+    "portalAccess": "Portal access",
+    "access": {
+      "title": "Portal access",
+      "lede": "The partner signs in with this username at the same login screen and sees only its portal.",
+      "username": "Username",
+      "usernameHint": "Letters, numbers and dots, e.g. parceiro.3.",
+      "email": "E-mail",
+      "required": "Required.",
+      "emailInvalid": "Type a valid e-mail.",
+      "create": "Create access",
+      "cancel": "Cancel",
+      "current": "Signs in as {username} · {email}",
+      "grantedAt": "Active since {date}",
+      "regenerate": "New password",
+      "revoke": "Revoke access",
+      "revokedNote": "Access revoked. Create it again to give the partner a new password.",
+      "passwordTitle": "Password",
+      "passwordOnce": "Shown only now: copy it and send it to the partner. It cannot be seen again.",
+      "copy": "Copy",
+      "copied": "Copied",
+      "done": "Done",
+      "exists": "This partner already has an active login.",
+      "missing": "This partner has no active login.",
+      "partnerInactive": "Reactivate the partner before giving it a login.",
+      "active": "Portal on"
+    },
+    "ledger": {
+      "title": "Network ledger",
+      "lede": "What each partner owes Franco in the month under the network's model, and what the other model would give.",
+      "previousMonth": "Previous month",
+      "nextMonth": "Next month",
+      "modelLabel": "Billing model",
+      "models": {
+        "comissao": "Commission per closing",
+        "assinatura": "Monthly subscription"
+      },
+      "currentModel": "Network model: {model}",
+      "ruleCommission": "Rule: {rate}% of the first-year contract value, per closed referral.",
+      "ruleSubscription": "Rule: {fee} a month for each partner with portal access; a closing adds nothing.",
+      "networkWide": "A switch applies to the whole network.",
+      "notice": "Amounts to be checked — no automatic billing.",
+      "loadFailed": "The network ledger could not be loaded.",
+      "switchFailed": "The model could not be switched. Try again.",
+      "summaryLabel": "Month summary",
+      "total": "Owed this month · {model}",
+      "other": "Under the other model · {model}",
+      "dealsLabel": "Closed contracts",
+      "dealTotal": "{total} in the first year",
+      "empty": "No partner registered yet.",
+      "partner": "Partner",
+      "deals": "Closed",
+      "dealValue": "First-year contract",
+      "commission": "Commission ({rate}%)",
+      "subscription": "Subscription",
+      "due": "Owed",
+      "noAccess": "no access",
+      "footerTotal": "Network total this month"
+    }
+  },
+  "metrics": {
+    "title": "Metrics",
+    "heading": "Funnel of the last {days} days",
+    "lede": "Where each visit comes from, where the business owner gives up and which sector page sells. Each step counts only those who passed the one before.",
+    "period": "Period",
+    "days": "{days} days",
+    "range": "{from} to {to}",
+    "kpis": {
+      "visits": "Visits",
+      "contacts": "Contacts captured",
+      "bookings": "Meetings booked",
+      "conversion": "Visit → client"
+    },
+    "funnelTitle": "Funnel by step",
+    "funnelLede": "Each bar is the step against the top of the funnel; below, how much of the step before did not go on.",
+    "chartLabel": "Funnel by step",
+    "steps": {
+      "visitas": "Visits",
+      "cta": "CTA click",
+      "inicio": "Diagnostic started",
+      "contato": "Contact captured",
+      "resultado": "Result",
+      "agendou": "Booked",
+      "cliente": "Client"
+    },
+    "drop": "{pct} of the step before did not go on · −{lost}",
+    "clientNote": "Client counts the lead the team moved to Client on the pipeline within the period.",
+    "bySource": {
+      "title": "By source",
+      "lede": "By the source of each person's first visit."
+    },
+    "bySector": {
+      "title": "By sector page",
+      "lede": "Visits that entered on a sector page; the landing page's are not in this table."
+    },
+    "sources": {
+      "organico": "Organic",
+      "pago": "Paid",
+      "parceiro": "Partner",
+      "direto": "Direct"
+    },
+    "columns": {
+      "source": "Source",
+      "sector": "Sector page",
+      "visitas": "Visits",
+      "cta": "CTA clicks",
+      "ctaRate": "CTA / visit",
+      "contato": "Contacts",
+      "agendou": "Booked",
+      "cliente": "Clients",
+      "conversion": "Visit → client"
+    },
+    "loadFailed": "The funnel could not be loaded right now.",
+    "retry": "Try again",
+    "byChannel": {
+      "title": "By channel",
+      "lede": "From the diagnostic's start on, by the channel each lead started in."
+    },
+    "channels": {
+      "formulario": "Form",
+      "chat": "Chat"
+    },
+    "columnsChannel": {
+      "channel": "Channel",
+      "inicio": "Started",
+      "resultado": "Result",
+      "bookingRate": "Started → booked"
+    }
+  },
+  "repricing": {
+    "title": "Fee repricing",
+    "heading": "The Reforma adds work on every client",
+    "lede": "The diagnostic's engine measures each client's new work: each opportunity weighs 1.5 points and each risk 2.5 in the suggested uplift, from 4 to 25%, with the fee rounded to R$ 50.",
+    "hero": {
+      "label": "Extra revenue per year",
+      "base": "on {base}/year of fees today: +{share} on the listed portfolio."
+    },
+    "kpis": {
+      "clients": "Clients listed",
+      "average": "Average uplift",
+      "marked": "Marked for 2027"
+    },
+    "spread": {
+      "title": "Clients by uplift band",
+      "band": "+{from}–{to}%"
+    },
+    "filters": {
+      "sector": "Sector",
+      "regime": "Regime",
+      "allSectors": "Every sector",
+      "allRegimes": "Every regime"
+    },
+    "batch": {
+      "none": "Select clients to mark in batch",
+      "selected": "{count} selected | {count} selected",
+      "mark": "Mark in batch",
+      "marked": "{count} client marked for the 2027 repricing. | {count} clients marked for the 2027 repricing.",
+      "failed": "Could not mark them now. Try again."
+    },
+    "table": {
+      "caption": "Clients and suggested uplift",
+      "selectAll": "Select every listed client",
+      "selectOne": "Select {name}",
+      "client": "Client",
+      "current": "Today",
+      "suggested": "Suggested",
+      "pct": "Uplift",
+      "uplift": "Extra/year",
+      "marked": "Marked",
+      "open": "Open {name}",
+      "emptyTitle": "No client in this filter",
+      "emptyText": "Change the sector or the regime, or import the portfolio as CSV."
+    },
+    "detail": {
+      "title": "Client detail",
+      "emptyText": "Open a client of the list to see the Reforma items behind its uplift and write the letter.",
+      "today": "Today",
+      "suggested": "Suggested · +{pct}%",
+      "perYear": "{value} more per year.",
+      "items": "Impact items",
+      "noItems": "No Reforma item for this profile: the uplift stays at the 4% floor.",
+      "letter": "Write the repricing letter",
+      "markedBy": "Marked on {at} by {name}: {suggested} (+{pct}%)",
+      "markedAt": "Marked on {at}: {suggested} (+{pct}%)",
+      "loadFailed": "Could not open this client.",
+      "b2b": "B2B {value}%"
+    },
+    "kinds": {
+      "oportunidade": "Opportunity",
+      "risco": "Risk"
+    },
+    "sectors": {
+      "comercio": "Retail",
+      "industria": "Industry",
+      "servicos": "Services",
+      "saude": "Health",
+      "educacao": "Education",
+      "agro": "Agribusiness"
+    },
+    "regimes": {
+      "simples": "Simples Nacional",
+      "presumido": "Lucro Presumido",
+      "real": "Lucro Real"
+    },
+    "bands": {
+      "b1": "up to R$ 360k/year",
+      "b2": "R$ 360k to 4.8M/year",
+      "b3": "R$ 4.8 to 30M/year",
+      "b4": "R$ 30 to 300M/year",
+      "b5": "over R$ 300M/year"
+    },
+    "import": {
+      "action": "Import CSV",
+      "title": "Import the client portfolio",
+      "lede": "One line per client, in UTF-8, separated by semicolons or commas. A CNPJ already in the portfolio is updated. If any line has an error, nothing is imported.",
+      "columns": "File columns",
+      "accepted": "setor: comercio, industria, servicos, saude, educacao or agro · regime: simples, presumido or real · faixa_faturamento: b1 to b5 · percentual_b2b: 0 to 100 · mensalidade in reais, like 1.850,00 (minimum R$ 250) · autoriza_parceiros (optional): sim, não or empty",
+      "template": "Download template",
+      "file": "CSV file",
+      "fileRequired": "Choose a CSV file.",
+      "submit": "Import",
+      "cancel": "Cancel",
+      "success": "{total} clients imported: {created} new and {updated} updated.",
+      "line": "Line {line}",
+      "more": "And {count} more problems in the file.",
+      "templateFailed": "Could not download the template now.",
+      "codes": {
+        "import_encoding": "The file is not UTF-8. In Excel, save it as “CSV UTF-8”.",
+        "import_header": "The header is not the template's. Missing columns: {missing}.",
+        "import_empty": "The file has no client line.",
+        "import_too_many": "The file has more than {limit} lines: split it.",
+        "import_invalid": "Nothing was imported. Fix the lines below and send it again.",
+        "unexpected": "Could not import now. Try again."
+      },
+      "lineCodes": {
+        "required": "{field} is blank",
+        "name_too_long": "name over 160 characters",
+        "cnpj_invalid": "CNPJ check digits do not match",
+        "cnpj_duplicate": "CNPJ repeated in the file",
+        "sector_invalid": "unknown sector",
+        "regime_invalid": "unknown regime (simples, presumido or real)",
+        "band_invalid": "unknown revenue band (b1 to b5)",
+        "b2b_invalid": "B2B share outside 0 to 100",
+        "fee_invalid": "invalid monthly fee (minimum R$ 250)",
+        "columns": "columns missing on this line",
+        "consent_invalid": "partner consent other than sim or não"
+      },
+      "fields": {
+        "nome": "Name",
+        "cnpj": "CNPJ",
+        "setor": "Sector",
+        "regime": "Regime",
+        "faixa_faturamento": "Revenue band",
+        "percentual_b2b": "B2B share",
+        "mensalidade": "Monthly fee",
+        "autoriza_parceiros": "Partner consent"
+      }
+    },
+    "letter": {
+      "back": "Back to repricing",
+      "print": "Print",
+      "subject": "Fee repricing from {date}",
+      "greeting": "To {name}",
+      "cnpj": "CNPJ {cnpj}",
+      "intro": "The tax reform changes your company's fiscal routine from 2027. For {name}, the {firm} diagnostic points to {count} new line of work: | The tax reform changes your company's fiscal routine from 2027. For {name}, the {firm} diagnostic points to {count} new lines of work:",
+      "noItems": "The tax reform changes your company's fiscal routine from 2027, and following the transition becomes part of our work.",
+      "fee": "So the monthly fee goes from {current} to {suggested} (+{pct}%) from {date}, with the transition's follow-up included.",
+      "feeToday": "Fee today",
+      "feeFrom": "From {date}",
+      "closing": "We are at your disposal to go through each item.",
+      "regards": "Kind regards,",
+      "loadFailed": "Could not build the letter now.",
+      "notFound": "This client is not in the portfolio."
+    },
+    "loadFailed": "Could not load the portfolio now.",
+    "retry": "Try again"
+  },
+  "portal": {
+    "title": "Partner portal",
+    "greeting": "Hello, {name}",
+    "description": "The referrals {firm} sends you, and where each one stands. You only see what {firm} referred to you: nothing of its client base, nothing of other partners. The {hours}-business-hour first-contact SLA is the yardstick {firm} holds you to, and every accept and every status goes straight back to the lead's file at {firm}.",
+    "firmFallback": "the firm",
+    "loadFailed": "Your referrals could not be loaded.",
+    "retry": "Try again",
+    "noPartner": "This login is not linked to a partner.",
+    "kpis": {
+      "label": "Referral summary",
+      "novos": "New",
+      "andamento": "In progress",
+      "fechados": "Closed",
+      "estourado": "SLA breached"
+    },
+    "meetings": {
+      "title": "Upcoming meetings",
+      "empty": "No meeting booked. Book one from the referral's card, after the first contact."
+    },
+    "inbox": {
+      "label": "Referrals",
+      "emptyTitle": "No referrals yet",
+      "emptyText": "When {firm} refers a company to you, it shows up here."
+    },
+    "statuses": {
+      "enviado": "New",
+      "aceito": "Accepted",
+      "contato": "In contact",
+      "reuniao": "Meeting",
+      "proposta": "Proposal",
+      "fechado": "Closed",
+      "recusado": "Declined"
+    },
+    "actions": {
+      "aceito": "Accept",
+      "recusado": "Decline",
+      "contato": "Log first contact",
+      "reuniao": "Book meeting",
+      "proposta": "Send proposal",
+      "fechado": "Close contract"
+    },
+    "referral": {
+      "score": "{score}% fit",
+      "received": "Received {when}",
+      "contact": "Contact",
+      "phone": "Phone",
+      "email": "E-mail",
+      "viaFirm": "Through {firm}",
+      "contactAfterAccept": "The lead's contact appears once you accept.",
+      "covers": "In the diagnostic, for your specialty",
+      "meetingAt": "Meeting {when}",
+      "closedLine": "Contract of {value} in the 1st year · closed on {date}",
+      "declinedLine": "Declined on {date}. {firm} may refer another partner.",
+      "contract": {
+        "label": "Client contract",
+        "kinds": {
+          "fornecimento": "Supply contract",
+          "prestacao_servicos": "Services contract",
+          "locacao": "Lease contract",
+          "distribuicao": "Distribution contract",
+          "manutencao": "Maintenance contract"
+        },
+        "until": "until {year}",
+        "noClause": "without the Reforma clause",
+        "range": "{min} – {max} a year",
+        "rangeFrom": "from {min} a year",
+        "rangeNote": "A value band, not the contract's value."
+      }
+    },
+    "sla": {
+      "ok": "First contact: {hours} of {target} business hours",
+      "atencao": "Attention: {hours} of {target} business hours without contact",
+      "estourado": "SLA breached: {hours} business hours without contact (target {target})",
+      "cumprido": "First contact in {hours} business hours · within the {target}-hour SLA",
+      "fora": "First contact in {hours} business hours · outside the {target}-hour SLA",
+      "encerrado": "Declined: no SLA"
+    },
+    "meeting": {
+      "title": "Book the meeting",
+      "lede": "When do you meet {company}? The meeting shows in your upcoming meetings and on the lead's file at Franco.",
+      "label": "Meeting date and time",
+      "cancel": "Cancel",
+      "confirm": "Book meeting"
+    },
+    "close": {
+      "title": "Close the contract",
+      "lede": "The first-year value of the contract with {company}. It is what Franco's statement reads.",
+      "label": "First-year contract value (R$)",
+      "cancel": "Cancel",
+      "confirm": "Close contract"
+    },
+    "referrals": {
+      "invalidTransition": "This referral has moved on meanwhile: your inbox was refreshed.",
+      "notFound": "This referral is no longer in your inbox.",
+      "meetingRequired": "Choose the meeting's date and time.",
+      "meetingInvalid": "Choose the meeting's date and time.",
+      "meetingInPast": "The meeting must be in the future.",
+      "dealValueRequired": "Enter the first-year contract value.",
+      "dealValueInvalid": "Enter a first-year contract value above zero."
+    },
+    "statement": {
+      "title": "Statement",
+      "heading": "Statement with {firm}",
+      "previousMonth": "Previous month",
+      "nextMonth": "Next month",
+      "notice": "Amount to be checked — no automatic billing.",
+      "ruleCommission": "Rule: {rate}% of the first-year contract value, per closed referral.",
+      "ruleSubscription": "Rule: {fee} a month, unlimited referrals; a closing adds nothing.",
+      "item": "Item",
+      "closedAt": "Closed on",
+      "dealValue": "First-year contract",
+      "owed": "Owed to {firm}",
+      "subscriptionLine": "Monthly network subscription",
+      "thisMonth": "this month",
+      "included": "included",
+      "empty": "No referral closed this month.",
+      "total": "Total owed to {firm}",
+      "deals": "No contract closed this month. | 1 contract closed ({total} in the first year). | {n} contracts closed ({total} in the first year).",
+      "loadFailed": "The statement could not be loaded.",
+      "open": "See this month's statement"
+    }
+  },
+  "brands": {
+    "title": "Brands",
+    "lede": "Franco and its sub-brands: the same data, the same partner network and the same address, with their own name, colours and positioning. The site switches brand by ?marca=; the back office stays Franco's.",
+    "main": "Main brand",
+    "mainNote": "The firm's own brand, edited in the site's theme.",
+    "active": "Active",
+    "inactive": "Inactive",
+    "leads": "{count} leads | {count} lead | {count} leads",
+    "edit": "Edit",
+    "viewAs": "View as {name}",
+    "deactivate": "Deactivate",
+    "reactivate": "Reactivate",
+    "saved": "{name} saved.",
+    "deactivated": "{name} deactivated: ?marca={slug} now shows Franco.",
+    "reactivated": "{name} reactivated.",
+    "loadFailed": "The brands could not be loaded.",
+    "retry": "Try again",
+    "emptyTitle": "No sub-brands",
+    "emptyText": "The Express and Prime sub-brands arrive with the firm's initial load.",
+    "notFound": "This brand no longer exists.",
+    "form": {
+      "name": "Full name",
+      "shortName": "Short name",
+      "tagline": "Site tagline",
+      "taglineHint": "Shown at the top of the landing page and in the footer.",
+      "colours": "Colours",
+      "primary": "Primary colour",
+      "accent": "Accent colour",
+      "pick": "Pick the {field}",
+      "contrastOk": "White text on the primary: {ratio}:1 — readable.",
+      "contrastLow": "White text on the primary: {ratio}:1 — under {min}:1, the site refuses this colour.",
+      "contrastUnknown": "Write the primary as #rrggbb to measure its contrast.",
+      "previewLede": "How visitors see the top of the site",
+      "previewCta": "Take the diagnostic",
+      "proof": "Landing page figures",
+      "proofHint": "Four highlights: the figure or the strong word, and its caption.",
+      "proofValue": "Highlight {n}",
+      "proofLabel": "Caption of highlight {n}",
+      "proofValuePlaceholder": "35 years",
+      "proofLabelPlaceholder": "in São Paulo",
+      "proofRequired": "Fill in the four highlights and their captions.",
+      "required": "Required.",
+      "invalidColour": "Use a colour written as #rrggbb.",
+      "lowContrast": "White text does not read on this colour (under {min}:1). Pick a darker one.",
+      "cancel": "Cancel",
+      "save": "Save brand",
+      "heading": "Edit brand"
+    }
+  },
+  "channel": {
+    "title": "RNC channel",
+    "manageLede": "Franco belongs to the Rede Nacional de Contabilidade and introduces the platform to the network's firms. Each active firm pays {fee} a month for the platform, and Franco keeps {share} as the channel. The firms are examples.",
+    "readLede": "The Rede Nacional de Contabilidade firms Franco introduces, the stage each one is at and what Franco earns once they go live. The firms are examples.",
+    "hero": {
+      "label": "Franco's revenue from the channel",
+      "base": "No active firm yet · {yearly} a year. | {count} active firm · {yearly} a year. | {count} active firms · {yearly} a year.",
+      "pending": "{amount}/month more when the others go live.",
+      "allActive": "Every firm in the channel is active."
+    },
+    "perMonth": "{amount}/month",
+    "toVerify": "Amount to be checked — no automatic billing",
+    "stagesLabel": "Firms by stage",
+    "stages": {
+      "contato": "Contact",
+      "demo": "Demo",
+      "implantacao": "Onboarding",
+      "ativo": "Active"
+    },
+    "stageAria": "Stage: {stage}",
+    "listTitle": "Firms in the channel",
+    "since": "{city} · at this stage since {date}",
+    "shareLabel": "Franco's share",
+    "feeLabel": "Monthly fee",
+    "onActivation": "once active",
+    "advance": "Move to {stage}",
+    "edit": "Edit",
+    "add": "Add firm",
+    "advanced": "{name} moved to {stage}.",
+    "stale": "{name} had already changed stage. The board was refreshed.",
+    "saved": "{name} saved.",
+    "added": "{name} joined the channel, at Contact.",
+    "loadFailed": "The channel could not be loaded.",
+    "retry": "Try again",
+    "emptyTitle": "No firm in the channel",
+    "emptyManage": "Add the first network firm Franco is introducing.",
+    "emptyRead": "When Franco introduces a network firm, it shows up here.",
+    "invalidTransition": "This firm has already changed stage.",
+    "notFound": "This firm is no longer in the channel.",
+    "form": {
+      "addHeading": "New firm in the channel",
+      "editHeading": "Edit firm",
+      "name": "Firm",
+      "city": "City",
+      "fee": "Platform monthly fee",
+      "share": "Franco's share (%)",
+      "notes": "Notes",
+      "notesHint": "Only whoever runs the channel sees these.",
+      "preview": "Franco's share: {amount}/month once active",
+      "startsAt": "Starts at Contact; the stage moves with the Move button.",
+      "required": "Required.",
+      "feeBounds": "Between {min} and {max}.",
+      "shareBounds": "Between {min}% and {max}%.",
+      "save": "Save",
+      "cancel": "Cancel"
+    }
+  },
+  "assistant": {
+    "title": "Reforma assistant",
+    "lede": "Answers only from what Franco's team has reviewed, with the rule, the source and who reviewed it. What the notes do not cover goes to a specialist.",
+    "greeting": "Hello! I answer only from notes the specialists reviewed, citing the rule. Write the question or pick one of the notes.",
+    "who": "Franco assistant",
+    "you": "You",
+    "inputLabel": "Question for the assistant",
+    "inputPlaceholder": "Ask about the Reforma the way a client would",
+    "send": "Ask",
+    "thinking": "Looking through the reviewed notes…",
+    "tooShort": "Write at least 3 characters.",
+    "askFailed": "Could not ask right now. Try again.",
+    "count": "No answer in this conversation yet. | {count} answer in this conversation, all from reviewed notes. | {count} answers in this conversation, all from reviewed notes.",
+    "conversation": "Conversation with the assistant",
+    "suggestionsTitle": "Reviewed notes",
+    "suggestionsLede": "Tap a question to see its reviewed answer.",
+    "suggestionsEmpty": "No reviewed note in date yet. When a specialist reviews one, it shows up here.",
+    "questionsLink": "Questions for specialists",
+    "answer": {
+      "rule": "Rule: {rule}",
+      "source": "Source: {label}, read on {date}",
+      "reviewed": "reviewed by {name} on {date}",
+      "unknownReviewer": "a specialist"
+    },
+    "handoff": {
+      "noNote": "There is no note reviewed by the team for this question, so I will not risk an answer.",
+      "picker": "Specialist",
+      "send": "Hand to the specialist",
+      "done": "Handed to {name}. The answer arrives on the notifications bell.",
+      "noSpecialist": "No active specialist to take the question right now.",
+      "failed": "Could not hand it over right now. Try again."
+    },
+    "questions": {
+      "title": "Questions for specialists",
+      "ledeManage": "Every question the assistant handed to a specialist, open ones first.",
+      "ledeSpecialist": "The questions handed to you. Your answer rings the bell of whoever asked.",
+      "status": {
+        "aberta": "Open",
+        "respondida": "Answered"
+      },
+      "meta": "from {asker} to {specialist} · {date}",
+      "someone": "someone",
+      "answerLabel": "Your answer",
+      "answerSend": "Answer",
+      "answered": "Answer sent. {name} hears it on the bell.",
+      "answeredOn": "Answered on {date}",
+      "waiting": "Waiting for {name}",
+      "toNote": "Turn into a note",
+      "noted": "Turned into a note",
+      "noteCreated": "Draft note created. Another specialist reviews it before the assistant uses it.",
+      "empty": "No question yet. When the assistant hands one over, it shows up here.",
+      "emptyTitle": "Empty inbox",
+      "forbidden": "Only the specialists and the direction see the questions.",
+      "loadFailed": "Could not load the questions.",
+      "retry": "Try again"
+    },
+    "knowledge": {
+      "title": "Reforma knowledge base",
+      "lede": "Franco's own notes: the only thing the assistant answers with. A note goes live once another specialist reviews it, and for 90 days.",
+      "add": "New note",
+      "live": "No live note | {count} live note | {count} live notes",
+      "expiring": "No note expires within 7 days | {count} note expires within 7 days | {count} notes expire within 7 days",
+      "drafts": "None awaiting review | {count} awaiting review | {count} awaiting review",
+      "statsLabel": "State of the base",
+      "listTitle": "Notes",
+      "states": {
+        "rascunho": "Draft",
+        "revisada": "Reviewed",
+        "vencida": "Review expired",
+        "aposentada": "Retired"
+      },
+      "reviewedBy": "reviewed by {name} on {date}",
+      "awaiting": "awaiting review · last edit by {name}",
+      "expiresIn": "expires today | expires in {count} day | expires in {count} days",
+      "edit": "Edit",
+      "review": "Review",
+      "retire": "Retire",
+      "retireConfirm": "Retire this note? It stops answering for good.",
+      "retireYes": "Yes, retire",
+      "cancel": "Cancel",
+      "reviewedToast": "Note reviewed: the assistant answers with it now.",
+      "retiredToast": "Note retired.",
+      "savedToast": "Note saved as a draft. Another specialist still has to review it.",
+      "empty": "No note yet. Write the first: the assistant answers only with what is here.",
+      "emptyTitle": "Empty base",
+      "forbidden": "Only the specialists and the direction write the knowledge base.",
+      "loadFailed": "Could not load the knowledge base.",
+      "retry": "Try again",
+      "gaps": {
+        "title": "Questions without a note",
+        "lede": "The last 30 days' questions the assistant could not answer, most asked first.",
+        "times": "{count}×",
+        "lastAsked": "last on {date}",
+        "empty": "No question without a note in the last 30 days."
+      }
+    },
+    "form": {
+      "addHeading": "New note",
+      "editHeading": "Edit note",
+      "fromQuestionHeading": "Turn into a note",
+      "question": "Question",
+      "answer": "Answer",
+      "rule": "Rule (legal citation)",
+      "sourceLabel": "Source",
+      "sourceUrl": "Source address",
+      "asOf": "Read on",
+      "strong": "Strong keys",
+      "weak": "Weak keys",
+      "keywordsHint": "Separate with commas. A key of 4 letters or more matches the start of a word (cobr → cobrança); a strong key scores 2, a weak one 1, and an answer needs 2.",
+      "required": "Required.",
+      "tooLong": "At most {max} characters.",
+      "url": "An address starting with http:// or https://.",
+      "future": "A day that is not in the future.",
+      "strongRequired": "At least one strong key.",
+      "keyword": "Each key has 2 to 40 characters, at most 12 of them.",
+      "backToDraft": "Saving a change sends the note back to draft: another specialist reviews it again.",
+      "draftNote": "The note starts as a draft and answers only once another specialist reviews it.",
+      "cancel": "Cancel",
+      "save": "Save"
+    },
+    "notWriter": "Only the specialists and the direction write the knowledge base.",
+    "notReviewer": "Only a specialist who did not write the last change reviews the note.",
+    "notSpecialist": "That person is not an active specialist of Franco's.",
+    "retired": "This note was retired.",
+    "notFound": "This note no longer exists.",
+    "questionNotFound": "This question is not in your inbox.",
+    "answered": "This question was already answered.",
+    "alreadyNoted": "This question is already a note."
+  },
+  "fiscal": {
+    "retry": "Try again",
+    "estimate": "estimate",
+    "sectors": {
+      "comercio": "Retail",
+      "industria": "Industry",
+      "servicos": "Services",
+      "saude": "Health",
+      "educacao": "Education",
+      "agro": "Agribusiness"
+    },
+    "regimes": {
+      "simples": "Simples",
+      "presumido": "Presumido",
+      "real": "Real"
+    },
+    "statuses": {
+      "critico": "Critical",
+      "atencao": "Attention",
+      "ok": "OK",
+      "sem_notas": "No invoices imported"
+    },
+    "readiness": {
+      "title": "Invoice readiness",
+      "heading": "Do the clients' invoices already carry IBS/CBS?",
+      "lede": "The Presumido and Real clients, by the invoices they issued in the last 30 days: who Franco has to warn before the rejection.",
+      "note": "Read from the XMLs imported under Reinaldo › Invoices. An invoice is complete when every item carries the IBS/CBS group, its CST and cClassTrib, and the 2026 test rates. OK at 95% or more with nothing at risk; Attention from 80% to 94%; Critical under 80% or with any invoice at risk of rejection 1115. Simples clients stay out until 2027.",
+      "loadFailed": "The readiness could not be loaded right now.",
+      "hero": {
+        "label": "Invoices at risk of rejection 1115",
+        "base": "out of {invoices} invoices issued in the last 30 days by {clients} Presumido and Real clients.",
+        "bar": "Clients by status",
+        "barLabel": "{critico} critical, {atencao} need attention, {ok} ready",
+        "noNotes": "{count} with no invoices imported"
+      },
+      "kpis": {
+        "complete": "Complete invoices",
+        "critical": "Critical clients",
+        "ready": "Ready"
+      },
+      "filters": {
+        "status": "Status",
+        "all": "All · {count}",
+        "option": "{label} · {count}",
+        "system": "Issuing system",
+        "allSystems": "Every system"
+      },
+      "table": {
+        "caption": "Presumido and Real clients by the readiness of their issued invoices",
+        "client": "Client",
+        "invoices": "Invoices 30d",
+        "complete": "Complete",
+        "atRisk": "At risk",
+        "status": "Status",
+        "open": "Open {name}",
+        "noSystem": "system not identified",
+        "emptyTitle": "No client with this filter",
+        "emptyText": "Change the status or the system to see the others."
+      },
+      "detail": {
+        "title": "Client detail",
+        "emptyText": "Open a client from the list to see what its invoices miss and warn the client.",
+        "loadFailed": "This client could not be opened right now.",
+        "window": "Issued invoices · {days} days",
+        "invoices": "Invoices",
+        "complete": "Complete",
+        "atRisk": "At risk",
+        "issues": "What is missing",
+        "noIssues": "Nothing missing in the last {days} days' invoices.",
+        "noNotes": "No issued invoice imported in the last {days} days.",
+        "samples": "e.g.:",
+        "sample": "NF-e no. {number} (series {series}), item {item}",
+        "sampleNoItem": "NF-e no. {number} (series {series})",
+        "notify": "Warn the client",
+        "timeline": "Client history"
+      },
+      "issues": {
+        "missing_group": "Item without the IBS/CBS group: rejection 1115 once validation applies",
+        "missing_codes": "IBS/CBS CST or cClassTrib left blank",
+        "without_test_values": "2026 test rates (CBS 0.9% · IBS 0.1%) not shown"
+      },
+      "issueCount": "{count} invoice | {count} invoices"
+    },
+    "notice": {
+      "title": "Warning to the client",
+      "flag": "E-mail preview · nothing is sent: the client has no e-mail on file, and the warning is recorded in its history.",
+      "greeting": "Hello, {name} team,",
+      "counts": "Of the {invoices} invoices you issued in the last {days} days, {pct} already carry the complete IBS/CBS group.",
+      "risk": "{count} invoice would be rejected (rejection 1115) once the Federal Revenue's validation applies. | {count} invoices would be rejected (rejection 1115) once the Federal Revenue's validation applies.",
+      "fix": "The fix is in the product register and in how {system} issues them. Franco has already sorted the items and can help your team or the system's vendor correct them.",
+      "fixNoSystem": "The fix is in the product register and in the issuing system. Franco has already sorted the items and can help your team or the system's vendor correct them.",
+      "noNotes": "We have not received the invoices you issued in the last {days} days yet. Could you send us the XMLs, so we can check the IBS/CBS group before the Federal Revenue's validation?",
+      "ask": "Can we book 30 minutes this week?",
+      "signature": "Franco tax team",
+      "copy": "Copy text",
+      "copied": "Text copied",
+      "copyFailed": "Could not copy: select the text and copy it by hand.",
+      "register": "Record warning",
+      "registered": "Warning recorded by {name} on {at}.",
+      "registeredSystem": "Warning recorded on {at}.",
+      "registerFailed": "The warning could not be recorded right now. Try again.",
+      "close": "Close"
+    },
+    "timeline": {
+      "empty": "Nothing recorded yet.",
+      "loadFailed": "The history could not be loaded.",
+      "by": "{at} · {name}",
+      "bySystem": "{at} · recorded automatically",
+      "notice": "Invoice warning recorded: {invoices} invoices, {pct} complete, {risk} at risk",
+      "review": "Supplier review proposed: {share} from Simples, {range} a year (estimate)",
+      "other": "Record {type}"
+    },
+    "suppliers": {
+      "title": "Supplier credit",
+      "heading": "How much credit does each client leave on the table?",
+      "lede": "From 2027, buying from Simples suppliers yields little IBS/CBS credit: which clients should review their suppliers.",
+      "note": "Read from the last 90 days' purchase invoices: each supplier's regime comes from the XML's CRT (1, 2 or 4 = Simples/MEI; 3 = standard regime). Credit lost a year = Simples purchases × 12 × (26.5% reference rate − the 3% to 5% a Simples supplier pays inside the DAS). An estimate, as a range: the reference rate and the DAS share are not final yet.",
+      "loadFailed": "Supplier credit could not be loaded right now.",
+      "noSimples": "Nothing bought from Simples in the last 90 days: there is nothing to review.",
+      "proposedToast": "Supplier review proposed for {name}.",
+      "kpis": {
+        "label": "Supplier credit summary",
+        "total": "Credit lost a year",
+        "buying": "Clients buying from Simples",
+        "buyingValue": "{count} of {total}",
+        "mean": "Average Simples share",
+        "proposed": "Reviews proposed"
+      },
+      "filters": {
+        "sector": "Sector",
+        "allSectors": "Every sector"
+      },
+      "legend": {
+        "simples": "Simples/MEI supplier",
+        "normal": "Standard-regime supplier"
+      },
+      "list": {
+        "title": "Purchases by supplier regime",
+        "lede": "From the largest credit lost to the smallest. Who buys nothing from Simples loses nothing.",
+        "empty": "No Presumido or Real client with purchase invoices in this sector."
+      },
+      "row": {
+        "purchases": "purchases of {value}/month",
+        "lost": "Credit lost a year · {share} from Simples",
+        "bar": "Simples {simples}, standard regime {normal}",
+        "propose": "Propose a review",
+        "noSimples": "No Simples supplier",
+        "noSimplesHint": "Nothing bought from a Simples supplier in the last 90 days.",
+        "proposed": "Review proposed",
+        "history": "Show history",
+        "hideHistory": "Hide history",
+        "failed": "The review could not be proposed right now."
+      }
+    },
+    "imports": {
+      "title": "Invoices",
+      "heading": "The XMLs of the clients' invoices",
+      "lede": "Send the XMLs Franco receives from its clients, one file or a .zip with many. Each invoice is tied to its client by CNPJ: those it issued feed Invoice readiness; those it received, Supplier credit.",
+      "result": "Latest upload",
+      "success": "{stored} invoices stored out of {files} files.",
+      "form": {
+        "file": ".xml or .zip file",
+        "accepted": "One .xml or one .zip of up to 20 MB; up to 1 MB per XML and 2000 files per .zip. The files are kept with no public address.",
+        "submit": "Import",
+        "errors": {
+          "required": "Choose an .xml or .zip file.",
+          "kind": "Only .xml or .zip files.",
+          "size": "The file is over 20 MB: split it into more than one .zip.",
+          "invalid": "The file was refused: it must be an .xml or .zip of up to 20 MB.",
+          "throttled": "Too many uploads in a row: wait a minute and try again.",
+          "failed": "The import could not run right now. Try again."
+        }
+      },
+      "batches": {
+        "title": "Imports",
+        "empty": "No import yet.",
+        "loadFailed": "The imports could not be loaded."
+      },
+      "batch": {
+        "upload": "Uploaded on screen",
+        "folder": "Folder (nfe:import command)",
+        "by": "by {name}",
+        "files": "Files read",
+        "stored": "Invoices stored",
+        "refused": "Refused",
+        "showRefusals": "Show refusals ({count})",
+        "hideRefusals": "Hide refusals",
+        "all": "Show all {count} refusals",
+        "noRefusals": "Nothing refused."
+      },
+      "refusals": {
+        "not_xml": "Not a readable XML",
+        "not_nfe": "Not an authorised NF-e (nfeProc)",
+        "invalid_key": "Invalid access key",
+        "client_unknown": "No portfolio client with this CNPJ",
+        "duplicate": "Already imported",
+        "too_large": "Too large (over 1 MB, or the .zip went past 20 MB)"
+      }
+    }
+  },
+  "radar": {
+    "title": "Portfolio radar",
+    "heading": "The Reform's engine over the clients Franco already has",
+    "lede": "Each row is a conversation Franco can start tomorrow, or a batch for the Franco Specialist Network. Figures are estimates by revenue band.",
+    "note": "Where invoices were imported, the proof comes from them; the rest comes from the client record. Only a client that consented in its contract goes into a batch, and Franco keeps every one.",
+    "loadFailed": "The radar could not be loaded.",
+    "retry": "Try again",
+    "notFound": "This radar item does not exist.",
+    "partnerNotCovering": "This partner's specialty does not cover this item.",
+    "perYear": "a year",
+    "perMonth": "a month",
+    "kinds": {
+      "oportunidade": "Opportunity",
+      "risco": "Risk"
+    },
+    "kpis": {
+      "label": "Radar summary",
+      "clients": "Clients analysed",
+      "clientsValue": "{count} client | {count} clients",
+      "withOpportunity": "With at least one opportunity",
+      "total": "Opportunities in the portfolio",
+      "riskTypes": "Risk types found"
+    },
+    "opportunities": {
+      "title": "Clients by opportunity type",
+      "lede": "Sending a batch gives the chosen partner the 10 largest clients by estimate, with consent in their contract, not yet referred to it.",
+      "empty": "No opportunity in the portfolio."
+    },
+    "risks": {
+      "title": "Risks in the portfolio",
+      "lede": "Left out of the R$ total: they are costs to avoid, not revenue."
+    },
+    "row": {
+      "clients": "{count} client | {count} clients",
+      "held": "held back when B2B sales settle (estimate)",
+      "heldValue": "≈ {range} a month",
+      "partnerLabel": "Partner for {title}",
+      "refer": "Send the largest | Send the {count} largest",
+      "allSent": "All already sent",
+      "sent": "{count} sent | {count} sent",
+      "withoutConsent": "{count} without consent stays out of the batch | {count} without consent stay out of the batch",
+      "noPartner": "No specialty in the network for this item.",
+      "showClients": "Show clients",
+      "hideClients": "Hide clients",
+      "failed": "The batch could not be sent. Try again.",
+      "notCovering": "This partner's specialty does not cover this item.",
+      "alreadyReferred": "One of these clients was just sent to this partner. Open the radar again."
+    },
+    "detail": {
+      "loadFailed": "The clients could not be loaded.",
+      "empty": "No client in this item.",
+      "noConsent": "No consent",
+      "keys": "Access keys",
+      "proof": {
+        "cadastro": "from the client record",
+        "readiness": "Invoices of the last {days} days: {complete} of {invoices} complete, {atRisk} at risk",
+        "share": "B2B measured in the invoices: {share} ({documents} invoices in {days} days; the record says {declared})",
+        "split": "B2B sales from the invoices: {monthly} a month, {held} a month held back"
+      }
+    },
+    "sentToast": "{count} portfolio client sent to {partner}. Franco keeps every one. | {count} portfolio clients sent to {partner}. Franco keeps every one.",
+    "nothingToast": "Every client of “{title}” was already sent to {partner}."
+  },
+  "contracts": {
+    "title": "Contract alert",
+    "heading": "Contracts that cross 2027–2033 without a price clause for the Reforma",
+    "lede": "The clients' contracts Franco keeps, most exposed first. Those ending in 2026 or already with the clause are left out.",
+    "note": "Tax reform (EC 132/2023 and LC 214/2025): PIS, Cofins, ICMS and ISS give way to CBS and IBS from 2027 to 2033, and a long contract that crosses the transition needs a price rebalancing clause. Source: gov.br/fazenda, read on 05/11/2026.",
+    "loadFailed": "Could not load the contracts.",
+    "retry": "Try again",
+    "partnerNotLegal": "This partner is neither in tax law nor in pricing: choose another.",
+    "sentToast": "{client}'s contract sent to {partner}.",
+    "clauseToast": "Clause recorded on {client}'s contract.",
+    "kinds": {
+      "fornecimento": "Supply",
+      "prestacao_servicos": "Services",
+      "locacao": "Lease",
+      "distribuicao": "Distribution",
+      "manutencao": "Maintenance"
+    },
+    "kpis": {
+      "label": "Contracts summary",
+      "atRisk": "Without the Reforma clause",
+      "atRiskValue": "{count} of {total}",
+      "value": "Contracts' annual value",
+      "exposure": "Value × years exposed",
+      "referred": "Sent to legal"
+    },
+    "list": {
+      "title": "Contracts to review",
+      "lede": "Each strip marks the years from 2027 to 2033 in which the contract still runs. The bar compares its exposure with the most exposed contract's.",
+      "empty": "No contract crosses the transition without a clause."
+    },
+    "row": {
+      "line": "{kind} · since {start} · {value}/year · until {end}",
+      "years": "Exposed from {from} to {to}",
+      "notExposed": "Outside the 2027 to 2033 transition",
+      "exposure": "Value × years exposed",
+      "yearsExposed": "{count} year exposed | {count} years exposed",
+      "partnerLabel": "Legal partner for {client}'s contract",
+      "refer": "Send to legal",
+      "sent": "With {partners}",
+      "noPartner": "No legal partner in the network.",
+      "consentRefused": "Client without consent in the services contract to be introduced to partners.",
+      "consentMissing": "No consent recorded: the client never answered, in the services contract, whether it agrees to be introduced to partners.",
+      "clause": "Clause included",
+      "clauseConfirm": "Record that {client}'s contract already has the Reforma clause? It leaves the list, and the mark cannot be undone here.",
+      "clauseYes": "Record clause",
+      "cancel": "Cancel",
+      "failed": "Could not send it. Try again.",
+      "clauseFailed": "Could not record the clause. Try again.",
+      "consentRequired": "The client has not agreed to be introduced to partners: the contract was not sent.",
+      "alreadyReferred": "This contract was just sent to this partner. The list was refreshed."
+    },
+    "import": {
+      "action": "Import CSV",
+      "title": "Import contracts",
+      "lede": "One line per contract, in UTF-8, separated by semicolons or commas. The same client, kind, start and end updates the contract. Lines with an error are left out and the others go in.",
+      "columns": "File columns",
+      "accepted": "cnpj_cliente: a client of the portfolio · tipo: fornecimento, prestação de serviços, locação, distribuição or manutenção · valor_anual in reais, like 1.200.000,00 · inicio and fim: years, like 2025 · clausula_reforma: sim, não or empty",
+      "template": "Download template",
+      "file": "CSV file",
+      "fileRequired": "Choose a CSV file.",
+      "submit": "Import",
+      "close": "Close",
+      "cancel": "Cancel",
+      "success": "{total} contracts imported: {created} new and {updated} updated.",
+      "partial": "{stored} contracts stored: {created} new and {updated} updated. These lines were left out:",
+      "line": "Line {line}",
+      "more": "And {count} more line with a problem. | And {count} more lines with a problem.",
+      "templateFailed": "Could not download the template now.",
+      "codes": {
+        "import_encoding": "The file is not UTF-8. In Excel, save it as “CSV UTF-8”.",
+        "import_header": "The header is not the template's. Missing columns: {missing}.",
+        "import_empty": "The file has no contract line.",
+        "import_too_many": "The file has more than {limit} lines: split it.",
+        "unexpected": "Could not import now. Try again."
+      },
+      "lineCodes": {
+        "client_unknown": "no client of the firm has this CNPJ",
+        "kind_invalid": "unknown contract kind",
+        "value_invalid": "invalid annual value (R$ 0,01 to R$ 1 billion)",
+        "year_invalid": "year outside 2000–2100",
+        "end_before_start": "ends before the start",
+        "clause_invalid": "clause other than sim or não",
+        "columns": "columns missing on this line"
+      },
+      "fields": {
+        "cnpj_cliente": "Client CNPJ",
+        "tipo": "Kind",
+        "valor_anual": "Annual value",
+        "inicio": "Start",
+        "fim": "End",
+        "clausula_reforma": "Reforma clause"
+      }
+    }
+  },
+  "briefing": {
+    "title": "Daily briefing",
+    "greeting": {
+      "morning": "Good morning, {name}",
+      "afternoon": "Good afternoon, {name}",
+      "night": "Good evening, {name}"
+    },
+    "lede": "Briefing for {day}: what came in, what is booked and what needs you.",
+    "mailNote": "It also arrives by e-mail at 7am on business days.",
+    "kpis": {
+      "label": "Today's figures",
+      "leads": "New leads · 7 days",
+      "leadsSub": "{count} in the last 24h",
+      "meetings": "Meetings · next 5 business days",
+      "meetingsSub": "{count} today",
+      "referrals": "Referrals awaiting contact",
+      "referralsSub": "{breached} past the SLA · {warning} at risk",
+      "pipeline": "Open pipeline",
+      "pipelineSub": "{count} deals · estimated annual fee (portfolio range)",
+      "noBase": "no portfolio base"
+    },
+    "actions": {
+      "title": "Today's 3 actions",
+      "empty": "Nothing needs you urgently today.",
+      "sla_breached": "Chase {partner}: {company} has waited {hours} business hours for a first contact (target {goal}h).",
+      "meetings_today": "Prepare today's {count} meeting with the specialists. | Prepare today's {count} meetings with the specialists.",
+      "proposals": "Close {count} open proposal: {range}/year in fees. | Close {count} open proposals: {range}/year in fees.",
+      "proposals_no_range": "Close {count} open proposal. | Close {count} open proposals.",
+      "partial_leads": "Call {count} partial lead: left a contact and stopped mid-diagnostic. | Call {count} partial leads: left a contact and stopped mid-diagnostic.",
+      "radar": "Radar: {count} portfolio client with “{title}”, {range}/year. | Radar: {count} portfolio clients with “{title}”, {range}/year.",
+      "radar_monthly": "Radar: {count} portfolio client with “{title}”, {range}/month. | Radar: {count} portfolio clients with “{title}”, {range}/month.",
+      "go": {
+        "sla_breached": "See partner",
+        "meetings_today": "Open agenda",
+        "proposals": "See pipeline",
+        "partial_leads": "Call list",
+        "radar": "Open Radar"
+      }
+    },
+    "countdown": {
+      "title": "Reform: CBS in force in",
+      "ariaLabel": "Time until 01/01/2027, 00:00 São Paulo time",
+      "days": "days",
+      "hours": "hours",
+      "minutes": "min",
+      "seconds": "sec",
+      "started": "CBS in force since 01/01/2027",
+      "caption": "01/01/2027: the CBS is charged and PIS/Cofins end (LC 214/2025; gov.br/fazenda, read on 05/11/2026).",
+      "postponed": "Industry bodies have asked to delay the CBS to 2028 (news of 04/11/2026, still under discussion): the countdown follows the law as it stands."
+    },
+    "meetings": {
+      "title": "Upcoming meetings",
+      "empty": "No meetings in the next 5 business days.",
+      "more": "and {count} more.",
+      "anonymous": "Unnamed company"
+    },
+    "referrals": {
+      "title": "Referrals and the {goal} business-hour SLA",
+      "empty": "No referral awaiting a first contact.",
+      "more": "and {count} more."
+    },
+    "stages": {
+      "title": "Pipeline by stage",
+      "count": "{count} deal | {count} deals",
+      "perYear": "{range}/year"
+    },
+    "loadFailed": "The briefing could not be loaded.",
+    "retry": "Try again"
+  }
+}

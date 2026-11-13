@@ -25,7 +25,6 @@ const tabStub = {
 };
 
 const primevueStubs = {
-  ATip: { name: 'ATip', props: ['tipKey'], template: '<span class="tip-stub">{{ tipKey }}</span>' },
   Tabs: tabsStub,
   TabList: tabListStub,
   Tab: tabStub,
@@ -121,38 +120,6 @@ describe('OTabView — view mode', () => {
 
   it('does not render a RouterView in view mode', () => {
     expect(mount().findComponent({ name: 'RouterView' }).exists()).toBe(false);
-  });
-});
-
-describe('OTabView — tips', () => {
-  it('renders a tip beside the title when the panel names one', () => {
-    const wrapper = mount({ slot: '<OTabPanel title="Overview" tipKey="overview.tip" value="overview" />' });
-
-    expect(wrapper.find('.tip-stub').text()).toBe('overview.tip');
-  });
-
-  // The descriptor is read off vnode.props, where Vue leaves a kebab-case attribute as it was written.
-  it('reads tip-key written in kebab case', () => {
-    const wrapper = mount({ slot: '<OTabPanel title="Overview" tip-key="overview.tip" value="overview" />' });
-
-    expect(wrapper.find('.tip-stub').text()).toBe('overview.tip');
-  });
-
-  // PrimeVue's Tab is a button that switches on click; the tip is a button inside it.
-  it('keeps a click on the tip from reaching the tab', async () => {
-    let tabClicks = 0;
-    const wrapper = mount({ slot: '<OTabPanel title="Overview" tipKey="overview.tip" value="overview" />' });
-
-    wrapper.find('.tab-stub').element.addEventListener('click', () => tabClicks++);
-    await wrapper.find('.tip-stub').trigger('click');
-
-    expect(tabClicks).toBe(0);
-  });
-
-  it('renders no tip when the panel names none', () => {
-    const wrapper = mount();
-
-    expect(wrapper.find('.tip-stub').exists()).toBe(false);
   });
 });
 

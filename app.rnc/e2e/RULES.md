@@ -1,5 +1,5 @@
 ---
-version: 1.8.2
+version: 1.14.0
 origin: pendulum
 based-on: 1.8.2
 ---
@@ -24,7 +24,15 @@ A request can.
 
 - Playwright (Chromium) — `playwright.config.ts` at app.rnc root
 - Run: `cd app.rnc && npm run test:e2e` or `make e2e`
-- Dev server: auto-started via `webServer` (`npx vite --mode test --port 5173`) — no SSL
+- Dev server: auto-started via `webServer` (`npx vite --mode test --port $E2E_PORT --strictPort`,
+  `E2E_PORT` defaulting to 5173; `baseURL` and the readiness `url` follow it) — no SSL
+- **A second checkout (a git worktree) must run with its own `E2E_PORT`**, e.g.
+  `E2E_PORT=5175 make pre-commit` from its root. Locally `reuseExistingServer` is on, so with the
+  default port the suite silently runs against whatever already answers on 5173 — the OTHER
+  checkout's code. And if that server is a plain `npm run dev` (not `--mode test`), the five
+  English-route specs fail: the default language `en` comes from `.env.test`, and a dev server
+  started from `.env` serves `pt-BR`. The
+  Makefile does not set the port on purpose: the main checkout keeps 5173.
 - Retries: 1 locally, 2 on CI
 - **The browsers are not installed by `npm install`.** A first run on a new machine needs
   `npx playwright install chromium`, or every test fails at browser launch.
@@ -49,6 +57,10 @@ e2e/
   theme/             ← what the theme promises, as the browser computed it: contrast, relief,
                        touch targets, scrollbars, the viewport height, the dialog mask
   ideas/             ← the Ideas board and an opened idea, at phone width
+  channel/           ← the RNC channel: the operator's advance, Reinaldo's read-only screen (rnc-3)
+  assistant/         ← the Reforma assistant: an answer with its source, the hand-off (rnc-3)
+  contracts/         ← the contract alert: legal referral, consent, clause, import; the portal's band (rnc-3)
+  briefing/          ← Reinaldo's daily briefing: the landing, every action's screen, both schemes (rnc-3)
   static/            ← what the app serves, not what a person does (robots.txt)
 ```
 
@@ -85,8 +97,21 @@ and translation. IDs set by PrimeVue props (`#loginPassword` via `inputId`) and
 `mockUser.permissions` is not decoration: the route guards read it against the route's
 `meta.permission` and **redirect to home when it is missing**, so the spec then asserts against a
 page that never rendered and fails on a locator rather than on a permission. `/users` needs
-`users.read`, the roles screen `permissions.read`, the Design pages need `design.read`. When a route gains a `meta.permission`, grant it
+`users.read`, the roles screen `permissions.read`, the workspaces `leads.read` / `metrics.read` / `users.read`. When a route gains a `meta.permission`, grant it
 in the fixtures in the same change.
+
+## Signed-in specs start at `/painel`
+
+`/` is Franco's public site (rnc-1 AM15) and renders no rail; a spec that measures the back office
+goes to `/painel`, the `home` route.
+
+## Known Gaps
+
+- **No component gallery to measure** (rnc-1 F1). Four cases measured the Showcase's `/components`
+  page — list row actions under a finger, default-size controls at 44px, the rendered badges and
+  active tab, and the toggle/secondary/tag contrast (`contrast-controls.spec.ts`). They left with the
+  Showcase module. Their rules still hold through the preset, and the tokens-only contrast cases
+  remain; each comes back as a screen of the hub renders those controls (F5 kanban, F8 repricing).
 
 ## Measuring overflow
 

@@ -3,6 +3,14 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.13.0 — 2026-11-07
+
+### Added
+
+- `prefersReducedMotionHelper()` — whether the system asks for less motion, read at the moment it
+  matters (never cached at module load) and `false` where `matchMedia` is missing, so motion plays
+  rather than throws. The site's directives read it (rnc-1).
+
 ## 1.12.0 — 2026-09-21
 
 ### Added

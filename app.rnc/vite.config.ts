@@ -23,20 +23,28 @@ export default defineConfig(({ mode }) => {
   // Single source of truth for the active brand theme. `@ActiveTheme` (imported
   // by src/styles/theme/colors.css) and the ACTIVE_THEME constant both resolve
   // from VITE_ACTIVE_THEME, so switching themes is a one-line .env change.
-  const activeTheme = process.env.VITE_ACTIVE_THEME || 'battoni-dev';
+  const activeTheme = process.env.VITE_ACTIVE_THEME || 'franco';
+
+  // Plain http when no certificate is named (rnc-1 AM1: `http://localhost:5173`, no Valet). A
+  // project serving through Valet names its key and cert and gets https + wss as before.
+  const sslKey = process.env.VITE_LOCAL_SSL_KEY;
+  const sslCert = process.env.VITE_LOCAL_SSL_CERT;
+  const hasLocalSsl = !!sslKey && !!sslCert;
 
   return defineConfig({
     server: isLocal
       ? {
           host: hostname,
-          https: {
-            key: fs.readFileSync(`${process.env.HOME}/${process.env.VITE_LOCAL_SSL_KEY}`, 'utf8'),
-            cert: fs.readFileSync(`${process.env.HOME}/${process.env.VITE_LOCAL_SSL_CERT}`, 'utf8'),
-          },
+          https: hasLocalSsl
+            ? {
+                key: fs.readFileSync(`${process.env.HOME}/${sslKey}`, 'utf8'),
+                cert: fs.readFileSync(`${process.env.HOME}/${sslCert}`, 'utf8'),
+              }
+            : undefined,
           port: 5173,
           strictPort: true,
           hmr: {
-            protocol: 'wss',
+            protocol: hasLocalSsl ? 'wss' : 'ws',
             host: hostname,
             port: 5173,
             clientPort: 5173,
@@ -90,6 +98,7 @@ export default defineConfig(({ mode }) => {
         'primevue/inputgroupaddon',
         'primevue/inputicon',
         'primevue/inputmask',
+        'primevue/inputnumber',
         'primevue/inputotp',
         'primevue/inputtext',
         'primevue/message',
@@ -122,6 +131,8 @@ export default defineConfig(({ mode }) => {
         '@Assets/*': getPath('./src/assets/*'),
         '@Constants': getPath('./src/constants'),
         '@Constants/*': getPath('./src/constants/*'),
+        '@Directives': getPath('./src/directives'),
+        '@Directives/*': getPath('./src/directives/*'),
         '@Enums': getPath('./src/enums'),
         '@Enums/*': getPath('./src/enums/*'),
         '@Helpers': getPath('./src/helpers'),
@@ -146,16 +157,40 @@ export default defineConfig(({ mode }) => {
 
         '@AuthModule': getPath('./src/modules/Auth'),
         '@AuthModule/*': getPath('./src/modules/Auth/*'),
-        '@IdeaModule': getPath('./src/modules/Idea'),
-        '@IdeaModule/*': getPath('./src/modules/Idea/*'),
+        '@DiagnosticModule': getPath('./src/modules/Diagnostic'),
+        '@DiagnosticModule/*': getPath('./src/modules/Diagnostic/*'),
+        '@FiscalModule': getPath('./src/modules/Fiscal'),
+        '@FiscalModule/*': getPath('./src/modules/Fiscal/*'),
+        '@BriefingModule': getPath('./src/modules/Briefing'),
+        '@BriefingModule/*': getPath('./src/modules/Briefing/*'),
+        '@ContractsModule': getPath('./src/modules/Contracts'),
+        '@ContractsModule/*': getPath('./src/modules/Contracts/*'),
+        '@RadarModule': getPath('./src/modules/Radar'),
+        '@RadarModule/*': getPath('./src/modules/Radar/*'),
         '@HomeModule': getPath('./src/modules/Home'),
         '@HomeModule/*': getPath('./src/modules/Home/*'),
+        '@NotificationModule': getPath('./src/modules/Notification'),
+        '@NotificationModule/*': getPath('./src/modules/Notification/*'),
+        '@MetricsModule': getPath('./src/modules/Metrics'),
+        '@MetricsModule/*': getPath('./src/modules/Metrics/*'),
+        '@AssistantModule': getPath('./src/modules/Assistant'),
+        '@AssistantModule/*': getPath('./src/modules/Assistant/*'),
+        '@BrandsModule': getPath('./src/modules/Brands'),
+        '@BrandsModule/*': getPath('./src/modules/Brands/*'),
+        '@ChannelModule': getPath('./src/modules/Channel'),
+        '@ChannelModule/*': getPath('./src/modules/Channel/*'),
+        '@PartnerModule': getPath('./src/modules/Partner'),
+        '@PartnerModule/*': getPath('./src/modules/Partner/*'),
+        '@PortalModule': getPath('./src/modules/Portal'),
+        '@PortalModule/*': getPath('./src/modules/Portal/*'),
+        '@RepricingModule': getPath('./src/modules/Repricing'),
+        '@RepricingModule/*': getPath('./src/modules/Repricing/*'),
         '@PersonalizationModule': getPath('./src/modules/Personalization'),
         '@PersonalizationModule/*': getPath('./src/modules/Personalization/*'),
-        '@TipModule': getPath('./src/modules/Tip'),
-        '@TipModule/*': getPath('./src/modules/Tip/*'),
-        '@ShowcaseModule': getPath('./src/modules/Showcase'),
-        '@ShowcaseModule/*': getPath('./src/modules/Showcase/*'),
+        '@PipelineModule': getPath('./src/modules/Pipeline'),
+        '@PipelineModule/*': getPath('./src/modules/Pipeline/*'),
+        '@SiteModule': getPath('./src/modules/Site'),
+        '@SiteModule/*': getPath('./src/modules/Site/*'),
         '@UserModule': getPath('./src/modules/User'),
         '@UserModule/*': getPath('./src/modules/User/*'),
       },

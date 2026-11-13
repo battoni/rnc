@@ -45,7 +45,7 @@ test.describe('an address that matches nothing', () => {
 
     await page.getByRole('button', { name: /back to start|voltar ao início/i }).click();
 
-    await expect(page).toHaveURL('/');
+    await expect(page).toHaveURL('/painel');
     await expect(page.getByTestId('not-found')).toHaveCount(0);
     await expect(page.getByRole('heading', { name: 'Home' })).toBeVisible();
   });

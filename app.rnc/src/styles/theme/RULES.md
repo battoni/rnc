@@ -1,5 +1,5 @@
 ---
-version: 2.5.1
+version: 2.6.0
 origin: pendulum
 based-on: 2.5.1
 ---
@@ -205,6 +205,10 @@ keeps the interface legible for someone who set the flag for reading comfort rat
 
 ### Do not
 
+- Do not add a stagger as a fifth step. `--motion-stagger` (55ms, 0 under reduced motion) is how
+  far apart a row of siblings STARTS; each still takes `settle`. The entrances themselves live in
+  `styles/components/motion.css` and `src/directives/` (its RULES): a thing on screen at load plays
+  on mount in CSS alone, a thing below the fold waits for `v-reveal`.
 - Do not inline a duration. The reduced-motion override has to be able to reach it, and an inlined
   value makes that block dead code.
 - Do not add a fifth duration to fit one component. Pick the nearest step; if none fits, the

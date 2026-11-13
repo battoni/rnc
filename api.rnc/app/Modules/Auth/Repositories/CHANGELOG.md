@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 2.3.0 — 2026-11-07
+
+### Added
+
+- `UserRepository::findUserByPartnerId`, `saveUser` (fill + save, so the `hashed` cast runs — `updateUser` is a query update) and `deleteUserSessions` (the `sessions` table rows of one user) for `LinkedAccountService` (rnc-2 F1).
+
 ## 2.2.0 — 2026-09-17
 
 ### Changed
