@@ -1,0 +1,84 @@
+---
+description: > Read a person's QA round (a Claude Docs doc from `battoni-new-qa-session`), check every problem Invoke with /battoni-qa-result.
+alwaysApply: false
+---
+# QA Result
+
+> Read a person's QA round (a Claude Docs doc from `battoni-new-qa-session`), check every problem
+> against the app before calling it a bug, and turn each one into the right next step. Works days
+> later, in a fresh session, after the merge or before it: everything it needs is found from the
+> link, never from memory of the session that wrote the doc.
+>
+> **Usage:** `/battoni-qa-result <doc link>` — from the monorepo root. Pass the link, never pasted
+> text: a paste loses the result chips, the comments and the way to fix a step in place.
+> Reads with the `battoni-new-qa-session` skill, mode **recolher** (load it); this command adds what
+> a feature needs around it.
+
+## Step 1 — Find the feature (from the link alone)
+
+1. **Doc id** = the end of the link. `rtk git fetch -q origin`, then look for it in every feature's
+   `state.md` → `## QA`: on `main` (`grep -l <id> specs/*/state.md`) and on every open feature branch
+   (`git show <branch>:specs/<id>-*/state.md`). The doc's line there names the round, the tester and
+   the env. `/battoni-verify` writes that line when it makes the doc, and so does the skill when the
+   doc is made outside verify, so the doc always has a home.
+2. **Not found** → the doc belongs to no feature (an ad-hoc round on the whole product): ask the
+   owner once which PRs it covers, then follow the skill's recolher mode alone and stop.
+3. **Where the code is now:** `gh pr list --state all --head <branch>` for the feature's PR.
+
+| PR state | A real bug is fixed… | Where the record goes |
+| --- | --- | --- |
+| open (draft or not) | on the feature branch, in its worktree (`EnterWorktree` with `path: .claude/worktrees/<id>`; none → `rtk make wt-new ID=<id> BRANCH=<branch>` first), never a checkout in the main checkout | the branch's `state.md` |
+| merged | through the **small track**: a new ID, its own `fix/` branch and PR, citing the `R#` it broke (`.claude/feature-flow.md`, "After delivery") | `state.md` on `main`, through that fix PR |
+| closed, not merged | nowhere until the owner says: ask | — |
+
+A worktree the sweep removed is no loss: the branch is on GitHub
+(`rtk make wt-new ID=<id> BRANCH=<branch>` brings it back, with its deps; the browser
+stack is `make fresh-seed` plus `make serve-api`/`make serve-app` from it, when a step needs it), and a merged feature lives on `main`. A small-track fix gets its
+own: `rtk make wt-new ID=<new id> BRANCH=fix/<new id>-<slug>`.
+
+## Step 2 — Read only the new answers
+
+- Spawn one `battoni-reader` (Haiku) or `general-purpose` agent with `model: sonnet` to read the doc
+  (skill, recolher steps 1–3) and return **only**: each row that is not "Funcionou" (step number,
+  its `A#`, the Observação), the rows still unanswered, the comments, and the filled lines of the
+  problem log. The main session never reads the whole doc: a round of 85 steps is ~60k of XML.
+- **A round in parts.** The doc's `## QA` line in `state.md` ends with `collected: rev <n>` after
+  each run. On the next run, ask the reader for changes since that rev (`sinceRev`), so a tester who
+  takes days is collected as often as wanted, and only what changed is judged again.
+- The tester may still be at work: a step without an answer is "not run yet", never a failure.
+
+## Step 3 — Check each problem before it is a bug
+
+The app may have moved since the doc was written (later PRs). Judge on the code that is live for the
+tester: the PR's branch when it is open, `main` when it is merged.
+
+1. **Re-run the step** where it can be run without the person: the local API through `tinker` or
+   Pest, or one `battoni-chrome-driver` round for a screen. In boanerges-3, 10.6 "the banner stays"
+   reproduced as working: the step pointed at the wrong week, so it was the script's fault.
+2. Then sort it, as the skill says:
+   - **script error** (wrong label, wrong week, wrong expectation) → fix the step's text in the doc
+     and in `qa-script.md`; never the tester's answer, chip or note;
+   - **environment** (old `main`, seeder not run, missing login) → one line for the tester;
+   - **violates an A#** → a bug: a failing test first, then the fix, in the place the table above
+     says;
+   - **outside the spec** → a new D# or a new intent, the owner's call; never fixed in silence.
+
+Ask the owner (one `AskUserQuestion`) only for what the sort cannot settle: a bug that needs a
+product decision, an "outside the spec", a PR that was closed.
+
+## Step 4 — Record and close the loop
+
+- The doc: the skill's round summary at the top ("Rodada N concluída em …").
+- `state.md` → `## QA`, on the doc's line: `collected: rev <n> · <date> · <x> passed, <y> problems
+  (<IDs opened>), <z> not run`. Committed with the fix it records, or alone (`<id>: Record the QA
+  round`) on the branch, or through the small-track PR when the feature is merged.
+- **Merge gate.** When `plan.md` → `## QA` says the merge waits for this round: every step answered
+  and no open bug → `state.md` Next = "merge", and say the draft PR can be marked ready; otherwise
+  Next names what is still owed.
+- A round that is not finished is recorded too (`<z> not run`), so the next session sees it.
+
+## Step 5 — Report
+
+One screen: the counts, each real bug (step, `A#`, where it is fixed and its ID), the script steps
+corrected, the environment notes, what is still unanswered. Then a message for the tester, in
+pt-BR, one paragraph per line, ready to paste: what changed in the doc and which steps to redo.

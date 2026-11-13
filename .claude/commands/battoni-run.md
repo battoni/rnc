@@ -39,7 +39,9 @@ nothing. Otherwise go to the first phase whose `<id>: F<n>` commit is not on the
      `code-reviewer` on Sonnet.
    - **Chrome QA** — run it (recommended, needs Chrome open with the extension connected and the
      API and SPA served locally) · skip it and list every Chrome round as owed in the PR.
-3. Check out `feature/<id>-<slug>`; the tree must be clean.
+3. Be in the feature's worktree: `EnterWorktree` with `path: .claude/worktrees/<id>` (none →
+   `rtk make wt-new ID=<id> BRANCH=feature/<id>-<slug>` first), never a checkout in the main
+   checkout, which stays on `main`; the tree must be clean. Chrome QA on → `make fresh-seed`, `make serve-api` and `make serve-app` from there (no `wt-up` in rnc).
 4. If Chrome QA is on: `curl` the API and the SPA, and open one tab through the
    `battoni-chrome-driver` agent. A failure here is said now, not found at 3 a.m.
 5. Tell the owner, in one block, what must already be allowed for nobody to be asked: `git add`,
@@ -54,15 +56,17 @@ nothing. Otherwise go to the first phase whose `<id>: F<n>` commit is not on the
 ## Step 1 — One phase per subagent
 
 For the next phase without its commit, first add `F<n> started, attempt <a>` to the
-`## Away run` log and commit `state.md`, so a wakeup that fires mid-phase knows a builder is at
-work. Who writes the log: the coordinator writes `started` and `failed`, the builder writes
+`## Away run` log, **without committing**: a wakeup reads the file on disk, so it already knows a
+builder is at work, and the builder's one phase commit carries the line. Who writes the log: the coordinator writes `started` and `failed`, the builder writes
 `done` or `blocked` for its own phase. Then spawn one `general-purpose` agent with `model: "opus"`
 (building is judgment work, `.claude/delegation-policy.md`). The brief, and nothing else from this
 conversation:
 
 > Build phase F<n> of feature `<id>` (attempt <a>). Follow
 > `.claude/commands/battoni-start-session.md`, section "With a feature ID", steps 1–5, exactly:
-> tests red first, then code, `/battoni-pre-commit`, commit with the subject `<id>: F<n> …`. Run `/battoni-pre-commit` inline; a
+> tests red first, then code, the phase gate (`/battoni-pre-commit` without the full Playwright suite;
+> only the e2e files this phase adds or edits), then **one** commit with the code and `state.md`
+> together, subject `<id>: F<n> …` (never a separate state commit). Run `/battoni-pre-commit` inline; a
 > review it would hand to an agent you cannot spawn, you do yourself. You are in **away mode**
 > (`.claude/feature-flow.md`, "Decided while you were away"): never ask; a question takes its
 > recommended option and is logged as `W#`, and as a `C#` in `spec.md` when it changes behaviour
@@ -86,10 +90,12 @@ Wait for its completion notification, then read only `state.md` → `## Done`, `
 ## Step 2 — Verify
 
 When every phase is done and the stop condition includes verify, follow `/battoni-verify <id>` in
-this session, in its away mode, keeping it a coordinator: the review goes to the reviewer named in
+this session, in its away mode, keeping it a coordinator (its layer 1 is the feature's one run of
+the full app Playwright suite): the review goes to the reviewer named in
 `## Away run`, each fix to a fresh `general-purpose` `opus` agent briefed with the finding (red
-test first, then the fix, `/battoni-pre-commit`, commit, the same `state.md` rule as Step 1), and
-each Chrome round to `battoni-chrome-driver`. The PR is opened through `/battoni-publish-pr`
+test first, then the fix, `/battoni-pre-commit`, commit, the same `state.md` rule as Step 1),
+`qa-script.md` and the human QA doc (when `plan.md` → `## QA` says yes) to their Sonnet agents,
+and each Chrome round to `battoni-chrome-driver`. The PR is opened through `/battoni-publish-pr`
 (which pushes and opens a **draft**) with the body `/battoni-create-pr` writes, plus a
 **Decided while you were away** section that copies the `W#` list.
 
