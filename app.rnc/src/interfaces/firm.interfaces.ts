@@ -17,6 +17,8 @@ interface PublicFirm {
   logo_text: string;
   logo_url?: string | null;
   mailbox: string | null;
+  /** The firm's opt-in modules (rnc-4 R17, `FIRM_MODULE`): the site hides what is off — the chat. */
+  modules?: string[];
   name: string;
   phone: string | null;
   phone_href: string | null;

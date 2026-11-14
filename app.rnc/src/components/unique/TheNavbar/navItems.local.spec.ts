@@ -10,8 +10,52 @@ import { useLocalNavItems } from './navItems.local';
  * permission that only its audience holds — TheNavbar's `isVisibleNavItem` does the hiding, and
  * TheNavbar.spec proves that gate. What this proves is that every group declares one.
  */
+const ALL_MODULES = [
+  'portfolio',
+  'fiscal',
+  'radar',
+  'partners',
+  'contracts',
+  'chat',
+  'assistant',
+  'briefing',
+  'brands',
+  'channel',
+];
+
+function signInWithModules(modules: string[], isSpecialist = false) {
+  useUserStore().setUserAndPermissions(
+    {
+      firm: { modules, name: 'Alvorada Contabilidade', slug: 'alvorada' },
+      id: 7,
+      is_specialist: isSpecialist,
+      last_name: 'Alvorada',
+      name: 'Helena',
+      role: 'Gestão',
+      role_slug: 'gestao',
+      username: 'helena.alvorada',
+    } as never,
+    []
+  );
+}
+
+/** Every route name the rail offers, children included, in order. */
+function routeNamesOf(items: NavItem[]): string[] {
+  return items.flatMap((item) => [
+    item.routeName ?? '',
+    ...(item.children ?? []).map((child) => child.routeName ?? ''),
+  ]);
+}
+
 describe('useLocalNavItems', () => {
-  beforeEach(() => setActivePinia(createPinia()));
+  /*
+   * The declaration tests below read the rail of a firm with EVERY module on (Franco's): which entry
+   * a module hides is the rnc-4 block at the end.
+   */
+  beforeEach(() => {
+    setActivePinia(createPinia());
+    signInWithModules(ALL_MODULES);
+  });
 
   it('declares the three groups and the portal, in order, each with its gate', () => {
     const items = useLocalNavItems().value;
@@ -131,6 +175,60 @@ describe('useLocalNavItems', () => {
 
     expect(portal?.children?.map((child) => [child.label, child.routeName, child.permission, child.role])).toEqual([
       ['navigation.statement', 'portal-statement', 'portal.access', 'parceiro'],
+    ]);
+  });
+  /*
+   * rnc-4 A24 (R17, R20): a module the firm has off takes its screens out of the rail — the API
+   * answers them 404 and the router shows not-found. Without `partners` no partner entry is left:
+   * the registry, the trail, the ledger, and the partner's portal.
+   */
+  it('has no partner entry when the firm has `partners` off (rnc-4 A24)', () => {
+    signInWithModules(ALL_MODULES.filter((module) => module !== 'partners'));
+
+    const names = routeNamesOf(useLocalNavItems().value);
+
+    expect(names).not.toContain('partners');
+    expect(names).not.toContain('referral-trail');
+    expect(names).not.toContain('network-ledger');
+    expect(names).not.toContain('portal');
+    expect(names).not.toContain('portal-statement');
+    expect(names).toContain('metrics');
+    expect(names).toContain('briefing');
+  });
+
+  it.each([
+    ['portfolio', ['repricing']],
+    ['fiscal', ['nfe-readiness', 'supplier-credit', 'nfe-imports']],
+    ['radar', ['portfolio-radar']],
+    ['contracts', ['contract-alert']],
+    ['assistant', ['assistant', 'assistant-knowledge']],
+    ['briefing', ['briefing']],
+    ['brands', ['brands']],
+    ['channel', ['management-channel', 'channel']],
+  ])('drops the screens of `%s` when it is off, and only those', (module, screens) => {
+    signInWithModules(ALL_MODULES, true);
+    const everyScreen = routeNamesOf(useLocalNavItems().value);
+
+    signInWithModules(
+      ALL_MODULES.filter((key) => key !== module),
+      true
+    );
+
+    expect(routeNamesOf(useLocalNavItems().value)).toEqual(everyScreen.filter((name) => !screens.includes(name)));
+  });
+
+  it('keeps only the core screens for a firm with no opt-in module (the platform firm)', () => {
+    signInWithModules([]);
+
+    expect(routeNamesOf(useLocalNavItems().value)).toEqual([
+      'team-home',
+      'pipeline',
+      'agenda',
+      'management-home',
+      'metrics',
+      'operator-home',
+      'users',
+      'roles-and-permissions',
     ]);
   });
 });

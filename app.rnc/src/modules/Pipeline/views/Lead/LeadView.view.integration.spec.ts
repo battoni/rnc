@@ -42,11 +42,19 @@ const STUBS = {
   RouterLink: { props: ['to'], template: '<a><slot :navigate="() => {}" /></a>' },
 };
 
-function renderLead() {
+function renderLead(modules: string[] = ['partners']) {
   const pinia = createPinia();
   setActivePinia(pinia);
   useUserStore().setUserAndPermissions(
-    { id: 3, last_name: 'Gomes', name: 'Patrícia', role: 'Equipe', role_slug: 'equipe', username: 'patricia' },
+    {
+      firm: { modules, name: 'Franco Contabilidade', slug: 'franco' },
+      id: 3,
+      last_name: 'Gomes',
+      name: 'Patrícia',
+      role: 'Equipe',
+      role_slug: 'equipe',
+      username: 'patricia',
+    } as never,
     ['leads.read', 'leads.update']
   );
 
@@ -237,5 +245,23 @@ describe('LeadView', () => {
     renderLead();
 
     expect((await screen.findByTestId('empty-state')).textContent).toContain('Lead not found');
+  });
+  /*
+   * rnc-4 W38: the lead's partner matches and referral are the Partner module's
+   * (`leads/{id}/partner-matches`, 404 without `partners`), so a firm without it gets no routing
+   * panel — and asks for no matches.
+   */
+  it('rnc-4: draws no partner routing when the firm has `partners` off', async () => {
+    renderLead([]);
+
+    await screen.findByTestId('lead-detail');
+
+    expect(screen.queryByTestId('lead-routing')).toBeNull();
+  });
+
+  it('rnc-4: draws the partner routing while `partners` is on', async () => {
+    renderLead();
+
+    expect(await screen.findByTestId('lead-routing')).toBeTruthy();
   });
 });

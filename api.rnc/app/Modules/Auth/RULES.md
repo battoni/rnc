@@ -1,5 +1,5 @@
 ---
-version: 2.12.0
+version: 2.13.0
 origin: pendulum
 based-on: 2.9.0
 ---
@@ -195,6 +195,10 @@ role never holds `permissions.*` — whoever can edit roles can grant themselves
   `app/Http/Middleware`, outside this module.
 - **`users.phone` is not unique.** Two accounts on one phone cannot sign in by code at all until
   one of them changes it.
+
+## Modules per firm (rnc-4)
+
+- **Signing in answers what `auth/me` answers** (rnc-4 F3c, R20): `AuthController::login` and `LoginCodeController::verify` return `withPlatform()` (no view-as at sign-in), so the back office's rail and router know the firm's modules without a second request.
 
 ## Do Not
 

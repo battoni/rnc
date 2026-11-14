@@ -2,6 +2,7 @@
 
 namespace App\Modules\Firm\Resources;
 
+use App\Modules\Firm\Helpers\FirmModules;
 use App\Modules\Firm\Models\Firm;
 use App\Modules\Firm\Models\FirmBrand;
 use Illuminate\Http\Request;
@@ -25,6 +26,10 @@ use Illuminate\Support\Facades\Storage;
  *
  * `is_platform` says the root's firm (D3); `platform.name` is the product's name, one config value
  * (R9, `PLATFORM_NAME`) — no other file names the product.
+ *
+ * `modules` is the firm's opt-in list (rnc-4 R17, `FirmModules::enabled`, as `auth/me` answers it —
+ * core is always on and never listed): the site hides what the firm has off, the chat receptionist
+ * above all. The firm's, under a sub-brand too — a brand has no modules of its own.
  *
  * @mixin Firm
  */
@@ -66,6 +71,7 @@ class PublicFirmResource extends JsonResource
             'mailbox' => $this->mailbox,
             'business_hours' => $this->business_hours,
             'platform' => ['name' => (string) config('platform.name')],
+            'modules' => FirmModules::enabled($this->resource),
         ];
     }
 }

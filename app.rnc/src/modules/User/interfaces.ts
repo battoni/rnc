@@ -47,6 +47,34 @@ interface User {
   email_verified?: boolean;
   phone?: string | null;
   profile_type?: string | null;
+  /**
+   * The person's firm (rnc-4 R20, api `FirmSummaryResource`): sent by `auth/me` and the sign-in
+   * answers only; null for a firm-less account (the platform operator). A list's user has no key.
+   */
+  firm?: UserFirm | null;
+  /** The product and the operator flag (rnc-4 R20); same answers as `firm`. */
+  platform?: UserPlatform;
 }
 
-export type { CreateUserPayload, GetUsersParams, UpdateUserPayload, User };
+/** The signed-in person's firm as the back office's shell boots from it (rnc-4 R20). */
+interface UserFirm {
+  brand_accent?: string;
+  brand_primary?: string;
+  is_platform?: boolean;
+  logo_text?: string;
+  logo_url?: string | null;
+  /** The firm's opt-in modules (`FIRM_MODULE`); core is always on and never listed (W34). */
+  modules: string[];
+  name: string;
+  short_name?: string | null;
+  slug: string;
+}
+
+interface UserPlatform {
+  is_operator: boolean;
+  name: string;
+  /** The firm the operator is viewing as (F4c); null outside it. */
+  view_as: { name: string; slug: string } | null;
+}
+
+export type { CreateUserPayload, GetUsersParams, UpdateUserPayload, User, UserFirm, UserPlatform };

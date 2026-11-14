@@ -198,8 +198,8 @@ function sentenceOf(action: BriefingAction): string {
 
     <template v-else-if="briefing">
       <section
-        class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4"
         :aria-label="$t('briefing.kpis.label')"
+        :class="['grid grid-cols-1 gap-3 sm:grid-cols-2', briefing.referrals ? 'xl:grid-cols-4' : 'xl:grid-cols-3']"
       >
         <div
           class="bg-panel shadow-lift motion-enter flex min-w-0 flex-col gap-1 rounded-lg p-4"
@@ -243,6 +243,7 @@ function sentenceOf(action: BriefingAction): string {
         </div>
 
         <div
+          v-if="briefing.referrals"
           class="bg-panel shadow-lift motion-enter flex min-w-0 flex-col gap-1 rounded-lg p-4"
           data-kpi="referrals"
           data-testid="briefing-kpi"
@@ -358,7 +359,7 @@ function sentenceOf(action: BriefingAction): string {
         <MCountdown />
       </div>
 
-      <div class="grid grid-cols-1 gap-3 xl:grid-cols-3">
+      <div :class="['grid grid-cols-1 gap-3', briefing.referrals ? 'xl:grid-cols-3' : 'xl:grid-cols-2']">
         <section
           aria-labelledby="briefing-meetings-title"
           class="bg-panel shadow-lift motion-enter flex min-w-0 flex-col gap-3 rounded-lg p-5"
@@ -415,6 +416,7 @@ function sentenceOf(action: BriefingAction): string {
         </section>
 
         <section
+          v-if="briefing.referrals"
           aria-labelledby="briefing-referrals-title"
           class="bg-panel shadow-lift motion-enter flex min-w-0 flex-col gap-3 rounded-lg p-5"
           data-testid="briefing-referrals"

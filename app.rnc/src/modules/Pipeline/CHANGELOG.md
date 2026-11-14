@@ -2,6 +2,10 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.5.0 — 2026-11-14
+
+- Lead detail without `partners` (rnc-4 F3c, W38): `LeadView` draws no `MLeadRouting` — the matches and the referral are the partner network's (404 without it).
+
 ## 1.4.0 — 2026-11-07
 
 ### Added

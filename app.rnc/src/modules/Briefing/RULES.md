@@ -1,5 +1,5 @@
 ---
-version: 1.1.0
+version: 1.2.0
 origin: rnc
 based-on: 1.0.1
 ---
@@ -24,6 +24,7 @@ router, the rail and Home's landing spec.
 
 ## Intentional Decisions
 
+- **`referrals` is null while the firm has `partners` off** (rnc-4 R19, C11): the referral tile and the "Indicações e SLA" panel are not drawn and the grids close up (three KPIs, two panels). Without `portfolio` the ranges are null and read "sem base na carteira"; the API already left out the SLA, Radar and contract actions.
 - **The screen writes the sentences, the API sends the numbers** (W82, spec C6): an action is
   `{kind, params, to}` and `sentenceOf` picks `briefing.actions.<kind>` (the demo's copy, with the
   plural form by count); a proposal without a portfolio base reads `proposals_no_range`, a Radar

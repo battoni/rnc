@@ -1,5 +1,5 @@
 # State: Reforma hub as a white-label platform for accounting firms
-Stage: build F3b2/19
+Stage: build F3c/19
 Updated: 14/11/2026
 Branch: feature/rnc-4-white-label-platform · Worktree: .claude/worktrees/rnc-4
 ## Done
@@ -231,9 +231,44 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   (`assistant`; Franco's usernames → the firm's stand-ins by role); `DemoFirmSeeder` + `equipe.alvorada`,
   `camila.alvorada`, its six sector pages; `SpecialistSeeder` profiles for Alvorada's two; new
   `PlatformManagerSeeder` (local only) in `seeders.local.php`. Database unit 1.27.0.
+- **F3c Modules per firm — SPA** (A24, A25; R17, R19, R20) · 14/11 · full Vitest 1391 (`--maxWorkers=2`;
+  +46: `User/store.spec` 3, `attachAuthGuard.helper.spec` 4, `navItems.local.spec` 10,
+  `libraries/router/routes.local.spec` 20 new, `BriefingView` A25, `RadarView`, `ContractsView`, `LeadView` 2,
+  `DiagnosticView.chatOff.spec` 2), all green · full Pest 2011 (+2: `PublicFirmTest` modules, `MeFirmTest`
+  sign-in answer), all green · Playwright: the phase's files `tenancy/modules.spec.ts` (new, 4) and
+  `diagnostic/chat.spec.ts` (edited) 10/10, plus — because `fixtures/auth.ts` changed — every folder
+  whose screens are opt-in (briefing, radar, contracts, navigation, pipeline, portal, channel,
+  assistant, fiscal, repricing, brand, tenancy, diagnostic): 113 tests, 112 green and 1 timeout (`diagnostic.spec.ts` quiz walk, a slot button 'not stable' under load) that passed 8/8 when its file ran alone with `--retries=0`; the rest of the suite not run
+  (phase gate) · check-app (aliases, vue-tsc), check-api (Pint, PHPStan), mirror check, sanitize
+  (ESLint, Prettier, sort-locales) green; check-portal and check-cortex skip themselves here ·
+  vue-conventions, design-conventions and arcus reviews inline (computed order in `DiagnosticView`
+  fixed; nothing else) · pre-commit green 14/11/2026 without the full Playwright suite.
+  Red first: 38 of the new/changed Vitest cases and the 3 new Pest assertions failed before the code
+  (the Diagnostic chat specs that only wait for the toggle, and the "while on" cases, passed).
+  Mutations seen red: the guard's module check off (3 unit + 3 e2e red), the rail's `onlyEnabled`
+  filter off (e2e), the rail's `partners` entries unmarked (2), the Contracts picker asked regardless (1).
+  Live (worktree API on 8001, `make fresh-seed`, Alvorada's `partners` off by tinker, then restored):
+  `public/firm` with `X-Firm: alvorada` listed `[portfolio, fiscal, radar, contracts, briefing]`;
+  `helena.alvorada`'s sign-in answered `firm.modules` the same and `platform`; `GET partners` 404
+  `modules.disabled`, `GET leads` 200; the root's `public/firm` `is_platform` true, `modules` []. The rail
+  and the not-found screen were proven in Playwright on the mocked session (W52), not in Chrome
+  (verify's rounds).
+  What changed: SPA — `@Enums` `FIRM_MODULE`; `User` store `firm`/`platform` + `hasModule` (kept when a
+  payload has no `firm` key); `attachAuthGuard` `meta.module` → not-found at the same address, after the
+  permission, and `meta.moduleFallback` on the redirect it came from; `routes.local.ts` `ofModule()` marks
+  Partner/Portal (`partners`), Repricing (`portfolio`), Fiscal, Radar, Contracts, Assistant, Briefing,
+  Brands, Channel; Workspace `management-home` falls back to the metrics; `navItems.local.ts` entries carry
+  `module`, `onlyEnabled` filters them (TheNavbar untouched); Briefing draws no referral tile/panel when
+  `referrals` is null; Radar and Contracts take `canRefer` (no batch / no legal referral, no picker
+  request, no "enviados" tile); `LeadView` no `MLeadRouting` without `partners` (W38); the diagnostic's chat
+  toggle only with `chat`. API — `PublicFirmResource` `modules`; `AuthController::login` and
+  `LoginCodeController::verify` answer `withPlatform()`. Unit versions bumped (User 2.2.0, helpers 1.15.0,
+  TheNavbar 1.9.0, Briefing/Radar/Contracts 1.2.0, Pipeline 1.5.0, Diagnostic 1.4.0, Home 3.6.0, e2e 1.19.0,
+  api Firm 1.8.0, Auth 2.13.0). Spec C13, C14.
 ## Next
-1. `/battoni-start-session rnc-4` (or the running `/battoni-run rnc-4`) → **F3c** Modules per firm — SPA
-   (A24, A25). Start with `make fresh-seed` (F3b2's live check added a visitante lead to Alvorada).
+1. `/battoni-start-session rnc-4` (or the running `/battoni-run rnc-4`) → **F4a** Platform operator and
+   console — API (A26–A28), security-sensitive (P6). `make fresh-seed` first is optional (F3c left the
+   local DB as seeded).
 ## Pitfalls
 - (F1a) `UserFactory` now puts every user in the default firm (`franco` under phpunit), creating it
   when absent. A test that creates `Firm::factory(['slug' => 'franco'])` AFTER a user would collide
@@ -317,6 +352,18 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
 - (F3b2) `DemoFirmSeedTest` runs the whole seed as `local` with the NF-e disk faked — `NfeSeeder`
   deletes `nfe/<firm id>/` first, and an unfaked disk would wipe a developer's seeded files. ~5 s a case.
 - (F3b2) `make fresh-seed` now takes ~15 s (two firms' NF-e, ~4,900 XMLs).
+- (F3c) A signed-in Vitest spec of a screen with an opt-in part gives the user a `firm` with its modules
+  (`setUserAndPermissions({ ...user, firm: { modules, … } })`); without one `hasModule` is false and the
+  part is gone. A payload without the `firm` key keeps the store's firm — `clearUser` or a new pinia resets it.
+- (F3c) Every e2e spec that spreads `mockUser` gets Franco with every module (`fixtures/auth.ts`); a spec
+  that builds its own user from scratch, or its own `public/firm`, must list the modules its screen needs.
+- (F3c) A pt-BR address in an English e2e run is rewritten to its English twin before the guard runs:
+  assert `/gestao/...` with `seedLanguage(page, 'pt-BR')`.
+- (F3c) `public/firm` is read once per page load and kept (`useFirmBrand`): a Vitest spec that needs a
+  firm WITHOUT a module in a file whose other cases had it mocks `usePublicFirm` in its own file
+  (`DiagnosticView.chatOff.spec.ts`).
+- (F3c) A Bash `python3 /dev/stdin file <<EOF` edit silently did nothing here — write the script to the
+  scratchpad and run it by path.
 ## QA
 (none yet — rounds in plan.md → QA)
 ## Seeded people (password `seeding.password`; `battoni` uses `seeding.superadmin_password`)
@@ -358,6 +405,8 @@ F3a done
 F3b1 done
 08:53 F3b2 started, attempt 1
 F3b2 done
+09:08 F3c started, attempt 1
+F3c done
 ## Decided while you were away
 - W1 plan: proposal.html skipped in away mode (spec D27; to reverse: `/battoni-new-proposal rnc-4 final`).
 - W2 plan: the owner's phases are split into 17 builder phases with his labels kept (spec D28); his
@@ -487,3 +536,20 @@ F3b2 done
   end of `seeders.local.php`.
 - W46 F3b2: AM3's moved check ran as HTTP calls through Vite's proxy with a cookie jar per host (as
   W12), API on 8001; Chrome rounds stay verify's. To reverse: n/a.
+- W47 F3c: `public/firm` answers the firm's whole opt-in list (`modules`, as `auth/me`), not a
+  `has_chat` flag — the public site may need `brands` or `partners` next, and which modules a firm has is
+  no secret worth a second shape (spec C13). To reverse: a flag per public need.
+- W48 F3c: the sign-in answers (`auth/login`, `auth/phone/verify`) carry `firm` and `platform` like
+  `auth/me` (spec C13) — without them the rail after a fresh login had no modules until a reload. To
+  reverse: a `fetchMe()` after every sign-in in the SPA.
+- W49 F3c: `meta.module` is set in `routes.local.ts` (`ofModule`) for whole route sets, not in each
+  module's route files (plan text) — one place shows the split, and a route file stays plain data. To
+  reverse: a `meta.module` on each route record.
+- W50 F3c: `/gestao` (`/management`) lands on the metrics while `briefing` is off, through
+  `meta.moduleFallback` on the redirect routes, instead of not-found (spec C14). To reverse: drop the meta.
+- W51 F3c: the rail is filtered in `navItems.local.ts` (LOCAL), not in the synced `TheNavbar`'s
+  `isVisibleNavItem`; the portal entry is `partners`', repricing `portfolio`'s. Without `partners` the Radar
+  draws no batch column and the Contracts no legal referral and no "enviados ao jurídico" tile (W38's lead
+  routing gone too). To reverse: a `module` field on the core `NavItem` and a TheNavbar check.
+- W52 F3c: A24's live check ran as HTTP calls on the worktree API (8001) plus a Playwright spec on a mocked
+  session for the rail and the not-found screen; Chrome rounds stay verify's (as W12, W46). To reverse: n/a.

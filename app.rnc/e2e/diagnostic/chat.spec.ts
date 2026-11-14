@@ -53,7 +53,7 @@ async function mockApi(page: Page) {
   const json = (data: unknown, status = 200) => ({ status, contentType: 'application/json', body: JSON.stringify(data) });
 
   await page.route('**/public/firm', (route) =>
-    route.fulfill(json({ data: { name: 'Franco Contabilidade', phone: '11 3732-5500', phone_href: 'tel:+551137325500', mailbox: 'saf@franco-rnc.com.br', business_hours: [] } }))
+    route.fulfill(json({ data: { name: 'Franco Contabilidade', modules: ['chat'], phone: '11 3732-5500', phone_href: 'tel:+551137325500', mailbox: 'saf@franco-rnc.com.br', business_hours: [] } }))
   );
   await page.route('**/public/events', (route) => route.fulfill({ status: 201, contentType: 'application/json', body: '[]' }));
   await page.route('**/public/diagnostics', (route) => {

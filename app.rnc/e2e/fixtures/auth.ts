@@ -63,6 +63,16 @@ export const mockUser = {
   role: 'Admin',
   role_slug: 'operador',
   status: 'active',
+  /*
+   * The session's firm (rnc-4 R20) with EVERY opt-in module on, as Franco is seeded: the rail and
+   * the router hide a module's screens while the firm has it off (F3c), so a spec about a screen
+   * needs its module. A spec about a module being off overrides `firm` (`tenancy/modules.spec.ts`).
+   */
+  firm: {
+    modules: ['portfolio', 'fiscal', 'radar', 'partners', 'contracts', 'chat', 'assistant', 'briefing', 'brands', 'channel'],
+    name: 'Franco Contabilidade',
+    slug: 'franco',
+  },
   // `permissions.*` because the roles screen closes its route on `permissions.read` (e2e/RULES.md).
   permissions: [
     'users.read',

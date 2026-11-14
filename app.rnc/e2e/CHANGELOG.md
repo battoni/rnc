@@ -3,6 +3,16 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.19.0 — 2026-11-14
+
+### Added
+
+- `tenancy/modules.spec.ts` (rnc-4 F3c, A24): a firm without `partners` has no partner entry in the rail and `/gestao/parceiros` is not found at the same address; `/management` lands on the metrics without `briefing`.
+
+### Changed
+
+- `fixtures/auth.ts`: `mockUser.firm` — Franco with every opt-in module — so the specs that spread it keep their screens once the router closes a module that is off; `diagnostic/chat.spec.ts`'s firm lists `chat`.
+
 ## 1.18.0 — 2026-11-14
 
 ### Added

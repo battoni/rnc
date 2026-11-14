@@ -28,6 +28,7 @@ const answers: { alert: ContractAlert; partners: LegalPartner[] } = {
 };
 let alertRequests = 0;
 let alertFails = false;
+let partnerRequests = 0;
 
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: toastAdd }) }));
 vi.mock('vue-router', async (importOriginal) => ({
@@ -51,11 +52,22 @@ const STUBS = {
   },
 };
 
-function renderContracts() {
+/** The firm's opt-in modules this screen reads (rnc-4 R16): partners on, unless a test turns it off. */
+const WITH_PARTNERS = ['portfolio', 'contracts', 'partners'];
+
+function renderContracts(modules: string[] = WITH_PARTNERS) {
   const pinia = createPinia();
   setActivePinia(pinia);
   useUserStore().setUserAndPermissions(
-    { id: 2, last_name: 'Franco', name: 'Reinaldo', role: 'CEO', role_slug: 'gestao', username: 'reinaldo' },
+    {
+      firm: { modules, name: 'Franco Contabilidade', slug: 'franco' },
+      id: 2,
+      last_name: 'Franco',
+      name: 'Reinaldo',
+      role: 'CEO',
+      role_slug: 'gestao',
+      username: 'reinaldo',
+    } as never,
     ['leads.read', 'contracts.manage']
   );
 
@@ -82,6 +94,7 @@ beforeEach(() => {
   posted.length = 0;
   alertRequests = 0;
   alertFails = false;
+  partnerRequests = 0;
   answers.alert = CONTRACTS_FIXTURE;
   answers.partners = [ANDRADE, MARGEM];
   server.use(
@@ -92,7 +105,11 @@ beforeEach(() => {
         ? HttpResponse.json({ message: 'boom' }, { status: 500 })
         : HttpResponse.json({ data: answers.alert });
     }),
-    http.get('http://localhost/contracts/legal-partners', () => HttpResponse.json({ data: answers.partners })),
+    http.get('http://localhost/contracts/legal-partners', () => {
+      partnerRequests++;
+
+      return HttpResponse.json({ data: answers.partners });
+    }),
     http.post('http://localhost/contracts/:id/referrals', async ({ params, request }) => {
       const body = (await request.json()) as { partner_id: number };
 
@@ -112,7 +129,7 @@ beforeEach(() => {
         contracts: answers.alert.contracts.map((row) =>
           row.id === Number(params.id) ? { ...row, referred_to: [{ id: partner.id, name: partner.name }] } : row
         ),
-        summary: { ...answers.alert.summary, referred: answers.alert.summary.referred + 1 },
+        summary: { ...answers.alert.summary, referred: (answers.alert.summary.referred ?? 0) + 1 },
       };
 
       return HttpResponse.json({ data: { id: 501 } }, { status: 201 });
@@ -353,5 +370,36 @@ describe('ContractsView', () => {
 
     expect(screen.getByTestId('dialog').getAttribute('data-title')).toBe('contracts.import.title');
     expect(screen.getByTestId('import-form')).toBeTruthy();
+  });
+  /*
+   * rnc-4 R19 (A20's SPA half): with `contracts` on and `partners` off the API answers 404 on the
+   * legal picker and an alert without a referral field. The screen does not ask for the picker,
+   * draws no "Encaminhar ao jurídico", no "Com <parceiro>", no "Sem parceiro jurídico" and no
+   * "enviados ao jurídico" tile — the clause and the exposure stay.
+   */
+  it('rnc-4 R19: without `partners` there is no legal referral — no picker request, no button, no tile', async () => {
+    const summary: Record<string, number | undefined> = { ...CONTRACTS_FIXTURE.summary };
+
+    delete summary.referred;
+    answers.alert = {
+      ...CONTRACTS_FIXTURE,
+      contracts: CONTRACTS_FIXTURE.contracts.map(({ referred_to: _sent, ...row }) => ({
+        ...row,
+        client: { id: row.client.id, name: row.client.name },
+      })),
+      summary,
+    } as never;
+    renderContracts(['portfolio', 'contracts']);
+
+    await screen.findAllByTestId('contract');
+
+    expect(partnerRequests).toBe(0);
+    expect(screen.queryByTestId('contracts-referred')).toBeNull();
+    expect(screen.queryAllByTestId('contract-refer')).toHaveLength(0);
+    expect(screen.queryAllByTestId('contract-sent')).toHaveLength(0);
+    expect(screen.queryAllByTestId('contract-no-partner')).toHaveLength(0);
+    expect(screen.queryAllByTestId('contract-consent-blocked')).toHaveLength(0);
+    expect(screen.getAllByTestId('contract-clause').length).toBe(idsShown().length);
+    expect(screen.getByTestId('contracts-exposure')).toBeTruthy();
   });
 });

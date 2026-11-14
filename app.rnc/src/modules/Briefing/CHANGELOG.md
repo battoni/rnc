@@ -2,6 +2,10 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.2.0 — 2026-11-14
+
+- Briefing without the partner network (rnc-4 F3c, R19, A25): `referrals` may be null — no referral tile (the KPI row is three wide) and no SLA panel (the panel row is two wide); a null fee range already read "sem base na carteira".
+
 ## 1.1.0 — 2026-11-14
 
 ### Changed

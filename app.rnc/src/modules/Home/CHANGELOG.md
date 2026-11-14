@@ -3,6 +3,10 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 3.6.0 — 2026-11-14
+
+- Management landing fallback (rnc-4 F3c, R17): `management-home` carries `meta.moduleFallback` (`/gestao/metricas`, `/management/metrics`), where `attachAuthGuard` sends it while the firm has `briefing` off.
+
 ## 3.5.0 — 2026-11-14
 
 ### Changed

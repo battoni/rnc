@@ -52,3 +52,20 @@ it('answers only the modules the catalogue still knows', function () {
 
     expect($me['firm']['modules'])->toBe(['briefing']);
 });
+
+/*
+ * rnc-4 R20 (F3c): the sign-in answers carry the same `firm` and `platform` as `auth/me`, so the
+ * back office's rail and router know the firm's modules from the first screen after login — not only
+ * after a reload.
+ */
+it('answers the firm and the platform on the password sign-in too', function () {
+    Firm::where('slug', 'franco')->firstOrFail()->forceFill(['modules' => ['briefing']])->save();
+
+    $user = $this->postJson('/api/auth/login', ['username' => 'reinaldo', 'password' => config('seeding.password')])
+        ->assertOk()
+        ->json('data');
+
+    expect($user['firm']['slug'])->toBe('franco')
+        ->and($user['firm']['modules'])->toBe(['briefing'])
+        ->and($user['platform']['is_operator'])->toBeFalse();
+});

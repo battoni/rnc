@@ -109,7 +109,10 @@ beforeEach(() => {
   sessionStorage.clear();
   vi.stubGlobal('navigator', { ...navigator, sendBeacon });
   server.use(
-    http.get('http://localhost/public/firm', () => HttpResponse.json({ data: { name: 'Franco Contabilidade' } })),
+    // rnc-4 R17: the chat is the `chat` module's; Franco has it (the chat-off case: DiagnosticView.chatOff.spec).
+    http.get('http://localhost/public/firm', () =>
+      HttpResponse.json({ data: { modules: ['chat'], name: 'Franco Contabilidade' } })
+    ),
     http.post(API, async ({ request }) => {
       const body = (await request.json()) as Record<string, unknown>;
       record('POST', 'start', body);
@@ -399,6 +402,12 @@ describe('DiagnosticView — the CNPJ path', () => {
 });
 
 describe('DiagnosticView — Formulário · Conversar no chat (rnc-2 R12, R14)', () => {
+  /** The toggle appears once the firm says it has the chat (rnc-4 R17). */
+  async function renderWithChat() {
+    renderDiagnostic();
+    await screen.findByTestId('diagnostic-mode');
+  }
+
   function mode(key: 'chat' | 'form') {
     return screen.getByTestId(`mode-${key}`);
   }
@@ -416,7 +425,7 @@ describe('DiagnosticView — Formulário · Conversar no chat (rnc-2 R12, R14)',
   }
 
   it('opens on the form, with the chat one tap away', async () => {
-    renderDiagnostic();
+    await renderWithChat();
 
     expect(mode('form').getAttribute('aria-pressed')).toBe('true');
     expect(mode('chat').getAttribute('aria-pressed')).toBe('false');
@@ -430,7 +439,7 @@ describe('DiagnosticView — Formulário · Conversar no chat (rnc-2 R12, R14)',
   });
 
   it('starts a chat lead from the chat and a form lead from the form (A10)', async () => {
-    renderDiagnostic();
+    await renderWithChat();
 
     await fireEvent.click(mode('chat'));
     await tap('quiz');
@@ -440,7 +449,7 @@ describe('DiagnosticView — Formulário · Conversar no chat (rnc-2 R12, R14)',
   });
 
   it('keeps every answer when the visitor switches to the form mid-way, and back (A10)', async () => {
-    renderDiagnostic();
+    await renderWithChat();
 
     await fireEvent.click(mode('chat'));
     await tap('quiz');
@@ -475,7 +484,7 @@ describe('DiagnosticView — Formulário · Conversar no chat (rnc-2 R12, R14)',
   });
 
   it("opens the simulator in the form from the chat's result", async () => {
-    renderDiagnostic();
+    await renderWithChat();
 
     await fireEvent.click(mode('chat'));
     await tap('quiz');

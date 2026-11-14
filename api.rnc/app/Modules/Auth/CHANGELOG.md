@@ -3,6 +3,9 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 2.13.0 — 2026-11-14
+- The sign-in answers carry `firm` and `platform` (rnc-4 F3c, R20): `POST auth/login` and `auth/phone/verify` answer `UserResource::withPlatform()` like `auth/me`, so the SPA knows the firm's modules from the first screen. Tested in `tests/Feature/Auth/MeFirmTest`.
+
 ## 2.12.0 — 2026-11-14
 - `GET auth/me` answers `firm` (slug, name, look, opt-in `modules`; null for a firm-less account) and `platform: {name, is_operator, view_as}` (rnc-4 F3a, R20). Tested by `tests/Feature/Auth/MeFirmTest`.
 

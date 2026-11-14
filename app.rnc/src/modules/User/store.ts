@@ -1,10 +1,12 @@
 import { defineStore } from 'pinia';
-import type { User } from '@UserModule';
+import type { User, UserFirm, UserPlatform } from '@UserModule';
 import { ROLES } from '@AuthModule';
 import { GetMeService } from './services';
 
 interface UserState {
+  firm: UserFirm | null;
   permissions: string[];
+  platform: UserPlatform | null;
   user: User | null;
 }
 
@@ -21,7 +23,9 @@ function persistSessionHint(user: User | null): void {
 
 const useUserStore = defineStore('user', {
   state: (): UserState => ({
+    firm: null,
     permissions: [],
+    platform: null,
     user: null,
   }),
   getters: {
@@ -29,14 +33,25 @@ const useUserStore = defineStore('user', {
     hasEditAuth: (state): boolean => state.user?.role_slug === ROLES.SUPERADMIN,
   },
   actions: {
+    /**
+     * The session's user. `firm` and `platform` (rnc-4 R20) come only with `auth/me` and the sign-in
+     * answers: a payload without the key (a profile save) keeps what the session already knew.
+     */
     setUserAndPermissions(user: User | null, permissions: string[] = []): void {
       this.user = user;
       this.permissions = permissions ?? user?.permissions ?? [];
+
+      if (user && 'firm' in user) this.firm = user.firm ?? null;
+
+      if (user?.platform) this.platform = user.platform;
+
       persistSessionHint(user);
     },
     clearUser(): void {
       this.user = null;
       this.permissions = [];
+      this.firm = null;
+      this.platform = null;
       persistSessionHint(null);
     },
     hasSessionHint(): boolean {
@@ -49,6 +64,13 @@ const useUserStore = defineStore('user', {
     },
     hasPermission(key: string): boolean {
       return this.permissions.includes(key);
+    },
+    /**
+     * Whether the person's firm has an opt-in module on (rnc-4 R17, `FIRM_MODULE`). A firm-less
+     * account — the platform operator, whose requests run as the platform firm — has none.
+     */
+    hasModule(key: string): boolean {
+      return this.firm?.modules.includes(key) ?? false;
     },
   },
 });

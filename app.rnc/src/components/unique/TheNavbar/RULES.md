@@ -1,5 +1,5 @@
 ---
-version: 1.8.0
+version: 1.9.0
 origin: pendulum
 based-on: 1.6.3
 ---
@@ -14,6 +14,7 @@ Orchestrator for all three navbar variants (desktop sidebar, tablet/mobile drawe
 
 ## Intentional Decisions
 
+- **A rail entry of an opt-in module carries `module`** (rnc-4 F3c, R17): `useLocalNavItems` filters it out, with its children, while the firm has it off (`onlyEnabled`, `useUserStore().hasModule`) — in the LOCAL file, so the synced `TheNavbar` keeps only its permission/role filter. The route itself is closed by `attachAuthGuard` (`meta.module`).
 - **`CORE_NAV_ITEMS` and `settings` are defined here, not in a constants file.** The core list is a plain constant; `itemsWithRoutes` composes it with the local layer on every read, which is what keeps a store-backed group live.
 - **The local layer is a composable, not a constant.** `navItems.local.ts` exports `useLocalNavItems(): ComputedRef<NavItem[]>`, called once in setup, so a group's children can come from a store — a group whose rows are records the person owns — instead of from a hand-written list. It may load what its items need; keep it cheap, because it runs on every navigation.
 - **Three optional `NavItem` fields exist for that case, and only that case**: `params` (a child pointing at a parameterised route), `key` (several entries resolving the same route name need distinct keys), and `isLabelLiteral` (an entry named by a person's own record — running a trail's name through `$t()` would translate a name that happened to match a key). Do not reach for them for a static entry.

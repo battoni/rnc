@@ -1,5 +1,5 @@
 ---
-version: 1.18.0
+version: 1.19.0
 origin: pendulum
 based-on: 1.8.2
 ---
@@ -107,6 +107,12 @@ and translation. IDs set by PrimeVue props (`#loginPassword` via `inputId`) and
 page that never rendered and fails on a locator rather than on a permission. `/users` needs
 `users.read`, the roles screen `permissions.read`, the workspaces `leads.read` / `metrics.read` / `users.read`. When a route gains a `meta.permission`, grant it
 in the fixtures in the same change.
+
+**And the firm must have the module the screen belongs to** (rnc-4 F3c, R17): a route carrying
+`meta.module` is "not found" while the session's `firm.modules` lacks it, and its rail entry is gone.
+`mockUser.firm` has every opt-in module on (as Franco is seeded); a spec about a module being off
+overrides `firm` (`tenancy/modules.spec.ts`). A public page's firm (`public/firm`) lists `modules`
+too — the chat toggle needs `chat` (`diagnostic/chat.spec.ts`).
 
 ## Signed-in specs start at `/painel`
 

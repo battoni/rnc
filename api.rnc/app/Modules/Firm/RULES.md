@@ -1,5 +1,5 @@
 ---
-version: 1.7.0
+version: 1.8.0
 origin: rnc
 ---
 # RULES — Firm Module
@@ -150,6 +150,7 @@ firms records of the Channel module, with no tenant.
 
 ## Intentional Decisions
 
+- **`PublicFirmResource` answers `modules`** (rnc-4 F3c, R17, W47): the firm's opt-in keys as `auth/me` lists them (core never listed; the platform firm none), the firm's under a sub-brand too. The public site reads it to hide the chat where `chat` is off.
 - **`users` is not firm-scoped.** Sign-in looks the username up before any firm is known; the user's
   `firm_id` is what scopes everything they read. The seeded `operador` (`battoni`) still belongs
   to Franco until rnc-4 F4a moves it to no firm (platform firm, root only).

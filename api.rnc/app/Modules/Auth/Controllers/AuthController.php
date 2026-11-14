@@ -28,7 +28,9 @@ class AuthController extends Controller
         $credentials = LoginCredentialsDTO::from($request);
         $user = $this->authService->authenticate($credentials, $request);
 
-        return ApiResponse::success(data: new UserResource($user));
+        // rnc-4 F3c: the same `firm` and `platform` as `auth/me`, so the shell's rail and router know
+        // the firm's modules from the first screen after sign-in (no view-as yet: it starts later).
+        return ApiResponse::success(data: (new UserResource($user))->withPlatform());
     }
 
     public function logout(Request $request): JsonResponse

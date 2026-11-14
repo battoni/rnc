@@ -1,10 +1,11 @@
-import type { NavigationGuardNext, RouteLocationNormalized, Router } from 'vue-router';
+import type { NavigationGuardNext, RouteLocationNormalized, RouteLocationRaw, Router } from 'vue-router';
 import { useGlobalAbortController } from '@Composables';
 import { useUserStore } from '@UserModule';
 import { intendedPathFrom, loginWithReturnTo } from './afterLogin.helper';
 import { isOpenRoute, isPublicRoute } from './routeAccess.helper';
 
 const HOME_NAME = 'home';
+const NOT_FOUND_NAME = 'not-found';
 
 function requiredPermission(to: RouteLocationNormalized): string | undefined {
   return (to.meta as { permission?: string }).permission;
@@ -30,6 +31,52 @@ function isPermitted(to: RouteLocationNormalized, hasPermission: (permission: st
   if (!PERMISSION) return true;
 
   return hasPermission(PERMISSION);
+}
+
+/**
+ * Whether the person's firm has the module this route belongs to (rnc-4 R17, `meta.module`, set in
+ * `routes.local.ts`). A route of no module is core and always on.
+ */
+function isModuleOn(to: RouteLocationNormalized, hasModule: (key: string) => boolean): boolean {
+  const MODULE = (to.meta as { module?: string }).module;
+
+  return !MODULE || hasModule(MODULE);
+}
+
+/**
+ * Where a screen of a module that is off goes: the not-found view at the SAME address (the API
+ * answers 404 `modules.disabled` there too) — unless the person asked for a landing that redirects
+ * into it (`/gestao` → the briefing) and that landing names a fallback (`meta.moduleFallback`): the
+ * Gestão link must open something.
+ */
+function moduleOffDestination(to: RouteLocationNormalized): RouteLocationRaw {
+  const FALLBACK = (to.redirectedFrom?.meta as { moduleFallback?: string } | undefined)?.moduleFallback;
+
+  if (FALLBACK) return FALLBACK;
+
+  return {
+    name: NOT_FOUND_NAME,
+    params: { pathMatch: to.path.slice(1).split('/') },
+    query: to.query,
+    hash: to.hash,
+  };
+}
+
+/** A signed-in person's way in: the key the route costs, then the firm's module (the API's order, W36). */
+function admitSignedIn(to: RouteLocationNormalized, next: NavigationGuardNext): void {
+  const userStore = useUserStore();
+
+  if (!isPermitted(to, userStore.hasPermission)) {
+    next({ name: HOME_NAME });
+    return;
+  }
+
+  if (!isModuleOn(to, userStore.hasModule)) {
+    next(moduleOffDestination(to));
+    return;
+  }
+
+  next();
 }
 
 export default function attachAuthGuard(router: Router): void {
@@ -62,12 +109,7 @@ export default function attachAuthGuard(router: Router): void {
     }
 
     if (userStore.user) {
-      if (!isPermitted(to, userStore.hasPermission)) {
-        next({ name: HOME_NAME });
-        return;
-      }
-
-      next();
+      admitSignedIn(to, next);
       return;
     }
 
@@ -88,14 +130,7 @@ export default function attachAuthGuard(router: Router): void {
 
     return userStore
       .fetchMe()
-      .then(() => {
-        if (!isPermitted(to, userStore.hasPermission)) {
-          next({ name: HOME_NAME });
-          return;
-        }
-
-        next();
-      })
+      .then(() => admitSignedIn(to, next))
       .catch(() => next(loginWithReturnTo(to)));
   });
 }

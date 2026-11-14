@@ -433,3 +433,12 @@ the deploy; a per-action audit trail inside view-as; firm self-signup without th
 - C12 (F3a, W37) R17's "public routes included" reaches the sub-brand header: with `brands` off no
   `X-Brand` names a sub-brand — 404 `brands.notFound` like a typo, the events beacon falls back to the
   main brand (rnc-3 AM21). Reverse: ignore the header silently.
+- C13 (F3c, W47, W48) R20's firm reaches two more answers: `GET public/firm` lists the firm's opt-in
+  `modules` (the site hides the chat where `chat` is off — the platform firm's root site among
+  them), and the sign-in answers (`auth/login`, `auth/phone/verify`) carry the same `firm` and
+  `platform` as `auth/me`, so the rail is right on the first screen after login. Reverse: a
+  `has_chat` flag on `public/firm`; a `fetchMe` after every sign-in.
+- C14 (F3c, W50) R17's "its SPA routes show not-found" has one exception: the management landing
+  (`/gestao`, `/management`) redirects to the briefing and, while `briefing` is off, lands on the
+  metrics instead of not-found (the Gestão link must open something). Reverse: drop
+  `meta.moduleFallback` from the Workspace routes.

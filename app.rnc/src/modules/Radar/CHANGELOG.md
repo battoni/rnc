@@ -2,6 +2,10 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.2.0 — 2026-11-14
+
+- Radar without `partners` (rnc-4 F3c, R19): `MRadarTypeRow` takes `canRefer` (the view's `hasModule('partners')`) and draws no batch column — no picker, no "no partner", no consent line. The XML evidence without `fiscal` is the API's (the proof reads "cadastro").
+
 ## 1.1.0 — 2026-11-14
 
 ### Changed

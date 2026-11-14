@@ -3,6 +3,10 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.9.0 — 2026-11-14
+
+- Rail entries per firm module (rnc-4 F3c, R17, A24): `navItems.local.ts` entries carry `module` (`LocalNavItem`) and `useLocalNavItems` drops those the firm has off, children included — partners, trail, ledger and the portal without `partners`, and so on. `TheNavbar.vue` is untouched.
+
 ## 1.8.0 — 2026-11-14
 
 ### Changed

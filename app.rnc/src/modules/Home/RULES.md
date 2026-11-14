@@ -1,5 +1,5 @@
 ---
-version: 3.5.0
+version: 3.6.0
 origin: pendulum
 based-on: 2.0.0
 ---
@@ -20,6 +20,7 @@ opens: Equipe (`team-home`), Reinaldo (`management-home`) and Operador (`operato
 
 ## Intentional Decisions
 
+- **`/gestao` falls back to the metrics without `briefing`** (rnc-4 F3c): the redirect routes carry `meta.moduleFallback`, which `attachAuthGuard` reads from `redirectedFrom` when the briefing's module is off — by path, Home still imports nothing from Metrics or Briefing.
 - **`WORKSPACES` is the role table read through permissions** (plan AM8): `leads.read` opens Equipe,
   `metrics.read` Reinaldo, `users.read` Operador. The rail (`TheNavbar/navItems.local.ts`), the cards
   on `HomeView` and the routes' `meta.permission` all read the same keys. Never gate on a role slug.

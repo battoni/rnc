@@ -1,5 +1,5 @@
 ---
-version: 1.4.0
+version: 1.5.0
 origin: rnc
 ---
 
@@ -14,6 +14,7 @@ The team's screens (R18–R20): the board (`/equipe/pipeline`, route `pipeline`)
 
 ## Intentional Decisions
 
+- **The lead's partner routing is the Partner module's** (rnc-4 W38): `LeadView` mounts `MLeadRouting` only while the firm has `partners` (`hasPartners`), so a firm without it never asks `leads/{id}/partner-matches`.
 - **The routing panel is the Partner module's** (`MLeadRouting`, F6): `LeadView` mounts it under the
   diagnostic with `canRefer` = `leads.update` and prepends the `encaminhamento.enviado` line it
   emits. The stage does not change on a referral.

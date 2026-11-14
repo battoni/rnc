@@ -307,4 +307,42 @@ describe('BriefingView', () => {
     await waitFor(() => expect(screen.getAllByTestId('briefing-kpi')).toHaveLength(4));
     expect(requests).toBe(2);
   });
+
+  /*
+   * rnc-4 A25 (R19, C11): a firm with `briefing` on and `portfolio`, `partners`, `radar` and
+   * `contracts` off gets `referrals` null, no fee range and none of those actions. The screen draws
+   * what is left — leads, meetings, the pipeline by count, the countdown — and no referral tile or
+   * panel, instead of failing on `referrals.count`.
+   */
+  it('renders its other sections and no referral part when the partner, portfolio, Radar and contract parts are off (rnc-4 A25)', async () => {
+    atSaoPaulo('2026-11-09T09:15:00');
+    answers.briefing = {
+      ...BRIEFING_FIXTURE,
+      actions: BRIEFING_FIXTURE.actions.filter((action) => ['meetings_today', 'partial_leads'].includes(action.kind)),
+      pipeline: {
+        ...BRIEFING_FIXTURE.pipeline,
+        range_cents: null,
+        stages: BRIEFING_FIXTURE.pipeline.stages.map((stage) => ({ ...stage, range_cents: null })),
+      },
+      referrals: null,
+    };
+    renderBriefing();
+
+    await waitFor(() => expect(screen.getAllByTestId('briefing-kpi')).toHaveLength(3));
+    expect(screen.getAllByTestId('briefing-kpi').map((tile) => tile.dataset.kpi)).toEqual([
+      'leads',
+      'meetings',
+      'pipeline',
+    ]);
+    expect(screen.queryByTestId('briefing-referrals')).toBeNull();
+    expect(screen.getByTestId('briefing-meetings')).toBeTruthy();
+    expect(screen.getAllByTestId('briefing-stage').length).toBeGreaterThan(0);
+    expect(plain(kpi('pipeline').textContent)).toContain('no portfolio base');
+    expect(screen.queryByTestId('briefing-failed')).toBeNull();
+    expect(
+      screen
+        .getAllByTestId('briefing-action')
+        .every((row) => ['meetings_today', 'partial_leads'].includes(row.dataset.kind!))
+    ).toBe(true);
+  });
 });

@@ -1,4 +1,5 @@
 import type { RouteRecordRaw } from 'vue-router';
+import { FIRM_MODULE } from '@Enums';
 import { AssistantModuleRoutes } from '@AssistantModule';
 import { BrandsModuleRoutes } from '@BrandsModule';
 import { BriefingModuleRoutes } from '@BriefingModule';
@@ -33,22 +34,32 @@ import { SiteRoutes } from '@SiteModule';
 // partner's portal (F1), the fiscal screens (F8) and the portfolio Radar (F10). rnc-3: the
 // operator's brands console (F2), the RNC channel (F3b), the Reforma assistant (F5), the
 // contract alert (F7) and Reinaldo's briefing (F9).
+//
+// rnc-4 F3c (R17): every screen of an opt-in module carries `meta.module` — set here, where the
+// whole map is in view, not in each module's route file — and `attachAuthGuard` shows not-found
+// while the firm has it off. The split is the API's `module:<key>` middleware's: the portal is the
+// partner network's, repricing the portfolio's. Core (site, diagnostic, workspaces, pipeline,
+// metrics) carries none.
 const localRoutes: RouteRecordRaw[] = [
   ...SiteRoutes,
   ...DiagnosticModuleRoutes,
   ...WorkspaceRoutes,
   ...PipelineModuleRoutes,
-  ...PartnerModuleRoutes,
+  ...ofModule(FIRM_MODULE.PARTNERS, PartnerModuleRoutes),
   ...MetricsModuleRoutes,
-  ...RepricingModuleRoutes,
-  ...PortalModuleRoutes,
-  ...BrandsModuleRoutes,
-  ...ChannelModuleRoutes,
-  ...AssistantModuleRoutes,
-  ...FiscalModuleRoutes,
-  ...RadarModuleRoutes,
-  ...ContractsModuleRoutes,
-  ...BriefingModuleRoutes,
+  ...ofModule(FIRM_MODULE.PORTFOLIO, RepricingModuleRoutes),
+  ...ofModule(FIRM_MODULE.PARTNERS, PortalModuleRoutes),
+  ...ofModule(FIRM_MODULE.BRANDS, BrandsModuleRoutes),
+  ...ofModule(FIRM_MODULE.CHANNEL, ChannelModuleRoutes),
+  ...ofModule(FIRM_MODULE.ASSISTANT, AssistantModuleRoutes),
+  ...ofModule(FIRM_MODULE.FISCAL, FiscalModuleRoutes),
+  ...ofModule(FIRM_MODULE.RADAR, RadarModuleRoutes),
+  ...ofModule(FIRM_MODULE.CONTRACTS, ContractsModuleRoutes),
+  ...ofModule(FIRM_MODULE.BRIEFING, BriefingModuleRoutes),
 ];
+
+function ofModule(module: FIRM_MODULE, routes: RouteRecordRaw[]): RouteRecordRaw[] {
+  return routes.map((route) => ({ ...route, meta: { ...route.meta, module } }) as RouteRecordRaw);
+}
 
 export default localRoutes;

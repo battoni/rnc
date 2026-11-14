@@ -1,5 +1,5 @@
 ---
-version: 1.1.0
+version: 1.2.0
 origin: rnc
 based-on: 1.0.1
 ---
@@ -25,6 +25,7 @@ the services, `CONTRACT_KIND` and the types. Nothing imports this module but the
 
 ## Intentional Decisions
 
+- **No legal referral without `partners`** (rnc-4 R19, A20): the API answers 404 on the picker and an alert without `referred_to`, `summary.referred` and the consent fields, so `ContractsView` skips the picker request, passes `canRefer` false to `MContractRow` and leaves out the fourth tile. The clause and the exposure stay.
 - **Every figure is the API's.** The four KPIs (`summary`), each row's years exposed and exposure,
   the consent and the partners it went to come from `GET contracts`; after a referral, a clause or
   an import the view reads it again rather than patching a row (as the Radar and the ledger, W41).

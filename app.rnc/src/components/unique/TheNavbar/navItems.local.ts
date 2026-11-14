@@ -1,6 +1,7 @@
 import { computed } from 'vue';
 import type { ComputedRef } from 'vue';
 import type { NavItem } from './interfaces';
+import { FIRM_MODULE } from '@Enums';
 import { ASSISTANT_PERMISSIONS, ASSISTANT_ROUTE_NAMES } from '@AssistantModule';
 import { BRANDS_PERMISSIONS, BRANDS_ROUTE_NAMES } from '@BrandsModule';
 import { BRIEFING_PERMISSIONS, BRIEFING_ROUTE_NAMES } from '@BriefingModule';
@@ -65,7 +66,17 @@ import { useUserStore } from '@UserModule';
  * team's (F5), the RNC channel in his and the operator's (F3b), the contract alert in his (F7) and
  * the brands console in the operator's (F2). Route names are the owners' (celer-05), never an import of their screens.
  */
-const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
+/**
+ * An entry of an opt-in module (rnc-4 R17): `module` takes it out of the rail while the signed-in
+ * person's firm has it off — the route is not found then (`attachAuthGuard`) and the API answers 404.
+ * Filtered here, in the local file, so the synced `TheNavbar` keeps its permission/role filter as is.
+ */
+interface LocalNavItem extends NavItem {
+  children?: LocalNavItem[];
+  module?: FIRM_MODULE;
+}
+
+const WORKSPACE_CHILDREN: Record<string, LocalNavItem[] | undefined> = {
   team: [
     {
       icon: 'pi pi-th-large',
@@ -83,6 +94,7 @@ const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
     {
       icon: 'pi pi-comments',
       label: 'navigation.assistant',
+      module: FIRM_MODULE.ASSISTANT,
       permission: ASSISTANT_PERMISSIONS.ask,
       routeName: ASSISTANT_ROUTE_NAMES.ask,
     },
@@ -90,12 +102,14 @@ const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
     {
       icon: 'pi pi-file-check',
       label: 'navigation.readiness',
+      module: FIRM_MODULE.FISCAL,
       permission: FISCAL_PERMISSIONS.read,
       routeName: FISCAL_ROUTE_NAMES.readiness,
     },
     {
       icon: 'pi pi-truck',
       label: 'navigation.suppliers',
+      module: FIRM_MODULE.FISCAL,
       permission: FISCAL_PERMISSIONS.read,
       routeName: FISCAL_ROUTE_NAMES.suppliers,
     },
@@ -105,6 +119,7 @@ const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
     {
       icon: 'pi pi-sun',
       label: 'navigation.briefing',
+      module: FIRM_MODULE.BRIEFING,
       permission: BRIEFING_PERMISSIONS.read,
       routeName: BRIEFING_ROUTE_NAMES.briefing,
     },
@@ -117,24 +132,28 @@ const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
     {
       icon: 'pi pi-sitemap',
       label: 'navigation.partners',
+      module: FIRM_MODULE.PARTNERS,
       permission: PARTNER_PERMISSIONS.manage,
       routeName: PARTNER_ROUTE_NAMES.partners,
     },
     {
       icon: 'pi pi-shield',
       label: 'navigation.trail',
+      module: FIRM_MODULE.PARTNERS,
       permission: PARTNER_PERMISSIONS.trail,
       routeName: PARTNER_ROUTE_NAMES.trail,
     },
     {
       icon: 'pi pi-wallet',
       label: 'navigation.ledger',
+      module: FIRM_MODULE.PARTNERS,
       permission: PARTNER_PERMISSIONS.ledger,
       routeName: PARTNER_ROUTE_NAMES.ledger,
     },
     {
       icon: 'pi pi-percentage',
       label: 'navigation.repricing',
+      module: FIRM_MODULE.PORTFOLIO,
       permission: REPRICING_PERMISSIONS.manage,
       routeName: REPRICING_ROUTE_NAMES.list,
     },
@@ -142,6 +161,7 @@ const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
     {
       icon: 'pi pi-share-alt',
       label: 'navigation.channel',
+      module: FIRM_MODULE.CHANNEL,
       permission: CHANNEL_PERMISSIONS.read,
       routeName: CHANNEL_ROUTE_NAMES.management,
     },
@@ -149,12 +169,14 @@ const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
     {
       icon: 'pi pi-file-import',
       label: 'navigation.invoices',
+      module: FIRM_MODULE.FISCAL,
       permission: FISCAL_PERMISSIONS.import,
       routeName: FISCAL_ROUTE_NAMES.imports,
     },
     {
       icon: 'pi pi-compass',
       label: 'navigation.radar',
+      module: FIRM_MODULE.RADAR,
       permission: RADAR_PERMISSIONS.manage,
       routeName: RADAR_ROUTE_NAMES.radar,
     },
@@ -162,6 +184,7 @@ const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
     {
       icon: 'pi pi-file-edit',
       label: 'navigation.contracts',
+      module: FIRM_MODULE.CONTRACTS,
       permission: CONTRACTS_PERMISSIONS.manage,
       routeName: CONTRACTS_ROUTE_NAMES.alert,
     },
@@ -178,6 +201,7 @@ const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
     {
       icon: 'pi pi-palette',
       label: 'navigation.brands',
+      module: FIRM_MODULE.BRANDS,
       permission: BRANDS_PERMISSIONS.manage,
       routeName: BRANDS_ROUTE_NAMES.list,
     },
@@ -185,6 +209,7 @@ const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
     {
       icon: 'pi pi-share-alt',
       label: 'navigation.channel',
+      module: FIRM_MODULE.CHANNEL,
       permission: CHANNEL_PERMISSIONS.read,
       routeName: CHANNEL_ROUTE_NAMES.operator,
     },
@@ -196,9 +221,10 @@ const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
  * `assistant.manage`. "Specialist" is a flag on the person, not a key, so this entry is added from
  * the signed-in user rather than gated by `permission` alone.
  */
-const KNOWLEDGE_ENTRY: NavItem = {
+const KNOWLEDGE_ENTRY: LocalNavItem = {
   icon: 'pi pi-book',
   label: 'navigation.knowledge',
+  module: FIRM_MODULE.ASSISTANT,
   permission: ASSISTANT_PERMISSIONS.ask,
   routeName: ASSISTANT_ROUTE_NAMES.knowledge,
 };
@@ -209,11 +235,12 @@ const KNOWLEDGE_ENTRY: NavItem = {
  * holds none of the three groups' keys, so it sees only this (and the core Home, which sends it here).
  * Its one child is the statement (rnc-2 F4, R11), behind the same key and role.
  */
-const PORTAL_ENTRY: NavItem = {
+const PORTAL_ENTRY: LocalNavItem = {
   children: [
     {
       icon: 'pi pi-wallet',
       label: 'navigation.statement',
+      module: FIRM_MODULE.PARTNERS,
       permission: PORTAL_PERMISSIONS.access,
       role: PORTAL_ROLE_SLUG,
       routeName: PORTAL_ROUTE_NAMES.statement,
@@ -221,6 +248,7 @@ const PORTAL_ENTRY: NavItem = {
   ],
   icon: 'pi pi-briefcase',
   label: 'navigation.portal',
+  module: FIRM_MODULE.PARTNERS,
   permission: PORTAL_PERMISSIONS.access,
   role: PORTAL_ROLE_SLUG,
   routeName: PORTAL_ROUTE_NAMES.home,
@@ -234,26 +262,38 @@ const PORTAL_ENTRY: NavItem = {
 function useLocalNavItems(): ComputedRef<NavItem[]> {
   const userStore = useUserStore();
 
-  return computed<NavItem[]>(() => [
-    ...WORKSPACES.map((workspace) => ({
-      children: childrenOf(workspace.key, writesKnowledge(userStore)),
-      icon: workspace.icon,
-      label: `navigation.${workspace.key}`,
-      permission: workspace.permission,
-      routeName: workspace.routeName,
-    })),
-    PORTAL_ENTRY,
-  ]);
+  return computed<NavItem[]>(() =>
+    onlyEnabled(
+      [
+        ...WORKSPACES.map((workspace) => ({
+          children: childrenOf(workspace.key, writesKnowledge(userStore)),
+          icon: workspace.icon,
+          label: `navigation.${workspace.key}`,
+          permission: workspace.permission,
+          routeName: workspace.routeName,
+        })),
+        PORTAL_ENTRY,
+      ],
+      userStore.hasModule
+    )
+  );
 }
 
 function writesKnowledge(userStore: ReturnType<typeof useUserStore>): boolean {
   return Boolean(userStore.user?.is_specialist) || userStore.hasPermission(ASSISTANT_PERMISSIONS.manage);
 }
 
-function childrenOf(key: string, withKnowledge: boolean): NavItem[] | undefined {
+function childrenOf(key: string, withKnowledge: boolean): LocalNavItem[] | undefined {
   const children = WORKSPACE_CHILDREN[key];
 
   return key === 'team' && children && withKnowledge ? [...children, KNOWLEDGE_ENTRY] : children;
+}
+
+/** The entries — and their children — whose module the firm has on, or that belong to none (core). */
+function onlyEnabled(items: LocalNavItem[], hasModule: (key: string) => boolean): LocalNavItem[] {
+  return items
+    .filter((item) => !item.module || hasModule(item.module))
+    .map((item) => (item.children ? { ...item, children: onlyEnabled(item.children, hasModule) } : item));
 }
 
 const localNavSettings: NavItem[] = [];

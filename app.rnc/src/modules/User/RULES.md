@@ -1,5 +1,5 @@
 ---
-version: 2.1.0
+version: 2.2.0
 origin: pendulum
 based-on: 2.1.0
 ---
@@ -81,6 +81,10 @@ The single source of truth for the authenticated session.
 
 - **`Auth` module** imports `useUserStore` to clear session on logout and check session state in the auth guard.
 - This module imports `GetPermissionGroupsService` and `GetRolesService` from `@AuthModule` inside `MAddEditUserForm` — roles and permission groups are Auth domain data.
+
+## Modules per firm (rnc-4)
+
+- **`hasModule(key)` is the firm's opt-in list** (rnc-4 F3c, R17, `FIRM_MODULE` in `@Enums`): `firm` and `platform` arrive with `auth/me` and the sign-in answers only, so `setUserAndPermissions` keeps them when a later payload (a profile save) has no `firm` key, and `clearUser` drops them. A firm-less account (the platform operator) has no opt-in module — its requests run as the platform firm, which has none.
 
 ## Do Not
 

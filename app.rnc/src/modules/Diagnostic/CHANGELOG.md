@@ -2,6 +2,10 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.4.0 — 2026-11-14
+
+- The chat per firm (rnc-4 F3c, R17): the "Formulário · Conversar no chat" toggle shows only where `public/firm` lists `chat` — not on the platform firm's root site; the form is always there. Tested by `DiagnosticView.chatOff.spec.ts`.
+
 ## 1.3.2 — 2026-11-07
 
 ### Changed

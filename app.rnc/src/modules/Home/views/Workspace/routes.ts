@@ -14,8 +14,19 @@ const WorkspaceRoutes: RouteRecordRaw[] = [
   { path: '/team', name: 'team-home-en', redirect: '/team/pipeline' },
   { path: '/equipe', name: 'team-home-pt-BR', redirect: '/equipe/pipeline' },
   // Reinaldo's landing IS his briefing (rnc-3 F9, R26): the rail's Reinaldo link and the home card arrive on it.
-  { path: '/management', name: 'management-home-en', redirect: '/management/briefing' },
-  { path: '/gestao', name: 'management-home-pt-BR', redirect: '/gestao/briefing' },
+  // rnc-4 F3c (R17): a firm without `briefing` lands on its metrics instead (`attachAuthGuard`).
+  {
+    path: '/management',
+    name: 'management-home-en',
+    meta: { moduleFallback: '/management/metrics' },
+    redirect: '/management/briefing',
+  },
+  {
+    path: '/gestao',
+    name: 'management-home-pt-BR',
+    meta: { moduleFallback: '/gestao/metricas' },
+    redirect: '/gestao/briefing',
+  },
   {
     path: '/operator',
     name: 'operator-home-en',

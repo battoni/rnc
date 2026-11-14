@@ -53,13 +53,14 @@ interface Briefing {
   leads: { last_24_hours: number; last_7_days: number };
   meetings: { count: number; next: BriefingMeeting[]; today: number; window_end: string };
   pipeline: { count: number; range_cents: BriefingRange; stages: BriefingStage[] };
+  /** Null while the firm has `partners` off (rnc-4 R19, C11): no referral tile, no SLA panel. */
   referrals: {
     by_state: { atencao: number; estourado: number; ok: number };
     count: number;
     goal_hours: number;
     more: number;
     top: BriefingReferral[];
-  };
+  } | null;
 }
 
 export type { Briefing, BriefingAction, BriefingMeeting, BriefingRange, BriefingReferral, BriefingStage };

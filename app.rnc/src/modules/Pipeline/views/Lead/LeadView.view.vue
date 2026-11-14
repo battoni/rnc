@@ -4,6 +4,7 @@ import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 import type { LeadDetail, LeadMove, LeadTimelineEvent, PendingLostMove } from '../../interfaces';
+import { FIRM_MODULE } from '@Enums';
 import { getI18nRouteName, toRouteId, translateError } from '@Helpers';
 import { useUserStore } from '@UserModule';
 import { contactLinks, useLeadFormat } from '../../composables';
@@ -47,6 +48,8 @@ const lead = ref<LeadDetail | null>(null);
 const pendingLost = ref<PendingLostMove | null>(null);
 
 const canUpdate = computed(() => userStore.hasPermission(PIPELINE_PERMISSIONS.update));
+// rnc-4 W38: the partner matches and the referral are the partner network's (404 without `partners`).
+const hasPartners = computed(() => userStore.hasModule(FIRM_MODULE.PARTNERS));
 const leadId = computed(() => toRouteId(route.params.id));
 const links = computed(() => contactLinks(lead.value?.phone ?? null, lead.value?.email ?? null));
 const stageOptions = computed(() => BOARD_STAGES.map((stage) => ({ label: stageLabel(stage), value: stage })));
@@ -328,6 +331,7 @@ function onNoteSaved(note: LeadTimelineEvent) {
           </section>
 
           <MLeadRouting
+            v-if="hasPartners"
             :canRefer="canUpdate"
             :company="lead.company"
             :leadId="lead.id"

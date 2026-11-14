@@ -5,9 +5,10 @@ import { getLoginPath } from './i18n/getLoginPath.helper';
 
 // Mock the user store so the guard can be exercised without a real session.
 const fetchMe = vi.fn();
-const userStoreState: { user: unknown; hasSessionHint: boolean; permissions: string[] } = {
+const userStoreState: { user: unknown; hasSessionHint: boolean; modules: string[]; permissions: string[] } = {
   user: null,
   hasSessionHint: true,
+  modules: [],
   permissions: [],
 };
 
@@ -23,6 +24,7 @@ vi.mock('@UserModule', () => ({
     },
     fetchMe,
     hasSessionHint: () => userStoreState.hasSessionHint,
+    hasModule: (key: string) => userStoreState.modules.includes(key),
     hasPermission: (key: string) => userStoreState.permissions.includes(key),
   }),
 }));
@@ -36,6 +38,9 @@ type Guard = (
     name?: string;
     meta: Record<string, unknown>;
     fullPath?: string;
+    hash?: string;
+    path?: string;
+    redirectedFrom?: { meta: Record<string, unknown> };
     query?: Record<string, string | string[] | null>;
   },
   from: { name?: string },
@@ -67,6 +72,7 @@ describe('attachAuthGuard', () => {
     createNewController.mockClear();
     userStoreState.user = null;
     userStoreState.hasSessionHint = true;
+    userStoreState.modules = [];
     userStoreState.permissions = [];
   });
 
@@ -293,5 +299,85 @@ describe('attachAuthGuard', () => {
     guard({ name: 'login', meta: { isPublic: true } }, { name: 'login' }, next);
 
     expect(cancelAllRequests).not.toHaveBeenCalled();
+  });
+  /*
+   * rnc-4 R17, A24: a screen of a module the firm has off is not found — the not-found view at the
+   * same address, not Home — however the person got there (typed, bookmarked, an old link). The rail
+   * hides the entry; this is what closes the route, as `meta.permission` does for a key.
+   */
+  it("shows not-found at the same address when the route's module is off for the firm (rnc-4 A24)", () => {
+    userStoreState.user = { id: 1 };
+    userStoreState.permissions = ['partners.manage'];
+    userStoreState.modules = ['briefing'];
+    const guard = makeRouterCapture();
+    const next = vi.fn();
+
+    guard(
+      {
+        name: 'partners-pt-BR',
+        meta: { module: 'partners', permission: 'partners.manage' },
+        path: '/gestao/parceiros',
+        query: { page: '2' },
+        hash: '',
+      },
+      { name: 'home' },
+      next
+    );
+
+    expect(next).toHaveBeenCalledWith({
+      name: 'not-found',
+      params: { pathMatch: ['gestao', 'parceiros'] },
+      query: { page: '2' },
+      hash: '',
+    });
+  });
+
+  it('lets the route through when the firm has its module on', () => {
+    userStoreState.user = { id: 1 };
+    userStoreState.permissions = ['partners.manage'];
+    userStoreState.modules = ['partners'];
+    const guard = makeRouterCapture();
+    const next = vi.fn();
+
+    guard({ name: 'partners-pt-BR', meta: { module: 'partners' }, path: '/gestao/parceiros' }, { name: 'home' }, next);
+
+    expect(next).toHaveBeenCalledWith();
+  });
+
+  it('charges the module after the session is fetched too (a hard navigation)', async () => {
+    fetchMe.mockImplementation(() => {
+      userStoreState.user = { id: 1 };
+
+      return Promise.resolve(undefined);
+    });
+    const guard = makeRouterCapture();
+    const next = vi.fn();
+
+    await guard({ name: 'radar-pt-BR', meta: { module: 'radar' }, path: '/gestao/radar' }, { name: undefined }, next);
+
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ name: 'not-found' }));
+  });
+
+  /*
+   * A landing that redirects into an opt-in screen (`/gestao` → the briefing) names where to go when
+   * that screen's module is off: the Gestão link must open something, not "page not found".
+   */
+  it('sends a landing redirect to its fallback when the screen it redirected to is off', () => {
+    userStoreState.user = { id: 1 };
+    const guard = makeRouterCapture();
+    const next = vi.fn();
+
+    guard(
+      {
+        name: 'briefing-pt-BR',
+        meta: { module: 'briefing' },
+        path: '/gestao/briefing',
+        redirectedFrom: { meta: { moduleFallback: '/gestao/metricas' } },
+      },
+      { name: 'home' },
+      next
+    );
+
+    expect(next).toHaveBeenCalledWith('/gestao/metricas');
   });
 });

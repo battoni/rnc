@@ -1,5 +1,5 @@
 ---
-version: 1.14.0
+version: 1.15.0
 origin: pendulum
 based-on: 1.12.0
 ---
@@ -118,6 +118,10 @@ instead, and it walks Fragments because the content is almost always inside a `<
 API answers 404 `firms.notFound`. A reserved-slug list or a format check here would be a second copy
 of the API's rule that drifts. A host outside `VITE_ROOT_DOMAIN` (an IP, a preview domain) names no
 firm and gets the platform firm, like the root.
+
+## Modules per firm (rnc-4)
+
+- **`attachAuthGuard` charges `meta.module` after `meta.permission`** (rnc-4 F3c, R17): a module the firm has off (`useUserStore().hasModule`) shows the not-found view at the SAME address (`{ name: 'not-found', params: { pathMatch } }`), as the API answers 404 `modules.disabled`; a landing that redirected into it and carries `meta.moduleFallback` goes there instead. The modules are set in `libraries/router/routes.local.ts` (`ofModule`), not in each module's route file.
 
 ## Do Not
 

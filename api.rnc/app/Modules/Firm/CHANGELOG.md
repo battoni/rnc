@@ -2,6 +2,9 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.8.0 — 2026-11-14
+- `public/firm` answers `modules` (rnc-4 F3c, R17): the firm's opt-in list (`FirmModules::enabled`, under a sub-brand too), so the site hides what is off — the chat. Tested in `tests/Feature/Firm/PublicFirmTest`.
+
 ## 1.7.0 — 2026-11-14
 - `firm:create` (rnc-4 F3b1, R21, D17): `Services/FirmProvisioner` makes a firm ready to sign in to in one transaction — default palette and weekday hours, core + `briefing` through `FirmModulesService`, the six default sector pages (`SectorPageService::startFirm`), consent v1 from the platform default, a `gestao` manager with a 16-character password returned once (`--specialist` makes them bookable); refuses a malformed, reserved or taken slug, a missing name or manager, a taken username and a malformed or taken e-mail (`firms.slug*`, `users.form.*`). `DTOs/CreateFirmDTO`, `DTOs/ProvisionedFirm`, `FirmRepository::createFirm()`; the command is `app/Console/Commands/CreateFirm.php`. Tested by `tests/Feature/Firm/CreateFirmCommandTest`.
 

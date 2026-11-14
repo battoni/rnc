@@ -4,7 +4,9 @@ import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
 import type { RadarBatchResult, RadarPartnerOption, RadarSummary, RadarTypeRow } from '../../interfaces';
 import { vCountUp } from '@Directives';
+import { FIRM_MODULE } from '@Enums';
 import { useFiscalFormat } from '@FiscalModule';
+import { useUserStore } from '@UserModule';
 import { RADAR_KIND } from '../../enums';
 import { GetRadarService } from '../../services';
 
@@ -18,6 +20,8 @@ import { GetRadarService } from '../../services';
  */
 const TOAST_LIFE_MS = 4000;
 
+const userStore = useUserStore();
+
 const { formatCount, formatRange, formatShortRange } = useFiscalFormat();
 const { t } = useI18n();
 const toast = useToast();
@@ -25,6 +29,9 @@ const toast = useToast();
 const loadFailed = ref(false);
 const loading = ref(false);
 const summary = ref<RadarSummary | null>(null);
+
+// rnc-4 R19: the batch referral is the partner network's; without `partners` no row offers it.
+const canRefer = computed(() => userStore.hasModule(FIRM_MODULE.PARTNERS));
 
 const opportunities = computed(
   () => summary.value?.types.filter((type) => type.kind === RADAR_KIND.OPORTUNIDADE) ?? []
@@ -203,6 +210,7 @@ function onSent(type: RadarTypeRow, partner: RadarPartnerOption, result: RadarBa
           <MRadarTypeRow
             v-for="type in opportunities"
             :key="type.rule"
+            :canRefer
             :type
             @onSent="onSent"
           />
@@ -230,6 +238,7 @@ function onSent(type: RadarTypeRow, partner: RadarPartnerOption, result: RadarBa
           <MRadarTypeRow
             v-for="type in risks"
             :key="type.rule"
+            :canRefer
             :type
             @onSent="onSent"
           />

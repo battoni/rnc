@@ -16,8 +16,8 @@ class UserResource extends JsonResource
     private ?Firm $viewAs = null;
 
     /**
-     * Adds what the signed-in shell boots from (rnc-4 R9, R20) — for `GET auth/me` only; a user in a
-     * list does not carry it: `firm` (`FirmSummaryResource`, null for a firm-less account) and
+     * Adds what the signed-in shell boots from (rnc-4 R9, R20) — for `GET auth/me` and the sign-in
+     * answers (password, phone code; F3c) only; a user in a list does not carry it: `firm` (`FirmSummaryResource`, null for a firm-less account) and
      * `platform` — the product's name, whether this is the platform operator, and the firm being
      * viewed as (`ViewAsFirm`, null until F4c).
      */

@@ -1,5 +1,5 @@
 ---
-version: 1.1.0
+version: 1.2.0
 origin: rnc
 based-on: 1.0.0
 ---
@@ -18,6 +18,7 @@ to a partner; the API writes everything (api Partner RULES → "The Radar's batc
 
 ## Intentional Decisions
 
+- **No batch without `partners`** (rnc-4 R19): `RadarView` computes `canRefer` from `useUserStore().hasModule(FIRM_MODULE.PARTNERS)` and `MRadarTypeRow` draws no batch column without it — an empty picker would read "no partner covers this", an invitation to register one. Without `fiscal` the API answers the proof from the record (no XML), so nothing here changes.
 - **Every figure is the API's.** The KPIs, each row's range (a year, or a month for the split
   payment, `period`), the partners a row may pick (only those whose specialty covers the rule), the
   next batch's size and the already sent come from `GET radar`; after a batch the view reads it
