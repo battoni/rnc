@@ -77,7 +77,7 @@ describe('PATCH /api/firm/settings (A35)', function () {
             ->assertJsonPath('data.phone', '11 4000-1000')
             ->assertJsonPath('data.phone_href', 'tel:+551140001000')
             ->assertJsonPath('data.mailbox', 'contato@franco.example')
-            ->assertJsonPath('data.business_hours', SETTINGS_HOURS)
+            ->assertJsonPathIgnoringKeyOrder('data.business_hours', SETTINGS_HOURS)
             ->assertJsonPath('data.credentials', 'ISO 9001:2015');
     });
 

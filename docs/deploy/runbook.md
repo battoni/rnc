@@ -200,26 +200,36 @@ on, a published table changes only through a new altering migration (`add_<colum
 
 MySQL 8, database `rnc`, `utf8mb4` / `utf8mb4_unicode_ci`, a user with rights on `rnc` only.
 
-The full Pest suite **did not run on MySQL 8** for rnc-4 (W95, as rnc-1's W1): this machine's
-`mysql -uroot` without a password is refused (`ERROR 1045`) and no password was guessed. The suite
-ran on SQLite in memory (its `phpunit.xml` default) — 2354 Pest, all green at F7. The owner proves
-MySQL with:
+**Proven on MySQL 8.0.41 (rnc-4 F7b, 14/11/2026)**, server in its default strict `sql_mode`
+(`ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,…`): `migrate:fresh --seed` with the local seeders (Franco, the
+platform firm, Alvorada, 2629 + 2287 demo NF-e) runs clean, and the full Pest suite is green on MySQL as on
+SQLite — **2399 Pest, all green on both**. What MySQL needed and SQLite never showed:
+
+- an index name over 64 characters (`client_contracts`' five-column unique, SQLSTATE 1059) — now named;
+  `SchemaIdentifierLengthTest` fails on any table, column, index or foreign key name over 64;
+- `RoleService` read the unique-violation message by column (`roles.name`); MySQL names the index
+  (`roles.roles_name_unique`), so a name race was a 500 and a slug collision never retried;
+- tests only: MySQL re-orders a JSON object's keys and does not roll an auto-increment back between
+  tests, and quotes with backticks — the tests compare JSON ignoring key order and ask for Franco's id.
+
+W95 ("MySQL 8 not run") is retired: it held only because the root password was unknown; the owner
+gave it and the commands below ran. Repeat them before a deploy that touches a migration:
 
 ```bash
-# 1. a test database (asks for the root password)
+# 1. the databases (asks for the root password)
 mysql -uroot -p -e "CREATE DATABASE IF NOT EXISTS rnc_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; CREATE DATABASE IF NOT EXISTS rnc CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 
-# 2. the full suite on it — the shell's variables win over phpunit.xml's <env> (none is forced)
-cd api.rnc
-DB_CONNECTION=mysql DB_HOST=127.0.0.1 DB_PORT=3306 DB_DATABASE=rnc_test DB_USERNAME=root DB_PASSWORD='<root password>' vendor/bin/pest
+# 2. the full suite on MySQL — the shell's variables win over phpunit.xml's <env> (none is forced).
+#    The password comes from the environment, never from a file in the repo.
+read -s DB_PASSWORD && export DB_PASSWORD
+make test-mysql                          # DB_DATABASE defaults to rnc_test; DB_HOST/PORT/USERNAME to 127.0.0.1/3306/root
 
-# 3. the local seed on MySQL: point api.rnc/.env at it, then rebuild
-#    DB_CONNECTION=mysql  DB_DATABASE=rnc  DB_USERNAME=root  DB_PASSWORD=<root password>
-cd .. && make fresh-seed      # migrate:fresh --seed on the .env connection (the `touch` of the SQLite file is harmless)
+# 3. schema and seed on MySQL, without touching api.rnc/.env (it stays on SQLite)
+cd api.rnc
+DB_CONNECTION=mysql DB_HOST=127.0.0.1 DB_PORT=3306 DB_DATABASE=rnc DB_USERNAME=root php artisan migrate:fresh --seed --force
 ```
 
-Expect the same count as SQLite with every test green; write the count here (replacing the paragraph
-above) and in the feature's `state.md`.
+Expect the SQLite count, every test green.
 
 ## Env inventory — API (`api.rnc/.env`)
 
@@ -298,5 +308,4 @@ verified — `MailSenderTest` reads it), `BCRYPT_ROUNDS` (default 12).
 ## Open before go-live
 
 - The production `<root>`, the Resend domain and the server are the owner's to choose.
-- MySQL 8 suite and seed (section "Database").
 - A production demo firm (`firm:create`) if the landing should link one (`VITE_DEMO_FIRM_SLUG`).

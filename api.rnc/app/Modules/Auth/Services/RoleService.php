@@ -34,6 +34,14 @@ class RoleService
 
     private const MAX_SLUG_ATTEMPTS = 8;
 
+    /**
+     * MySQL 8 names the index, not the column ("Duplicate entry 'x' for key 'roles.roles_name_unique'"),
+     * where SQLite says "roles.name": without these a race on MySQL was a 500 (rnc-4 F7b).
+     */
+    private const NAME_UNIQUE_INDEX = 'roles_name_unique';
+
+    private const SLUG_UNIQUE_INDEX = 'roles_slug_unique';
+
     public function __construct(
         private RoleRepository $roleRepository,
     ) {}
@@ -300,7 +308,7 @@ class RoleService
     private function isRolesSlugUniqueViolation(QueryException $queryException): bool
     {
         $lowerMessage = strtolower($queryException->getMessage());
-        $mentionsSlug = str_contains($lowerMessage, 'roles.slug') || str_contains($lowerMessage, 'roles`.`slug');
+        $mentionsSlug = str_contains($lowerMessage, 'roles.slug') || str_contains($lowerMessage, 'roles`.`slug') || str_contains($lowerMessage, self::SLUG_UNIQUE_INDEX);
         $isUniqueOrDuplicate = str_contains($lowerMessage, 'unique') || str_contains($lowerMessage, 'duplicate');
 
         return $mentionsSlug && $isUniqueOrDuplicate;
@@ -309,7 +317,7 @@ class RoleService
     private function isRolesNameUniqueViolation(QueryException $queryException): bool
     {
         $lowerMessage = strtolower($queryException->getMessage());
-        $mentionsName = str_contains($lowerMessage, 'roles.name') || str_contains($lowerMessage, 'roles`.`name');
+        $mentionsName = str_contains($lowerMessage, 'roles.name') || str_contains($lowerMessage, 'roles`.`name') || str_contains($lowerMessage, self::NAME_UNIQUE_INDEX);
         $isUniqueOrDuplicate = str_contains($lowerMessage, 'unique') || str_contains($lowerMessage, 'duplicate');
 
         return $mentionsName && $isUniqueOrDuplicate;

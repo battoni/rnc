@@ -1,5 +1,5 @@
 ---
-version: 1.31.0
+version: 1.32.0
 origin: pendulum
 based-on: 1.6.0
 ---
@@ -86,6 +86,16 @@ based-on: 1.6.0
   route it had before modules existed; a test about a module that is off sets `modules` itself.
 
 ## Migrations
+
+- **An index or foreign key name stays within MySQL's 64 characters.** SQLite takes any length, so a
+  long generated name (`{table}_{columns}_unique`) passes the suite and stops the first `migrate` on
+  MySQL (SQLSTATE 1059). Name it: `client_contracts_period_unique`. `SchemaIdentifierLengthTest`
+  walks every table, column, index and foreign key name (rnc-4 F7b).
+- **A JSON column gives its keys back in MySQL's order, not the writer's.** MySQL sorts an object's
+  keys (by length, then name); SQLite keeps them as written. Nothing may depend on that order — a
+  test reading a JSON value compares with `toBeIgnoringKeyOrder` / `assertJsonPathIgnoringKeyOrder`
+  (`tests/Pest.php`), and an auto-increment id is never asserted as `1` (MySQL does not roll it back
+  between tests). Run the suite on MySQL with `make test-mysql`.
 
 - **A foreign key lives in the `create_*` of the table that holds it** (`arcus-api-architecture`
   §3). When the target table sorts later, rename the target's migration to an earlier timestamp

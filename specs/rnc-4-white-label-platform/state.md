@@ -1,5 +1,5 @@
 # State: Reforma hub as a white-label platform for accounting firms
-Stage: build F9b/19 (optional F9a and F9b done; verify next)
+Stage: build F7b/20 (F7b MySQL fix done, added by the coordinator 14/11; verify next)
 Updated: 14/11/2026
 Branch: feature/rnc-4-white-label-platform · Worktree: .claude/worktrees/rnc-4
 ## Done
@@ -580,10 +580,25 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   `ConfirmPopup` that says it cannot be undone, then the API's anonymised detail; "Dados anonimizados em …" for every reader (W108);
   the `dados.anonimizados` timeline sentence by `via`. Locales 1.18.1 (also `firms.offboarded`, W110); e2e 1.23.0 (RULES: a confirm
   popup is clicked without a scroll). Spec: C21.
+- **F7b MySQL fix** (R36; retires W95; added by the coordinator after the owner gave the MySQL login, plan.md phase order) ·
+  14/11 · MySQL 8.0.41 (strict default `sql_mode`): `migrate:fresh --seed` with the local seeders (Franco, hub, Alvorada, 2629 + 2287
+  NF-e) clean on `rnc_r4`; **full Pest 2399 on SQLite AND 2399 on MySQL (`rnc_r4_test`), all green** (+2: `SchemaIdentifierLengthTest`,
+  the slug-collision case in `AuthHardeningTest`); `make test-mysql` itself ran green (2399). Vitest and Playwright not run (no
+  app.rnc change). Pint, PHPStan (`make check-api`), mirror check green. pre-commit green 14/11/2026 for the steps that apply: the
+  full `make pre-commit` was not run (sanitize, `wt-test`, Vitest and e2e skipped — API, tests and docs only).
+  What changed: `client_contracts`' five-column unique named `client_contracts_period_unique` (the generated name was 66 > 64,
+  SQLSTATE 1059 — the only long name; the test walks every table, column, index and foreign key name, red on the old migration).
+  `RoleService` also matches MySQL's index-named unique message (`roles.roles_name_unique` / `roles_slug_unique`): a name race was a
+  500 and a slug collision never retried on MySQL (both cases red on MySQL before the fix). Tests only: MySQL sorts a JSON object's
+  keys, so 23 assertions on JSON values use `toBeIgnoringKeyOrder` / `assertJsonPathIgnoringKeyOrder` (`tests/Pest.php`); six
+  seeder tests ask for Franco's id instead of `1` (auto-increment is not rolled back); `PlatformFirmsTest` matches backtick quoting;
+  `AddressBlockTest` drops its throwaway tables (DDL outlives the test on MySQL). Database 1.32.0 (RULES: identifier length, JSON
+  key order), Auth 2.18.1. Runbook → Database rewritten with the proof and the repeat commands; "Open before go-live" loses the
+  MySQL line. No `whereRaw`/`selectRaw` needed a change (all portable `CASE`/`COUNT`/`SUM`), no JSON or text default exists. W112.
 ## Next
 1. F9a and F9b done (every builder phase built). Then `/battoni-verify rnc-4`: full gate (full Playwright included), `fable-reviewer` with spec + `main..HEAD` (P6 points of F1a,
-   F4a, F4c, and F9a's `ResolveCurrentFirm` offboarded branch + `FirmResolver::belongsTo`), Chrome QA rounds 1–6, draft PR. The owner,
-   before any deploy: the MySQL 8 run in `docs/deploy/runbook.md` → "Database".
+   F4a, F4c, and F9a's `ResolveCurrentFirm` offboarded branch + `FirmResolver::belongsTo`), Chrome QA rounds 1–6, draft PR. MySQL 8
+   is proven (F7b); before a deploy that touches a migration, repeat `make test-mysql` (`docs/deploy/runbook.md` → "Database").
 ## Pitfalls
 - (F1a) `UserFactory` now puts every user in the default firm (`franco` under phpunit), creating it
   when absent. A test that creates `Firm::factory(['slug' => 'franco'])` AFTER a user would collide
@@ -763,6 +778,11 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   (axios builds `new URL`): add `createObjectURL`/`revokeObjectURL` onto `URL` with `Object.assign` instead.
 - (F9b) This sandbox refuses Bash calls mixing heredocs or several commands with git; multi-file edits went through a Python script
   in the scratchpad run by path, and `rtk git status` alone.
+- (F7b) MySQL sorts a JSON object's keys and keeps auto-increment across `RefreshDatabase`'s rolled-back transactions: a test on a
+  JSON value uses `toBeIgnoringKeyOrder` / `assertJsonPathIgnoringKeyOrder`, never `toBe`; never assert an id is `1`. A new index over
+  several columns may need an explicit name (`SchemaIdentifierLengthTest`). Prove a schema change with `make test-mysql`.
+- (F7b) The MySQL root password is the owner's (same local user as boanerges): pass it through the environment only, never into
+  `.env`, docs or state.
 ## QA
 (none yet — rounds in plan.md → QA)
 ## Seeded people (password `seeding.password`; `battoni` uses `seeding.superadmin_password`)
@@ -830,6 +850,8 @@ F7 done
 F9a done
 14:12 F9b started, attempt 1
 F9b done
+14:41 F7b started, attempt 1
+F7b done
 ## Decided while you were away
 - W1 plan: proposal.html skipped in away mode (spec D27; to reverse: `/battoni-new-proposal rnc-4 final`).
 - W2 plan: the owner's phases are split into 17 builder phases with his labels kept (spec D28); his
@@ -1111,7 +1133,8 @@ F9b done
 - W95 F7: MySQL 8 not run (R36) — `mysql -uroot` without a password is refused (`ERROR 1045`, as rnc-1's W1) and no password was tried;
   the full Pest ran on SQLite in memory (2354). `docs/deploy/runbook.md` → "Database" gives the owner the exact commands (create
   `rnc_test` + `rnc`, `DB_*` in the shell over phpunit.xml's unforced `<env>`, `make fresh-seed` with `.env` on MySQL). To reverse: run them
-  and write the count there.
+  and write the count there. **Retired by F7b (W112):** it held only because the password was unknown; the owner gave it and the suite
+  and seed ran on MySQL 8.
 - W96 F7: F4d's W93 closed — `auth/me`'s `platform.view_as` carries the viewed firm's opt-in `modules` (`FirmModules::enabled`), and the
   User store's `hasModule` reads them while a view-as is set (else the person's firm's); `firm` stays null for the operator. The app
   Platform Known Gap is retired with its reason. To reverse: drop the field and the store's first branch.
@@ -1157,3 +1180,8 @@ F9b done
   treat it like `firms.mismatch` in `errorHandler`.
 - W111 F9b: the export downloads as `lead-<id>-dados.json`, the API's `data` as it came, indented (2 spaces), built in the browser from the
   JSON answer (no file endpoint). To reverse: a `Content-Disposition` download from the API.
+- W112 F7b: MySQL 8 proven (retires W95) — schema + local seed clean, full Pest 2399 green on MySQL as on SQLite. JSON key order is
+  treated as no contract: MySQL's re-ordering is absorbed in the tests (`toBeIgnoringKeyOrder`), not by turning JSON columns into
+  text; `client_contracts`' unique is named `client_contracts_period_unique`; `make test-mysql` lives in `Makefile.local` (the sync
+  never touches it) and reads the password from the environment. No MySQL-vs-SQLite difference left open, so no Known Gap. To
+  reverse: n/a (a proof); JSON columns to `text` if key order ever becomes part of a contract.

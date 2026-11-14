@@ -3,6 +3,14 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.32.0 — 2026-11-14
+
+### Fixed
+
+- MySQL 8 (rnc-4 F7b): `client_contracts`' five-column unique is named `client_contracts_period_unique` — the generated
+  name was 66 characters and `migrate` failed with SQLSTATE 1059. `SchemaIdentifierLengthTest` guards every name.
+  Rules: identifier length, JSON key order, ids in tests.
+
 ## 1.31.0 — 2026-11-14
 
 ### Added

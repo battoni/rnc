@@ -59,7 +59,7 @@ it('writes one contrato.clausula line on the client timeline, with the user (A20
         'user_id' => $this->reinaldo->id,
         'type' => 'contrato.clausula',
     ])
-        ->and($line->data)->toBe(['contract_id' => $this->contract->id, 'kind' => 'locacao', 'end_year' => 2031]);
+        ->and($line->data)->toBeIgnoringKeyOrder(['contract_id' => $this->contract->id, 'kind' => 'locacao', 'end_year' => 2031]);
 });
 
 it('drops the row from the alert (A20)', function () {

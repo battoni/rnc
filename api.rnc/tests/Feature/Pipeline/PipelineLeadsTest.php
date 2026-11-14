@@ -200,7 +200,7 @@ describe('moving a card (R18, A11)', function () {
         $event = LeadEvent::query()->where('lead_id', $lead->id)->where('type', 'etapa.alterada')->sole();
 
         expect($event->user_id)->toBe($patricia->id)
-            ->and($event->data)->toBe(['from' => 'lead', 'to' => 'proposta', 'via' => 'arrastar']);
+            ->and($event->data)->toBeIgnoringKeyOrder(['from' => 'lead', 'to' => 'proposta', 'via' => 'arrastar']);
     });
 
     it('stores the move to cliente for the funnel to count', function () {
@@ -210,7 +210,7 @@ describe('moving a card (R18, A11)', function () {
 
         expect($lead->fresh()->stage)->toBe('cliente')
             ->and(LeadEvent::query()->where('lead_id', $lead->id)->where('type', 'etapa.alterada')->sole()->data)
-            ->toBe(['from' => 'proposta', 'to' => 'cliente', 'via' => 'botao']);
+            ->toBeIgnoringKeyOrder(['from' => 'proposta', 'to' => 'cliente', 'via' => 'botao']);
     });
 
     it('moves among all the stages, backwards too', function () {

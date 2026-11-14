@@ -1,6 +1,7 @@
 <?php
 
 use App\Modules\Booking\Models\Appointment;
+use App\Modules\Firm\Models\Firm;
 use App\Modules\Firm\Models\FirmBrand;
 use App\Modules\Lead\Models\Lead;
 use App\Modules\Lead\Models\LeadConsent;
@@ -26,7 +27,7 @@ it('fills every stage with invented leads from the last 30 days', function () {
         ->toBe(['cliente', 'lead', 'lead_parcial', 'perdido', 'proposta', 'reuniao_marcada', 'visitante'])
         ->and($leads->min('created_at')->greaterThanOrEqualTo(now()->subDays(31)))->toBeTrue()
         ->and($leads->where('stage', 'perdido')->whereNull('lost_reason'))->toBeEmpty()
-        ->and($leads->pluck('firm_id')->unique()->all())->toBe([1]);
+        ->and($leads->pluck('firm_id')->unique()->all())->toBe([Firm::where('slug', 'franco')->value('id')]);
 });
 
 it('gives each lead a timeline and books the meetings of the reunião marcada column', function () {

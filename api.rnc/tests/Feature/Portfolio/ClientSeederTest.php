@@ -1,6 +1,7 @@
 <?php
 
 use App\Helpers\Brazil\Cnpj;
+use App\Modules\Firm\Models\Firm;
 use App\Modules\Portfolio\Models\Client;
 use Database\Seeders\DatabaseSeeder;
 
@@ -24,7 +25,7 @@ it('seeds 500 invented clients with valid, plainly invented CNPJs', function () 
         ->and((float) $clients->min('monthly_fee'))->toBeGreaterThanOrEqual(900.0)
         ->and((float) $clients->max('monthly_fee'))->toBeLessThanOrEqual(9000.0)
         ->and($clients->whereNotNull('repricing'))->toHaveCount(0)
-        ->and($clients->pluck('firm_id')->unique()->all())->toBe([1]);
+        ->and($clients->pluck('firm_id')->unique()->all())->toBe([Firm::where('slug', 'franco')->value('id')]);
 });
 
 it('gives about 85 % of the clients consent through the contract, the rest a no (rnc-2 R28)', function () {

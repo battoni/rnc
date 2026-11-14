@@ -13,7 +13,7 @@ describe('the firm seeder', function () {
 
         $firm = Firm::where('slug', 'franco')->firstOrFail();
 
-        expect($firm->id)->toBe(1)
+        expect(Firm::orderBy('id')->value('slug'))->toBe('franco')
             ->and($firm->name)->toBe('Franco Contabilidade')
             ->and($firm->logo_text)->toBe('Franco Contabilidade')
             ->and($firm->brand_primary)->toBe('#00375a')
@@ -21,7 +21,7 @@ describe('the firm seeder', function () {
             ->and($firm->address)->toBe('Av. Corifeu de Azevedo Marques, 2333, 1º e 2º andares, Butantã, São Paulo-SP')
             ->and($firm->phone)->toBe('11 3732-5500')
             ->and($firm->mailbox)->toBe('saf@franco-rnc.com.br')
-            ->and($firm->business_hours)->toBe([
+            ->and($firm->business_hours)->toBeIgnoringKeyOrder([
                 ['weekdays' => [1, 2, 3, 4], 'from' => '08:00', 'to' => '18:00'],
                 ['weekdays' => [5], 'from' => '08:00', 'to' => '17:00'],
             ]);

@@ -21,8 +21,8 @@ describe('database seed', function () {
     it('creates Franco as the first firm, then only the platform firm', function () {
         $this->seed();
 
-        expect(Firm::orderBy('id')->pluck('slug')->all())->toBe(['franco', 'hub'])
-            ->and(Firm::first()->id)->toBe(1);
+        // Ordered by id, not `id === 1`: MySQL does not roll an auto-increment back between tests (rnc-4 F7b).
+        expect(Firm::orderBy('id')->pluck('slug')->all())->toBe(['franco', 'hub']);
     });
 
     it('creates Reinaldo, the team and four specialists in Franco, and the operator in no firm', function () {

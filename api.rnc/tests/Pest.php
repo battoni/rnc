@@ -7,6 +7,7 @@ use App\Modules\Firm\Models\Firm;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 
 /*
@@ -44,6 +45,41 @@ pest()->beforeEach(fn () => Http::preventStrayRequests())->in('Feature');
 
 expect()->extend('toBeOne', function () {
     return $this->toBe(1);
+});
+
+/*
+| MySQL stores a JSON object with its keys re-ordered (by length, then by name), SQLite keeps them as
+| written: `['from' => 'lead', 'to' => 'x', 'via' => 'y']` comes back as `to, via, from` (rnc-4 F7b).
+| Key order of a JSON object is not part of any contract, so a value read from a JSON column is
+| compared with this: identical (`toBe`) once the keys of every object are sorted — lists keep
+| their order, scalars keep their type.
+*/
+function sortJsonObjectKeys(mixed $value): mixed
+{
+    if (! is_array($value)) {
+        return $value;
+    }
+
+    $sorted = array_map(sortJsonObjectKeys(...), $value);
+
+    if (! array_is_list($sorted)) {
+        ksort($sorted);
+    }
+
+    return $sorted;
+}
+
+expect()->extend('toBeIgnoringKeyOrder', function (array $expected) {
+    expect(sortJsonObjectKeys($this->value))->toBe(sortJsonObjectKeys($expected));
+
+    return $this;
+});
+
+TestResponse::macro('assertJsonPathIgnoringKeyOrder', function (string $path, array $expected) {
+    /** @var TestResponse $this */
+    expect($this->json($path))->toBeIgnoringKeyOrder($expected);
+
+    return $this;
 });
 
 /*

@@ -178,7 +178,7 @@ describe('a client\'s sale (A13)', function () {
 
         nfeImportUpload(nfeImportPerson('gestao'), nfeImportFile(NfeXmlBuilder::nfe(['key' => $broken])))
             ->assertCreated()
-            ->assertJsonPath('data.refused', [['file' => 'nota.xml', 'code' => 'invalid_key']]);
+            ->assertJsonPathIgnoringKeyOrder('data.refused', [['file' => 'nota.xml', 'code' => 'invalid_key']]);
 
         expect(nfeImportDocuments())->toBe([]);
     });
@@ -243,7 +243,7 @@ describe('a file that cannot be read (A14, plan AM3)', function () {
         $stored = implode('', array_map(fn (string $file) => (string) Storage::disk('local')->get($file), Storage::disk('local')->allFiles()));
         $batch = NfeImport::withoutGlobalScopes()->firstOrFail();
 
-        expect($response->json('data.refused'))->toBe([['file' => 'entidade.xml', 'code' => 'not_nfe']])
+        expect($response->json('data.refused'))->toBeIgnoringKeyOrder([['file' => 'entidade.xml', 'code' => 'not_nfe']])
             ->and(nfeImportDocuments())->toBe([])
             ->and($response->getContent())->not->toContain('CANARY')
             ->and(json_encode($batch->getAttributes()))->not->toContain('CANARY')
@@ -255,7 +255,7 @@ describe('a file that cannot be read (A14, plan AM3)', function () {
 
         nfeImportUpload(nfeImportPerson('gestao'), nfeImportFile(NfeFixture::withExternalEntity('file:///etc/hostname')))
             ->assertCreated()
-            ->assertJsonPath('data.refused', [['file' => 'nota.xml', 'code' => 'not_nfe']]);
+            ->assertJsonPathIgnoringKeyOrder('data.refused', [['file' => 'nota.xml', 'code' => 'not_nfe']]);
 
         expect(nfeImportDocuments())->toBe([]);
     });
@@ -265,13 +265,13 @@ describe('a file that cannot be read (A14, plan AM3)', function () {
 
         nfeImportUpload(nfeImportPerson('gestao'), nfeImportFile(NfeFixture::billionLaughs(), 'risos.xml'))
             ->assertCreated()
-            ->assertJsonPath('data.refused', [['file' => 'risos.xml', 'code' => 'not_nfe']]);
+            ->assertJsonPathIgnoringKeyOrder('data.refused', [['file' => 'risos.xml', 'code' => 'not_nfe']]);
     });
 
     it('refuses a .xml whose content is not XML as not_xml', function () {
         nfeImportUpload(nfeImportPerson('gestao'), nfeImportFile('isto não é uma nota', 'texto.xml'))
             ->assertCreated()
-            ->assertJsonPath('data.refused', [['file' => 'texto.xml', 'code' => 'not_xml']]);
+            ->assertJsonPathIgnoringKeyOrder('data.refused', [['file' => 'texto.xml', 'code' => 'not_xml']]);
     });
 
     it('refuses an XML over 1 MB as too_large and stores nothing', function () {
@@ -280,7 +280,7 @@ describe('a file that cannot be read (A14, plan AM3)', function () {
 
         nfeImportUpload(nfeImportPerson('gestao'), nfeImportFile($padded, 'grande.xml'))
             ->assertCreated()
-            ->assertJsonPath('data.refused', [['file' => 'grande.xml', 'code' => 'too_large']]);
+            ->assertJsonPathIgnoringKeyOrder('data.refused', [['file' => 'grande.xml', 'code' => 'too_large']]);
 
         expect(nfeImportDocuments())->toBe([]);
     });
@@ -342,7 +342,7 @@ describe('a ZIP of XMLs (A14, plan AM3)', function () {
             '..\\..\\windows\\ruim.xml' => 'não é xml',
         ]), 'lote.zip'))->assertCreated()->json('data');
 
-        expect($data['refused'])->toBe([['file' => 'ruim.xml', 'code' => 'not_xml']])
+        expect($data['refused'])->toBeIgnoringKeyOrder([['file' => 'ruim.xml', 'code' => 'not_xml']])
             ->and(Storage::disk('local')->allFiles())->toBe(['nfe/'.nfeImportFirmId().'/'.$seller->id.'/'.NfeXmlBuilder::key(NFE_SELLER_CNPJ, 123).'.xml'])
             ->and(file_exists(base_path('public/evil.xml')))->toBeFalse();
     });
@@ -401,10 +401,10 @@ describe('a ZIP of XMLs (A14, plan AM3)', function () {
 
         nfeImportUpload(nfeImportPerson('gestao'), nfeImportFile(NfeFixture::zip($entries), 'muitos.zip'))
             ->assertCreated()
-            ->assertJsonPath('data.refused', [['file' => 'muitos.zip', 'code' => 'too_large']]);
+            ->assertJsonPathIgnoringKeyOrder('data.refused', [['file' => 'muitos.zip', 'code' => 'too_large']]);
         nfeImportUpload(nfeImportPerson('gestao'), nfeImportFile(NfeXmlBuilder::nfe(), 'falso.zip'))
             ->assertCreated()
-            ->assertJsonPath('data.refused', [['file' => 'falso.zip', 'code' => 'not_xml']]);
+            ->assertJsonPathIgnoringKeyOrder('data.refused', [['file' => 'falso.zip', 'code' => 'not_xml']]);
     });
 });
 
@@ -564,7 +564,7 @@ describe('private storage and the firm wall (A15)', function () {
         nfeImportUpload($otherPerson, nfeImportFile(NfeXmlBuilder::nfe()))->assertCreated()->assertJsonPath('data.stored', 1);
         nfeImportUpload(nfeImportPerson('gestao'), nfeImportFile(NfeXmlBuilder::nfe()))
             ->assertCreated()
-            ->assertJsonPath('data.refused', [['file' => 'nota.xml', 'code' => 'client_unknown']]);
+            ->assertJsonPathIgnoringKeyOrder('data.refused', [['file' => 'nota.xml', 'code' => 'client_unknown']]);
 
         $ours = nfeImportClient(NFE_SELLER_CNPJ);
         nfeImportUpload(nfeImportPerson('gestao'), nfeImportFile(NfeXmlBuilder::nfe()))->assertCreated()->assertJsonPath('data.stored', 1);

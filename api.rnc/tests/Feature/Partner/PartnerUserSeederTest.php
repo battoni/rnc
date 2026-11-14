@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use App\Modules\Firm\Models\Firm;
 use App\Modules\Partner\Models\Partner;
 use App\Modules\Partner\Models\PartnerAccessEvent;
 use Carbon\CarbonImmutable;
@@ -23,7 +24,7 @@ it('gives each of the eight seeded partners its parceiro login', function () {
 
     expect($logins->pluck('username')->all())->toBe(['parceiro.1', 'parceiro.2', 'parceiro.3', 'parceiro.4', 'parceiro.5', 'parceiro.6', 'parceiro.7', 'parceiro.8'])
         ->and($logins->pluck('partner_id')->all())->toBe($partners)
-        ->and($logins->every(fn (User $login) => $login->role?->slug === 'parceiro' && $login->firm_id === 1))->toBeTrue()
+        ->and($logins->every(fn (User $login) => $login->role?->slug === 'parceiro' && $login->firm_id === Firm::where('slug', 'franco')->value('id')))->toBeTrue()
         ->and(Partner::withoutGlobalScopes()->whereNull('access_granted_at')->count())->toBe(0)
         ->and(PartnerAccessEvent::withoutGlobalScopes()->where('type', 'granted')->pluck('user_id')->sort()->values()->all())->toBe($logins->pluck('id')->sort()->values()->all());
 });

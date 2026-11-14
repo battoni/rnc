@@ -351,6 +351,14 @@ describe('a role refusal', function () {
         }
     });
 
+    it('moves to the next slug when the slug index catches a collision', function () {
+        Role::create(['name' => 'Another', 'slug' => 'raced-slug']);
+
+        $role = app(RoleService::class)->create(new RoleStoreDTO(name: 'Raced Slug', description: null, permission_group_ids: ['users']));
+
+        expect($role->slug)->toBe('raced-slug-1');
+    });
+
     it('names a taken name with a key on rename', function () {
         Role::create(['name' => 'Taken']);
         $role = Role::create(['name' => 'Free']);

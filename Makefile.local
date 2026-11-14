@@ -6,7 +6,7 @@
 #   	cd api.myproject && php artisan db:seed --class=DemoSeeder
 
 # rnc-1 F1 — the local stack (plan AM1): one host, `localhost`, never 127.0.0.1 beside it.
-.PHONY: serve-api serve-app fresh-seed
+.PHONY: serve-api serve-app fresh-seed test-mysql
 
 serve-api: ## api.rnc — the API on http://localhost:8000 (php artisan serve; Valet is not used)
 	cd api.rnc && php artisan serve --host=localhost --port=8000
@@ -16,3 +16,10 @@ serve-app: ## app.rnc — the SPA on http://localhost:5173 (Node 24: `nvm use` f
 
 fresh-seed: ## api.rnc — rebuild the local SQLite database (database/database.sqlite, gitignored) and seed Franco, the roles and the team
 	cd api.rnc && touch database/database.sqlite && php artisan migrate:fresh --seed
+
+# rnc-4 F7b — the full Pest suite on MySQL 8 instead of phpunit.xml's in-memory SQLite (its <env> is
+# not forced, so the shell wins). The password comes from the environment, never from a file here:
+#   DB_PASSWORD=… make test-mysql     (database rnc_test, created utf8mb4_unicode_ci beforehand)
+test-mysql: ## api.rnc — full Pest on MySQL 8 (DB_PASSWORD from env; DB_DATABASE defaults to rnc_test)
+	cd api.rnc && DB_CONNECTION=mysql DB_URL= DB_HOST=$${DB_HOST:-127.0.0.1} DB_PORT=$${DB_PORT:-3306} \
+		DB_DATABASE=$${DB_DATABASE:-rnc_test} DB_USERNAME=$${DB_USERNAME:-root} vendor/bin/pest --compact

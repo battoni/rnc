@@ -173,7 +173,7 @@ describe('the anonymisation (A48)', function () {
                 'company' => null, 'cnpj' => null, 'contact_name' => null, 'phone' => null, 'email' => null, 'visitor_uuid' => null, 'report_token' => null,
             ])
             ->and($row->stage)->toBe('lead')
-            ->and($row->profile)->toBe(PRIVACY_PROFILE)
+            ->and($row->profile)->toBeIgnoringKeyOrder(PRIVACY_PROFILE)
             ->and($row->anonymised_at?->toIso8601String())->toBe(now()->toIso8601String())
             ->and(LeadConsent::query()->where('lead_id', $lead->id)->sole()->text)->toBe('Autorizo o escritório a me contatar.');
     });
@@ -200,7 +200,7 @@ describe('the anonymisation (A48)', function () {
         expect($lead->fresh()->lost_reason)->toBeNull()
             ->and($lead->fresh()->stage)->toBe('perdido')
             ->and($events['nota.adicionada']->data)->toBe(['text' => null])
-            ->and($events['etapa.alterada']->data)->toBe(['from' => 'lead', 'to' => 'perdido', 'via' => 'ficha'])
+            ->and($events['etapa.alterada']->data)->toBeIgnoringKeyOrder(['from' => 'lead', 'to' => 'perdido', 'via' => 'ficha'])
             ->and(LeadEvent::query()->where('lead_id', $lead->id)->get()->toJson())->not->toContain('Ana');
     });
 

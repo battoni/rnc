@@ -44,7 +44,7 @@ describe('GET /api/public/firm — the firm brand (A8)', function () {
             ->assertJsonPath('data.name', 'Alvorada Contabilidade')
             ->assertJsonPath('data.short_name', 'Alvorada')
             ->assertJsonPath('data.tagline', 'Contabilidade para quem está começando')
-            ->assertJsonPath('data.proof', ALVORADA_PROOF)
+            ->assertJsonPathIgnoringKeyOrder('data.proof', ALVORADA_PROOF)
             ->assertJsonPath('data.is_platform', false)
             ->assertJsonPath('data.logo_url', null)
             ->assertJsonPath('data.platform', ['name' => 'Hub da Reforma']);

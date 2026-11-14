@@ -54,7 +54,8 @@ describe('GET platform/firms', function () {
 
         DB::enableQueryLog();
         $firms = collect($this->actingAs($this->operator)->getJson('/api/platform/firms')->assertOk()->json('data'))->keyBy('slug');
-        $leadQueries = collect(DB::getQueryLog())->filter(fn (array $query) => str_contains($query['query'], '"leads"'));
+        // SQLite quotes `"leads"`, MySQL `` `leads` ``.
+        $leadQueries = collect(DB::getQueryLog())->filter(fn (array $query) => preg_match('/["`]leads["`]/', $query['query']) === 1);
 
         expect($firms->keys()->all())->toContain('franco', 'hub')
             ->and($firms['franco']['lead_count'])->toBe(3)

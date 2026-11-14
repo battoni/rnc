@@ -3,6 +3,11 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 2.18.1 — 2026-11-14
+- `RoleService::create` recognises MySQL 8's unique-violation message, which names the index (`roles.roles_name_unique`,
+  `roles.roles_slug_unique`) where SQLite names the column: a name race was a 500 and a slug collision never moved to the
+  next slug on MySQL (rnc-4 F7b). Tested by `tests/Feature/Auth/AuthHardeningTest` (`a role refusal`) under `make test-mysql`.
+
 ## 2.18.0 — 2026-11-14
 - `UserRepository::findAllFirmUsers` — every login of a firm, active or not, for `firm:offboard`'s export (rnc-4 F9a, R40). Tested by `tests/Feature/Firm/OffboardFirmCommandTest`.
 
