@@ -1,5 +1,5 @@
 # State: Reforma hub as a white-label platform for accounting firms
-Stage: build F7b/20 (F7b MySQL fix done, added by the coordinator 14/11; verify next)
+Stage: verify
 Updated: 14/11/2026
 Branch: feature/rnc-4-white-label-platform · Worktree: .claude/worktrees/rnc-4
 ## Done
@@ -785,6 +785,7 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   `.env`, docs or state.
 ## QA
 (none yet — rounds in plan.md → QA)
+- Verify review (3 fable-reviewer slices): 16 API findings accepted (P1-A1, P1-A2 part, P2-A3, P2-A4, P2-A5, P2-A6, PE1, PE3, P1-C1, P2-C2, P2-C3, P2-C4, P2-C6, 3 nits), fixed in 6ad129e, 400d16a, 1588a01 (2417 Pest on SQLite and on MySQL 8, all green; SPA slice is the app builder's); rejected: PE2 (cross-firm username/e-mail check is inherent to global identifiers — Auth RULES Known Gap), P2-C5 (read-only cross-module reads are allowed by arcus and declared in the reader's RULES), A45 (EnvInventoryTest checks the runbook; the MySQL proof is `make test-mysql`, owner-run).
 ## Seeded people (password `seeding.password`; `battoni` uses `seeding.superadmin_password`)
 - Platform: `battoni` — operador, no firm (since F4a), root only (`localhost:5173`).
 - Platform firm `hub` (F1a): `gestao.hub` — gestao, local only (`PlatformManagerSeeder`, F3b2).
@@ -1185,3 +1186,19 @@ F7b done
   text; `client_contracts`' unique is named `client_contracts_period_unique`; `make test-mysql` lives in `Makefile.local` (the sync
   never touches it) and reads the password from the environment. No MySQL-vs-SQLite difference left open, so no Known Gap. To
   reverse: n/a (a proof); JSON columns to `text` if key order ever becomes part of a contract.
+- W113 verify P2-A3: a view-as start on an offboarded firm is 422 `platform.viewAsOffboarded` (code `view_as_offboarded`), like the
+  platform firm's 422 — the console lists the firm, so "not found" would lie; an open view-as whose firm is offboarded mid-visit falls
+  back to the platform firm. The SPA needs the new key in `PLATFORM_ERROR_KEYS` and both locales (app builder). Spec C23. To reverse:
+  404 `firms.notFound`.
+- W114 verify P2-A4: `auth/login` is resolved as a visitor's request over any live session (host's `X-Firm`, else the default firm),
+  and the login ends the session's view-as as `logout` BEFORE checking the password — a failed sign-in still ends it, since the person
+  chose to replace the session. To reverse: end it only after a successful `authenticate`.
+- W115 verify P1-A2: an offboarded firm's logins are anonymised in place, never deleted (timeline authors and audit rows still point at
+  them): name "Pessoa removida", username `desligado.<id>`, e-mail/phone/CPF/birth date null, a random 64-character password,
+  inactive, sessions ended. Spec C22. To reverse: deactivate only (C20 as it was).
+- W116 verify P2-C2: the one demo guard allows `local` AND `testing` (the Pest suite seeds Franco's demo data); `BrandSeeder` and
+  `ChannelSeeder` joined it so the runbook's "nothing invented outside local" is true for every demo seeder. To reverse: per-seeder
+  `production` checks.
+- W117 verify PE1: role writes need `platform.operator` on top of `permissions.update`. No spec change — `RoleSeeder` already keeps the
+  roles screen (`permissions.*`) the operator's; the route now enforces it. Tests write roles as `platformOperatorWithPermissions`.
+  To reverse: drop the alias from `$rolesWrite`.

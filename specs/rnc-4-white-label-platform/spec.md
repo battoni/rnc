@@ -462,3 +462,8 @@ the deploy; a per-action audit trail inside view-as; firm self-signup without th
 - C21 (F9b, W106) R38's notice also answers at the root (`/privacidade` on the platform firm, unlike `/diagnostico` and
   `/reforma/:slug`, R28): there the platform is the controller of what the beta form keeps, so the page names it as controller and
   shows no operator line. Reverse: `firmSiteOnly` on the route and no footer link at the root.
+- C22 (verify P1-A2, W115) R40's `firm:offboard` also anonymises the firm's logins in the same transaction as its leads — name,
+  e-mail, phone, CPF and birth date wiped, username `desligado.<id>`, a random password, inactive, sessions ended; the rows stay. A
+  failed exit deletes its export file. Partners, clients, contracts, NF-e files and notes stay a Known Gap. Reverse: deactivate only.
+- C23 (verify P2-A3, W113) R26's view-as never enters an offboarded firm (422 `platform.viewAsOffboarded`), and one open when the firm
+  is offboarded ends there (the operator is back in the platform firm). Reverse: view-as ignores `offboarded_at`.
