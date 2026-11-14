@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { RouteLocationNormalized } from 'vue-router';
 
-const userStoreState: { permissions: string[] } = { permissions: [] };
+const userStoreState: { permissions: string[]; roleSlug: string } = { permissions: [], roleSlug: 'operador' };
 
 vi.mock('@UserModule', () => ({
   useUserStore: () => ({
-    user: { id: 1 },
+    user: { id: 1, role_slug: userStoreState.roleSlug },
     fetchMe: vi.fn(),
     hasSessionHint: () => true,
     hasPermission: (key: string) => userStoreState.permissions.includes(key),
@@ -50,7 +50,10 @@ function visit(route: (typeof NAMED_ROUTES)[number]) {
  * address opened the permissions screen for any signed-in account.
  */
 describe('RolesAndPermissions routes', () => {
-  beforeEach(() => (userStoreState.permissions = []));
+  beforeEach(() => {
+    userStoreState.permissions = [];
+    userStoreState.roleSlug = 'operador';
+  });
 
   it('declares both named routes', () => {
     expect(NAMED_ROUTES.map((route) => route.name)).toEqual([
@@ -69,11 +72,23 @@ describe('RolesAndPermissions routes', () => {
   );
 
   it.each(NAMED_ROUTES.map((route) => [route.name, route]))(
-    '%s opens for an account holding permissions.read',
+    '%s opens for the operator holding permissions.read',
     (_name, route) => {
       userStoreState.permissions = ['permissions.read'];
 
       expect(visit(route)).toHaveBeenCalledWith();
+    }
+  );
+
+  // rnc-4 verify: role writes are the operator's alone on the API (403 `platform.operatorOnly`) — a firm manager
+  // granted the keys is still turned away (`meta.role`).
+  it.each(NAMED_ROUTES.map((route) => [route.name, route]))(
+    '%s turns away a firm manager even holding permissions.read and permissions.update',
+    (_name, route) => {
+      userStoreState.permissions = ['permissions.read', 'permissions.update'];
+      userStoreState.roleSlug = 'gestao';
+
+      expect(visit(route)).toHaveBeenCalledWith({ name: 'home' });
     }
   );
 });

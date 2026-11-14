@@ -104,6 +104,23 @@ describe('useLocalNavItems', () => {
     ]);
   });
 
+  /*
+   * rnc-4 verify (API batch): role writes are the operator's alone (403 `platform.operatorOnly`), and the operator's
+   * group opens on `users.read`, which the firm manager holds (F5a) — so the roles link names the operator's role
+   * as well as its key, and no firm role is offered it even if granted `permissions.*`. The route says the same
+   * (`RolesAndPermissions/routes.ts`, `meta.role`).
+   */
+  it('offers the roles screen to the operator role alone, never to a firm manager', async () => {
+    const roles = useLocalNavItems().value[2]?.children?.find((child) => child.routeName === 'roles-and-permissions');
+    const { default: ROUTES } = await import('@/modules/Auth/views/RolesAndPermissions/routes');
+
+    expect([roles?.permission, roles?.role]).toEqual(['permissions.read', 'operador']);
+    expect(ROUTES.filter((route) => route.name).map((route) => route.meta)).toEqual([
+      { permission: 'permissions.read', role: 'operador' },
+      { permission: 'permissions.read', role: 'operador' },
+    ]);
+  });
+
   it("puts the brands console in the operator's group, behind its own key (rnc-3 R5, D3)", () => {
     const brands = useLocalNavItems().value[2]?.children?.find((child) => child.routeName === 'brands');
 

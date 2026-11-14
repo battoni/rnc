@@ -1,5 +1,5 @@
 ---
-version: 1.17.0
+version: 1.18.0
 origin: pendulum
 based-on: 1.12.0
 ---
@@ -123,6 +123,11 @@ firm and gets the platform firm, like the root.
 ## Modules per firm (rnc-4)
 
 - **`attachAuthGuard` charges `meta.module` after `meta.permission`** (rnc-4 F3c, R17): a module the firm has off (`useUserStore().hasModule`) shows the not-found view at the SAME address (`{ name: 'not-found', params: { pathMatch } }`), as the API answers 404 `modules.disabled`; a landing that redirected into it and carries `meta.moduleFallback` goes there instead. The modules are set in `libraries/router/routes.local.ts` (`ofModule`), not in each module's route file.
+
+- **`attachAuthGuard` charges `meta.role` with `meta.permission`** (rnc-4 verify): a route that names a role answers
+  only to it, whatever keys another role holds — the roles screen is the operator's (`operador`), because the API
+  keeps every role write to the operator (403 `platform.operatorOnly`) while a key can be granted to a firm role.
+  A refusal goes home, like a missing key.
 
 ## Do Not
 

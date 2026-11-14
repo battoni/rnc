@@ -159,6 +159,33 @@ describe('attachAuthGuard', () => {
     expect(next).toHaveBeenCalledWith();
   });
 
+  /*
+   * rnc-4 verify (API batch): role writes are the operator's alone on the API (403 `platform.operatorOnly`), and
+   * a key can be granted to a firm role. A route that declares `meta.role` answers only to that role — the key
+   * alone does not open it.
+   */
+  it('turns away a person holding the key but not the role the route declares', () => {
+    userStoreState.user = { id: 7, role_slug: 'gestao' };
+    userStoreState.permissions = ['permissions.read', 'permissions.update'];
+    const guard = makeRouterCapture();
+    const next = vi.fn();
+
+    guard({ name: 'roles', meta: { permission: 'permissions.read', role: 'operador' } }, { name: 'home' }, next);
+
+    expect(next).toHaveBeenCalledWith({ name: 'home' });
+  });
+
+  it('lets the declared role through with the key', () => {
+    userStoreState.user = { id: 1, role_slug: 'operador' };
+    userStoreState.permissions = ['permissions.read'];
+    const guard = makeRouterCapture();
+    const next = vi.fn();
+
+    guard({ name: 'roles', meta: { permission: 'permissions.read', role: 'operador' } }, { name: 'home' }, next);
+
+    expect(next).toHaveBeenCalledWith();
+  });
+
   it('charges the same permission after the session is fetched, not only before', async () => {
     fetchMe.mockImplementation(() => {
       userStoreState.user = { id: 1 };

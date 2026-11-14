@@ -34,6 +34,17 @@ function isPermitted(to: RouteLocationNormalized, hasPermission: (permission: st
 }
 
 /**
+ * Whether the person has the role the route declares (`meta.role`), on top of its key. For a screen whose writes the
+ * API keeps to one role whatever keys another holds — the roles screen is the operator's (rnc-4 verify, 403
+ * `platform.operatorOnly`), while a key can be granted to a firm role. A route that declares none skips it.
+ */
+function hasRequiredRole(to: RouteLocationNormalized, roleSlug: string | undefined): boolean {
+  const ROLE = (to.meta as { role?: string }).role;
+
+  return !ROLE || ROLE === roleSlug;
+}
+
+/**
  * Whether the person's firm has the module this route belongs to (rnc-4 R17, `meta.module`, set in
  * `routes.local.ts`). A route of no module is core and always on.
  */
@@ -66,7 +77,9 @@ function moduleOffDestination(to: RouteLocationNormalized): RouteLocationRaw {
 function admitSignedIn(to: RouteLocationNormalized, next: NavigationGuardNext): void {
   const userStore = useUserStore();
 
-  if (!isPermitted(to, userStore.hasPermission)) {
+  const isRefused = !isPermitted(to, userStore.hasPermission) || !hasRequiredRole(to, userStore.user?.role_slug);
+
+  if (isRefused) {
     next({ name: HOME_NAME });
     return;
   }

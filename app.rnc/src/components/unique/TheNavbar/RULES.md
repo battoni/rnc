@@ -1,5 +1,5 @@
 ---
-version: 1.12.0
+version: 1.13.0
 origin: pendulum
 based-on: 1.6.3
 ---
@@ -49,6 +49,9 @@ No props or emits — this is a unique layout component.
 - **`useUserStore`**: `hasPermission()` filters nav items; `user.role_slug` gates role-restricted items; `clearUser()` is called on logout.
 - **`LogoutService`** from `@AuthModule`: called on logout. Success and HTTP 401 both run `completeLogout` (clear user, `resetAllStores`, login path, success toast) — a 401 means the server already has no session. Other failures show an error toast.
 - **`::deep(.nav-drawer-mobile)`** in this component's `<style scoped>` forces `height: 100vh` on the mobile drawer — this CSS targets `ONavbarDrawer`'s Drawer root through the scoped boundary.
+
+- **The roles link in the operator's group names the role `operador`** (rnc-4 verify): that group opens on
+  `users.read`, which the firm manager holds (F5a), and role writes are the operator's alone on the API.
 
 ## Do Not
 

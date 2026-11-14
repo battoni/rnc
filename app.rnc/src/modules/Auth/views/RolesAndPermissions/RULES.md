@@ -1,5 +1,5 @@
 ---
-version: 2.2.0
+version: 2.3.0
 origin: pendulum
 based-on: 2.2.0
 ---
@@ -34,6 +34,15 @@ Full role management page: tabbed role list, permission panels, add/edit role di
   for `users.create`/`users.update` too (the user form needs the list), but this screen is where
   permissions are read and changed, so it asks for the permissions key. `routes.spec.ts` runs both
   routes through `attachAuthGuard`; the e2e `mockUser` carries `permissions.read`/`permissions.update`.
+- **And on `meta.role: 'operador'`** (rnc-4 verify): role writes are the operator's alone on the API (403
+  `platform.operatorOnly`) and roles are global, so a firm account granted `permissions.*` is sent home rather
+  than offered a screen whose every save fails. The rail's link names the same role (`navItems.local.ts`).
+
+## Known Gaps
+
+- **The synced settings block still lists "Perfis" on the key alone** (`TheNavbar.vue`'s `settings`, core): a firm
+  account granted `permissions.read` would see the link, and the guard sends it home. No seeded firm role holds
+  the key (only the operator grants it); fixing it there needs a role slug in a synced file.
 
 ## Dependencies & Context
 

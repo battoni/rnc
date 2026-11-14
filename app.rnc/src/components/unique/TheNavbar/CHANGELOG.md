@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.13.0 — 2026-11-14
+
+### Changed
+
+- rnc-4 verify: the operator group's roles link carries `role: 'operador'` besides `permissions.read`.
+
 ## 1.12.0 — 2026-11-14
 
 ### Added

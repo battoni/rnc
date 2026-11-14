@@ -785,7 +785,8 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   `.env`, docs or state.
 ## QA
 (none yet — rounds in plan.md → QA)
-- Verify review (3 fable-reviewer slices): 16 API findings accepted (P1-A1, P1-A2 part, P2-A3, P2-A4, P2-A5, P2-A6, PE1, PE3, P1-C1, P2-C2, P2-C3, P2-C4, P2-C6, 3 nits), fixed in 6ad129e, 400d16a, 1588a01 (2417 Pest on SQLite and on MySQL 8, all green; SPA slice is the app builder's); rejected: PE2 (cross-firm username/e-mail check is inherent to global identifiers — Auth RULES Known Gap), P2-C5 (read-only cross-module reads are allowed by arcus and declared in the reader's RULES), A45 (EnvInventoryTest checks the runbook; the MySQL proof is `make test-mysql`, owner-run).
+- Layer 1 (tests, full gate, 14/11/2026): 2417 Pest · 1540 Vitest · 234 Playwright, all green (verify's final gate: `make pre-commit` static steps + sanitize + wt-test, then the three suites; Vitest `--maxWorkers=2`).
+- Verify review (3 fable-reviewer slices): 16 API findings accepted (P1-A1, P1-A2 part, P2-A3, P2-A4, P2-A5, P2-A6, PE1, PE3, P1-C1, P2-C2, P2-C3, P2-C4, P2-C6, 3 nits), fixed in 6ad129e, 400d16a, 1588a01 (2417 Pest on SQLite and on MySQL 8, all green; SPA slice is the app builder's); rejected: PE2 (cross-firm username/e-mail check is inherent to global identifiers — Auth RULES Known Gap), P2-C5 (read-only cross-module reads are allowed by arcus and declared in the reader's RULES), A45 (EnvInventoryTest checks the runbook; the MySQL proof is `make test-mysql`, owner-run). SPA slice: P1-S1 + P2-S4 in 474124c, P2-S2 + P2-S5 + P2-S6 + the API's `platform.viewAsOffboarded` in 03951de, the roles screen kept to the operator (W118) in the commit carrying this line; rejected: P2-S3 (news source naming — editorial, the owner's call; list in the PR).
 ## Seeded people (password `seeding.password`; `battoni` uses `seeding.superadmin_password`)
 - Platform: `battoni` — operador, no firm (since F4a), root only (`localhost:5173`).
 - Platform firm `hub` (F1a): `gestao.hub` — gestao, local only (`PlatformManagerSeeder`, F3b2).
@@ -1202,3 +1203,14 @@ F7b done
 - W117 verify PE1: role writes need `platform.operator` on top of `permissions.update`. No spec change — `RoleSeeder` already keeps the
   roles screen (`permissions.*`) the operator's; the route now enforces it. Tests write roles as `platformOperatorWithPermissions`.
   To reverse: drop the alias from `$rolesWrite`.
+- W118 verify (SPA): the API keeps role writes to the operator (W117), but the rail's operator group opens on `users.read`, which the
+  manager holds, and a key can be granted to a firm role. The roles routes now declare `meta.role: 'operador'` (`attachAuthGuard` checks
+  it with `meta.permission`) and the rail's link carries `role: 'operador'`. The synced settings block's "Perfis" link still gates on the
+  key alone (a Known Gap in `RolesAndPermissions/RULES.md`: a role slug in a synced file). No spec change — D25 already keeps roles off
+  the manager. To reverse: drop `role` from the two route metas and the nav item.
+- W119 verify P1-S1: found while testing the escape — an EMPTY firm name prints its linked key (`firm.short`) because vue-i18n's
+  `linked()` treats an empty result as unresolved; only before the firm first answers, with no stored answer. Not fixed (an invisible
+  placeholder would leak into titles and copied text); Known Gap in `locales/RULES.md`. To reverse: n/a.
+- W120 verify P2-S2: the post-date twins (`cbsKey`, `<key>Started`) also cover the FIRM landing's title and description, which said the
+  same "começa a ser cobrada em 01/01/2027" as the product landing lines the finding named. "Até a lei mudar, vale 01/01/2027" stays (still
+  true). To reverse: drop the `cbsKey` calls in `LandingView`.

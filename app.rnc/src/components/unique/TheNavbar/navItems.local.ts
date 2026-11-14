@@ -218,10 +218,13 @@ const WORKSPACE_CHILDREN: Record<string, LocalNavItem[] | undefined> = {
   ],
   operator: [
     { icon: 'pi pi-users', label: 'navigation.users', permission: 'users.read', routeName: 'users' },
+    // The operator's role as well as the key (rnc-4 verify): this group opens on `users.read`, which the firm
+    // manager holds, and role writes are the operator's alone on the API (403 `platform.operatorOnly`).
     {
       icon: 'pi pi-key',
       label: 'navigation.roles',
       permission: 'permissions.read',
+      role: 'operador',
       routeName: 'roles-and-permissions',
     },
     // rnc-3 F2: Franco's sub-brands (R5), the operator's alone (D3).
