@@ -16,10 +16,12 @@ uses(RefreshDatabase::class);
  * operator's account exists, because those passwords are the shared local default.
  */
 describe('database seed', function () {
-    it('creates Franco as the first and only firm', function () {
+    // rnc-4 D3: the platform firm `hub` follows Franco in every environment (PlatformSeedersTest);
+    // the demo firm Alvorada is local only and never seeded here.
+    it('creates Franco as the first firm, then only the platform firm', function () {
         $this->seed();
 
-        expect(Firm::pluck('slug')->all())->toBe(['franco'])
+        expect(Firm::orderBy('id')->pluck('slug')->all())->toBe(['franco', 'hub'])
             ->and(Firm::first()->id)->toBe(1);
     });
 

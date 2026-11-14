@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.21.0 — 2026-11-13
+
+### Changed
+
+- rnc-4 F1a (D3, D6, D18; plan AM1, AM7): `create_firms_table` gains `is_platform` (bool, default false); new `PlatformFirmSeeder` (`hub`, every environment, after `FirmSeeder`) and `DemoFirmSeeder` (Alvorada, its manager `helena.alvorada` and specialist `bruno.alvorada` — local only, before `SpecialistSeeder`); `UserFactory` defaults `firm_id` to the default firm, creating it when absent.
+
 ## 1.20.0 — 2026-11-07
 
 ### Changed

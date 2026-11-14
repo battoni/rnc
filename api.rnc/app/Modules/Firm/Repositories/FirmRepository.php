@@ -16,6 +16,15 @@ class FirmRepository
         return Firm::query()->where('slug', $slug)->first();
     }
 
+    /**
+     * The firm the root host serves and a person with no firm works in (rnc-4 D3, plan AM1). One row
+     * at most; the lowest id wins should a second ever be flagged.
+     */
+    public function findPlatformFirm(): ?Firm
+    {
+        return Firm::query()->where('is_platform', true)->orderBy('id')->first();
+    }
+
     /** @param  array<string, mixed>  $attributes */
     public function updateFirm(Firm $firm, array $attributes): Firm
     {

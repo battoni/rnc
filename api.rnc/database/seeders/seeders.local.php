@@ -5,6 +5,7 @@ use Database\Seeders\BrandSeeder;
 use Database\Seeders\ChannelSeeder;
 use Database\Seeders\ClientSeeder;
 use Database\Seeders\ContractSeeder;
+use Database\Seeders\DemoFirmSeeder;
 use Database\Seeders\LocalUsersSeeder;
 use Database\Seeders\MetricsSeeder;
 use Database\Seeders\NfeSeeder;
@@ -29,6 +30,10 @@ $this->call(SectorPageSeeder::class);
 
 // The pilot's team (Reinaldo, the team, the four specialists) — refuses to run in production.
 $this->call(LocalUsersSeeder::class);
+
+// The demo firm Alvorada (rnc-4 F1a, D18): invented firm, manager and specialist — LOCAL ONLY
+// (refuses testing and production, AM7), before the specialists' hours it gets.
+$this->call(DemoFirmSeeder::class);
 
 // Every `is_specialist` member's weekly hours, from the firm's business hours (rnc-1 R15). After
 // the people, so the four specialists exist; on production it finds none until one is flagged.

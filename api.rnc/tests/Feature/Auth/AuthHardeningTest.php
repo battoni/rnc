@@ -40,6 +40,10 @@ function hardeningRegistrationPayload(array $overrides = []): array
     ], $overrides);
 }
 
+// Some of these doors are the self-registration ones, closed in this product (rnc-4 R7, D21): open
+// them for the file so the hardening they prove stays proved for a product of the family.
+beforeEach(fn () => config(['registration.enabled' => true]));
+
 function hardeningRegisterAndReadCode(): string
 {
     Mail::fake();

@@ -384,3 +384,13 @@ the deploy; a per-action audit trail inside view-as; firm self-signup without th
 
 ## Changes while building
 (C# added by the build.)
+- C1 (F1a, W6) D21's "registered only when `registration.enabled`" → the three routes stay
+  registered and `EnsureRegistrationOpen` answers 404 while it is false. Same answer to the outside;
+  the route matrix keeps classifying them and a test opens the door with a config change (routes are
+  read once at boot). Reverse: wrap the three `Route::post` in `if (config('registration.enabled'))`.
+- C2 (F1a, W7) The QA login-as (AM8) takes its firm from `X-Firm` when sent, else from the browser's
+  Host (`<slug>.<root>`; root and `www` → default): a navigation through Vite's proxy sends no
+  header. Local only. Reverse: header only, and the driver adds `X-Firm` some other way.
+- C3 (F1a, W8) `POST auth/users` stamps the current firm on the new account (from F5a's create
+  rules): with AM2's scoped reads, a firm-less new account vanished from the list that made it.
+  F5a keeps the refusals (no `operador`, `firm_id` or `partner_id` from a manager). Reverse: n/a.

@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\Schema;
  * firm — `comissao` or `assinatura`, a string the Firm module checks (no enum column, AM11) — with
  * the commission rate in basis points (1000 = 10 %) and the monthly fee in cents (R$ 490).
  * `FirmSettingsService` is the only writer.
+ *
+ * rnc-4 F1a (D3): `is_platform` marks the one firm the root host and `www` serve — the platform's
+ * own product site, where the operator (no firm) works. Never reachable by `X-Firm` (plan AM9).
  */
 return new class extends Migration
 {
@@ -32,6 +35,7 @@ return new class extends Migration
             $table->string('partner_money_model', 20)->default('comissao');
             $table->unsignedSmallInteger('partner_commission_rate_bp')->default(1000);
             $table->unsignedInteger('partner_monthly_fee_cents')->default(49000);
+            $table->boolean('is_platform')->default(false);
             $table->timestamps();
         });
     }

@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 2.10.0 — 2026-11-13
+
+### Changed
+
+- rnc-4 F1a (R4, R7, D5, D21; plan AM2, AM8): the password login, the phone code and the QA login-as refuse an account of another firm like a wrong password / wrong code (`FirmResolver::belongsTo`); `UserRepository` scopes the list, support names, phone lookup and `findFirmUserById` by the current firm and eager-loads `firm`; `UserService::create` stamps the current firm and `delete` deletes nothing outside it; self-registration answers 404 unless `registration.enabled`. Tests: `LoginFirmTest`, `UsersFirmScopeTest`, `RegistrationClosedTest`, `StatefulHostTest`.
+
 ## 2.9.0 — 2026-09-22
 
 ### Added

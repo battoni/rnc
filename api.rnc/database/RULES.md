@@ -1,5 +1,5 @@
 ---
-version: 1.20.0
+version: 1.21.0
 origin: pendulum
 based-on: 1.6.0
 ---
@@ -60,6 +60,11 @@ based-on: 1.6.0
   it needs with `userWithPermissions()`. Never draw the status at random: INACTIVE is a
   deactivated account, signed out on its next request, and a random draw made half of every
   test's users unable to act.
+- `UserFactory` puts the user in the **default firm** (`firms.default_slug`, `franco` under
+  `phpunit.xml`), creating it when the test has none (rnc-4 F1a). A signed-in user with no firm
+  now works in the platform firm or is refused `firms.required` (AM1), and user reads are scoped
+  by firm (AM2), so a firm-less default broke ~100 tests; a test that means "no firm" passes
+  `'firm_id' => null`.
 - The factory password is the plaintext `SEEDER_PWD` (`password` in `phpunit.xml`), so a test
   knows the password it can log in with.
 - Use `fake()->unique()` for `username`/`email` to satisfy the unique constraints.

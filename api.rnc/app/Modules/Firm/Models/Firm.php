@@ -27,7 +27,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $partner_commission_rate_bp basis points: 1000 = 10 %
  * @property int $partner_monthly_fee_cents
  */
-#[Fillable(['name', 'slug', 'logo_text', 'brand_primary', 'brand_accent', 'address', 'phone', 'mailbox', 'business_hours', 'partner_money_model', 'partner_commission_rate_bp', 'partner_monthly_fee_cents'])]
+#[Fillable(['name', 'slug', 'logo_text', 'brand_primary', 'brand_accent', 'address', 'phone', 'mailbox', 'business_hours', 'partner_money_model', 'partner_commission_rate_bp', 'partner_monthly_fee_cents', 'is_platform'])]
 class Firm extends Model
 {
     /** @use HasFactory<FirmFactory> */
@@ -38,6 +38,7 @@ class Firm extends Model
         'partner_money_model' => 'comissao',
         'partner_commission_rate_bp' => 1000,
         'partner_monthly_fee_cents' => 49000,
+        'is_platform' => false,
     ];
 
     /** The network's money model as its enum; an unknown stored value reads as the default. */
@@ -50,6 +51,7 @@ class Firm extends Model
     {
         return [
             'business_hours' => 'array',
+            'is_platform' => 'boolean',
             'partner_commission_rate_bp' => 'integer',
             'partner_monthly_fee_cents' => 'integer',
         ];

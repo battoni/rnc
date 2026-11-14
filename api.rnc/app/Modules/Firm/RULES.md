@@ -1,5 +1,5 @@
 ---
-version: 1.3.2
+version: 1.4.0
 origin: rnc
 ---
 # RULES — Firm Module
@@ -20,9 +20,22 @@ firms records of the Channel module, with no tenant.
 ## How a query is scoped
 
 - **`CurrentFirm`** (a scoped container binding) holds the firm of this request or command run.
-- **`ResolveCurrentFirm`** (api middleware, appended after `EnsureAccountActive`) sets it: the
-  signed-in person's `firm_id` wins; without a session the `X-Firm` header names the firm by slug,
-  and without the header it is `config('firms.default_slug')` (`franco`). An unknown slug is a 404.
+- **`ResolveCurrentFirm`** (api middleware, appended after `EnsureAccountActive`) sets it (rnc-4 F1a):
+  - signed in with a firm → that firm; an `X-Firm` naming another → 403 `firms.mismatch` (D5);
+  - signed in with NO firm (the operator) → `ViewAsFirm` (F4c; null until then), else the platform
+    firm; any `X-Firm` → 403 `firms.mismatch`; no platform firm → 403 `firms.required` (plan AM1);
+  - a visitor → the `X-Firm` slug through `FirmResolver::findTenantBySlug` (a reserved slug of
+    `config/platform.php`, an unknown one or the platform firm's → 404 `firms.notFound`, D2, AM9),
+    without the header `config('firms.default_slug')`: `hub` in the app, `franco` in `phpunit.xml` (D6).
+  *Retired 13/11/2026 (rnc-4 F1a):* "the signed-in person's `firm_id` wins; the default is `franco`".
+  A firm-less session fell through to the header — a way into any firm — and a null firm answered
+  500 further on; Franco is now one tenant among many, and the root is the platform's.
+- **`FirmResolver`** is the one place a door asks "which firm does this address name" (header,
+  host for the QA login-as) and "does this account belong to it" (`belongsTo`: its own firm, or the
+  platform firm for the firm-less `operador`). The logins and the QA login-as use it (Auth RULES).
+- **The platform firm** (`is_platform`, slug `hub`, D3) is seeded in every environment by
+  `PlatformFirmSeeder`; `FirmRepository::findPlatformFirm()` reads it. `DemoFirmSeeder` (Alvorada,
+  D18) is local only (AM7).
 - **`BelongsToFirm`** (trait) adds `FirmScope` and stamps `firm_id` on create. Every business model
   of later phases uses it. A row of another firm is absent, so the API answers 404, never 403.
 - **No firm set → no rows.** `FirmScope` closes to an empty `whereIn` (portable, AM11).
@@ -77,12 +90,20 @@ firms records of the Channel module, with no tenant.
 ## Intentional Decisions
 
 - **`users` is not firm-scoped.** Sign-in looks the username up before any firm is known; the user's
-  `firm_id` is what scopes everything they read. In Phase 1 the `operador` belongs to firm 1 too;
-  multi-firm access for the operator is Phase 3 (plan AM6).
-- **The header never moves a signed-in person.** Otherwise `X-Firm` would be a way into another
-  firm's leads.
+  `firm_id` is what scopes everything they read. The seeded `operador` (`battoni`) still belongs
+  to Franco until rnc-4 F4a moves it to no firm (platform firm, root only).
+- **The header never moves a signed-in person — and a mismatch is refused, not ignored** (rnc-4
+  D5). Otherwise `X-Firm` would be a way into another firm's leads; a 403 tells the SPA its session
+  is on the wrong host, and it signs out. Only a header that is PRESENT is compared, so the suite's
+  firm-B users with no header keep their 404s.
+- **`users` reads go through the firm** (rnc-4 AM2): `UserRepository` filters the list, the support
+  names, the phone lookup and `auth/users/{id}` by the current firm; username and e-mail stay unique
+  across all firms.
 
 ## Known Gaps
+
+- **Until F4c the operator reaches another firm only through the console** (rnc-4 AM1): a
+  firm-less session always works in the platform firm; `ViewAsFirm` returns null.
 
 - **Host mapping (rnc-3 D2).** A brand is chosen by `?marca=` + `X-Brand` because locally there is
   one host. `express.franco…` hosts need a `host` column read by `ResolveCurrentBrand`.

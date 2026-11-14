@@ -4,6 +4,8 @@ namespace App\Modules\Auth\Repositories;
 
 use App\Models\User;
 use App\Modules\Auth\Enums\UserStatus;
+use App\Modules\Firm\Models\Firm;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\LazyCollection;
@@ -12,20 +14,27 @@ class UserRepository
 {
     private const SESSIONS_TABLE = 'sessions';
 
+    /** `UserResource` reads the role's name and slug and the firm's slug on every row. */
+    private const READ_RELATIONS = ['role', 'firm'];
+
     public function __construct(
         private User $model
     ) {}
 
     /**
+     * Users are not firm-scoped models (sign-in looks a username up before any firm is known), so
+     * every read a firm's screen or public door makes passes the firm and filters here (rnc-4 AM2).
+     * Username and e-mail lookups stay global: both are unique across every firm.
+     *
+     * @param  int|null  $firmId  The current firm; null reads nobody.
      * @param  array<int>|null  $ids  Filter by user ids (when provided and non-empty).
      * @param  string|null  $orderBy  One of: name_asc, name_desc, status_asc, status_desc, role_asc, role_desc.
      * @param  string|null  $profileType  Filter by registration profile type.
      * @return LengthAwarePaginator<int, User>
      */
-    public function findAllUsers(?array $ids = null, ?string $orderBy = null, ?string $profileType = null, int $perPage = 15): LengthAwarePaginator
+    public function findAllUsers(?int $firmId, ?array $ids = null, ?string $orderBy = null, ?string $profileType = null, int $perPage = 15): LengthAwarePaginator
     {
-        // `UserResource` reads the role's name and slug on every row.
-        $query = $this->model->newQuery()->with('role');
+        $query = $this->inFirm($this->model->newQuery()->with(self::READ_RELATIONS), $firmId);
 
         if ($ids !== null && count($ids) > 0) {
             $query->whereIn('users.id', $ids);
@@ -71,18 +80,24 @@ class UserRepository
         return $query->paginate($perPage);
     }
 
+    /** Any account by id, whatever its firm — for the signed-in person's own row and internal checks. */
     public function findUserById(int $id): ?User
     {
-        return $this->model->newQuery()->with('role')->find($id);
+        return $this->model->newQuery()->with(self::READ_RELATIONS)->find($id);
+    }
+
+    /** An account of the current firm by id; another firm's id reads as none (rnc-4 AM2). */
+    public function findFirmUserById(int $id, ?int $firmId): ?User
+    {
+        return $this->inFirm($this->model->newQuery()->with(self::READ_RELATIONS), $firmId)->find($id);
     }
 
     /**
      * @return array<int, User>
      */
-    public function findAllActiveUsers(): array
+    public function findAllActiveUsers(?int $firmId): array
     {
-        return $this->model
-            ->newQuery()
+        return $this->inFirm($this->model->newQuery(), $firmId)
             ->where('status', UserStatus::ACTIVE->value)
             ->orderBy('name')
             ->orderBy('last_name')
@@ -110,10 +125,21 @@ class UserRepository
      * The account a phone number signs in to — but only when exactly ONE account carries it.
      * `users.phone` is not unique (an administrator may record a shared line), and a code must
      * never pick one of two people at random.
+     *
+     * Only inside the firm of the request (rnc-4 R4, AM2): on the platform firm the operator, who has
+     * no firm, is a candidate too — `FirmResolver::belongsTo` then says whether they may sign in.
      */
-    public function findSoleUserByPhone(string $phone): ?User
+    public function findSoleUserByPhone(string $phone, ?Firm $firm): ?User
     {
-        $users = $this->model->newQuery()->where('phone', $phone)->limit(2)->get();
+        $query = $this->model->newQuery()->where('phone', $phone);
+
+        if ($firm?->is_platform) {
+            $query->where(fn (Builder $inner) => $inner->where('firm_id', $firm->id)->orWhereNull('firm_id'));
+        } else {
+            $this->inFirm($query, $firm?->id);
+        }
+
+        $users = $query->limit(2)->get();
 
         return $users->count() === 1 ? $users->first() : null;
     }
@@ -167,5 +193,14 @@ class UserRepository
     public function cursorAllUsers(): LazyCollection
     {
         return $this->model->newQuery()->orderBy('id')->cursor();
+    }
+
+    /**
+     * @param  Builder<User>  $query
+     * @return Builder<User>
+     */
+    private function inFirm(Builder $query, ?int $firmId): Builder
+    {
+        return $firmId === null ? $query->whereRaw('1 = 0') : $query->where('users.firm_id', $firmId);
     }
 }

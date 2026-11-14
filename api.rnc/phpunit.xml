@@ -37,5 +37,8 @@
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
         <env name="SEEDER_PWD" value="password"/>
+        <!-- rnc-4 D6: the suite keeps Franco as its implicit firm; the app default is the platform firm `hub`. -->
+        <env name="DEFAULT_FIRM_SLUG" value="franco"/>
+        <env name="REGISTRATION_ENABLED" value="false"/>
     </php>
 </phpunit>

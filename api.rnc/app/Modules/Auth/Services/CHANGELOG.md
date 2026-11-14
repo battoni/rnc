@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 2.7.0 — 2026-11-13
+
+### Changed
+
+- rnc-4 F1a (R4, AM2): `AuthService` and `LoginCodeService` refuse an account of another firm like a wrong password / wrong code (`FirmResolver::belongsTo`); `UserService` reads, edits, archives and deletes only inside the current firm and stamps it on create.
+
 ## 2.6.0 — 2026-11-07
 
 ### Added

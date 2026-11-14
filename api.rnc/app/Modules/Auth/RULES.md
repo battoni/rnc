@@ -1,5 +1,5 @@
 ---
-version: 2.9.0
+version: 2.10.0
 origin: pendulum
 based-on: 2.9.0
 ---
@@ -31,6 +31,24 @@ there is no "everything minus a list" left to subtract from. The protected all-k
 - **Changing the password or closing the account deletes the user's `sessions` rows**: with
   `SESSION_DRIVER=database` a cookie handed out before finds no session and gets a 401 (plan AM5).
   Without that, a revoked partner kept a working cookie until it expired.
+
+## One firm per account (rnc-4 F1a, LOCAL)
+
+- **An account signs in only on its own firm's host** (R4, D5). `AuthService` checks
+  `FirmResolver::belongsTo` in the SAME condition as the password, after the hash, so another
+  firm's account gets `auth.login.invalidCredentials` with the timing unchanged — and a deactivated
+  one of another firm is never told it is deactivated. The phone code looks the phone up inside the
+  firm (`findSoleUserByPhone($phone, $firm)`): no code is sent for another firm's phone and spending
+  one answers `invalid_code`. The firm-less `operador` belongs only to the platform firm (the root);
+  any other firm-less account belongs nowhere. `QaLoginAsController` applies the same rule (AM8).
+- **Every user read a screen or a public door makes is scoped by the current firm** (AM2):
+  `findAllUsers`, `findAllActiveUsers` (support names), `findSoleUserByPhone` and `findFirmUserById`
+  (every `auth/users/{id}` route; another firm's id is a 404). `findUserById` stays global for the
+  signed-in person's own row and the outrank check. `UserService::create` stamps the current firm.
+  Username and e-mail uniqueness stay global.
+- **Self-registration is closed** (R7, D21): `registration.enabled` (`REGISTRATION_ENABLED`,
+  default false) and `EnsureRegistrationOpen` answer 404 on the three routes; they stay registered
+  so the route matrix keeps them and a test can open the door with a config change.
 
 ## Domain
 

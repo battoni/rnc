@@ -2,6 +2,16 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.4.0 — 2026-11-13
+
+### Added
+
+- `firms.is_platform`, `FirmRepository::findPlatformFirm()`, `FirmResolver` (tenant by slug or host, reserved slugs, `belongsTo`), `ViewAsFirm` (null until F4c), `config/platform.php`, `PlatformFirmSeeder` (every environment) and `DemoFirmSeeder` (local only) — rnc-4 F1a, D2, D3, D18.
+
+### Changed
+
+- `ResolveCurrentFirm`: a header naming another firm is 403 `firms.mismatch` (D5); a firm-less session works in the platform firm or is 403 `firms.required` (AM1); reserved and platform slugs are 404 (AM9); the default firm is `hub` (`phpunit.xml` pins `franco`, D6). Tests: `FirmByHostTest`, `FirmMismatchTest`, `PlatformSeedersTest`.
+
 ## 1.3.2 — 2026-11-07
 
 ### Changed

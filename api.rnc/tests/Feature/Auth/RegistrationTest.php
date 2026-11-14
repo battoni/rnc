@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\Mail;
 
 uses(RefreshDatabase::class);
 
+// Registration is closed in this product (rnc-4 R7, D21); these tests prove the flow a product of the
+// family gets when it opens it. Closed by default: `RegistrationClosedTest`.
+beforeEach(fn () => config(['registration.enabled' => true]));
+
 // ---------------------------------------------------------------------------
 
 function registrationPayload(array $overrides = []): array

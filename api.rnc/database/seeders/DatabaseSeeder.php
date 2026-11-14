@@ -15,6 +15,8 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call(FirmSeeder::class);
+        // The platform firm (rnc-4 D3): the root host's firm, every environment.
+        $this->call(PlatformFirmSeeder::class);
         $this->call(RoleSeeder::class);
         $this->call(SuperAdminSeeder::class);
 

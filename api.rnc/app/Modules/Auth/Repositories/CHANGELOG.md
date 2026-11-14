@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 2.4.0 — 2026-11-13
+
+### Changed
+
+- rnc-4 F1a (AM2): `findAllUsers`, `findAllActiveUsers` and `findSoleUserByPhone` take the current firm; new `findFirmUserById`; user reads eager-load `firm` (the users list ran one query per row once users had a firm, `AuthHardeningTest`).
+
 ## 2.3.0 — 2026-11-07
 
 ### Added

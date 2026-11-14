@@ -9,6 +9,7 @@ use App\Modules\Auth\Enums\UserStatus;
 use App\Modules\Auth\Repositories\RoleRepository;
 use App\Modules\Auth\Repositories\UserPermissionRepository;
 use App\Modules\Auth\Repositories\UserRepository;
+use App\Modules\Firm\Services\CurrentFirm;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -20,6 +21,7 @@ class UserService
     public const CANNOT_MANAGE_HIGHER_ACCOUNT = 'users.cannotManageHigherAccount';
 
     public function __construct(
+        private CurrentFirm $currentFirm,
         private PermissionService $permissionService,
         private RoleRepository $roleRepository,
         private UserPermissionRepository $userPermissionRepository,
@@ -34,7 +36,7 @@ class UserService
      */
     public function list(?array $ids = null, ?string $orderBy = null, ?string $profileType = null, int $perPage = 15): LengthAwarePaginator
     {
-        $users = $this->userRepository->findAllUsers($ids, $orderBy, $profileType, $perPage);
+        $users = $this->userRepository->findAllUsers($this->currentFirm->id(), $ids, $orderBy, $profileType, $perPage);
         $permissionsMap = $this->permissionService->forUsers($users->getCollection()->all());
 
         foreach ($users as $user) {
@@ -46,7 +48,7 @@ class UserService
 
     public function find(int $id): ?User
     {
-        $user = $this->userRepository->findUserById($id);
+        $user = $this->userRepository->findFirmUserById($id, $this->currentFirm->id());
 
         if ($user) {
             $user->setAttribute('permissions', $this->permissionService->forUser($user));
@@ -64,6 +66,8 @@ class UserService
                 'name' => $dto->name,
                 'last_name' => $dto->last_name,
                 'username' => $dto->username,
+                // Made inside the firm of whoever makes it: a user the firm could not list is a lost one.
+                'firm_id' => $this->currentFirm->id(),
                 'role_id' => $dto->role_id,
                 'status' => $dto->status,
                 'password' => Hash::make($dto->password),
@@ -87,7 +91,7 @@ class UserService
 
     public function update(int $id, UserUpdateDTO $dto, ?int $actingUserId = null): ?User
     {
-        $user = $this->userRepository->findUserById($id);
+        $user = $this->userRepository->findFirmUserById($id, $this->currentFirm->id());
 
         if (! $user) {
             return null;
@@ -174,18 +178,21 @@ class UserService
             ]);
         }
 
-        $user = $this->userRepository->findUserById($id);
+        // Another firm's account reads as none, and nothing is deleted (rnc-4 AM2).
+        $user = $this->userRepository->findFirmUserById($id, $this->currentFirm->id());
 
-        if ($user) {
-            $this->refuseIfOutranked($user, $actingUserId);
+        if (! $user) {
+            return false;
         }
+
+        $this->refuseIfOutranked($user, $actingUserId);
 
         return $this->userRepository->deleteUser($id);
     }
 
     public function archive(int $id, ?int $actingUserId = null): ?User
     {
-        $user = $this->userRepository->findUserById($id);
+        $user = $this->userRepository->findFirmUserById($id, $this->currentFirm->id());
 
         if (! $user) {
             return null;

@@ -32,9 +32,10 @@ Route::post('auth/phone/verify', [LoginCodeController::class, 'verify'])->middle
 // Throttled because none of the three has an authenticated caller. `register` is the write and
 // `email/code` re-sends — the one an enumeration script would lean on hardest — both by IP.
 // `verify` is the guess, so it is counted by IP and by e-mail, like the login door.
-Route::post('auth/register', [RegisterController::class, 'register'])->middleware('throttle:registration');
-Route::post('auth/email/code', [RegisterController::class, 'requestCode'])->middleware('throttle:registration');
-Route::post('auth/email/verify', [RegisterController::class, 'verify'])->middleware('throttle:registration-verify');
+// Closed unless `registration.enabled` (rnc-4 R7, D21): `registration.open` answers 404 first.
+Route::post('auth/register', [RegisterController::class, 'register'])->middleware(['registration.open', 'throttle:registration']);
+Route::post('auth/email/code', [RegisterController::class, 'requestCode'])->middleware(['registration.open', 'throttle:registration']);
+Route::post('auth/email/verify', [RegisterController::class, 'verify'])->middleware(['registration.open', 'throttle:registration-verify']);
 
 // ROLES
 // A permission per verb, never one for the resource. These routes used to ask only for a session,

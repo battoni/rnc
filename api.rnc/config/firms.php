@@ -6,12 +6,13 @@
 |--------------------------------------------------------------------------
 |
 | The firm a request belongs to when nobody is signed in and the public site sends no `X-Firm`
-| header (`ResolveCurrentFirm`). Franco Contabilidade is the pilot's only firm.
+| header (`ResolveCurrentFirm`) — the root host. Outside testing that is the platform firm `hub`
+| (rnc-4 D3, D6); `phpunit.xml` pins `franco` so the suite keeps its implicit firm.
 |
 */
 
 return [
 
-    'default_slug' => env('DEFAULT_FIRM_SLUG', 'franco'),
+    'default_slug' => env('DEFAULT_FIRM_SLUG', 'hub'),
 
 ];
