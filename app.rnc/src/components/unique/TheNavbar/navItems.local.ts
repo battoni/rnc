@@ -7,6 +7,7 @@ import { BRANDS_PERMISSIONS, BRANDS_ROUTE_NAMES } from '@BrandsModule';
 import { BRIEFING_PERMISSIONS, BRIEFING_ROUTE_NAMES } from '@BriefingModule';
 import { CHANNEL_PERMISSIONS, CHANNEL_ROUTE_NAMES } from '@ChannelModule';
 import { CONTRACTS_PERMISSIONS, CONTRACTS_ROUTE_NAMES } from '@ContractsModule';
+import { FIRM_SETTINGS_PERMISSIONS, FIRM_SETTINGS_ROUTE_NAMES } from '@FirmSettingsModule';
 import { FISCAL_PERMISSIONS, FISCAL_ROUTE_NAMES } from '@FiscalModule';
 import { WORKSPACES } from '@HomeModule';
 import { METRICS_PERMISSIONS, METRICS_ROUTE_NAMES } from '@MetricsModule';
@@ -188,6 +189,31 @@ const WORKSPACE_CHILDREN: Record<string, LocalNavItem[] | undefined> = {
       module: FIRM_MODULE.CONTRACTS,
       permission: CONTRACTS_PERMISSIONS.manage,
       routeName: CONTRACTS_ROUTE_NAMES.alert,
+    },
+    // rnc-4 F5b (R30–R33): the firm's own settings, last — all four behind `firm.settings`, the manager's key.
+    {
+      icon: 'pi pi-building',
+      label: 'navigation.firmContact',
+      permission: FIRM_SETTINGS_PERMISSIONS.settings,
+      routeName: FIRM_SETTINGS_ROUTE_NAMES.contact,
+    },
+    {
+      icon: 'pi pi-users',
+      label: 'navigation.firmTeam',
+      permission: FIRM_SETTINGS_PERMISSIONS.settings,
+      routeName: FIRM_SETTINGS_ROUTE_NAMES.team,
+    },
+    {
+      icon: 'pi pi-calendar-clock',
+      label: 'navigation.firmSpecialists',
+      permission: FIRM_SETTINGS_PERMISSIONS.settings,
+      routeName: FIRM_SETTINGS_ROUTE_NAMES.specialists,
+    },
+    {
+      icon: 'pi pi-file-check',
+      label: 'navigation.firmConsent',
+      permission: FIRM_SETTINGS_PERMISSIONS.settings,
+      routeName: FIRM_SETTINGS_ROUTE_NAMES.consent,
     },
   ],
   operator: [

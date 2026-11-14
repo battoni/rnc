@@ -167,6 +167,11 @@ describe('useLocalNavItems', () => {
       ['portfolio-radar', 'radar.manage'],
       // rnc-3 F7 (R18–R22): "Alerta de contratos" — `contracts.manage` (gestao).
       ['contract-alert', 'contracts.manage'],
+      // rnc-4 F5b (R30–R33): the firm's own settings — contact, team, specialists' hours, consent.
+      ['firm-contact', 'firm.settings'],
+      ['firm-team', 'firm.settings'],
+      ['firm-specialists', 'firm.settings'],
+      ['firm-consent', 'firm.settings'],
     ]);
   });
 
@@ -237,6 +242,10 @@ describe('useLocalNavItems', () => {
       'agenda',
       'management-home',
       'metrics',
+      'firm-contact',
+      'firm-team',
+      'firm-specialists',
+      'firm-consent',
       'operator-home',
       'users',
       'roles-and-permissions',

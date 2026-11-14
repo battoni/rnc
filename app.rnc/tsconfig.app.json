@@ -58,6 +58,8 @@
       "@AssistantModule/*": ["./src/modules/Assistant/*"],
       "@BrandsModule": ["./src/modules/Brands"],
       "@BrandsModule/*": ["./src/modules/Brands/*"],
+      "@FirmSettingsModule": ["./src/modules/FirmSettings"],
+      "@FirmSettingsModule/*": ["./src/modules/FirmSettings/*"],
       "@PlatformModule": ["./src/modules/Platform"],
       "@PlatformModule/*": ["./src/modules/Platform/*"],
       "@ChannelModule": ["./src/modules/Channel"],

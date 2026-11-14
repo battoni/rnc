@@ -1,5 +1,5 @@
 # State: Reforma hub as a white-label platform for accounting firms
-Stage: build F5a/19
+Stage: build F5b/19
 Updated: 14/11/2026
 Branch: feature/rnc-4-white-label-platform · Worktree: .claude/worktrees/rnc-4
 ## Done
@@ -415,12 +415,33 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   `firm.credentials` (no block when null, none on the product site), `PublicFirm.credentials`, `site.footer.credentialsText` removed,
   `rolesAndPermissions.groups.firm` (locales 1.16.0); Site (1.8.1) Known Gap retired; `helpers/RULES.md` table re-padded by Prettier
   (sanitize). Spec C16, C17.
+- **F5b Firm settings — SPA** (A39, A40; R30–R33) · 14/11 · Vitest full 1477 (`--maxWorkers=2`; +29 in FirmSettings:
+  `FirmContactView` 5, `FirmTeamView` 6, `FirmSpecialistsView` 6, `FirmConsentView` 7, `MAddEditTeamMemberForm` 5; `navItems.local.spec`
+  2 cases extended), all green · Playwright `e2e/firm-settings/settings.spec.ts` 3 (new) + `e2e/navigation` + `e2e/users` = 28, all green,
+  stable over 3 runs with `--retries=0` · Pest not run (no api.rnc change) · `make check-app` (aliases 35, vue-tsc), `make check-api`
+  (Pint, PHPStan), `sync-mirror-check`, `sanitize` (lint, format, sort-locales) green; vue, design reviews inline (fixed: watchers moved
+  to named handlers, a `window` identifier shadowing the global renamed `span`, ref order, weekday toggles `gap-3`). Phase gate green
+  14/11/2026 — NOT the full `/battoni-pre-commit`: skipped the full Playwright suite (plan Defaults/D30; only this phase's e2e file plus
+  `navigation`/`users`), the full Pest suite (no API change), `check-portal` (no portal) and `check-cortex` (skipped by design here);
+  arcus review not run (no PHP touched).
+  Red first: the e2e file was written before the components and failed (3/3); the 5 Vitest files failed on import and the 2 rail cases
+  on the missing entries before the code. Mutations seen red: preview not filled (1), `{escritorio}` check off (1), every role offered
+  (1), new password not shown (1), reset sending more than the password (1), hours weekday check off (1), the specialist's saved week
+  not put in its row (1), a 480px team list (e2e overflow 125px — see Pitfalls: first measured green on the document alone).
+  Live (worktree API on 8001, Python cookie jar, W82): `helena.alvorada` → consent history [1], POST v2 201 author Helena, a text without
+  `{escritorio}` 422 `leads.consentPlaceholderMissing`; `auth/roles` readable; `POST auth/users` (equipe, specialist, a browser-style
+  16-char password) 201 on alvorada, the new login signs in with it; role `parceiro` 422 `users.form.roleNotAssignable`; `GET specialists`
+  lists the new person; reset 200; archive → inactive. Re-seeded after (`make fresh-seed`). "A new diagnostic stores v2, an old lead keeps
+  v1" stays Pest-proven (F5a A38), not re-run live.
+  What changed: new module FirmSettings (1.0.0) — views `FirmContactView`, `FirmTeamView`, `FirmSpecialistsView`, `FirmConsentView`;
+  molecules `MBusinessHoursEditor`, `MAddEditTeamMemberForm`, `MTeamPasswordForm`, `MSpecialistHoursForm`; composables
+  `useOneTimePassword` (W81), `useApiRefusal`; 8 services; routes `/gestao/escritorio|equipe|especialistas|consentimento` (+ en
+  `/management/firm|team|specialists|consent`); rail: four children at the end of "Gestão" behind `firm.settings` (TheNavbar 1.11.0, W83);
+  locales (1.17.0) `firmSettings.*`, `navigation.firm*`, `users.form.roleNotAssignable`, `leads.consentPlaceholderMissing`; config (1.6.0)
+  `@FirmSettingsModule` alias, `primevue/radiobutton` in `optimizeDeps`; e2e (1.21.0). Spec: no C# (W81–W83 stay inside R30–R33).
 ## Next
-1. `/battoni-start-session rnc-4` (or the running `/battoni-run rnc-4`) → **F5b** Firm settings — SPA (A39, A40; R30–R33): module
-   `FirmSettings` on F5a's endpoints — `GET/PATCH firm/settings` (contact, hours, credentials line), `auth/users` with
-   `is_specialist` (role limited to `equipe`/`gestao`; a 422 `users.form.roleNotAssignable` needs its locale), `GET specialists` +
-   `PUT specialists/{id}/hours`, `GET/POST firm/consent-versions` (preview fills `{escritorio}`; 422
-   `leads.consentPlaceholderMissing` needs its locale). Read plan.md → F5b.
+1. `/battoni-start-session rnc-4` (or the running `/battoni-run rnc-4`) → **F4c** Logo upload and view-as — API (A41, A42; R26, R27;
+   security-sensitive, P6 list in its Done line). Read plan.md → F4c.
 ## Pitfalls
 - (F1a) `UserFactory` now puts every user in the default firm (`franco` under phpunit), creating it
   when absent. A test that creates `Firm::factory(['slug' => 'franco'])` AFTER a user would collide
@@ -557,6 +578,12 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
 - (F5a) In this sandbox `curl` through `rtk` fails and a `php artisan serve &` inside a script never answered; the live check ran
   the server as a background task and a Python `urllib` script with a cookie jar on `127.0.0.1:8001` (API only — the SPA rule P1
   is about the browser).
+- (F5b) `TheLayout` scrolls the back office in `.main-scroll` (`overflow-y-auto`, so x as well): a row wider than the screen scrolls
+  THERE while `document.documentElement` stays the window's width. An e2e "no horizontal scroll" check measures both
+  (`e2e/firm-settings/settings.spec.ts` `horizontalOverflow`); `platform/console.spec.ts` still measures only the document.
+- (F5b) `auth/users` takes the password from the caller and has no generate route: the SPA draws it (`useOneTimePassword`); a live
+  script that creates a login must send one.
+- (F5b) A new PrimeVue component in a template must join `optimizeDeps.include` in `vite.config.ts` (`src/test/optimizeDeps.spec.ts`).
 ## QA
 (none yet — rounds in plan.md → QA)
 ## Seeded people (password `seeding.password`; `battoni` uses `seeding.superadmin_password`)
@@ -610,6 +637,8 @@ F6a done
 F6b done
 11:27 F5a started, attempt 1
 F5a done
+11:57 F5b started, attempt 1
+F5b done
 ## Decided while you were away
 - W1 plan: proposal.html skipped in away mode (spec D27; to reverse: `/battoni-new-proposal rnc-4 final`).
 - W2 plan: the owner's phases are split into 17 builder phases with his labels kept (spec D28); his
@@ -844,3 +873,14 @@ F5a done
   any non-empty text.
 - W80 F5a: the live check ran as HTTP calls on the worktree API (8001) with a cookie jar — no screen in this phase; Chrome rounds stay
   verify's (as W56). To reverse: n/a.
+- W81 F5b: a team login's password (new or reset) is drawn in the browser — 16 letters and digits without look-alikes from
+  `crypto.getRandomValues` (`useOneTimePassword`) — sent once and shown once with `MOneTimePassword`; `auth/users` takes the password
+  from the caller and F5a added no generate route. The reset sends the password alone. To reverse: a server-side generate route that
+  answers the password, as the console's manager login does.
+- W82 F5b: the live check ran as HTTP calls on the worktree API (8001) with a cookie jar, plus the A40 Playwright spec on a mocked API;
+  the Chrome rounds (QA round 3) stay verify's (as W56). The plan's "a new diagnostic stores v2, an old lead keeps v1" is F5a's Pest
+  (A38), not re-run live. To reverse: n/a.
+- W83 F5b: the four settings screens are the last children of "Gestão" in the rail, all behind `firm.settings` (the team's route asks
+  `users.read` like its API; inside it each `users.*` key hides its own button); the role is two radio choices (Equipe, Gestão) read from
+  `auth/roles` by slug, not a select; the consent form also refuses saving the current version's exact words. To reverse: a separate
+  "Escritório" group; a select; allow an identical version.

@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.21.0 — 2026-11-14
+
+### Added
+
+- `firm-settings/settings.spec.ts` (rnc-4 F5b, A40): the demo firm's manager on `alvorada.localhost` saves a consent v2 (preview with the firm's name, history growing) and creates a team login whose password is shown once; the four settings screens read at 390 and 1440, light and dark, with no horizontal scroll — measured on the document AND on `TheLayout`'s `.main-scroll`, where a too-wide row scrolls while the document stays the window's width (a 480px list measured 125px there and 0 on the document) (API mocked).
+
 ## 1.20.0 — 2026-11-14
 
 ### Added

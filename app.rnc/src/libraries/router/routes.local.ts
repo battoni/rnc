@@ -6,6 +6,7 @@ import { BriefingModuleRoutes } from '@BriefingModule';
 import { ChannelModuleRoutes } from '@ChannelModule';
 import { ContractsModuleRoutes } from '@ContractsModule';
 import { DiagnosticModuleRoutes } from '@DiagnosticModule';
+import { FirmSettingsModuleRoutes } from '@FirmSettingsModule';
 import { FiscalModuleRoutes } from '@FiscalModule';
 import { WorkspaceRoutes } from '@HomeModule';
 import { MetricsModuleRoutes } from '@MetricsModule';
@@ -41,6 +42,7 @@ import { SiteRoutes } from '@SiteModule';
 // while the firm has it off. The split is the API's `module:<key>` middleware's: the portal is the
 // partner network's, repricing the portfolio's. Core (site, diagnostic, workspaces, pipeline,
 // metrics) carries none. rnc-4 F4b: the platform console (R25) — core too, closed by the operator's keys.
+// rnc-4 F5b: the firm's own settings for its manager (R30–R33) — core, closed by `firm.settings` / `users.read`.
 const localRoutes: RouteRecordRaw[] = [
   ...SiteRoutes,
   ...DiagnosticModuleRoutes,
@@ -58,6 +60,7 @@ const localRoutes: RouteRecordRaw[] = [
   ...ofModule(FIRM_MODULE.CONTRACTS, ContractsModuleRoutes),
   ...ofModule(FIRM_MODULE.BRIEFING, BriefingModuleRoutes),
   ...PlatformModuleRoutes,
+  ...FirmSettingsModuleRoutes,
 ];
 
 function ofModule(module: FIRM_MODULE, routes: RouteRecordRaw[]): RouteRecordRaw[] {

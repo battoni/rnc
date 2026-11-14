@@ -56,7 +56,11 @@
     "briefing": "Briefing do dia",
     "platform": "Plataforma",
     "platformConsent": "Consentimento padrão",
-    "platformFirms": "Escritórios"
+    "platformFirms": "Escritórios",
+    "firmConsent": "Consentimento",
+    "firmContact": "Contato do escritório",
+    "firmSpecialists": "Especialistas",
+    "firmTeam": "Acessos da equipe"
   },
   "rolesAndPermissions": {
     "groups": {
@@ -2205,6 +2209,111 @@
       "copy": "Copiar",
       "once": "Copie agora: ela não será mostrada de novo. Uma nova pode ser gerada no login do gestor.",
       "title": "Senha"
+    }
+  },
+  "users": {
+    "form": {
+      "roleNotAssignable": "Aqui só se dão os papéis da equipe (Equipe ou Gestão)."
+    }
+  },
+  "leads": {
+    "consentPlaceholderMissing": "O texto precisa nomear o escritório: escreva {'{escritorio}'} onde vai o nome dele."
+  },
+  "firmSettings": {
+    "cancel": "Cancelar",
+    "done": "Concluir",
+    "retry": "Tentar de novo",
+    "errors": {
+      "required": "Obrigatório"
+    },
+    "contact": {
+      "title": "Contato do escritório",
+      "lede": "Como o visitante chega ao escritório: o endereço, o telefone, o e-mail e o horário que o site público mostra, e a linha de credenciais no rodapé. A identidade visual do escritório é definida pela plataforma.",
+      "address": "Endereço",
+      "phone": "Telefone",
+      "mailbox": "E-mail de contato",
+      "credentials": "Linha de credenciais (opcional)",
+      "credentialsHint": "Certificações e associações, mostradas no rodapé do site como escritas. Deixe vazio para não mostrar nenhuma.",
+      "save": "Salvar",
+      "saved": "Contato salvo. O site mostra na próxima visita.",
+      "loadFailed": "Não foi possível carregar o contato do escritório."
+    },
+    "hours": {
+      "title": "Horário de atendimento",
+      "hint": "Agrupe os dias da semana que têm o mesmo horário.",
+      "window": "Faixa {n}",
+      "weekdays": "Dias da semana",
+      "weekday": "Dia da semana",
+      "from": "Abre",
+      "to": "Fecha",
+      "add": "Adicionar horário",
+      "remove": "Remover faixa {n}",
+      "none": "Sem horário: o site não mostra nenhum.",
+      "weekdayRequired": "Escolha pelo menos um dia da semana.",
+      "timeRequired": "Preencha os dois horários como HH:MM.",
+      "closesAfterOpens": "O horário de fechar precisa vir depois do de abrir."
+    },
+    "team": {
+      "title": "Acessos da equipe",
+      "lede": "Os acessos do escritório: a equipe e a gestão. A senha de um acesso novo aparece uma vez só — repasse para a pessoa.",
+      "new": "Novo acesso",
+      "newHeading": "Novo acesso",
+      "editHeading": "Editar acesso",
+      "name": "Nome",
+      "lastName": "Sobrenome",
+      "username": "Usuário",
+      "role": "Papel",
+      "specialist": "Especialista — o visitante pode agendar uma reunião com esta pessoa",
+      "specialistHint": "Um especialista novo começa no horário de atendimento do escritório; ajuste em Especialistas.",
+      "specialistBadge": "Especialista",
+      "passwordNote": "Uma senha é gerada quando o acesso é criado e aparece uma vez só.",
+      "create": "Criar acesso",
+      "save": "Salvar",
+      "created": "{username} foi criado. A senha:",
+      "edit": "Editar",
+      "reset": "Redefinir senha",
+      "deactivate": "Desativar",
+      "reactivate": "Reativar",
+      "deactivateConfirm": "Desativar {name}? O acesso para de funcionar até ser reativado.",
+      "reactivateConfirm": "Reativar {name}? O acesso volta a funcionar com a senha atual.",
+      "active": "Ativo",
+      "inactive": "Inativo",
+      "loadFailed": "Não foi possível carregar a equipe."
+    },
+    "reset": {
+      "heading": "Redefinir senha",
+      "lede": "{name} ({username}) recebe uma senha nova, mostrada uma vez só aqui. A antiga para de funcionar.",
+      "submit": "Gerar senha nova"
+    },
+    "specialists": {
+      "title": "Especialistas",
+      "lede": "O horário semanal de cada especialista — os horários que a agenda do diagnóstico oferece ao visitante. Quem é especialista se marca em Acessos da equipe.",
+      "hours": "Horário semanal",
+      "noHours": "Sem horário: não aparece na agenda.",
+      "edit": "Horário",
+      "formHeading": "Horário do especialista",
+      "formLede": "A semana de {name}. Cada linha é uma faixa em um dia da semana.",
+      "noHoursNote": "Sem linhas, a agenda não oferece horário com este especialista.",
+      "save": "Salvar horário",
+      "empty": "Nenhum especialista ainda. Marque alguém da equipe como especialista em Acessos da equipe.",
+      "goToTeam": "Ir para Acessos da equipe",
+      "loadFailed": "Não foi possível carregar os especialistas."
+    },
+    "consent": {
+      "title": "Consentimento",
+      "lede": "A frase que o visitante aceita antes do diagnóstico. Salvar cria uma versão nova; as respostas já dadas ficam com a versão que aceitaram.",
+      "current": "A versão {version} é a que o visitante vê hoje.",
+      "label": "Texto do consentimento",
+      "hint": "Escreva {placeholder} onde vai o nome do escritório.",
+      "counter": "{count} / {max}",
+      "previewTitle": "Como o visitante lê",
+      "save": "Salvar nova versão",
+      "saved": "Versão {version} salva. Os novos diagnósticos usam ela.",
+      "unchanged": "Este é o mesmo texto da versão atual. Mude antes de salvar.",
+      "history": "Histórico",
+      "version": "v{version}",
+      "platformAuthor": "Padrão da plataforma",
+      "loadFailed": "Não foi possível carregar o consentimento."
     }
   }
 }

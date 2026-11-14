@@ -56,7 +56,11 @@
     "briefing": "Daily briefing",
     "platform": "Platform",
     "platformConsent": "Default consent",
-    "platformFirms": "Firms"
+    "platformFirms": "Firms",
+    "firmConsent": "Consent",
+    "firmContact": "Firm contact",
+    "firmSpecialists": "Specialists",
+    "firmTeam": "Team logins"
   },
   "rolesAndPermissions": {
     "groups": {
@@ -2205,6 +2209,111 @@
       "copy": "Copy",
       "once": "Copy it now: it will not be shown again. A new one can be generated from the manager login.",
       "title": "Password"
+    }
+  },
+  "users": {
+    "form": {
+      "roleNotAssignable": "Only the team roles (Team or Management) can be given here."
+    }
+  },
+  "leads": {
+    "consentPlaceholderMissing": "The text must name the firm: write {'{escritorio}'} where its name goes."
+  },
+  "firmSettings": {
+    "cancel": "Cancel",
+    "done": "Done",
+    "retry": "Try again",
+    "errors": {
+      "required": "Required"
+    },
+    "contact": {
+      "title": "Firm contact",
+      "lede": "How visitors reach the firm: the address, phone, e-mail and hours the public site prints, and the credentials line in its footer. The firm's look is set by the platform.",
+      "address": "Address",
+      "phone": "Phone",
+      "mailbox": "Contact e-mail",
+      "credentials": "Credentials line (optional)",
+      "credentialsHint": "Certifications and memberships, printed in the site's footer as written. Leave it empty to show none.",
+      "save": "Save",
+      "saved": "Contact data saved. The site shows it on the next visit.",
+      "loadFailed": "The firm's contact data could not be loaded."
+    },
+    "hours": {
+      "title": "Business hours",
+      "hint": "Group the weekdays that share the same hours.",
+      "window": "Window {n}",
+      "weekdays": "Weekdays",
+      "weekday": "Weekday",
+      "from": "Opens",
+      "to": "Closes",
+      "add": "Add hours",
+      "remove": "Remove window {n}",
+      "none": "No hours: the site shows none.",
+      "weekdayRequired": "Pick at least one weekday.",
+      "timeRequired": "Fill in both times as HH:MM.",
+      "closesAfterOpens": "The closing time must come after the opening time."
+    },
+    "team": {
+      "title": "Team logins",
+      "lede": "The firm's logins: the team and its managers. A new login's password is shown once — pass it on to the person.",
+      "new": "New login",
+      "newHeading": "New login",
+      "editHeading": "Edit login",
+      "name": "First name",
+      "lastName": "Last name",
+      "username": "Username",
+      "role": "Role",
+      "specialist": "Specialist — visitors can book a meeting with this person",
+      "specialistHint": "A new specialist starts on the firm's business hours; adjust them under Specialists.",
+      "specialistBadge": "Specialist",
+      "passwordNote": "A password is generated when the login is created and shown once.",
+      "create": "Create login",
+      "save": "Save",
+      "created": "{username} was created. Its password:",
+      "edit": "Edit",
+      "reset": "Reset password",
+      "deactivate": "Deactivate",
+      "reactivate": "Reactivate",
+      "deactivateConfirm": "Deactivate {name}? The login stops working until it is reactivated.",
+      "reactivateConfirm": "Reactivate {name}? The login works again with its current password.",
+      "active": "Active",
+      "inactive": "Inactive",
+      "loadFailed": "The team could not be loaded."
+    },
+    "reset": {
+      "heading": "Reset password",
+      "lede": "{name} ({username}) gets a new password, shown once here. The old one stops working.",
+      "submit": "Generate new password"
+    },
+    "specialists": {
+      "title": "Specialists",
+      "lede": "Each specialist's weekly hours — the times the diagnostic's agenda offers visitors. Who is a specialist is set under Team logins.",
+      "hours": "Weekly hours",
+      "noHours": "No hours: not offered on the agenda.",
+      "edit": "Hours",
+      "formHeading": "Specialist hours",
+      "formLede": "{name}'s week. Each row is one window on one weekday.",
+      "noHoursNote": "With no rows, the agenda offers no time with this specialist.",
+      "save": "Save hours",
+      "empty": "No specialist yet. Mark a team member as specialist under Team logins.",
+      "goToTeam": "Go to Team logins",
+      "loadFailed": "The specialists could not be loaded."
+    },
+    "consent": {
+      "title": "Consent",
+      "lede": "The sentence a visitor accepts before the diagnostic. Saving makes a new version; answers already given keep the version they accepted.",
+      "current": "Version {version} is the one visitors see today.",
+      "label": "Consent text",
+      "hint": "Write {placeholder} where the firm's name goes.",
+      "counter": "{count} / {max}",
+      "previewTitle": "As visitors read it",
+      "save": "Save new version",
+      "saved": "Version {version} saved. New diagnostics use it.",
+      "unchanged": "This is the same text as the current version. Change it before saving.",
+      "history": "History",
+      "version": "v{version}",
+      "platformAuthor": "Platform default",
+      "loadFailed": "The consent could not be loaded."
     }
   }
 }

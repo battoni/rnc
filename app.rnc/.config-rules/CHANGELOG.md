@@ -3,6 +3,11 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.6.0 — 2026-11-14
+
+### Added
+- rnc-4 F5b: the `@FirmSettingsModule` alias in the three files, and `primevue/radiobutton` in `optimizeDeps.include` — the team form's role choice is its first template (`optimizeDeps.spec.ts` went red without it).
+
 ## 1.5.0 — 2026-11-14
 
 ### Added

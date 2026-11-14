@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.17.0 — 2026-11-14
+
+### Added
+
+- `local/*.json` (rnc-4 F5b): `firmSettings.*` (the four settings screens), `navigation.firmContact|firmTeam|firmSpecialists|firmConsent`, and the two API refusals the screens show by key — `users.form.roleNotAssignable` (W76) and `leads.consentPlaceholderMissing` (W79), merged into the core `users` and a new `leads` section.
+
 ## 1.16.0 — 2026-11-14
 
 ### Changed
