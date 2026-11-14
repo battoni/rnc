@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.0.1 — 2026-11-14
+
+### Added
+
+- Chrome QA 3.4: `FirmContactView` spec pins that the first "Salvar" and the next each toast once (the QA saw none on the first; not reproduced, W125).
+
 ## 1.0.0 — 2026-11-14
 
 ### Added

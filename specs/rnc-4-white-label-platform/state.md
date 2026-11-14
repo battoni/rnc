@@ -788,6 +788,7 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
 - Layer 1 (tests, full gate, 14/11/2026): 2417 Pest · 1540 Vitest · 234 Playwright, all green (verify's final gate: `make pre-commit` static steps + sanitize + wt-test, then the three suites; Vitest `--maxWorkers=2`).
 - Verify review (3 fable-reviewer slices): 16 API findings accepted (P1-A1, P1-A2 part, P2-A3, P2-A4, P2-A5, P2-A6, PE1, PE3, P1-C1, P2-C2, P2-C3, P2-C4, P2-C6, 3 nits), fixed in 6ad129e, 400d16a, 1588a01 (2417 Pest on SQLite and on MySQL 8, all green; SPA slice is the app builder's); rejected: PE2 (cross-firm username/e-mail check is inherent to global identifiers — Auth RULES Known Gap), P2-C5 (read-only cross-module reads are allowed by arcus and declared in the reader's RULES), A45 (EnvInventoryTest checks the runbook; the MySQL proof is `make test-mysql`, owner-run). SPA slice: P1-S1 + P2-S4 in 474124c, P2-S2 + P2-S5 + P2-S6 + the API's `platform.viewAsOffboarded` in 03951de, the roles screen kept to the operator (W118) in the commit carrying this line; rejected: P2-S3 (news source naming — editorial, the owner's call; list in the PR).
 - Layer 2 Chrome: rounds 1–2 run; fixes 13dae23 (1.11 QA login host) and the commit carrying this line (1.10 beta fields + beta consent summary). Gate after the fixes: 478 Pest (Auth, QaLogin, Lead, Pipeline, Mail, Platform) · 1542 Vitest · 8 Playwright (`e2e/pipeline`), all green; `make check-api`, `make check-app`, `make sync-mirror-check` clean.
+- Layer 2 Chrome: rounds 1–7 run (Guilherme's Chrome, 1440 only — window min 606 px; 390 covered by Playwright where marked); fixes bcd247c (5.21 firm brand kept per host, dropped on logout and on "Sair"; 4.11/4.12 prime→principal pinned, W123), 4ab5397 (5.2 Operador group, landing and Users screen the operator's alone, footer copies dropped, W124) and the commit carrying this line (3.4 first-save toast pinned, not reproduced, W125). Gate: 1552 Vitest (`--maxWorkers=2`) · 90 Playwright (site, brand, navigation, firm-settings, platform, users, roles), all green; no PHP touched (no Pest run); `make check-app`, `make sync-mirror-check` clean.
 ## Seeded people (password `seeding.password`; `battoni` uses `seeding.superadmin_password`)
 - Platform: `battoni` — operador, no firm (since F4a), root only (`localhost:5173`).
 - Platform firm `hub` (F1a): `gestao.hub` — gestao, local only (`PlatformManagerSeeder`, F3b2).
@@ -1222,3 +1223,17 @@ F7b done
   instead of the empty diagnostic rows, and its consent summary is channel-aware ("contatado sobre o beta"); the stored text and version are
   shown as given. No API change — `LeadDetailResource` already sent the whole `profile`. No C# — spec behaviour (R29, D29) unchanged; this
   is the detail showing what was stored. To reverse: drop the `LEAD_CHANNEL.BETA` branches in `LeadView`.
+- W123 Chrome QA 4.11/4.12: not reproduced on full page loads (headless Chromium on franco.localhost:5173, the running stack):
+  `?marca=principal` clears `app.rnc:brand` and every later public call goes without `X-Brand`. 4.11 as scripted opens plain
+  `/diagnostico` after 4.10's `?marca=prime`, which keeps Prime for the tab by design (rnc-3 R2). Pinned by `publicBrand.spec` and
+  `brands.spec` (red with the main-brand clear removed). The cached FIRM brand was the real hole (5.21): kept as `{ firm, host }`,
+  dropped by `reload()`, `forget()` on logout, "Sair" reloads even when `auth/me` fails. Not done: the 401 path in `errorHandler`
+  (an import cycle `@Providers` → `@Composables`); the next `public/firm` answer replaces it. No C#.
+- W124 Chrome QA 5.2: the Operador workspace, its landing (`/operador`) and the bootstrap Users screen ask `role: 'operador'` besides
+  `users.read` (the manager holds it since F5a for /gestao/equipe); TheNavbar's footer drops its core Usuários/Permissões (the
+  operator saw them twice). Personalização stays everyone's (browser preferences). Franco's manager keeps "Canal RNC" under Gestão.
+  `GET auth/users` still answers a manager 200 — the screen, not the data, is the operator's. No C# (A26's operator rail unchanged;
+  the manager never had the group in the spec). To reverse: drop `role` from `WORKSPACES`/the two routes and restore the footer entries.
+- W125 Chrome QA 3.4 (first "Salvar" on /gestao/escritorio without a toast): not reproduced — a first save and a second each toast once
+  (`FirmContactView` spec, red with the first toast skipped); the screen keeps no dirty state. Likely the driver read the page after the
+  3.5 s toast had gone, or a Chrome `type="time"` field not yet committed (the inline "horário" error, no toast). Left as is.

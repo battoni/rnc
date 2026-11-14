@@ -18,6 +18,10 @@ import FirmContactView from './FirmContactView.view.vue';
  * line and the business hours, as `PATCH firm/settings` takes them. The look and the modules are the
  * operator's and are not on this screen.
  */
+const { toastAdd } = vi.hoisted(() => ({ toastAdd: vi.fn() }));
+
+vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: toastAdd }) }));
+
 vi.mock('vue-router', async (importOriginal) => ({
   ...(await importOriginal<object>()),
   useRoute: () => ({ hash: '', params: {}, query: {} }),
@@ -43,6 +47,7 @@ function field(testId: string) {
 
 beforeEach(() => {
   sent.length = 0;
+  toastAdd.mockClear();
 
   server.use(
     http.get('http://localhost/firm/settings', () => HttpResponse.json({ data: SETTINGS_FIXTURE })),
@@ -102,6 +107,29 @@ describe('FirmContactView', () => {
         },
       ])
     );
+  });
+
+  /*
+   * Chrome QA 3.4: the first "Salvar" showed no toast, the second did. The first save of an untouched screen and a
+   * second one after a new window each say so once — the screen keeps no dirty state that a first save could miss.
+   */
+  it('says "saved" on the first save, and again on the next', async () => {
+    renderContact();
+
+    await waitFor(() => expect(field('contact-address').value).toBe(SETTINGS_FIXTURE.address));
+
+    await fireEvent.update(screen.getByTestId('hours-from-0'), '09:00');
+    await fireEvent.update(screen.getByTestId('hours-to-0'), '17:00');
+    await fireEvent.click(screen.getByTestId('contact-save'));
+
+    await waitFor(() => expect(toastAdd).toHaveBeenCalledTimes(1));
+    expect(toastAdd).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
+    expect(sent).toHaveLength(1);
+    await waitFor(() => expect(screen.getByTestId('contact-save').hasAttribute('disabled')).toBe(false));
+
+    await fireEvent.click(screen.getByTestId('contact-save'));
+
+    await waitFor(() => expect(toastAdd).toHaveBeenCalledTimes(2));
   });
 
   it('refuses a window with no weekday or closing before it opens, before sending', async () => {
