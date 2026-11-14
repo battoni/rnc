@@ -5,7 +5,8 @@
  */
 /**
  * The sub-brand the tab is shown under (rnc-3 R2, D2): `?marca=<slug>` once, then kept for the tab in
- * `sessionStorage` and sent as `X-Brand` on every public call. `?marca=franco` is the main brand.
+ * `sessionStorage` and sent as `X-Brand` on every public call. `?marca=principal` — or the host firm's
+ * own slug — is the main brand (rnc-4 R15: the word was Franco's slug).
  */
 const BRAND_STORAGE_KEY = 'app.rnc:brand';
 
@@ -16,7 +17,7 @@ const BRAND_PREVIEW_STORAGE_KEY = 'app.rnc:brand-preview';
 const BRAND_PALETTE_STORAGE_KEY = 'app.rnc:brand-palette';
 
 /** The address-bar words of the sub-brand (R2, R5). */
-const BRAND_QUERY = { brand: 'marca', main: 'franco', preview: 'previa', previewOn: '1' } as const;
+const BRAND_QUERY = { brand: 'marca', main: 'principal', preview: 'previa', previewOn: '1' } as const;
 
 /** The header every public call carries under a sub-brand, and the API's refusal of a stale one (C1). */
 const BRAND_HEADER = 'X-Brand';

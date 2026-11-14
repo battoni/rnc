@@ -35,7 +35,7 @@ function onGetSupportNamesRequest() {
 
     <div class="flex max-w-[500px] flex-col items-center justify-center gap-4">
       <div class="m-auto w-full max-w-[100px]">
-        <ALogo variant="min" />
+        <MFirmLogo variant="min" />
       </div>
 
       <div class="flex max-w-[400px] flex-col items-center justify-center gap-2">

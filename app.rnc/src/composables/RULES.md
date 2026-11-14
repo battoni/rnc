@@ -1,5 +1,5 @@
 ---
-version: 1.7.0
+version: 1.8.0
 origin: pendulum
 based-on: 1.6.0
 ---
@@ -94,6 +94,12 @@ Every "resend in 42s" uses it; do not count ticks in a component.
   `platform.name` wherever no public page is up (a public page writes its own, `useSeo`).
 - **`publicBrand`** (`?marca=`, `X-Brand`, `publicApi`) and the `BRAND_*` constants moved here from the
   Site module with it; the Site module re-exports them, so `@SiteModule` still answers for them.
+- **The firm's names fill the translations** (rnc-4 R14): `useBrandTheme` calls `setFirmNames`
+  (`@Libraries/i18n`) with the host firm's `short_name || name` and `name`, behind every `{firmShort}` /
+  `{firmName}` in `locales/local`. The host firm's on both layouts — a sub-brand changes the colours and
+  the mark, not the firm the copy speaks for. Until a firm is known the names are empty.
+- **`?marca=principal` or the host firm's own slug is the main brand** (`publicBrand`).
+  _Retired 14/11/2026 (rnc-4 F2c2):_ "`?marca=franco` is the main brand" — one tenant's slug in the build.
 - The palette's colours come from the firm's row, never the theme file: `VITE_ACTIVE_THEME=hub` is
   only the neutral ground of a tab's first page. A firm with no colours keeps the theme's.
 

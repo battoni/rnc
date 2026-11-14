@@ -1,10 +1,10 @@
 {
   "auth": {
     "brand": {
-      "domain": "franco-rnc.com.br",
-      "headline": "The reform is coming.\nFranco is ready.",
+      "domain": "Tax Reform · 2026–2033",
+      "headline": "The reform is coming.\n{firmShort} is ready.",
       "tag": "Tax reform",
-      "tagline": "Franco Contabilidade's hub to walk every client through the 2026–2033 transition."
+      "tagline": "{firmName}'s hub to walk every client through the 2026–2033 transition."
     }
   },
   "home": {
@@ -20,7 +20,7 @@
         "upcoming": "The pipeline, each lead's file and the team's agenda arrive here."
       },
       "management": {
-        "title": "Reinaldo",
+        "title": "Management",
         "description": "Funnel metrics, partner network, referral trail and fee repricing.",
         "upcoming": "Metrics, partners, the trail and fee repricing arrive here."
       },
@@ -33,7 +33,7 @@
   },
   "navigation": {
     "team": "Team",
-    "management": "Reinaldo",
+    "management": "Management",
     "operator": "Operator",
     "pipeline": "Pipeline",
     "agenda": "Agenda",
@@ -122,7 +122,7 @@
       "ask": "Does your company know how much it changes?",
       "lede": "In 5 minutes the free diagnostic shows the reform's opportunities and risks for your business, with estimated values. A specialist explains the detail in a meeting.",
       "sectorsLink": "See what changes in my sector",
-      "proofLabel": "Why Franco",
+      "proofLabel": "Why {firmShort}",
       "changesKicker": "What changes",
       "changesTitle": "Five changes that reach your company's cash",
       "timelineKicker": "Timeline 2026–2033",
@@ -138,13 +138,7 @@
       "sectorsFailed": "We could not load the sectors right now.",
       "retry": "Try again",
       "closingTitle": "Start with the diagnostic. We explain the rest.",
-      "closingText": "Being Franco is being by your side: 35 years beside São Paulo's companies.",
-      "proof": {
-        "years": "in São Paulo",
-        "clients": "clients served",
-        "iso": "certified quality",
-        "network": "National Accounting Network"
-      },
+      "closingText": "{firmShort} stands by your side through every step of the transition.",
       "changes": {
         "cbs": {
           "title": "CBS",
@@ -215,7 +209,7 @@
       "ctaText": "The free diagnostic matches your company's profile against these rules in 5 minutes.",
       "others": "Other sectors",
       "notFoundTitle": "This sector page does not exist",
-      "notFoundText": "See the sectors Franco already explains.",
+      "notFoundText": "See the sectors {firmShort} already explains.",
       "failedTitle": "The page did not load",
       "failedText": "Check your connection and try again.",
       "retry": "Try again"
@@ -343,7 +337,7 @@
       "name": "Your name",
       "phone": "WhatsApp or phone",
       "email": "E-mail",
-      "hint": "One of the two is enough. Your data stays with Franco and is not shared without your permission.",
+      "hint": "One of the two is enough. Your data stays with {firmShort} and is not shared without your permission.",
       "consentOptional": "Optional: you get the result either way."
     },
     "actions": {
@@ -385,11 +379,11 @@
     },
     "schedule": {
       "title": "The details of each item are with the specialist",
-      "text": "In 30 minutes, online or at Franco, they explain the numbers behind each value and the action plan. The meeting is free.",
+      "text": "In 30 minutes, online or at {firmShort}, they explain the numbers behind each value and the action plan. The meeting is free.",
       "action": "Book a specialist"
     },
     "booking": {
-      "intro": "Choose who will see you and when. It is {minutes} minutes, online or at Franco's office, to open each item and the action plan. Slots over the next 10 working days.",
+      "intro": "Choose who will see you and when. It is {minutes} minutes, online or at {firmShort}'s office, to open each item and the action plan. Slots over the next 10 working days.",
       "specialists": "Specialist",
       "suggested": "Recommended for your profile",
       "days": "Day",
@@ -408,12 +402,12 @@
         "email": "Enter a valid e-mail: the confirmation and the Impact Report go to it.",
         "slotTaken": "That time has just been booked. Choose another one.",
         "slotUnavailable": "That time is no longer on the agenda. Choose another one.",
-        "alreadyBooked": "This diagnostic already has a meeting booked. Franco's team will contact you for any change.",
+        "alreadyBooked": "This diagnostic already has a meeting booked. {firmShort}'s team will contact you for any change.",
         "unavailable": "We could not reach the agenda right now. Try again in a moment."
       },
       "confirmed": {
         "with": "with {specialist}",
-        "length": "{minutes} minutes, online or at Franco's office.",
+        "length": "{minutes} minutes, online or at {firmShort}'s office.",
         "sent": "We sent the confirmation to your e-mail with the Impact Report link, and a reminder the day before.",
         "found": "{company} · {opportunities} and {risks} to discuss.",
         "openReport": "Open the Impact Report",
@@ -430,7 +424,7 @@
       "legal": "Values estimated from the revenue band and reference rates (LC 214/2025 and amendments). Not a tax calculation or an opinion: the specialist confirms each item with the company's data.",
       "loading": "Loading the report…",
       "missingTitle": "This link has expired or was not found",
-      "missingText": "The Impact Report stays available for 30 days after the booking. Take the diagnostic again or talk to Franco's team.",
+      "missingText": "The Impact Report stays available for 30 days after the booking. Take the diagnostic again or talk to {firmShort}'s team.",
       "missingAction": "Take the diagnostic",
       "seoTitle": "Tax Reform Impact Report",
       "seoDescription": "The Tax Reform diagnostic result, with the 2026–2033 simulator."
@@ -441,13 +435,13 @@
         "form": "Form",
         "chat": "Chat with us"
       },
-      "who": "Franco reception",
+      "who": "{firmShort} reception",
       "note": "Every answer fills the same diagnostic as the form. You can switch to the form mid-way and come back: nothing is lost.",
-      "logLabel": "Conversation with Franco's reception",
+      "logLabel": "Conversation with {firmShort}'s reception",
       "repliesLabel": "Quick replies",
       "send": "Send",
       "typing": "The reception is typing…",
-      "greeting": "Hi! I am Franco's virtual reception. In 5 minutes I show what the Tax Reform changes for your company and what it may be worth.",
+      "greeting": "Hi! I am {firmShort}'s virtual reception. In 5 minutes I show what the Tax Reform changes for your company and what it may be worth.",
       "resumed": "I see you already started on the form. Let's pick up where you stopped.",
       "advanced": "I see you moved on in the form. Let's pick up where you stopped.",
       "notUnderstood": "I did not understand. Choose one of the options below.",
@@ -463,8 +457,8 @@
         "regime": "And its tax regime today?",
         "company": "Who do I send the result to? What is the company's name?",
         "name": "And your name?",
-        "contact": "What is your WhatsApp, phone or e-mail? One is enough. Your data stays with Franco and is not shared without your permission.",
-        "consent": "One more, optional: when the diagnostic calls for it, may I introduce you to a specialist of Franco's network? \"{text}\" You get the result either way.",
+        "contact": "What is your WhatsApp, phone or e-mail? One is enough. Your data stays with {firmShort} and is not shared without your permission.",
+        "consent": "One more, optional: when the diagnostic calls for it, may I introduce you to a specialist of {firmShort}'s network? \"{text}\" You get the result either way.",
         "b2b": "How much of your sales goes to other companies (B2B)? The rest is end consumers.",
         "band": "What is the annual revenue band?",
         "incentivos": "Does the company have ICMS tax incentives?",
@@ -494,7 +488,7 @@
         "answerPlaceholder": "Or type your answer"
       },
       "result": {
-        "specialist": "A Franco specialist explains each item, free of charge. Choose a time:",
+        "specialist": "A {firmShort} specialist explains each item, free of charge. Choose a time:",
         "simulator": "See the 2026–2033 simulator for my case"
       }
     }
@@ -709,7 +703,7 @@
   },
   "partners": {
     "title": "Partners",
-    "lede": "Franco's network of specialists: {active} of {total} active ones receive referrals. A deactivated partner leaves routing and stays in the trail.",
+    "lede": "{firmShort}'s network of specialists: {active} of {total} active ones receive referrals. A deactivated partner leaves routing and stays in the trail.",
     "add": "New partner",
     "edit": "Edit",
     "deactivate": "Deactivate",
@@ -762,17 +756,17 @@
     },
     "routing": {
       "title": "Refer to the network",
-      "lede": "Each partner with how well it fits this lead's diagnostic. Franco stays the lead's owner: the partner talks to the company through Franco.",
+      "lede": "Each partner with how well it fits this lead's diagnostic. {firmShort} stays the lead's owner: the partner talks to the company through {firmShort}.",
       "score": "{score}% · {specialty}",
       "refer": "Refer",
       "referredOn": "Referred on {date}",
       "coversLabel": "Diagnostic items the partner solves",
       "coversNothing": "No item of this diagnostic in its specialty.",
-      "empty": "No active partner in the network. Reinaldo adds partners under Partners.",
+      "empty": "No active partner in the network. Management adds partners under Partners.",
       "loadFailed": "The partners for this lead could not be loaded.",
       "messageLabel": "Message to {partner}",
-      "defaultMessage": "Franco recommends {company}. Could you make the first contact within 24 business hours?",
-      "privacyNote": "The partner receives the company's name, the diagnostic and Franco's contact — never the lead's phone or e-mail.",
+      "defaultMessage": "{firmShort} recommends {company}. Could you make the first contact within 24 business hours?",
+      "privacyNote": "The partner receives the company's name, the diagnostic and {firmShort}'s contact — never the lead's phone or e-mail.",
       "messageRequired": "Write the message to the partner.",
       "cancel": "Cancel",
       "send": "Send referral",
@@ -829,7 +823,7 @@
     },
     "ledger": {
       "title": "Network ledger",
-      "lede": "What each partner owes Franco in the month under the network's model, and what the other model would give.",
+      "lede": "What each partner owes {firmShort} in the month under the network's model, and what the other model would give.",
       "previousMonth": "Previous month",
       "nextMonth": "Next month",
       "modelLabel": "Billing model",
@@ -1156,14 +1150,14 @@
     },
     "meeting": {
       "title": "Book the meeting",
-      "lede": "When do you meet {company}? The meeting shows in your upcoming meetings and on the lead's file at Franco.",
+      "lede": "When do you meet {company}? The meeting shows in your upcoming meetings and on the lead's file at {firmShort}.",
       "label": "Meeting date and time",
       "cancel": "Cancel",
       "confirm": "Book meeting"
     },
     "close": {
       "title": "Close the contract",
-      "lede": "The first-year value of the contract with {company}. It is what Franco's statement reads.",
+      "lede": "The first-year value of the contract with {company}. It is what {firmShort}'s statement reads.",
       "label": "First-year contract value (R$)",
       "cancel": "Cancel",
       "confirm": "Close contract"
@@ -1201,7 +1195,7 @@
   },
   "brands": {
     "title": "Brands",
-    "lede": "Franco and its sub-brands: the same data, the same partner network and the same address, with their own name, colours and positioning. The site switches brand by ?marca=; the back office stays Franco's.",
+    "lede": "{firmShort} and its sub-brands: the same data, the same partner network and the same address, with their own name, colours and positioning. The site switches brand by ?marca=; the back office stays {firmShort}'s.",
     "main": "Main brand",
     "mainNote": "The firm's own brand, edited in the site's theme.",
     "active": "Active",
@@ -1212,7 +1206,7 @@
     "deactivate": "Deactivate",
     "reactivate": "Reactivate",
     "saved": "{name} saved.",
-    "deactivated": "{name} deactivated: ?marca={slug} now shows Franco.",
+    "deactivated": "{name} deactivated: ?marca={slug} now shows {firmShort}.",
     "reactivated": "{name} reactivated.",
     "loadFailed": "The brands could not be loaded.",
     "retry": "Try again",
@@ -1250,10 +1244,10 @@
   },
   "channel": {
     "title": "RNC channel",
-    "manageLede": "Franco belongs to the Rede Nacional de Contabilidade and introduces the platform to the network's firms. Each active firm pays {fee} a month for the platform, and Franco keeps {share} as the channel. The firms are examples.",
-    "readLede": "The Rede Nacional de Contabilidade firms Franco introduces, the stage each one is at and what Franco earns once they go live. The firms are examples.",
+    "manageLede": "{firmShort} belongs to the Rede Nacional de Contabilidade and introduces the platform to the network's firms. Each active firm pays {fee} a month for the platform, and {firmShort} keeps {share} as the channel. The firms are examples.",
+    "readLede": "The Rede Nacional de Contabilidade firms {firmShort} introduces, the stage each one is at and what {firmShort} earns once they go live. The firms are examples.",
     "hero": {
-      "label": "Franco's revenue from the channel",
+      "label": "{firmShort}'s revenue from the channel",
       "base": "No active firm yet · {yearly} a year. | {count} active firm · {yearly} a year. | {count} active firms · {yearly} a year.",
       "pending": "{amount}/month more when the others go live.",
       "allActive": "Every firm in the channel is active."
@@ -1270,7 +1264,7 @@
     "stageAria": "Stage: {stage}",
     "listTitle": "Firms in the channel",
     "since": "{city} · at this stage since {date}",
-    "shareLabel": "Franco's share",
+    "shareLabel": "{firmShort}'s share",
     "feeLabel": "Monthly fee",
     "onActivation": "once active",
     "advance": "Move to {stage}",
@@ -1283,8 +1277,8 @@
     "loadFailed": "The channel could not be loaded.",
     "retry": "Try again",
     "emptyTitle": "No firm in the channel",
-    "emptyManage": "Add the first network firm Franco is introducing.",
-    "emptyRead": "When Franco introduces a network firm, it shows up here.",
+    "emptyManage": "Add the first network firm {firmShort} is introducing.",
+    "emptyRead": "When {firmShort} introduces a network firm, it shows up here.",
     "invalidTransition": "This firm has already changed stage.",
     "notFound": "This firm is no longer in the channel.",
     "form": {
@@ -1293,10 +1287,10 @@
       "name": "Firm",
       "city": "City",
       "fee": "Platform monthly fee",
-      "share": "Franco's share (%)",
+      "share": "{firmShort}'s share (%)",
       "notes": "Notes",
       "notesHint": "Only whoever runs the channel sees these.",
-      "preview": "Franco's share: {amount}/month once active",
+      "preview": "{firmShort}'s share: {amount}/month once active",
       "startsAt": "Starts at Contact; the stage moves with the Move button.",
       "required": "Required.",
       "feeBounds": "Between {min} and {max}.",
@@ -1307,9 +1301,9 @@
   },
   "assistant": {
     "title": "Reforma assistant",
-    "lede": "Answers only from what Franco's team has reviewed, with the rule, the source and who reviewed it. What the notes do not cover goes to a specialist.",
+    "lede": "Answers only from what {firmShort}'s team has reviewed, with the rule, the source and who reviewed it. What the notes do not cover goes to a specialist.",
     "greeting": "Hello! I answer only from notes the specialists reviewed, citing the rule. Write the question or pick one of the notes.",
-    "who": "Franco assistant",
+    "who": "{firmShort} assistant",
     "you": "You",
     "inputLabel": "Question for the assistant",
     "inputPlaceholder": "Ask about the Reforma the way a client would",
@@ -1363,7 +1357,7 @@
     },
     "knowledge": {
       "title": "Reforma knowledge base",
-      "lede": "Franco's own notes: the only thing the assistant answers with. A note goes live once another specialist reviews it, and for 90 days.",
+      "lede": "{firmShort}'s own notes: the only thing the assistant answers with. A note goes live once another specialist reviews it, and for 90 days.",
       "add": "New note",
       "live": "No live note | {count} live note | {count} live notes",
       "expiring": "No note expires within 7 days | {count} note expires within 7 days | {count} notes expire within 7 days",
@@ -1427,7 +1421,7 @@
     },
     "notWriter": "Only the specialists and the direction write the knowledge base.",
     "notReviewer": "Only a specialist who did not write the last change reviews the note.",
-    "notSpecialist": "That person is not an active specialist of Franco's.",
+    "notSpecialist": "That person is not an active specialist of {firmShort}'s.",
     "retired": "This note was retired.",
     "notFound": "This note no longer exists.",
     "questionNotFound": "This question is not in your inbox.",
@@ -1459,8 +1453,8 @@
     "readiness": {
       "title": "Invoice readiness",
       "heading": "Do the clients' invoices already carry IBS/CBS?",
-      "lede": "The Presumido and Real clients, by the invoices they issued in the last 30 days: who Franco has to warn before the rejection.",
-      "note": "Read from the XMLs imported under Reinaldo › Invoices. An invoice is complete when every item carries the IBS/CBS group, its CST and cClassTrib, and the 2026 test rates. OK at 95% or more with nothing at risk; Attention from 80% to 94%; Critical under 80% or with any invoice at risk of rejection 1115. Simples clients stay out until 2027.",
+      "lede": "The Presumido and Real clients, by the invoices they issued in the last 30 days: who {firmShort} has to warn before the rejection.",
+      "note": "Read from the XMLs imported under Management › Invoices. An invoice is complete when every item carries the IBS/CBS group, its CST and cClassTrib, and the 2026 test rates. OK at 95% or more with nothing at risk; Attention from 80% to 94%; Critical under 80% or with any invoice at risk of rejection 1115. Simples clients stay out until 2027.",
       "loadFailed": "The readiness could not be loaded right now.",
       "hero": {
         "label": "Invoices at risk of rejection 1115",
@@ -1523,11 +1517,11 @@
       "greeting": "Hello, {name} team,",
       "counts": "Of the {invoices} invoices you issued in the last {days} days, {pct} already carry the complete IBS/CBS group.",
       "risk": "{count} invoice would be rejected (rejection 1115) once the Federal Revenue's validation applies. | {count} invoices would be rejected (rejection 1115) once the Federal Revenue's validation applies.",
-      "fix": "The fix is in the product register and in how {system} issues them. Franco has already sorted the items and can help your team or the system's vendor correct them.",
-      "fixNoSystem": "The fix is in the product register and in the issuing system. Franco has already sorted the items and can help your team or the system's vendor correct them.",
+      "fix": "The fix is in the product register and in how {system} issues them. {firmShort} has already sorted the items and can help your team or the system's vendor correct them.",
+      "fixNoSystem": "The fix is in the product register and in the issuing system. {firmShort} has already sorted the items and can help your team or the system's vendor correct them.",
       "noNotes": "We have not received the invoices you issued in the last {days} days yet. Could you send us the XMLs, so we can check the IBS/CBS group before the Federal Revenue's validation?",
       "ask": "Can we book 30 minutes this week?",
-      "signature": "Franco tax team",
+      "signature": "{firmShort} tax team",
       "copy": "Copy text",
       "copied": "Text copied",
       "copyFailed": "Could not copy: select the text and copy it by hand.",
@@ -1591,7 +1585,7 @@
     "imports": {
       "title": "Invoices",
       "heading": "The XMLs of the clients' invoices",
-      "lede": "Send the XMLs Franco receives from its clients, one file or a .zip with many. Each invoice is tied to its client by CNPJ: those it issued feed Invoice readiness; those it received, Supplier credit.",
+      "lede": "Send the XMLs {firmShort} receives from its clients, one file or a .zip with many. Each invoice is tied to its client by CNPJ: those it issued feed Invoice readiness; those it received, Supplier credit.",
       "result": "Latest upload",
       "success": "{stored} invoices stored out of {files} files.",
       "form": {
@@ -1636,9 +1630,9 @@
   },
   "radar": {
     "title": "Portfolio radar",
-    "heading": "The Reform's engine over the clients Franco already has",
-    "lede": "Each row is a conversation Franco can start tomorrow, or a batch for the Franco Specialist Network. Figures are estimates by revenue band.",
-    "note": "Where invoices were imported, the proof comes from them; the rest comes from the client record. Only a client that consented in its contract goes into a batch, and Franco keeps every one.",
+    "heading": "The Reform's engine over the clients {firmShort} already has",
+    "lede": "Each row is a conversation {firmShort} can start tomorrow, or a batch for the {firmShort} Specialist Network. Figures are estimates by revenue band.",
+    "note": "Where invoices were imported, the proof comes from them; the rest comes from the client record. Only a client that consented in its contract goes into a batch, and {firmShort} keeps every one.",
     "loadFailed": "The radar could not be loaded.",
     "retry": "Try again",
     "notFound": "This radar item does not exist.",
@@ -1694,13 +1688,13 @@
         "split": "B2B sales from the invoices: {monthly} a month, {held} a month held back"
       }
     },
-    "sentToast": "{count} portfolio client sent to {partner}. Franco keeps every one. | {count} portfolio clients sent to {partner}. Franco keeps every one.",
+    "sentToast": "{count} portfolio client sent to {partner}. {firmShort} keeps every one. | {count} portfolio clients sent to {partner}. {firmShort} keeps every one.",
     "nothingToast": "Every client of “{title}” was already sent to {partner}."
   },
   "contracts": {
     "title": "Contract alert",
     "heading": "Contracts that cross 2027–2033 without a price clause for the Reforma",
-    "lede": "The clients' contracts Franco keeps, most exposed first. Those ending in 2026 or already with the clause are left out.",
+    "lede": "The clients' contracts {firmShort} keeps, most exposed first. Those ending in 2026 or already with the clause are left out.",
     "note": "Tax reform (EC 132/2023 and LC 214/2025): PIS, Cofins, ICMS and ISS give way to CBS and IBS from 2027 to 2033, and a long contract that crosses the transition needs a price rebalancing clause. Source: gov.br/fazenda, read on 05/11/2026.",
     "loadFailed": "Could not load the contracts.",
     "retry": "Try again",

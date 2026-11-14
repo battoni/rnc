@@ -130,7 +130,7 @@ function onPrint() {
       <header
         class="border-primary-500 flex flex-col gap-3 border-b-2 pb-5 sm:flex-row sm:items-end sm:justify-between"
       >
-        <ALogo />
+        <MFirmLogo />
 
         <span class="text-muted text-sm">{{ formatLongDate(letter.issued_on) }}</span>
       </header>

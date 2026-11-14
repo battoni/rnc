@@ -22,7 +22,7 @@ withDefaults(
       </div>
 
       <div class="relative">
-        <ALogo
+        <MFirmLogo
           class="text-primary-contrast text-3xl"
           tone="inherit"
         />
@@ -69,7 +69,7 @@ withDefaults(
       <div class="relative flex flex-1 items-center justify-center px-4 py-4">
         <div class="flex w-full max-w-[400px] flex-col">
           <div class="mb-4 flex justify-center">
-            <ALogo
+            <MFirmLogo
               class="text-2xl"
               variant="min"
             />

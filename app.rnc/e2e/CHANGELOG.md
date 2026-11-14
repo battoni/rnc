@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.18.0 — 2026-11-14
+
+### Added
+
+- `brand/no-franco.spec.ts` (rnc-4 F2c2, A16): on Alvorada's mocked host the landing, the diagnostic's contact step and result, the impact report and the back-office home name Alvorada and never Franco or Reinaldo; the rail reads "Gestão".
+
 ## 1.17.0 — 2026-11-13
 
 ### Changed

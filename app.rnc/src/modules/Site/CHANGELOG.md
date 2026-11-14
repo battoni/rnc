@@ -1,5 +1,11 @@
 # Changelog — Site Module
 
+## 1.7.0 — 2026-11-14
+
+### Changed
+
+- Landing (rnc-4 F2c2, R15): the proof strip is the firm's — or the sub-brand's — `proof`, and a firm with none shows no strip; `PROOF_POINTS` (Franco's four, with "RNC") removed. `?marca=principal` or the host firm's slug is the main brand (was `?marca=franco`).
+
 ## 1.6.0 — 2026-11-14
 
 ### Changed

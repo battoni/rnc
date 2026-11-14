@@ -1,6 +1,7 @@
 import { createPinia, setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, it } from 'vitest';
 import type { NavItem } from './interfaces';
+import i18n from '@Libraries/i18n';
 import { useUserStore } from '@UserModule';
 import { useLocalNavItems } from './navItems.local';
 
@@ -23,6 +24,16 @@ describe('useLocalNavItems', () => {
       // who holds every key, never sees it, and a partner holds none of the three groups' keys.
       ['navigation.portal', 'portal', 'portal.access', 'parceiro'],
     ]);
+  });
+
+  // A13 (rnc-4 R14): the manager's group is named for the role, never for a person.
+  it('reads "Gestão" on the management group and its home card, in both languages', () => {
+    const { t } = i18n.global;
+
+    expect(t('navigation.management', {}, { locale: 'pt-BR' })).toBe('Gestão');
+    expect(t('home.workspaces.management.title', {}, { locale: 'pt-BR' })).toBe('Gestão');
+    expect(t('navigation.management', {}, { locale: 'en' })).toBe('Management');
+    expect(t('home.workspaces.management.title', {}, { locale: 'en' })).toBe('Management');
   });
 
   it("puts the bootstrap's administration screens in the operator's group", () => {

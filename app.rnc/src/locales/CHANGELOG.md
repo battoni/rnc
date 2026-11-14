@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.13.0 — 2026-11-14
+
+### Changed
+
+- `local/*.json` (rnc-4 F2c2, R14, R15): every string that named Franco takes `{firmShort}` (short name) or `{firmName}` (full name), filled at runtime by the host firm; "Reinaldo" is "Gestão" / "Management" (`navigation.management`, `home.workspaces.management.title`, the partner registry's empty state, the NF-e note); `site.landing.proof.*` removed (the proof strip is the firm's own `proof`); `site.landing.closingText` and `auth.brand.domain` generic.
+
 ## 1.12.0 — 2026-11-14
 
 ### Changed

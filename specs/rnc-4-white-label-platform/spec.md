@@ -413,3 +413,15 @@ the deploy; a per-action audit trail inside view-as; firm self-signup without th
   the back office now paints the firm's ramp (the plain mix measured 4.29:1 on Franco's row). Franco's
   400 moves from `#0a7dad` to a lighter cyan; the 500 and 300 are unchanged. Reverse: the plain mix,
   and a dark-scheme override of the link in `button.css`.
+- C8 (F2c2, W26) R14's "strings that need the firm take `{firm}`" → they take `{firmShort}` (the host
+  firm's short name, else its full name) or `{firmName}` (its full name), filled at runtime from the
+  host firm by `useBrandTheme` through linked messages; no call site passes them. `{firm}` was already
+  a parameter the caller passes (the portal's partner firm, the repricing letter's — 8 strings per
+  language), and a global `{firm}` overwrote it (5 portal specs went red). Reverse: rename those
+  callers' parameter first, then let `{firm}` be the host's.
+- C9 (F2c2, W27) The main brand's address word `?marca=franco` (rnc-3 R2) → `?marca=principal` or the
+  host firm's own slug: the old word was one tenant's slug in the build. On `franco.localhost`,
+  `?marca=franco` still drops the sub-brand. Reverse: `BRAND_QUERY.main = 'franco'`.
+- C10 (F2c2, W28) The landing's proof strip is the firm's (or the sub-brand's) `proof` only; a firm with
+  no `proof` shows no strip — the build's four were Franco's, "RNC" among them. Franco's seeded `proof`
+  (F2a) keeps its landing as it was. Reverse: a generic four in i18n as the fallback.

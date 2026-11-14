@@ -5,21 +5,26 @@ import { DEFAULT_LANGUAGE, LOCALE_STORAGE_KEY, UI_LOCALES } from '@Constants';
 import localEn from '../../locales/local/en.json';
 import localPtBr from '../../locales/local/pt-BR.json';
 import deepMergeMessages from './deepMergeMessages';
+import { withFirmPlaceholders } from './firmPlaceholders';
 
 // Project-owned translations (src/locales/local/*) deep-merged OVER the synced core, so a
 // rnc sync can never revert them. The plugin loads only the top-level core locales
 // (vite.config include is scoped to ./src/locales/*.json); the local overrides are merged here.
+// Their `{firmShort}` / `{firmName}` become links to the host firm's names (`firmPlaceholders.ts`).
 const localMessages: Record<string, MessageTree> = {
-  en: localEn,
-  'pt-BR': localPtBr,
+  en: withFirmPlaceholders(localEn),
+  'pt-BR': withFirmPlaceholders(localPtBr),
 };
+
+/** Before the host firm answers: empty, never the raw key a missing link would print. */
+const NO_FIRM_NAMES = { name: '', short: '' };
 
 const coreMessages = messages as Record<string, MessageTree>;
 
 const mergedMessages = Object.fromEntries(
   Object.entries(coreMessages).map(([locale, coreTree]) => [
     locale,
-    deepMergeMessages(coreTree, localMessages[locale] ?? {}),
+    deepMergeMessages(deepMergeMessages(coreTree, localMessages[locale] ?? {}), { firm: NO_FIRM_NAMES }),
   ])
 );
 
@@ -56,4 +61,14 @@ const i18n = createI18n({
  */
 document.documentElement.lang = i18n.global.locale.value;
 
+/*
+ * The host firm's names behind `{firmShort}` and `{firmName}`, in every language the build ships. Called by
+ * `useBrandTheme` whenever the firm answers; until then the names are empty — the tab's stored answer
+ * usually fills them before the first paint.
+ */
+function setFirmNames(names: { name: string; short: string }) {
+  Object.keys(mergedMessages).forEach((locale) => i18n.global.mergeLocaleMessage(locale, { firm: names }));
+}
+
 export default i18n;
+export { setFirmNames };

@@ -78,8 +78,8 @@ class RoleSeeder extends Seeder
             ->all();
 
         $this->seedRole(RoleService::ADMINISTRATOR_SLUG, 'Operador', 'Battoni Dev: opera o produto, todas as permissões', $everyKey);
-        $this->seedRole('gestao', 'CEO', 'Reinaldo: equipe, rede de parceiros, métricas e reajuste', [...self::EQUIPE_KEYS, ...self::CEO_EXTRA_KEYS]);
-        $this->seedRole('equipe', 'Equipe', 'Equipe da Franco: pipeline, agenda e notificações', self::EQUIPE_KEYS);
+        $this->seedRole('gestao', 'Gestão', 'Gestão do escritório: equipe, rede de parceiros, métricas e reajuste', [...self::EQUIPE_KEYS, ...self::CEO_EXTRA_KEYS]);
+        $this->seedRole('equipe', 'Equipe', 'Equipe do escritório: pipeline, agenda e notificações', self::EQUIPE_KEYS);
         $this->seedRole(PartnerAccessService::PARTNER_ROLE_SLUG, 'Parceiro', 'Parceiro da rede: só o portal do parceiro', self::PARCEIRO_KEYS);
     }
 

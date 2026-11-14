@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.24.0 — 2026-11-14
+
+### Changed
+
+- `RoleSeeder` (rnc-4 F2c2, R14, R15): the manager role is labelled "Gestão" ("Gestão do escritório: equipe, rede de parceiros, métricas e reajuste") and the team's description names no firm ("Equipe do escritório: …"); `SeededRolesTest` asserts no role names Franco, Reinaldo or CEO. A database seeded before keeps its labels (`firstOrCreate` never rewrites a row).
+
 ## 1.23.0 — 2026-11-14
 
 ### Changed

@@ -112,7 +112,7 @@ test.describe('Partner portal — staff', () => {
       await page.goto('/painel');
       await expect(page.getByTestId('workspace-card').first()).toBeVisible();
 
-      await expect(railLink(page, 'Reinaldo')).toBeVisible();
+      await expect(railLink(page, 'Gestão')).toBeVisible();
       await expect(railLink(page, 'Portal do parceiro')).toHaveCount(0);
     });
   }

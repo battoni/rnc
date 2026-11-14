@@ -102,6 +102,18 @@ describe('useBrandTheme, mounted by App.vue', () => {
     expect(document.title).toBe('Hub da Reforma');
   });
 
+  // rnc-4 R14: the copy's `{firmShort}` / `{firmName}` speak for the host firm, filled from the same answer.
+  it('names the host firm in the translations, short name first, else the full name', async () => {
+    const { useBrandTheme } = await freshTheme();
+    const { default: i18n } = await import('@Libraries/i18n');
+
+    mountApp(useBrandTheme);
+    await flushPromises();
+
+    expect(i18n.global.t('site.landing.proofLabel', {}, { locale: 'pt-BR' })).toBe('Por que a Alvorada Contabilidade');
+    expect(i18n.global.t('auth.brand.tagline', {}, { locale: 'pt-BR' })).toContain('hub da Alvorada Contabilidade');
+  });
+
   it("paints the tab's stored palette on a second mount, before the API answers", async () => {
     const first = await freshTheme();
 

@@ -1,5 +1,5 @@
 ---
-version: 1.6.0
+version: 1.7.0
 origin: rnc
 ---
 
@@ -68,7 +68,7 @@ No login. The CTA's destination `/diagnostico` is the Diagnostic module's (F3); 
 
 - **A sub-brand rides in the address once, then in the tab** (rnc-3 R2, D2): `?marca=<slug>` →
   `sessionStorage` `app.rnc:brand`, read on every ask so whatever page carries `?marca=` wins;
-  `?marca=franco` and any 404 `brands.notFound` drop it (the refusal also leaves the address bar, or
+  `?marca=principal`, the host firm's own slug and any 404 `brands.notFound` drop it (the refusal also leaves the address bar, or
   the next read would store the stale slug again). A slug outside `[a-z0-9-]{1,40}` is never sent.
 - **Every public call goes through `publicApi`** — never `API` straight — so `X-Brand` is on all of
   them (C1) and a refused brand is retried once as the main brand: a stale tab lands on Franco, not on
@@ -91,11 +91,21 @@ index.ts`, `constants.ts`), so `@SiteModule` still answers for every name it exp
   are declared on the root and resolve there. The ramp is `brandPalette`'s — Franco's shape (500 the
   primary, 300 the accent) with each pair the site paints measured, so any accent the operator picks
   still reads; `e2e/site/brands.spec.ts` measures the painted pairs in both schemes.
+- **The proof strip is the firm's own `proof`** (rnc-4 F2a/F2c2) — or the sub-brand's — and a firm with
+  none shows no strip. _Retired 14/11/2026 (rnc-4 F2c2):_ "the main brand keeps Franco's own copy
+  (`PROOF_POINTS`, i18n)" — four figures of one tenant, "RNC" among them, on every firm's landing.
+- **The site's words name the host firm through `{firmShort}` / `{firmName}`** (`locales/RULES.md`),
+  never "Franco" (R15, `noTenantNames.spec.ts`, `e2e/brand/no-franco.spec.ts`).
 - **Under a sub-brand the copy that is Franco's own gives way**: the header and footer mark and the
   copyright carry the brand's name, the footer and the hero kicker its tagline, the proof strip its
   points. The rest of the site's words keep "a Franco" — the sub-brands keep the Franco name (D1).
 
 ## Known Gaps
+
+- **The footer's credentials line is one firm's** (`site.footer.credentialsText`: ISO 9001:2015 ·
+  PQEC Sescon-SP · Rede Nacional de Contabilidade). It names no tenant, so R15 holds, but another
+  firm's site shows Franco's certifications. It belongs on the firm's row with the other brand fields
+  — the console phases (F3/F4) decide where; until then it is static copy.
 
 - **No server-side rendering** (D4): crawlers that run no JavaScript see an empty shell.
 - **`index.html` and the API still say `noindex`** (the bootstrap's back-office default). The public

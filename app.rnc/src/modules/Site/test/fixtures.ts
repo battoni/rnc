@@ -14,6 +14,14 @@ const FIRM_FIXTURE: PublicFirm = {
   name: 'Franco Contabilidade',
   phone: '11 3732-5500',
   phone_href: 'tel:+551137325500',
+  // rnc-4 F2a: the firm's own four points, as `FirmSeeder` writes them (the build carries none).
+  proof: [
+    { label: 'em São Paulo', value: '35 anos' },
+    { label: 'clientes atendidos', value: '500+' },
+    { label: 'qualidade certificada', value: 'ISO 9001' },
+    { label: 'Rede Nacional de Contabilidade', value: 'RNC' },
+  ],
+  short_name: 'Franco',
   slug: 'franco',
 };
 

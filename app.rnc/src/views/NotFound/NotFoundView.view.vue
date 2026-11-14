@@ -24,7 +24,7 @@ function onHomeClick() {
       class="flex flex-col items-center gap-6 text-center"
       data-testid="not-found"
     >
-      <ALogo variant="min" />
+      <MFirmLogo variant="min" />
 
       <div class="flex flex-col gap-2">
         <h1 class="text-heading text-2xl font-semibold tracking-tight">

@@ -1,5 +1,6 @@
 import { readonly, ref } from 'vue';
 import type { ApiParams } from '@Providers';
+import { currentFirmSlug } from '@Helpers';
 import { API } from '@Providers';
 import {
   BRAND_HEADER,
@@ -13,7 +14,7 @@ import {
 /*
  * The sub-brand of this tab (rnc-3 R2, D2). There is one local host, so the brand rides in the
  * address once — `?marca=<slug>`, `?previa=1` for the operator's "Ver como" — and the tab keeps it in
- * `sessionStorage`; `?marca=franco` is the main brand and drops it. `sessionStorage` is the truth, so
+ * `sessionStorage`; `?marca=principal` or the host firm's own slug is the main brand and drops it. `sessionStorage` is the truth, so
  * every reader agrees, and the address bar is read on every ask: whatever page the visitor lands on
  * with `?marca=` wins.
  *
@@ -57,7 +58,9 @@ function adoptAddress() {
 
   const slug = asked.trim().toLowerCase();
 
-  if (slug === BRAND_QUERY.main || !BRAND_SLUG_PATTERN.test(slug)) {
+  const isMainBrand = slug === BRAND_QUERY.main || slug === currentFirmSlug();
+
+  if (isMainBrand || !BRAND_SLUG_PATTERN.test(slug)) {
     writeStorage(BRAND_STORAGE_KEY, null);
     writeStorage(BRAND_PREVIEW_STORAGE_KEY, null);
     return;

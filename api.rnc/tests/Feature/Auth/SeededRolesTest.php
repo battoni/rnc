@@ -50,6 +50,13 @@ describe('the seeded roles', function () {
             ->and(Role::where('slug', 'gestao')->exists())->toBeTrue();
     });
 
+    it('label the manager "Gestão" and name no person or firm in any role (rnc-4 R14, R15)', function () {
+        expect(Role::where('slug', 'gestao')->value('name'))->toBe('Gestão');
+
+        Role::all()->each(fn (Role $role) => expect("{$role->name} {$role->description}")
+            ->not->toMatch('/Franco|Reinaldo|CEO/'));
+    });
+
     it('give a partner only the portal (rnc-2 R1)', function () {
         expect(seededRoleKeys('parceiro'))->toBe(['portal.access']);
     });

@@ -1,5 +1,5 @@
 ---
-version: 1.12.0
+version: 1.13.0
 origin: pendulum
 based-on: 1.11.0
 ---
@@ -35,6 +35,15 @@ showcase    ← MODULE
 tips        ← MODULE
 users       ← MODULE
 ```
+
+## The firm in a string (rnc-4 R14, R15)
+
+A project string (`local/*.json`) never names a tenant — Franco, Reinaldo, Willy, APW — and says "RNC"
+only under a `channel` key (`src/test/noTenantNames.spec.ts`). A string that needs the HOST firm writes
+`{firmShort}` (its short name, else its full name) or `{firmName}` (its full name), and no call site
+passes it: `libraries/i18n` turns both into links to `firm.short` / `firm.name`, which `useBrandTheme`
+fills from the firm's answer. `{firm}` stays what it was — a parameter the caller passes (the portal's
+partner firm, the repricing letter's), which the host placeholders never touch.
 
 When adding a new top-level key, also register it in `scripts/sort-locales.mjs` under `TOP_LEVEL_GROUPS`.
 An unregistered key still sorts, as a module, and the script prints a `!` line naming it — seven

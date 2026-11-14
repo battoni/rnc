@@ -1,6 +1,7 @@
 import { onBeforeUnmount, onMounted, watch } from 'vue';
 import type { DeepReadonly, Ref } from 'vue';
 import type { PublicFirm } from '@Interfaces';
+import { setFirmNames } from '@Libraries/i18n';
 import { brandPalette } from './brandPalette';
 import { BRAND_PALETTE_STORAGE_KEY } from './constants';
 import { currentBrand } from './publicBrand';
@@ -27,6 +28,10 @@ import { useFirmBrand } from './useFirmBrand';
  *
  * The document title is the product's name (`platform.name`, R9) wherever no public page is up: a
  * public page writes its own (`useSeo`).
+ *
+ * The firm's names fill the translations' `{firmShort}` / `{firmName}` (rnc-4 R14, `setFirmNames`): the
+ * host firm's, on both layouts — a sub-brand changes the colours and the mark, not the firm the copy
+ * speaks for.
  */
 interface StoredPalette {
   accent: string;
@@ -122,6 +127,10 @@ function useBrandTheme() {
     firmPalette = current ? toPalette(current, current.slug) : null;
 
     paintCurrent();
+
+    if (!current) return;
+
+    setFirmNames({ name: current.name, short: current.short_name || current.name });
   }
 }
 

@@ -7,7 +7,7 @@ import { FIRM_FIXTURE, PRIME_FIRM_FIXTURE } from '../test/fixtures';
 
 /*
  * R2 (rnc-3 F2, AM21): the tab keeps the sub-brand of `?marca=` in `sessionStorage` and sends it as
- * `X-Brand` on every public call; `?marca=franco` drops it, and so does any 404 `brands.notFound` —
+ * `X-Brand` on every public call; `?marca=principal` drops it, and so does any 404 `brands.notFound` —
  * the call is then asked again as the main brand, so a stale tab lands on Franco instead of an error.
  */
 const seen: (string | null)[] = [];
@@ -75,10 +75,10 @@ describe('usePublicFirm under a sub-brand', () => {
     expect(firm.value?.name).toBe('Franco Contabilidade');
   });
 
-  it('drops the brand on ?marca=franco', async () => {
+  it('drops the brand on ?marca=principal', async () => {
     sessionStorage.setItem(BRAND_STORAGE_KEY, 'prime');
     sessionStorage.setItem(BRAND_PREVIEW_STORAGE_KEY, '1');
-    window.history.replaceState({}, '', '/?marca=franco');
+    window.history.replaceState({}, '', '/?marca=principal');
 
     const { firm, load } = await freshFirm();
 

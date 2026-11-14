@@ -1,5 +1,5 @@
 # State: Reforma hub as a white-label platform for accounting firms
-Stage: build F2c1/19
+Stage: build F2c2/19
 Updated: 14/11/2026
 Branch: feature/rnc-4-white-label-platform · Worktree: .claude/worktrees/rnc-4
 ## Done
@@ -113,11 +113,31 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   1331 Vitest · 200 Playwright (4 flaky on the 1.1 h loaded run — diagnostic, navigation, site, users —
   green when re-run alone) · pint, PHPStan, vue-tsc, aliases, mirror check, lint/format/sort-locales ·
   convention reviews done inline (mechanical diff, no finding) · pre-commit green 14/11/2026.
+- **F2c2 Franco/Reinaldo strings → the host firm; names guards** (A13, A15, A16; R14, R15; AM6) · 14/11 ·
+  **FULL GATE**: 1938 Pest · 1345 Vitest · 204 Playwright (no flaky on the 4.1 min run; `site.spec` and `portal/access.spec` updated for the firm's `proof` and "Gestão", then re-run green) · pint, PHPStan, vue-tsc, aliases,
+  ESLint, Prettier, sort-locales, mirror check green · convention reviews inline (vue, design, arcus):
+  nothing left to fix · pre-commit green 14/11/2026.
+  Red first: `NoTenantNamesTest` (the `nfe:import` help named `franco`), `SeededRolesTest` "Gestão",
+  `noTenantNames.spec` (108 locale strings, `ALogo`'s default, `PROOF_POINTS`' "RNC"), `firmNames.spec`,
+  the navItems "Gestão" case, `ALogo` "draws nothing", `MFirmLogo.spec` (absent), the `useBrandTheme`
+  names case; `no-franco.spec.ts` 3 of 4 red against the old locales. Mutations seen red: `setFirmNames`
+  dropped from `useBrandTheme`, `BRAND_QUERY.main` back to `franco`.
+  What changed: locale values scripted (`locales.py` over `local/*.json`: 56 pt-BR, 54 en) —
+  "Franco Contabilidade" → `{firmName}`, "Franco" → `{firmShort}`, "Reinaldo" → "Gestão"/"Management",
+  `site.landing.proof.*` removed, `closingText` and `auth.brand.domain` generic. `libraries/i18n`:
+  `withFirmPlaceholders` turns `{firmShort}`/`{firmName}` into linked messages `@:{'firm.short'}` /
+  `@:{'firm.name'}` (braced: the bare form eats a following comma), `setFirmNames` (empty until a firm
+  answers); `useBrandTheme` calls it with `short_name || name`. `ALogo` has no default name (draws
+  nothing); new `MFirmLogo` (host firm's `logo_text`) on sign-in, forgot password, terms, not found,
+  firm not found, repricing letter. Landing proof strip = firm's `proof` only (C10). `?marca=principal`
+  or the host slug is the main brand (C9). API: `RoleSeeder` "Gestão" + generic descriptions,
+  `nfe:import` help example `alvorada`; `phpunit.xml` gains the `Arch` suite. Units bumped: ALogo 3.0.0,
+  MFirmLogo 1.0.0, composables, locales, Site, Repricing, Auth layouts/Terms/ForgotPassword, NotFound,
+  FirmNotFound, e2e, database.
+  Known gap recorded (Site RULES): the footer's credentials line is Franco's certifications.
 ## Next
-1. `/battoni-start-session rnc-4` (or the running `/battoni-run rnc-4`) → **F2c2** Franco/Reinaldo
-   strings → `{firm}` / generic (locale VALUES — `navigation.management` and `home.workspaces.management`
-   still read "Reinaldo" —, RoleSeeder's "CEO" label and description, lang, resources), plus
-   `NoTenantNamesTest`, `noTenantNames.spec.ts` and `e2e/brand/no-franco.spec.ts` (A15, A16) — FULL GATE.
+1. `/battoni-start-session rnc-4` (or the running `/battoni-run rnc-4`) → **F3a** Modules per firm — API
+   with degrade (A17–A21).
 ## Pitfalls
 - (F1a) `UserFactory` now puts every user in the default firm (`franco` under phpunit), creating it
   when absent. A test that creates `Firm::factory(['slug' => 'franco'])` AFTER a user would collide
@@ -171,6 +191,13 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   rename anchors on what follows the token, not only a word boundary.
 - (F2c1) The full Playwright run took 1.1 h under machine load with 4 flaky specs passing on retry;
   re-run the flaky files alone with `--retries=0` before calling one red.
+- (F2c2) A locale string that needs the host firm writes `{firmShort}` or `{firmName}`, never `{firm}`:
+  `{firm}` is a parameter the caller passes (portal, repricing letter). Vitest's `setup.ts` fills the
+  host names with Franco; a spec about another firm calls `setFirmNames` itself.
+- (F2c2) `ALogo` with no `name` draws nothing — use `MFirmLogo` for the host firm's mark.
+- (F2c2) `src/test/noTenantNames.spec.ts` and `tests/Arch/NoTenantNamesTest.php` fail on any
+  Franco/Reinaldo/Willy/APW outside comments, specs and `test/` folders, and on "RNC" outside the
+  Channel module (locales: outside a `channel` key).
 ## QA
 (none yet — rounds in plan.md → QA)
 ## Seeded people (password `seeding.password`; `battoni` uses `seeding.superadmin_password`)
@@ -204,6 +231,8 @@ F2a done
 F2b done
 02:08 F2c1 started, attempt 1
 F2c1 done
+04:32 F2c2 started, attempt 1
+F2c2 done
 ## Decided while you were away
 - W1 plan: proposal.html skipped in away mode (spec D27; to reverse: `/battoni-new-proposal rnc-4 final`).
 - W2 plan: the owner's phases are split into 17 builder phases with his labels kept (spec D28); his
@@ -274,3 +303,15 @@ F2c1 done
   reverse: rename the identifiers in F2c2.
 - W25 F2c1: the old paths `/reinaldo/*` and `/ceo/*` are dropped with no redirect (A13 asks "not
   found"); a bookmark to `/reinaldo` lands on Not Found. To reverse: redirect routes from the old paths.
+- W26 F2c2: the host firm's placeholders are `{firmShort}` / `{firmName}`, not `{firm}` (spec C8) —
+  `{firm}` was the portal's and letter's own parameter. To reverse: rename those first.
+- W27 F2c2: `?marca=principal` or the host firm's slug drops the sub-brand (spec C9). To reverse:
+  `BRAND_QUERY.main = 'franco'`.
+- W28 F2c2: a firm with no `proof` shows no proof strip (spec C10). To reverse: generic i18n fallback.
+- W29 F2c2: the screens that drew `ALogo`'s default name draw `MFirmLogo` (a molecule reading
+  `useFirmBrand`, like `MNavbarBrand`) rather than each passing the firm. To reverse: a prop per screen.
+- W30 F2c2: `RoleSeeder` keeps `firstOrCreate`, so a database seeded before keeps "CEO"/"Reinaldo" labels
+  until `make fresh-seed`; W24's identifiers (`CEO_EXTRA_KEYS`, `$ceo`) still kept. To reverse:
+  `updateOrCreate` on name/description.
+- W31 F2c2: the footer's credentials line (Franco's certifications) stays static copy — it names no
+  tenant; recorded as a Site Known Gap for the console phases. To reverse: a firm field now.

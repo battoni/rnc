@@ -39,14 +39,6 @@ const PARTNER_MEDIUMS = ['affiliate', 'parceiro', 'partner'];
 /** The longest `utm_medium` the API stores. */
 const MEDIUM_MAX_LENGTH = 60;
 
-/** The landing's proof points (R5, facts.md §1): the figure, then the i18n key of its caption. */
-const PROOF_POINTS = [
-  { figure: '35 anos', key: 'years' },
-  { figure: '500+', key: 'clients' },
-  { figure: 'ISO 9001', key: 'iso' },
-  { figure: 'RNC', key: 'network' },
-] as const;
-
 /** "O que muda" (facts.md §2): the five changes, each an i18n key under `site.landing.changes`. */
 const WHAT_CHANGES = ['cbs', 'ibs', 'selective', 'splitPayment', 'credit'] as const;
 
@@ -78,7 +70,6 @@ export {
   MEDIUM_MAX_LENGTH,
   PAID_MEDIUMS,
   PARTNER_MEDIUMS,
-  PROOF_POINTS,
   SECTOR_GRID_ANCHOR,
   SITE_ROUTE_NAMES,
   TRAFFIC_SOURCE_STORAGE_KEY,
