@@ -1,7 +1,7 @@
 ---
-version: 1.8.0
+version: 1.9.0
 origin: rnc
-based-on: 1.8.0
+based-on: 1.9.0
 ---
 # RULES — Lead Module
 
@@ -77,11 +77,24 @@ them and writes the team's notes — through this module's service.
   client's `partner_consent_at`. The caller checks the client's consent first; this method trusts it.
   The create is `createOrFirst` (a savepoint): a racing batch that committed the lead after this
   one's read is reused — refreshed, its consent copied if it has none — instead of failing the batch.
+- **A beta signup is a lead of the platform firm only (rnc-4 R29, D29)**: `POST public/beta-signups`
+on the root (the platform firm, header-less — AM9) writes one `beta` lead through
+`LeadService::recordBetaSignup` — stage `lead`, path and channel `beta`, company/contact/e-mail/phone
+in their columns, role, city, UF, clients band and message in `profile` over the empty diagnostic
+profile (the pipeline's detail still diagnoses it), token born expired, the consent required
+(`accepted`) and stored under the platform firm's current version `via formulario`, a
+`contato.capturado` line. Any tenant is 404 before the body is read (`platform.firm` middleware),
+and `BetaSignupService` refuses again. The platform firm's team hears it by bell
+(`BetaSignupNotification`) and e-mail (`BetaSignupMail`, the platform firm's brand). Throttle
+5/min per address (`beta-signup`). `GET public/beta-signups/consent` gives the form its words
+(`ConsentTextService::forFirm`) — no lead exists before the submit.
 - **The visitor is kept by UUID** (`visitor_uuid`), not a foreign key to Tracking's `visitors`: the
   diagnostic may start before the visit's beacon lands, and the two meet on (firm, uuid).
 - **Children carry no firm column** (`lead_consents`, `lead_events`): they belong to their lead.
 
 ## Known Gaps
+- **A beta signup has no dedupe**: the same firm sending twice is two `beta` leads; the throttle
+(5/min/address) bounds a script, not a person. Decide with the beta's volume.
 
 - **No retention rule** for leads and consents until LGPD retention is decided.
 - **Bot traffic still creates visitantes**: `POST public/diagnostics` reuses the open `visitante`

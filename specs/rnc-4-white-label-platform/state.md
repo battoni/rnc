@@ -1,5 +1,5 @@
 # State: Reforma hub as a white-label platform for accounting firms
-Stage: build F4b/19
+Stage: build F6a/19
 Updated: 14/11/2026
 Branch: feature/rnc-4-white-label-platform · Worktree: .claude/worktrees/rnc-4
 ## Done
@@ -330,9 +330,37 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   firm-less operator to the console (Home 3.7.0, HomeView 1.2.0); locales `platform` group + 3 `navigation` keys,
   `sort-locales.mjs` registers `platform` (locales 1.15.0); e2e 1.20.0. api.rnc: Platform RULES 1.0.1 (Known Gap
   "No SPA yet" retired). Spec: no C# (W57–W59 stay inside R25's wording).
+- **F6a Beta signup — API** (A31; R29, D29) · 14/11 · `tests/Feature/Lead/BetaSignupTest.php` 30 tests (new).
+  Gate: Pest dirs Lead, Notification, Access, Pipeline, Firm, Mail, Arch 698 + Diagnostic, Metrics,
+  `MailSenderTest`, `DtoValidatedInputTest` 111, all green; Pint, PHPStan, mirror check green (`make check-api`,
+  `make sync-mirror-check`); arcus review inline (1 finding fixed: Lead RULES `based-on` bumped with `version`).
+  Phase gate green 14/11/2026 — NOT the full `/battoni-pre-commit`: skipped `check-app`, `sanitize`, Vitest and
+  Playwright (no app.rnc file changed, no e2e file in this phase; plan Defaults/D30), `check-portal` (no portal),
+  `check-cortex` (skipped by design here).
+  Red first: 24 of the 29 first tests failed before the code (the 5 tenant-404 cases held with no route).
+  Mutations seen red: `platform.firm` off the POST (1: the "404 before validation" case), BOTH the middleware and
+  `BetaSignupService`'s guard off (4: the tenant/default/`X-Firm: hub`/consent-read 404s), consent `accepted` →
+  `boolean` (1), throttle off (1), `mailTeam` off (1), bell off (1), consent words not from `ConsentTextService` (1),
+  token born live (1), UF not upper-cased (7), band label not translated in the e-mail (1). Not caught alone: the
+  service guard with the middleware on (defence in depth).
+  Live (worktree API on 8001, W67): `GET public/beta-signups/consent` at the root → hub's v1 words; POST header-less
+  201, with `X-Firm: franco` 404, with `X-Firm: hub` 404; one `beta_signup` bell row (`gestao.hub`) and the
+  e-mail in `laravel.log`. The local DB keeps that one `beta` lead ("Contábil Teste") on hub — handy for F6b's chip.
+  What changed: Lead (1.9.0) `LeadChannel::Beta`, `BetaClientsBand`, `PublicBetaSignupController`,
+  `BetaSignupRequest`, `BetaSignupDTO`, `BetaSignupService`, `LeadService::recordBetaSignup`,
+  `ConsentTextService::forFirm`, `PublicBetaSignupResource`, `Mail/BetaSignupMail` + `BetaSignupMailDTO`, Known Gap
+  "no dedupe"; Notification (1.5.0) `BetaSignupNotification` (`beta_signup`), `TeamNotifier::mailTeam`; middleware
+  `EnsurePlatformFirm` (`platform.firm`, `bootstrap/app.php`); routes `POST public/beta-signups`
+  (`throttle:5,1,beta-signup`, `platform.firm`, `brand`) and `GET public/beta-signups/consent` (`routeClasses.php`:
+  both public); mail views 1.4.0 `beta-signup` (+ text), `mail.beta_signup.*` pt_BR/en, `/mail-preview/beta-signup`.
+  Spec: no C# (W61–W66 stay inside R29/D29).
 ## Next
-1. `/battoni-start-session rnc-4` (or the running `/battoni-run rnc-4`) → **F6a** Beta signup — API (A31; R28,
-   R29). Gate: Pest dirs Lead, Notification, Access + static checks. The local DB is freshly seeded.
+1. `/battoni-start-session rnc-4` (or the running `/battoni-run rnc-4`) → **F6b** Product site on the root — SPA
+   (A32–A34; R28, R29). The API is ready: `POST public/beta-signups` (body `company, name, role, email, phone, city,
+   uf, clients_band` [`ate_100|de_101_a_300|de_301_a_1000|acima_1000`], `message?`, `consent: true`, `source?`,
+   `medium?`; 201 `{company, channel}`; 422 field errors; 429) and `GET public/beta-signups/consent` (`{text,
+   version}`). F6b also needs the bell's `beta_signup` line (`{lead_id, company, city, uf}`) and the board's "Beta"
+   chip; the timeline line is the existing `contato.capturado`.
 ## Pitfalls
 - (F1a) `UserFactory` now puts every user in the default firm (`franco` under phpunit), creating it
   when absent. A test that creates `Firm::factory(['slug' => 'franco'])` AFTER a user would collide
@@ -445,6 +473,12 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
 - (F4b) An e2e firm list mocked with two rows of the same `id` collapses in the `v-for` and the new-firm
   dialog's password never shows — give every mocked firm its own id.
 - (F4b) The main checkout's `php artisan serve` still held :8000; the live check used :8001 again.
+- (F6a) The beta routes 404 on every tenant AND on `X-Firm: hub` (AM9): the SPA's beta form must call them from
+  the root host WITHOUT `X-Firm` — `ApiProvider` adds it only when the host has a slug (`FIRM_SLUG`), so the root is fine.
+- (F6a) The beta form's consent words are the platform firm's current version, which today is the generic
+  partner-introduction sentence ("Autorizo Hub da Reforma a me apresentar a especialistas parceiros…") — W66.
+- (F6a) A test that rings hub's team creates hub's people with `assistantPerson('gestao', firm: $hub)`;
+  `PlatformManagerSeeder` (`gestao.hub`) is local-only.
 ## QA
 (none yet — rounds in plan.md → QA)
 ## Seeded people (password `seeding.password`; `battoni` uses `seeding.superadmin_password`)
@@ -492,6 +526,8 @@ F3c done
 F4a done
 10:08 F4b started, attempt 1
 F4b done
+10:38 F6a started, attempt 1
+F6a done
 ## Decided while you were away
 - W1 plan: proposal.html skipped in away mode (spec D27; to reverse: `/battoni-new-proposal rnc-4 final`).
 - W2 plan: the owner's phases are split into 17 builder phases with his labels kept (spec D28); his
@@ -662,3 +698,24 @@ F4b done
   reverse: drop the key from the check.
 - W60 F4b: the live check ran as HTTP calls on the worktree API (8001) with a cookie jar, plus the A30 Playwright
   spec on a mocked API; Chrome rounds stay verify's (as W56). To reverse: n/a.
+- W61 F6a: a `GET public/beta-signups/consent` (`{text, version}`, platform firm only) was added beside the POST —
+  F6b's form shows "the API's text" before any lead exists, and the diagnostic's way (`PublicLeadResource`) needs a
+  lead. The POST answers `{company, channel}` (an allow-list for the success state). To reverse: drop the GET and
+  put the words in `public/firm` for the platform firm.
+- W62 F6a: "hub's users with `leads.read`" is read as `TeamNotifier`'s team — active `equipe` and `gestao`, the two
+  roles granted `leads.read` — for both bell and e-mail (`TeamNotifier::mailTeam`, one copy per member); a per-user
+  `leads.read` override and the firm-less operator are not rung. To reverse: query users by effective permission.
+- W63 F6a: a tenant gets 404 from a new `platform.firm` middleware BEFORE the body is validated (a firm host never
+  sees a 422 that betrays the route), and `BetaSignupService` refuses again. The throttle runs first, so a tenant's
+  calls count too. To reverse: the service's null alone (a tenant would then get 422 on a bad body).
+- W64 F6a: the beta lead's timeline gets the existing `contato.capturado` `{consent}` line (no new event type the
+  SPA would have to learn); its token is born expired like a portfolio lead's; `source`/`medium` are optional
+  from the site (default `direto`), as on the diagnostic. To reverse: a `beta.inscricao` event type.
+- W65 F6a: the form's fields are fixed as `company, name, role, email, phone, city, uf, clients_band, message?`
+  with four clients bands (`ate_100`, `de_101_a_300`, `de_301_a_1000`, `acima_1000`) and UF from the 27 units; phone
+  required (normalised to `55…`), message ≤ 1000. To reverse: change `BetaSignupRequest`/`BetaClientsBand`.
+- W66 F6a: the consent stored and shown is the platform firm's current version as R29 says — today the generic
+  partner-introduction sentence, which reads oddly for a beta; the operator rewrites it in the console (F4a) and a
+  new version applies. Not a hard stop. To reverse: a beta-specific consent text (spec change).
+- W67 F6a: the live check ran as HTTP calls on the worktree API (8001), no screen in this phase; Chrome rounds stay
+  verify's (as W56). To reverse: n/a.

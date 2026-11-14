@@ -89,6 +89,19 @@ class ConsentTextService
     }
 
     /**
+     * What a visitor reads on a form with no lead behind it yet (rnc-4 R29: the beta signup): the
+     * firm's current version, `{escritorio}` filled with the firm's name.
+     *
+     * @return array{text: string, version: int}
+     */
+    public function forFirm(Firm $firm): array
+    {
+        $current = $this->currentVersion($firm->id);
+
+        return ['text' => ConsentTerms::fill($current->text, $firm->name), 'version' => $current->version];
+    }
+
+    /**
      * The consent a portfolio client gave in its service contract (rnc-2 R27): one generic sentence,
      * not versioned per firm (D12), the firm's name filled.
      *

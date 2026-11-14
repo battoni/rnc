@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.9.0 — 2026-11-14
+
+### Added
+
+- The platform's beta signup (rnc-4 F6a, R29, D29): `LeadChannel::Beta` (`beta`), `BetaClientsBand`, `PublicBetaSignupController` (`POST public/beta-signups`, `GET public/beta-signups/consent`), `BetaSignupRequest`, `BetaSignupDTO`, `BetaSignupService` (platform firm only, else null → 404), `LeadService::recordBetaSignup` (stage `lead`, path `beta`, contact in columns, the rest in `profile`, token born expired, consent under the firm's current version, a `contato.capturado` line), `ConsentTextService::forFirm`, `PublicBetaSignupResource`, `BetaSignupMail` + `BetaSignupMailDTO` (the platform team's e-mail). Tested by `tests/Feature/Lead/BetaSignupTest`.
+
 ## 1.8.0 — 2026-11-14
 
 ### Added

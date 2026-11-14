@@ -8,6 +8,7 @@
  * inherit the parent's).
  */
 
+use App\Http\Middleware\EnsurePlatformFirm;
 use App\Http\Middleware\ResolveCurrentBrand;
 use App\Modules\Assistant\Controllers\AssistantController;
 use App\Modules\Assistant\Controllers\NoteController;
@@ -22,6 +23,7 @@ use App\Modules\Firm\Controllers\PublicFirmController;
 use App\Modules\Fiscal\Controllers\NfeImportController;
 use App\Modules\Fiscal\Controllers\ReadinessController;
 use App\Modules\Fiscal\Controllers\SupplierCreditController;
+use App\Modules\Lead\Controllers\PublicBetaSignupController;
 use App\Modules\Metrics\Controllers\FunnelController;
 use App\Modules\Notification\Controllers\NotificationController;
 use App\Modules\Partner\Controllers\ContractReferralController;
@@ -58,6 +60,12 @@ $brandFallback = ResolveCurrentBrand::ALIAS.':'.ResolveCurrentBrand::FALLBACK;
 Route::get('public/firm', [PublicFirmController::class, 'show'])->middleware($brand);
 Route::get('public/sectors', [PublicSectorPageController::class, 'index'])->middleware($brand);
 Route::get('public/sectors/{slug}', [PublicSectorPageController::class, 'show'])->middleware($brand);
+
+// The platform's beta (rnc-4 R29, D29): the product is firm zero, so "Quero participar do beta" on the
+// root site is a `beta` lead on the platform firm's own pipeline. `platform.firm` answers 404 on any
+// tenant — and on `X-Firm: hub` (AM9) — before the body is read; 5 signups a minute per address.
+Route::get('public/beta-signups/consent', [PublicBetaSignupController::class, 'consent'])->middleware([EnsurePlatformFirm::ALIAS, $brand]);
+Route::post('public/beta-signups', [PublicBetaSignupController::class, 'store'])->middleware(['throttle:5,1,beta-signup', EnsurePlatformFirm::ALIAS, $brand]);
 
 // Tracking (R7, AM2): 60 events a minute per address — a person browsing never meets it, a loop
 // does. Keyed by IP for a visitor (Laravel's `throttle:<max>,<minutes>` signature).

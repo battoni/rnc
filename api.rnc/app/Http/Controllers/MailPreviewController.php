@@ -11,6 +11,8 @@ use App\Modules\Briefing\Helpers\ActionPicker;
 use App\Modules\Briefing\Mail\DailyBriefingMail;
 use App\Modules\Firm\Services\FirmResolver;
 use App\Modules\Firm\Services\MailBrand;
+use App\Modules\Lead\DTOs\BetaSignupMailDTO;
+use App\Modules\Lead\Mail\BetaSignupMail;
 use App\Modules\Partner\DTOs\ReferralMailDTO;
 use App\Modules\Partner\Mail\ReferralSent;
 use Carbon\CarbonImmutable;
@@ -64,6 +66,10 @@ class MailPreviewController extends Controller
                 'label' => 'Briefing — the manager\'s 07:00 e-mail on business days (rnc-3 F8)',
                 'make' => fn (): Mailable => (new DailyBriefingMail($this->sampleBriefing()))->locale('pt_BR'),
             ],
+            'beta-signup' => [
+                'label' => 'Platform — a firm signed up for the beta on the root site (rnc-4 F6a), to the platform firm\'s team',
+                'make' => fn (): Mailable => (new BetaSignupMail($this->sampleBetaSignup()))->locale('pt_BR'),
+            ],
         ];
     }
 
@@ -112,6 +118,24 @@ class MailPreviewController extends Controller
             firmPhone: '11 4000-1234',
             firmMailbox: $this->sampleBrand()->mailbox,
             firmAddress: 'Rua das Acácias, 120, Centro, Cidade Exemplo-SP',
+            brand: $this->sampleBrand(),
+        );
+    }
+
+    /** A beta signup as the root site's form would send it (invented names, rnc-4 F6a). */
+    private function sampleBetaSignup(): BetaSignupMailDTO
+    {
+        return new BetaSignupMailDTO(
+            leadId: 1,
+            company: 'Contábil Horizonte (exemplo)',
+            name: 'Marta Ribeiro',
+            role: 'Sócia',
+            email: 'marta@horizonte.example',
+            phone: '5531988887777',
+            city: 'Belo Horizonte',
+            uf: 'MG',
+            clientsBand: 'de_101_a_300',
+            message: 'Queremos testar com a nossa carteira de comércio.',
             brand: $this->sampleBrand(),
         );
     }

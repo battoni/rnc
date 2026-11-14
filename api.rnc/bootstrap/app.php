@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\EnsureAccountActive;
 use App\Http\Middleware\EnsureModuleEnabled;
+use App\Http\Middleware\EnsurePlatformFirm;
 use App\Http\Middleware\EnsurePlatformOperator;
 use App\Http\Middleware\EnsureRegistrationOpen;
 use App\Http\Middleware\EnsureUserPermission;
@@ -66,6 +67,8 @@ return Application::configure(basePath: dirname(__DIR__))
             EnsureModuleEnabled::ALIAS => EnsureModuleEnabled::class,
             // The platform console (rnc-4 R24): the firm-less `operador` only, after the permission.
             EnsurePlatformOperator::ALIAS => EnsurePlatformOperator::class,
+            // The platform's own site (rnc-4 R29): the platform firm only, else 404 before validation.
+            EnsurePlatformFirm::ALIAS => EnsurePlatformFirm::class,
         ]);
 
         /**

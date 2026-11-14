@@ -1,5 +1,11 @@
 # Changelog — Notification Module
 
+## 1.5.0 — 2026-11-14
+
+### Added
+
+- `BetaSignupNotification` (`kind: beta_signup`, `{lead_id, company, city, uf}`): a firm signed up for the beta on the root site — to the platform firm's team (rnc-4 F6a, R29). `TeamNotifier::mailTeam` queues one copy of a Mailable to every team member with an e-mail (pt-BR). Tested by `tests/Feature/Lead/BetaSignupTest`.
+
 ## 1.4.0 — 2026-11-14
 
 ### Changed

@@ -5,6 +5,7 @@ namespace App\Modules\Lead\Services;
 use App\Models\User;
 use App\Modules\Diagnostic\DTOs\DiagnosticProfileDTO;
 use App\Modules\Firm\Services\CurrentFirm;
+use App\Modules\Lead\DTOs\BetaSignupDTO;
 use App\Modules\Lead\DTOs\LeadContactDTO;
 use App\Modules\Lead\Enums\LeadChannel;
 use App\Modules\Lead\Enums\LeadEventType;
@@ -317,6 +318,46 @@ class LeadService
         $lead->touch();
 
         return $this->leadRepository->createLeadEvent($lead, LeadEventType::ReferralStatusChanged->value, $move, Carbon::now(), $by->id);
+    }
+
+    /**
+     * A firm's beta signup (rnc-4 R29, D29): a `beta` lead of the current firm — the caller has
+     * checked it is the platform firm — at stage `lead`, path `beta`, the contact in its columns and
+     * the rest of the form in `profile` (over the empty diagnostic profile, so the pipeline's detail
+     * still reads it). Its token is born expired, like a portfolio lead's: no public route opens it.
+     * The consent is answered under the firm's current version, as any contact's (AM12).
+     */
+    public function recordBetaSignup(BetaSignupDTO $signup): Lead
+    {
+        $now = Carbon::now();
+
+        return DB::transaction(function () use ($signup, $now) {
+            $lead = $this->leadRepository->createLead([
+                'token' => Str::random(self::TOKEN_LENGTH),
+                'token_expires_at' => $now,
+                'stage' => LeadStage::Lead->value,
+                'path' => LeadChannel::Beta->value,
+                'company' => $signup->company,
+                'contact_name' => $signup->name,
+                'phone' => $signup->phone,
+                'email' => $signup->email,
+                'profile' => [...self::EMPTY_PROFILE, ...$signup->profile()],
+                'channel' => LeadChannel::Beta->value,
+                'source' => $signup->source,
+                'medium' => $signup->medium,
+            ]);
+
+            $this->leadRepository->createLeadConsent($lead, [
+                ...$this->consentTextService->forLead($lead),
+                'given' => $signup->consent,
+                'via' => LeadChannel::Beta->consentVia(),
+                'given_at' => $now,
+            ]);
+
+            $this->leadRepository->createLeadEvent($lead, LeadEventType::ContactCaptured->value, ['consent' => $signup->consent], $now);
+
+            return $lead;
+        });
     }
 
     /**

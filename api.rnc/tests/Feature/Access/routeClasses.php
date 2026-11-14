@@ -26,6 +26,8 @@ return [
     'GET public/diagnostics/{token}/availability' => 'public',
     'POST public/diagnostics/{token}/booking' => 'public',
     'GET public/reports/{reportToken}' => 'public',
+    'GET public/beta-signups/consent' => 'public',
+    'POST public/beta-signups' => 'public',
     'POST auth/login' => 'public',
     'GET auth/support-names' => 'public',
     'POST auth/phone/code' => 'public',

@@ -1,5 +1,5 @@
 ---
-version: 1.4.0
+version: 1.5.0
 origin: rnc
 ---
 # RULES — Notification Module
@@ -24,6 +24,9 @@ behind `notifications.read` (AM8).
   already checked that person is an active specialist of the firm. F5 adds two more, one person
   each: the specialist's answer rings the asker (`AssistantAnswerNotification`), and a review in its
   last 7 days rings its reviewer (`AssistantNoteExpiringNotification`, `assistant:notify-expiring`).
+- **`mailTeam` e-mails the same team** (rnc-4 F6a): the beta signup rings the platform firm's team
+  by bell and e-mail (R29). One copy per member, so no member sees another's address; members
+  without an e-mail are skipped. The Mailable is the caller's (Lead's `BetaSignupMail`).
 - **A notification stores data, not sentences**: `kind` plus the fields; the SPA writes the pt-BR
   line from them, so wording changes never need a data migration.
 - **Database channel only, not queued**: it is one insert per person in the request.
