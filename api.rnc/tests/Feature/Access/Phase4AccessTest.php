@@ -18,6 +18,8 @@ use Database\Seeders\RoleSeeder;
  * F4a: the operator's console (`platform.firms`, `platform.consent`) — the `operador` role with no
  * firm, and nobody else: not a firm account handed the key in its own permissions, and no role but
  * the operator's can be given it (`RoleService`).
+ *
+ * F4c: the logo upload and view-as join the same rows (`platform.firms` + the firm-less operator).
  */
 beforeEach(function () {
     config(['firms.default_slug' => PlatformFirmSeeder::PLATFORM_SLUG]);
@@ -49,6 +51,12 @@ dataset('phase 4 platform routes', [
     'POST platform/firms/{id}/manager' => ['POST', '/api/platform/firms/{id}/manager'],
     'GET platform/consent-default' => ['GET', '/api/platform/consent-default'],
     'PUT platform/consent-default' => ['PUT', '/api/platform/consent-default'],
+    // F4c — the logo and view-as (R26, R27)
+    'POST platform/firms/{id}/logo' => ['POST', '/api/platform/firms/{id}/logo'],
+    'DELETE platform/firms/{id}/logo' => ['DELETE', '/api/platform/firms/{id}/logo'],
+    'POST platform/firms/{id}/view-as' => ['POST', '/api/platform/firms/{id}/view-as'],
+    'DELETE platform/view-as' => ['DELETE', '/api/platform/view-as'],
+    'GET platform/view-as-log' => ['GET', '/api/platform/view-as-log'],
 ]);
 
 describe('F4a platform console', function () {

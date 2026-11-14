@@ -1,19 +1,20 @@
 ---
-version: 1.0.1
+version: 1.1.0
 origin: rnc
 ---
 # RULES — Platform Module
 
-> For AI agents. rnc-4 F4a, 14/11/2026.
+> For AI agents. rnc-4 F4a, F4c, 14/11/2026.
 
 ## Domain
 
 The platform operator's console (rnc-4 R24, R25, D19): Battoni Dev runs every firm of the hub from
 here. The operator is the `operador` role with **no firm** (`battoni`, `SuperAdminSeeder`); it signs
-in at the root only and, outside view-as (F4c), every other request of theirs works in the platform
+in at the root only and, outside view-as, every other request of theirs works in the platform
 firm (`hub`, plan AM1). The console is how it reaches the other firms: list them, create one, edit
-its look, set its modules, create or reset its manager's login, and edit the platform's default
-consent sentence.
+its look and upload its logo, set its modules, create or reset its manager's login, edit the
+platform's default consent sentence, and enter one firm through "Acessar como suporte" (view-as,
+R26, D20), audited.
 
 ## Who reaches it
 
@@ -38,12 +39,37 @@ order — a guest 401, anybody else 403:
 | `POST platform/firms/{id}/manager` | `platform.firms` | 201 new / 200 reset, `{manager, password, created}` — `FirmProvisioner::provideManager` |
 | `GET platform/consent-default` | `platform.consent` | `{text}` |
 | `PUT platform/consent-default` | `platform.consent` | `{text}` — `PlatformSettings::updateConsentDefault` |
+| `POST platform/firms/{id}/logo` | `platform.firms` | the firm with `logo_url` — `UploadLogoRequest`, Firm's `FirmLogoService::replace` |
+| `DELETE platform/firms/{id}/logo` | `platform.firms` | the firm, `logo_url` null — `FirmLogoService::remove` (200 even with no logo) |
+| `POST platform/firms/{id}/view-as` | `platform.firms` | 201 the open session — `ViewAsService::start`; 404 / 409 `platform.viewAsActive` / 422 `platform.viewAsPlatformFirm` |
+| `DELETE platform/view-as` | `platform.firms` | 200 the session closed as `sair`, or `null` when none was active |
+| `GET platform/view-as-log` | `platform.firms` | paginated (25), latest first — `ViewAsSessionResource` |
 
 ## Rules
 
-- **It writes nothing itself.** Firms, their look, modules and manager logins are the Firm module's
-  writers (`Firm/RULES.md` → "The platform console's writers"); users are Auth's, through them. The
-  module owns no table.
+- **It writes no firm itself.** Firms, their look, logo file, modules and manager logins are the Firm
+  module's writers (`Firm/RULES.md` → "The platform console's writers"); users are Auth's, through
+  them. The module owns ONE table, its own audit: `platform_view_as_sessions` (F4c).
+- **A logo is judged by its bytes** (R27, D22; `UploadLogoRequest`, `Rules/LogoImage`): `finfo` must
+  read PNG, JPEG or WebP and `getimagesize` must parse the same type — an SVG, an SVG or HTML page
+  renamed `.png`, a GIF, a PNG signature over junk are `platform.logoType`, whatever the name or the
+  client's MIME; then Laravel's sniffed `mimetypes`, `max:512` (`platform.logoTooLarge`) and
+  `dimensions` ≤ 1024 px (`platform.logoTooWide`); no file `platform.logoRequired`. Stored by
+  `FirmLogoService` as `firms/<id>/logo-<40 random>.<sniffed ext>` on `public`; a new upload deletes
+  the file it replaced (only a file under that firm's folder is ever deleted). Not re-encoded (D22).
+- **View-as** (R26, D20; `ViewAsService`): the session holds only the id of an open
+  `platform_view_as_sessions` row (`ViewAsService::SESSION_KEY`); the row (operator, firm, IP,
+  started, ended, `end_reason`) is the truth. `current()` honours the key only for the firm-less
+  `operador` whose row it is, while the row is open and its firm is not the platform firm — a firm
+  account, an operator placed in a firm, another operator or a guest carrying the key rides nothing.
+  Firm's `ViewAsFirm` asks it, so `ResolveCurrentFirm` makes every request of that session the
+  viewed firm's and `auth/me` answers `platform.view_as`. It never nests (409), never targets the
+  platform firm (422). It ends on `DELETE platform/view-as` (`sair`), on `auth/logout` (`logout`,
+  Auth's `AuthController`), and at the person's next sign-in, any door (`expirou`,
+  `Listeners/CloseViewAsOnSignIn` on Laravel's `Login`, registered in `AppServiceProvider`) — which
+  also stops another browser's open view-as. It changes the firm, never the permissions: the
+  operator keeps its own keys (read and write, D20) and the viewed firm's modules still gate routes.
+  An `X-Firm` header stays 403 `firms.mismatch` (W9): view-as works at the root only.
 - **The firm is the one the route names, by id.** `PlatformFirmRepository::findFirmById` — a firm is
   not firm-scoped; an unknown id is 404 `firms.notFound`. The request's own firm (the platform firm)
   plays no part in any of these routes.
@@ -63,7 +89,7 @@ order — a guest 401, anybody else 403:
 
 ## Tables read from other modules
 
-- `firms` (Firm) — the list and the lookup by id.
+- `firms` (Firm) — the list, the lookup by id, the viewed firm.
 - `leads` (Lead) — counted per firm, across firms.
 - `users`, `roles` (Auth) — through `FirmProvisioner` and `UserService`, never queried here.
 
@@ -76,13 +102,27 @@ order — a guest 401, anybody else 403:
   promoted.
 - **The default consent requires `{escritorio}`** (W55): a consent that names no firm authorises
   nobody, and the firm's name is filled in per firm and sub-brand (C5).
+- **The session holds a row id, not a firm id** (F4c): closing the row ends the view-as wherever the
+  session lives, and a key that leaks into another person's session points at a row that is not
+  theirs.
+- **View-as and the logo ride `platform.firms`** (W84): no key of their own — the second lock (the
+  firm-less operator) is what keeps them the operator's, as for the rest of the console.
+- **"Sair" with nothing active answers 200 `null`** (W85), not 404: a second click, or a view-as a
+  sign-in elsewhere already closed, is not an error for the banner.
 
 ## Known Gaps
 
-- **Until F4c the operator reaches other firms only through the console** (rnc-4 AM1): outside the
-  console every request of a firm-less operator works in the platform firm; there is no view-as yet,
-  so the operator cannot open a firm's pipeline, partners or settings, and a firm's sub-brands
-  (`brands*`) are not editable from here until view-as.
-- **No logo upload yet** (R27, F4c): the look is text and colours; `logo_path` is not a field.
+- **`/storage` is outside `/api`** (plan AM10): `logo_url` is the `public` disk's URL
+  (`APP_URL/storage/…`, locally `http://localhost:8000/storage/…`, which needs `php artisan
+  storage:link`); the SPA's Vite proxy forwards `/api` only. The F7 runbook's vhost serves
+  `/storage` per host; F4d decides how the SPA shows it locally.
+- **No per-action audit inside view-as** (D20, out of scope): only the start and the end are logged.
+- **The logged IP is the direct peer** (`$request->ip()`): the app trusts no proxy yet, so behind the
+  deploy's reverse proxy every row would carry the proxy's address. F7's runbook must configure
+  trusted proxies (`$middleware->trustProxies`) for the IP to be the operator's.
+_Retired 14/11/2026 (F4c):_ "Until F4c the operator reaches other firms only through the console" —
+view-as now lets the operator enter one firm, audited; a firm's pipeline, partners, settings and
+sub-brands (`brands*`) are reached that way.
+_Retired 14/11/2026 (F4c):_ "No logo upload yet" — `POST/DELETE platform/firms/{id}/logo`.
 _Retired 14/11/2026 (F4b):_ "No SPA yet: the refusal keys have no locale text" — the console's
 screens (app `Platform` module) name every refusal by its code (`PLATFORM_ERROR_KEYS` → `platform.errors.*`).

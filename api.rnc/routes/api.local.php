@@ -37,8 +37,10 @@ use App\Modules\Partner\Controllers\PortalController;
 use App\Modules\Partner\Controllers\ReferralController;
 use App\Modules\Pipeline\Controllers\AgendaController;
 use App\Modules\Pipeline\Controllers\PipelineLeadController;
+use App\Modules\Platform\Controllers\FirmLogoController;
 use App\Modules\Platform\Controllers\PlatformConsentController;
 use App\Modules\Platform\Controllers\PlatformFirmController;
+use App\Modules\Platform\Controllers\ViewAsController;
 use App\Modules\Portfolio\Controllers\ClientEventController;
 use App\Modules\Portfolio\Controllers\ClientImportController;
 use App\Modules\Portfolio\Controllers\ContractController;
@@ -243,6 +245,14 @@ Route::post('platform/firms', [PlatformFirmController::class, 'store'])->middlew
 Route::patch('platform/firms/{id}', [PlatformFirmController::class, 'update'])->middleware($platformFirms);
 Route::put('platform/firms/{id}/modules', [PlatformFirmController::class, 'modules'])->middleware($platformFirms);
 Route::post('platform/firms/{id}/manager', [PlatformFirmController::class, 'manager'])->middleware($platformFirms);
+// rnc-4 F4c (R26, R27, D20, D22): the logo file, and "Acessar como suporte" — the operator enters one
+// firm (audited start and end), every request of that session works in it until Sair, logout or the
+// next sign-in. Same two locks.
+Route::post('platform/firms/{id}/logo', [FirmLogoController::class, 'store'])->middleware($platformFirms);
+Route::delete('platform/firms/{id}/logo', [FirmLogoController::class, 'destroy'])->middleware($platformFirms);
+Route::post('platform/firms/{id}/view-as', [ViewAsController::class, 'store'])->middleware($platformFirms);
+Route::delete('platform/view-as', [ViewAsController::class, 'destroy'])->middleware($platformFirms);
+Route::get('platform/view-as-log', [ViewAsController::class, 'index'])->middleware($platformFirms);
 $platformConsent = ['auth', 'permission:platform.consent', 'platform.operator'];
 Route::get('platform/consent-default', [PlatformConsentController::class, 'show'])->middleware($platformConsent);
 Route::put('platform/consent-default', [PlatformConsentController::class, 'update'])->middleware($platformConsent);

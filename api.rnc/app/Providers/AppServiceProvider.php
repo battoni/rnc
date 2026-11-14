@@ -12,8 +12,11 @@ use App\Modules\Firm\Services\CurrentBrand;
 use App\Modules\Firm\Services\CurrentFirm;
 use App\Modules\Firm\Services\MailBrand;
 use App\Modules\Partner\Services\CurrentPartner;
+use App\Modules\Platform\Listeners\CloseViewAsOnSignIn;
+use Illuminate\Auth\Events\Login;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
@@ -142,6 +145,9 @@ class AppServiceProvider extends ServiceProvider
 
         // `$table->addressColumns()` / `localityColumns()` — Brazil's address block (Helpers/Brazil).
         AddressColumns::register();
+
+        // Every sign-in closes the view-as sessions its person left open (rnc-4 D20, `expirou`).
+        Event::listen(Login::class, CloseViewAsOnSignIn::class);
     }
 
     /** A message whose Mailable names no brand wears the request's firm's, else the platform's. */

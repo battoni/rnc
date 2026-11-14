@@ -2,6 +2,16 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.11.0 — 2026-11-14
+
+### Added
+
+- The logo's writer and view-as (rnc-4 F4c, R26, R27): `FirmLogoService` (`replace` / `remove`, `sniff`,
+  `EXTENSIONS`) stores the console's upload on `public` under a server-made name and deletes the file it
+  replaced; `ViewAsFirm` answers the firm of the operator's open view-as through Platform's
+  `ViewAsService::current` (it returned null since F1a). Known Gap "until F4c…" retired. Tested by
+  `tests/Feature/Platform/FirmLogoTest` and `ViewAsTest`.
+
 ## 1.10.0 — 2026-11-14
 
 ### Added

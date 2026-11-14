@@ -3,6 +3,13 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.31.0 — 2026-11-14
+
+### Added
+
+- `create_platform_view_as_sessions` (rnc-4 F4c, R26, D20): the view-as audit — operator, firm, IP, started, ended,
+  `end_reason` — with `ViewAsSessionFactory` (an open session).
+
 ## 1.30.0 — 2026-11-14
 
 ### Added

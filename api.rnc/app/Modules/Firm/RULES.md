@@ -1,5 +1,5 @@
 ---
-version: 1.10.0
+version: 1.11.0
 origin: rnc
 ---
 # RULES — Firm Module
@@ -22,7 +22,7 @@ firms records of the Channel module, with no tenant.
 - **`CurrentFirm`** (a scoped container binding) holds the firm of this request or command run.
 - **`ResolveCurrentFirm`** (api middleware, appended after `EnsureAccountActive`) sets it (rnc-4 F1a):
   - signed in with a firm → that firm; an `X-Firm` naming another → 403 `firms.mismatch` (D5);
-  - signed in with NO firm (the operator) → `ViewAsFirm` (F4c; null until then), else the platform
+  - signed in with NO firm (the operator) → `ViewAsFirm` (the firm of an open view-as, F4c), else the platform
     firm; any `X-Firm` → 403 `firms.mismatch`; no platform firm → 403 `firms.required` (plan AM1);
   - a visitor → the `X-Firm` slug through `FirmResolver::findTenantBySlug` (a reserved slug of
     `config/platform.php`, an unknown one or the platform firm's → 404 `firms.notFound`, D2, AM9),
@@ -177,6 +177,18 @@ its route names by id:
   checked by the request, as on a sub-brand.
 - `PlatformSettings::updateConsentDefault($text)` — what the NEXT firm's version 1 copies (R13);
   existing versions are never touched.
+- `FirmLogoService::replace($firm, UploadedFile)` / `remove($firm)` (rnc-4 F4c, R27, D22) — the only
+  writer of `logo_path`: the file (already judged by Platform's `UploadLogoRequest`) is stored on
+  `public` as `firms/<id>/logo-<40 random>.<ext>`, the extension from `finfo` (`EXTENSIONS`), never
+  the client's name; the file it replaces is deleted, and only a file under that firm's own folder
+  is ever deleted. Not re-encoded.
+
+## View-as (rnc-4 F4c, R26, D20)
+
+- **`ViewAsFirm::resolve($request)`** is the firm of the operator's open view-as, else null. The
+  session, its audit row and every check (the firm-less `operador` whose row it is, the row open, not
+  the platform firm) are the Platform module's `ViewAsService::current` — this class only hands
+  `ResolveCurrentFirm` and `auth/me` the firm. Reads `platform_view_as_sessions` through it.
 
 ## Intentional Decisions
 
@@ -194,8 +206,8 @@ its route names by id:
 
 ## Known Gaps
 
-- **Until F4c the operator reaches another firm only through the console** (rnc-4 AM1): a
-  firm-less session always works in the platform firm; `ViewAsFirm` returns null.
+_Retired 14/11/2026 (F4c):_ "Until F4c the operator reaches another firm only through the console;
+`ViewAsFirm` returns null" — `ViewAsFirm` now answers the firm of the operator's open view-as.
 - **`FirmProvisioner`'s refusal keys have no SPA text yet** (rnc-4 F3b1): `firm:create` prints the
   keys themselves; the console's screens (F4b) add `firms.slug*`, `firms.nameRequired` and the new
   `users.form.*` keys to the locales.

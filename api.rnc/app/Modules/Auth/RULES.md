@@ -1,5 +1,5 @@
 ---
-version: 2.15.0
+version: 2.16.0
 origin: pendulum
 based-on: 2.9.0
 ---
@@ -52,8 +52,11 @@ there is no "everything minus a list" left to subtract from. The protected all-k
 
 - **`GET auth/me` boots the shell** (rnc-4 F3a, R20): `UserResource::withPlatform($viewAs)` adds
   `firm` (Firm's `FirmSummaryResource`, null for a firm-less account) and `platform: {name,
-  is_operator, view_as}` — `is_operator` is the `operador` role, `view_as` Firm's `ViewAsFirm` (null
-  until F4c). A user in a list or the login answer does not carry them.
+  is_operator, view_as}` — `is_operator` is the `operador` role, `view_as` Firm's `ViewAsFirm`
+  (`{slug, name}` of the operator's open view-as, else null; F4c). A user in a list does not carry
+  them; the login answers carry them with `view_as` null — a sign-in closes any view-as left open.
+- **Logout ends a view-as** (rnc-4 F4c, R26, D20): `AuthController::logout` closes the session's
+  open view-as as `logout` (Platform's `ViewAsService::end`) before the session is invalidated.
 
 ## The firm's manager runs its team (rnc-4 F5a, R31, AM2, LOCAL)
 

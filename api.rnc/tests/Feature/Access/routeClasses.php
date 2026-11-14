@@ -148,6 +148,12 @@ return [
     'POST platform/firms/{id}/manager' => 'staff',
     'GET platform/consent-default' => 'staff',
     'PUT platform/consent-default' => 'staff',
+    // rnc-4 F4c the logo and view-as, the same two locks
+    'POST platform/firms/{id}/logo' => 'staff',
+    'DELETE platform/firms/{id}/logo' => 'staff',
+    'POST platform/firms/{id}/view-as' => 'staff',
+    'DELETE platform/view-as' => 'staff',
+    'GET platform/view-as-log' => 'staff',
 
     // STAFF — rnc-4 F5a the firm's settings, `firm.settings` (the manager, `gestao`)
     'GET firm/settings' => 'staff',

@@ -3,6 +3,9 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 2.16.0 — 2026-11-14
+- `auth/logout` closes the session's open view-as with reason `logout`, and `auth/me`'s `platform.view_as` answers the viewed firm (rnc-4 F4c, R26). Tested by `tests/Feature/Platform/ViewAsTest`.
+
 ## 2.15.0 — 2026-11-14
 
 ### Added

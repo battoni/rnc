@@ -1,5 +1,5 @@
 # State: Reforma hub as a white-label platform for accounting firms
-Stage: build F5b/19
+Stage: build F4c/19
 Updated: 14/11/2026
 Branch: feature/rnc-4-white-label-platform · Worktree: .claude/worktrees/rnc-4
 ## Done
@@ -439,9 +439,41 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   `/management/firm|team|specialists|consent`); rail: four children at the end of "Gestão" behind `firm.settings` (TheNavbar 1.11.0, W83);
   locales (1.17.0) `firmSettings.*`, `navigation.firm*`, `users.form.roleNotAssignable`, `leads.consentPlaceholderMissing`; config (1.6.0)
   `@FirmSettingsModule` alias, `primevue/radiobutton` in `optimizeDeps`; e2e (1.21.0). Spec: no C# (W81–W83 stay inside R30–R33).
+- **F4c Logo upload and view-as — API** (A41, A42; R26, R27; AM1, AM10) · 14/11 · **security-sensitive — flagged for the verify review (P6)** ·
+  full Pest 2323 (+90: `Platform/ViewAsTest` 22, `Platform/FirmLogoTest` 18, and 50 more dataset rows from the five new routes in
+  `Access/Phase4AccessTest` and the route matrix), all green · Vitest and Playwright not run (no app.rnc change; plan Defaults/D30) ·
+  Pest dirs Platform, Auth, Firm, Access re-run after the last edit, 1032 green · `make check-api` (Pint, PHPStan), `make check-app`
+  (aliases 35, vue-tsc), `sync-mirror-check`, `sanitize` green; arcus review inline (fixed: concrete paginator type for
+  `ApiResponse::paginated`, a named boolean in `LogoImage`, the "IP behind a proxy" gap written down). Phase gate 14/11/2026 — NOT the
+  full `/battoni-pre-commit`: skipped the Vitest and Playwright suites (no app.rnc change, D30), `check-portal` (no portal) and
+  `check-cortex` (skipped by design here). No live HTTP check: the phase's Done-when is the Pest dirs; F4d's live round covers it.
+  Red first: 38 of the 39 first tests failed before the code (the unknown-firm logo 404 held: no route). Mutations seen red: the
+  operator check in `ViewAsService::find` off (caught only after adding "its own operator placed in a firm" — the firm-user cases never
+  reach `ViewAsFirm`), the row-owner check off, a closed row honoured, the platform-firm guard off, nesting allowed, the client's MIME
+  instead of `finfo`, the replaced file kept, logout not closing, the sign-in listener unregistered. Not caught: dropping the
+  `getimagesize` parse in `LogoImage` (defence in depth: `finfo` already refuses a PNG signature over junk).
+  P6 security list (for verify): **a file is accepted** in `UploadLogoRequest` → `Platform/Rules/LogoImage` (`finfo` type in
+  `FirmLogoService::EXTENSIONS` AND `getimagesize` parses the same type) → `mimetypes` → `max:512` → `dimensions` ≤ 1024; stored by
+  `FirmLogoService::replace` as `firms/<id>/logo-<40 random>.<ext from finfo>` on `public`, old file deleted only under that firm's
+  folder; operator only (`platform.firms` + `platform.operator`), the manager has no route (D19). **A firm is chosen** in
+  `ViewAsService::current` (firm-less `operador` + session key = id of an OPEN row owned by that user + firm not platform), read by
+  Firm's `ViewAsFirm` → `ResolveCurrentFirm::resolveSignedIn` (only for a firm-less user; `X-Firm` still 403, W9) and `auth/me`.
+  **A view-as starts** only in `ViewAsService::start` (409 if active, 404 unknown, 422 platform firm); **ends** in `ViewAsService::end`
+  (`DELETE platform/view-as` → `sair`, `AuthController::logout` → `logout`) and `closeLeftOpen` (`Listeners/CloseViewAsOnSignIn` on
+  every `Login` event → `expirou`, which also stops another browser's open view-as). Permissions are the operator's own; the viewed
+  firm's modules still gate (`modules.disabled` proven). Audit row: user, firm, `ip_address` (the direct peer — see Platform Known Gap),
+  started/ended, reason.
+  What changed: Platform (1.1.0) — `FirmLogoController`, `ViewAsController`, `UploadLogoRequest`, `Rules/LogoImage`, `ViewAsService`,
+  `ViewAsSessionRepository`, `Models/ViewAsSession`, `Enums/ViewAsEndReason`, `Exceptions/ViewAsException`,
+  `Listeners/CloseViewAsOnSignIn`, `ViewAsSessionResource`, `PlatformFirmResource.logo_url`; Known Gaps "until F4c the operator reaches
+  other firms only through the console" and "no logo upload yet" retired with their reasons. Firm (1.11.0) — `FirmLogoService`,
+  `ViewAsFirm` reads the open view-as; its own "until F4c…" gap retired. Auth (2.16.0) — logout closes the view-as. Database (1.31.0) —
+  `create_platform_view_as_sessions` + `ViewAsSessionFactory` (worktree SQLite migrated). `AppServiceProvider` registers the listener.
+  Routes: `POST/DELETE platform/firms/{id}/logo`, `POST platform/firms/{id}/view-as`, `DELETE platform/view-as`,
+  `GET platform/view-as-log`. Spec: C18 (W86).
 ## Next
-1. `/battoni-start-session rnc-4` (or the running `/battoni-run rnc-4`) → **F4c** Logo upload and view-as — API (A41, A42; R26, R27;
-   security-sensitive, P6 list in its Done line). Read plan.md → F4c.
+1. `/battoni-start-session rnc-4` (or the running `/battoni-run rnc-4`) → **F4d** Logo and view-as — SPA (A43; R26, R27). Read plan.md → F4d
+   and the F4c Done line above (routes, error keys `platform.logo*` / `platform.viewAs*`, `me.platform.view_as`, `logo_url`).
 ## Pitfalls
 - (F1a) `UserFactory` now puts every user in the default firm (`franco` under phpunit), creating it
   when absent. A test that creates `Firm::factory(['slug' => 'franco'])` AFTER a user would collide
@@ -584,6 +616,12 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
 - (F5b) `auth/users` takes the password from the caller and has no generate route: the SPA draws it (`useOneTimePassword`); a live
   script that creates a login must send one.
 - (F5b) A new PrimeVue component in a template must join `optimizeDeps.include` in `vite.config.ts` (`src/test/optimizeDeps.spec.ts`).
+- (F4c) `logo_url` is `APP_URL/storage/...` (`http://localhost:8000/storage/...` locally) — it needs `php artisan storage:link`
+  in the worktree's api.rnc, and Vite proxies `/api` only (AM10). F4d decides: proxy `/storage` too, or show the 8000 URL.
+- (F4c) A view-as lives in the server session (key `platform.view_as` = an open audit row id); the SPA must re-read `auth/me` after
+  start/stop — `POST` answers the session, not the user. Any sign-in of the operator (another browser too) closes it as `expirou`.
+- (F4c) A test that logs in as an operator now fires `CloseViewAsOnSignIn`; a test building a view-as row by hand before a login
+  will see it closed.
 ## QA
 (none yet — rounds in plan.md → QA)
 ## Seeded people (password `seeding.password`; `battoni` uses `seeding.superadmin_password`)
@@ -639,6 +677,8 @@ F6b done
 F5a done
 11:57 F5b started, attempt 1
 F5b done
+12:32 F4c started, attempt 1
+F4c done
 ## Decided while you were away
 - W1 plan: proposal.html skipped in away mode (spec D27; to reverse: `/battoni-new-proposal rnc-4 final`).
 - W2 plan: the owner's phases are split into 17 builder phases with his labels kept (spec D28); his
@@ -884,3 +924,17 @@ F5b done
   `users.read` like its API; inside it each `users.*` key hides its own button); the role is two radio choices (Equipe, Gestão) read from
   `auth/roles` by slug, not a select; the consent form also refuses saving the current version's exact words. To reverse: a separate
   "Escritório" group; a select; allow an identical version.
+- W84 F4c: view-as and the logo ride `platform.firms` (no new key) behind the same two locks as the console (`platform.operator`) —
+  the plan named no key, and the operator-only person check is what keeps them the operator's. To reverse: a `platform.view_as` key
+  in Auth's permission groups, refused to other roles by `RoleService`.
+- W85 F4c: `DELETE platform/view-as` with nothing active answers 200 `data: null` (idempotent), not 404 — a second "Sair", or a view-as
+  a sign-in elsewhere already closed, is not an error for the banner. Nested start is 409 `platform.viewAsActive`, the platform firm 422
+  `platform.viewAsPlatformFirm`, each with a `code`. To reverse: 404 on an empty stop.
+- W86 F4c: the audit row also keeps the IP (`ip_address`, the request's direct peer), beyond the plan's columns, as the brief asked
+  (spec C18); behind the deploy's proxy it needs trusted proxies (Platform Known Gap, F7). To reverse: drop the column.
+- W87 F4c: "close stale on sign-in" is a listener on Laravel's `Login` event (every door: password, phone code, QA login-as), not a call
+  in `AuthService`, and it closes ALL of the person's open rows — so signing in from another browser ends a view-as left open there.
+  To reverse: call `ViewAsService::closeLeftOpen` from each sign-in service and close only rows older than the session lifetime.
+- W88 F4c: the session holds the audit row's id, not the firm's, and `ViewAsFirm` (Firm) delegates to Platform's `ViewAsService::current`
+  (memoised per request) — closing the row ends the view-as wherever the session lives, and a leaked key points at a row that is not
+  the holder's. The logo writer is Firm's `FirmLogoService` (Platform writes no firm). To reverse: store the firm id in the session.

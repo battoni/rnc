@@ -11,6 +11,8 @@ use App\Modules\Auth\Resources\UserResource;
 use App\Modules\Auth\Services\AuthService;
 use App\Modules\Auth\Services\PermissionService;
 use App\Modules\Firm\Services\ViewAsFirm;
+use App\Modules\Platform\Enums\ViewAsEndReason;
+use App\Modules\Platform\Services\ViewAsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,6 +23,7 @@ class AuthController extends Controller
         private AuthService $authService,
         private PermissionService $permissionService,
         private ViewAsFirm $viewAsFirm,
+        private ViewAsService $viewAsService,
     ) {}
 
     public function login(LoginRequest $request): JsonResponse
@@ -29,12 +32,15 @@ class AuthController extends Controller
         $user = $this->authService->authenticate($credentials, $request);
 
         // rnc-4 F3c: the same `firm` and `platform` as `auth/me`, so the shell's rail and router know
-        // the firm's modules from the first screen after sign-in (no view-as yet: it starts later).
+        // the firm's modules from the first screen after sign-in. A sign-in never carries a view-as: it
+        // closed any left open (`CloseViewAsOnSignIn`, rnc-4 D20).
         return ApiResponse::success(data: (new UserResource($user))->withPlatform());
     }
 
     public function logout(Request $request): JsonResponse
     {
+        // A view-as ends with the session that held it, logged as `logout` (rnc-4 R26, D20).
+        $this->viewAsService->end($request, ViewAsEndReason::Logout);
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

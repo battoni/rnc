@@ -9,15 +9,17 @@ use App\Modules\Firm\DTOs\ManagerLogin;
 use App\Modules\Firm\DTOs\ProvisionedFirm;
 use App\Modules\Firm\DTOs\UpdateFirmLookDTO;
 use App\Modules\Firm\Models\Firm;
+use App\Modules\Firm\Services\FirmLogoService;
 use App\Modules\Firm\Services\FirmLookService;
 use App\Modules\Firm\Services\FirmModulesService;
 use App\Modules\Firm\Services\FirmProvisioner;
 use App\Modules\Platform\Repositories\PlatformFirmRepository;
+use Illuminate\Http\UploadedFile;
 
 /**
  * The operator's console over the firms (rnc-4 R25). It writes nothing itself: a firm is made by
  * `FirmProvisioner` (the same path as `firm:create`), its look by `FirmLookService`, its modules by
- * `FirmModulesService` and its manager login by `FirmProvisioner::provideManager` — each the Firm
+ * `FirmModulesService`, its logo file by `FirmLogoService` and its manager login by `FirmProvisioner::provideManager` — each the Firm
  * module's only writer of what it writes. The firm is the one the route names, by id; null when there
  * is none, for the controller's 404.
  */
@@ -28,6 +30,7 @@ class PlatformFirmService
         private FirmProvisioner $firmProvisioner,
         private FirmLookService $firmLookService,
         private FirmModulesService $firmModulesService,
+        private FirmLogoService $firmLogoService,
     ) {}
 
     /** @return list<array{firm: Firm, lead_count: int}> */
@@ -63,6 +66,22 @@ class PlatformFirmService
         $firm = $this->platformFirmRepository->findFirmById($id);
 
         return ! $firm ? null : $this->withCount($this->firmModulesService->set($firm, $modules, $operator));
+    }
+
+    /** @return array{firm: Firm, lead_count: int}|null */
+    public function replaceLogo(int $id, UploadedFile $file): ?array
+    {
+        $firm = $this->platformFirmRepository->findFirmById($id);
+
+        return ! $firm ? null : $this->withCount($this->firmLogoService->replace($firm, $file));
+    }
+
+    /** @return array{firm: Firm, lead_count: int}|null */
+    public function removeLogo(int $id): ?array
+    {
+        $firm = $this->platformFirmRepository->findFirmById($id);
+
+        return ! $firm ? null : $this->withCount($this->firmLogoService->remove($firm));
     }
 
     public function provideManager(int $id, FirmManagerDTO $dto): ?ManagerLogin

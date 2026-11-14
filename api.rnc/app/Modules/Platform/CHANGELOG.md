@@ -3,6 +3,9 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.1.0 — 2026-11-14
+- Logo upload and view-as (rnc-4 F4c, R26, R27, A41, A42): `FirmLogoController` — `POST/DELETE platform/firms/{id}/logo` (`UploadLogoRequest` + `Rules/LogoImage`: PNG/JPEG/WebP by `finfo` and the image header, ≤ 512 KB, ≤ 1024 px; stored by Firm's `FirmLogoService`); `PlatformFirmResource` gains `logo_url`. `ViewAsController` — `POST platform/firms/{id}/view-as`, `DELETE platform/view-as`, `GET platform/view-as-log`; the module's first table `platform_view_as_sessions` (`Models/ViewAsSession`, `Enums/ViewAsEndReason`, `ViewAsSessionRepository`), `ViewAsService` (the session key, `current()` read by Firm's `ViewAsFirm`), `ViewAsException` (409 / 422 with a code), `Listeners/CloseViewAsOnSignIn` (`expirou`). Known Gaps "until F4c…" and "no logo upload yet" retired. Tested by `tests/Feature/Platform/FirmLogoTest`, `ViewAsTest` and `tests/Feature/Access/Phase4AccessTest`.
+
 ## 1.0.1 — 2026-11-14
 - RULES: the "No SPA yet" Known Gap retired — the console's screens (rnc-4 F4b, app `Platform` module) give every refusal key its text.
 

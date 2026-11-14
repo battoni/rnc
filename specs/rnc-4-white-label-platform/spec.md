@@ -451,3 +451,5 @@ the deploy; a per-action audit trail inside view-as; firm self-signup without th
   W31 left. Reverse: a static footer line again.
 - C17 (F5a, W78) R31's specialist flag switched off keeps the specialist's row and hours and takes the person out of the agenda;
   switched on again it keeps those hours (R32's "starts on the firm's hours" is the first flag only). Reverse: delete the row on unflag.
+- C18 (F4c, W86) R26's log keeps, beside operator, firm, started, ended and reason, the address the view-as was started from
+  (`ip_address`): an audit of who entered a firm should say from where. Reverse: drop the column.
