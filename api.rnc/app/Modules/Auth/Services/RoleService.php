@@ -25,6 +25,11 @@ class RoleService
 
     public const ADMINISTRATOR_KEEPS_EVERY_KEY = 'rolesAndPermissions.administratorKeepsEveryKey';
 
+    /** The platform console's keys (rnc-4 F4a, R24): the administrator's alone, never another role's. */
+    public const OPERATOR_ONLY_KEY_PREFIX = 'platform.';
+
+    public const OPERATOR_ONLY_KEY = 'rolesAndPermissions.operatorOnlyKey';
+
     private const NAME_TAKEN_KEY = 'rolesAndPermissions.form.nameTaken';
 
     private const MAX_SLUG_ATTEMPTS = 8;
@@ -146,11 +151,30 @@ class RoleService
 
         $permissions = $role->slug === self::ADMINISTRATOR_SLUG
             ? $this->administratorMatrix($dto->permissions)
-            : $dto->permissions;
+            : $this->refuseOperatorOnlyKeys($dto->permissions);
 
         DB::transaction(fn () => $this->roleRepository->upsertRolePermissions($id, $permissions));
 
         return $this->find($id);
+    }
+
+    /**
+     * A platform key granted to any role but the administrator's is refused (rnc-4 R24: roles and
+     * the console stay the operator's). Revoking one — the screen sends the whole matrix, false
+     * included — is harmless and passes.
+     *
+     * @param  array<string, bool>  $requested
+     * @return array<string, bool>
+     */
+    private function refuseOperatorOnlyKeys(array $requested): array
+    {
+        foreach ($requested as $key => $granted) {
+            if ($granted && str_starts_with($key, self::OPERATOR_ONLY_KEY_PREFIX)) {
+                throw ValidationException::withMessages(['permissions' => [self::OPERATOR_ONLY_KEY]]);
+            }
+        }
+
+        return $requested;
     }
 
     /**

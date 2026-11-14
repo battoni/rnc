@@ -1,5 +1,5 @@
 ---
-version: 1.8.0
+version: 1.9.0
 origin: rnc
 ---
 # RULES — Firm Module
@@ -148,6 +148,25 @@ firms records of the Channel module, with no tenant.
   `UserService::isUsernameAvailable` / `isEmailAvailable`). Every write goes through the owning
   module's service.
 
+## The platform console's writers (rnc-4 F4a, R25)
+
+The console (`app/Modules/Platform`) writes nothing itself; it calls the writers here, for the firm
+its route names by id:
+
+- `FirmProvisioner::provision($dto, $operator)` — a new firm, the same path as `firm:create`; the
+  operator is `FirmModulesService::set`'s actor.
+- `FirmProvisioner::provideManager($firm, FirmManagerDTO)` → `ManagerLogin` (account, one-time
+  password, `created`): the firm's own `gestao` with that username gets a new password and loses its
+  sessions (Auth's `UserService::resetPassword`); a free username becomes a new `gestao` in the firm
+  (made under `CurrentFirm::runAs`, so `UserService::create` stamps that firm); any other account —
+  another firm's, or a member here who is not the manager — is 422 `users.form.usernameTaken` and
+  untouched. The console never moves an account between firms or promotes one.
+- `FirmLookService::update($firm, UpdateFirmLookDTO)` — name, logo text, short name, tagline, proof,
+  colours; never the slug, `is_platform` or the modules. `Rules/ReadableUnderWhite` (4,5:1, R11) is
+  checked by the request, as on a sub-brand.
+- `PlatformSettings::updateConsentDefault($text)` — what the NEXT firm's version 1 copies (R13);
+  existing versions are never touched.
+
 ## Intentional Decisions
 
 - **`PublicFirmResource` answers `modules`** (rnc-4 F3c, R17, W47): the firm's opt-in keys as `auth/me` lists them (core never listed; the platform firm none), the firm's under a sub-brand too. The public site reads it to hide the chat where `chat` is off.
@@ -167,9 +186,10 @@ firms records of the Channel module, with no tenant.
 - **Until F4c the operator reaches another firm only through the console** (rnc-4 AM1): a
   firm-less session always works in the platform firm; `ViewAsFirm` returns null.
 - **`FirmProvisioner`'s refusal keys have no SPA text yet** (rnc-4 F3b1): `firm:create` prints the
-  keys themselves; the console (F4a) adds `firms.slug*`, `firms.nameRequired` and the new
-  `users.form.*` keys to the locales. Two runs racing for one slug: the loser's unique index is an
-  uncaught 500 — the CLI is one operator at a time; F4a's console should catch it as `slugTaken`.
+  keys themselves; the console's screens (F4b) add `firms.slug*`, `firms.nameRequired` and the new
+  `users.form.*` keys to the locales.
+  _Retired 14/11/2026 (F4a):_ "Two runs racing for one slug: the loser's unique index is an uncaught
+  500" — `provision()` now catches the unique violation and answers `slugTaken` (or `usernameTaken`).
 
 - **Modules are enforced by the API only until F3c** (rnc-4): the SPA still shows every rail entry
   and the root site's chat; on a firm with the module off they answer 404 / 422 `modules.disabled`.

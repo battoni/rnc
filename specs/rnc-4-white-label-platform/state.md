@@ -1,5 +1,5 @@
 # State: Reforma hub as a white-label platform for accounting firms
-Stage: build F3c/19
+Stage: build F4a/19
 Updated: 14/11/2026
 Branch: feature/rnc-4-white-label-platform · Worktree: .claude/worktrees/rnc-4
 ## Done
@@ -265,10 +265,49 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   `LoginCodeController::verify` answer `withPlatform()`. Unit versions bumped (User 2.2.0, helpers 1.15.0,
   TheNavbar 1.9.0, Briefing/Radar/Contracts 1.2.0, Pipeline 1.5.0, Diagnostic 1.4.0, Home 3.6.0, e2e 1.19.0,
   api Firm 1.8.0, Auth 2.13.0). Spec C13, C14.
+- **F4a Platform operator and console — API** (A26–A28; R11, R24, R25; AM1) · 14/11 · **SECURITY-SENSITIVE:
+  flagged for the verify review (P6)** · full Pest 2118 (+107: `Platform/OperatorSignInTest` 7,
+  `Platform/PlatformFirmsTest` 22, `Platform/ConsentDefaultTest` 7, `Access/Phase4AccessTest` 51 + the route
+  matrix's 7 new rows; `RoleLoginTest` lost its `battoni` row — moved to `OperatorSignInTest` — and `SeedShapeTest`
+  expects `battoni` as the one firm-less account), all green · full Vitest 1391 (`--maxWorkers=2`; only
+  locale JSON changed in app.rnc) · Playwright not run (no e2e file added or edited — phase gate) · check-app
+  (aliases, vue-tsc), check-api (Pint, PHPStan), mirror check, sanitize (ESLint, Prettier, sort-locales)
+  green; check-portal and check-cortex skip themselves here · arcus review inline (vue/design reviews not
+  applicable: no Vue/TS file changed; nothing to fix) · pre-commit green 14/11/2026 without the full
+  Playwright suite.
+  Red first: the cross-firm negative tests were written first; 77 of the 87 new tests failed before the code
+  (the 3 "unknown id → 404" and the 7 "operator passes" rows held only because the routes did not exist — the
+  latter tightened to also refuse 404). Mutations seen red: `platform.operator` dropped from the routes (14 red:
+  a firm account with the key, a firm-placed `operador`), `RoleService`'s operator-only guard off (2), the lead
+  count scoped by `FirmScope` (1), `provideManager`'s firm check off (1 — another firm's manager reset), the
+  `{escritorio}` check off (2).
+  Live (worktree API on 8001, `make fresh-seed`, HTTP with a cookie jar, W56): `battoni` at the root → `firm`
+  null, `is_operator` true; with `X-Firm: franco` 422; `platform/firms` hub 0 · alvorada 40 · franco 40 leads
+  with their modules; `GET leads` as the operator 0 (hub's); `POST platform/firms` ipe → `http://ipe.localhost:5173`
+  + `gestao.ipe` and a password; primary `#7fd3ff` 422 `brand.lowContrast`; `gestao.ipe` signed in with
+  `X-Firm: ipe` (firm ipe) and got 403 on `platform/firms`. Re-seeded after.
+  P6 security list (for verify): the console's lock is `auth` + `permission:platform.*` + `EnsurePlatformOperator`
+  (role `operador` AND `firm_id` null) on all 7 routes (`routes/api.local.php`); `RoleService::refuseOperatorOnlyKeys`
+  refuses `platform.*` to any non-administrator role; the firm a console route touches is chosen by the route id
+  in `PlatformFirmRepository::findFirmById` (404 `firms.notFound`); `FirmScope` lifted only in
+  `PlatformFirmRepository::countLeadsByFirm`/`countLeadsOfFirm` (counts); a login is refused/reset in
+  `FirmProvisioner::provideManager` (only the firm's own `gestao` is reset, sessions deleted; any other
+  username 422, untouched); a new manager's firm is stamped by `UserService::create` under `CurrentFirm::runAs`.
+  The operator's own firm stays `ResolveCurrentFirm`'s (AM1, unchanged): platform firm, `X-Firm` → 403.
+  What changed: `SuperAdminSeeder` (`battoni` firm null); Auth `permission-groups.local.php` (`platform` group:
+  `platform.firms`, `platform.consent`), `RoleService` (`OPERATOR_ONLY_KEY_PREFIX`, 422
+  `rolesAndPermissions.operatorOnlyKey`), `UserService::resetPassword`/`findByUsername`; middleware
+  `EnsurePlatformOperator` (alias `platform.operator`, 403 `platform.operatorOnly`); Firm: `FirmProvisioner::provideManager`
+  + race catch (Known Gap retired), `FirmLookService`, `UpdateFirmLookDTO`, `FirmManagerDTO`, `ManagerLogin`,
+  `Rules/ReadableUnderWhite` (shared with `UpdateBrandRequest`), `PlatformSettings::updateConsentDefault`,
+  `MailBrand::siteUrlOf` public; new module `app/Modules/Platform` (controllers, requests, service, repository,
+  resources, RULES.md with the AM1 Known Gap, CHANGELOG 1.0.0); locales: the roles screen's `platform` group,
+  `consent` label and `operatorOnlyKey`. Versions: Auth 2.14.0, Firm 1.9.0, database 1.28.0, locales 1.14.0,
+  Platform 1.0.0. Spec C15.
 ## Next
-1. `/battoni-start-session rnc-4` (or the running `/battoni-run rnc-4`) → **F4a** Platform operator and
-   console — API (A26–A28), security-sensitive (P6). `make fresh-seed` first is optional (F3c left the
-   local DB as seeded).
+1. `/battoni-start-session rnc-4` (or the running `/battoni-run rnc-4`) → **F4b** Operator console — SPA
+   (A29, A30), FULL GATE (every Pest, Vitest and Playwright test). The local DB is freshly seeded (`battoni`
+   firm-less: sign in at `http://localhost:5173`).
 ## Pitfalls
 - (F1a) `UserFactory` now puts every user in the default firm (`franco` under phpunit), creating it
   when absent. A test that creates `Firm::factory(['slug' => 'franco'])` AFTER a user would collide
@@ -314,7 +353,8 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   1327/1327 green. A failure that moves between runs is the load, not the code.
 - (F2b) `useFirmBrand` reads `sessionStorage` at module load: a Vitest spec about it calls
   `vi.resetModules()` and imports it fresh, and clears `sessionStorage` in `beforeEach`.
-- (plan) `battoni` belongs to Franco until F4a moves it to no firm; from F4a it signs in only at the root.
+- (plan) `battoni` signs in only at the root (no firm since F4a).
+  _Retired 14/11/2026 (F4a):_ "`battoni` belongs to Franco until F4a" — moved.
 - (F2c1) The role is `gestao` and the paths are `/gestao/*` (`/management/*`); `/reinaldo` and `/ceo`
   match no route. A local DB seeded before F2c1 still holds a `ceo` role: `make fresh-seed`.
   _Retired 14/11/2026 (F2c1):_ "The role is `ceo` until F2c renames it" — renamed.
@@ -362,12 +402,21 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
 - (F3c) `public/firm` is read once per page load and kept (`useFirmBrand`): a Vitest spec that needs a
   firm WITHOUT a module in a file whose other cases had it mocks `usePublicFirm` in its own file
   (`DiagnosticView.chatOff.spec.ts`).
+- (F4a) `battoni` has no firm: it signs in only at the root (`localhost:5173`, no `X-Firm`); on
+  `franco.localhost` its login is the wrong-password 422. A test about the operator creates `hub`
+  (`PlatformFirmSeeder`) and sets `firms.default_slug` to `hub`; `RoleLoginTest` no longer lists it.
+- (F4a) A console route takes its firm from the route id, never `CurrentFirm`; the operator's own requests
+  stay in `hub`. A 403 body carries the key under `error`, not `message` (`assertJsonPath('error', …)`).
+- (F4a) A role can never hold a `platform.*` key except `operador` — a seeder or test granting one to
+  another role through `RoleService` gets 422; `UserPermission` overrides are still refused at the route.
+- (F4a) In this worktree's sandbox a Bash call mixing heredocs, `cp`, `sed -i` and git in one line is
+  refused as "too complex"; write files with Write and run one plain command per call.
 - (F3c) A Bash `python3 /dev/stdin file <<EOF` edit silently did nothing here — write the script to the
   scratchpad and run it by path.
 ## QA
 (none yet — rounds in plan.md → QA)
 ## Seeded people (password `seeding.password`; `battoni` uses `seeding.superadmin_password`)
-- Platform: `battoni` — operador (firm `franco` until F4a, then no firm, root only).
+- Platform: `battoni` — operador, no firm (since F4a), root only (`localhost:5173`).
 - Platform firm `hub` (F1a): `gestao.hub` — gestao, local only (`PlatformManagerSeeder`, F3b2).
 - Franco (`franco`, unchanged from rnc-3): `reinaldo` (ceo → `gestao` in F2c), `patricia` (equipe),
   specialists `mariana.toledo`, `carlos.prado`, `juliana.reis`, `rafael.antunes`; partners
@@ -407,6 +456,8 @@ F3b1 done
 F3b2 done
 09:08 F3c started, attempt 1
 F3c done
+09:45 F4a started, attempt 1
+F4a done
 ## Decided while you were away
 - W1 plan: proposal.html skipped in away mode (spec D27; to reverse: `/battoni-new-proposal rnc-4 final`).
 - W2 plan: the owner's phases are split into 17 builder phases with his labels kept (spec D28); his
@@ -553,3 +604,15 @@ F3c done
   routing gone too). To reverse: a `module` field on the core `NavItem` and a TheNavbar check.
 - W52 F3c: A24's live check ran as HTTP calls on the worktree API (8001) plus a Playwright spec on a mocked
   session for the rail and the not-found screen; Chrome rounds stay verify's (as W12, W46). To reverse: n/a.
+- W53 F4a: the console's routes need the key AND the firm-less `operador` (`EnsurePlatformOperator`), and
+  `RoleService` refuses `platform.*` to any other role — the plan named only the keys; with the key alone a
+  per-user override or a firm-placed `operador` would open the console. To reverse: drop `platform.operator`
+  from the routes and `refuseOperatorOnlyKeys`.
+- W54 F4a: `POST platform/firms/{id}/manager` creates OR resets by username — the firm's own `gestao` is reset
+  (sessions ended, 200), a free username is created there (201), any other account (another firm's, or a member
+  here who is not the manager) is 422 `users.form.usernameTaken` and untouched. To reverse: two routes, or
+  reset any account of the firm.
+- W55 F4a: the default consent must contain `{escritorio}` (422 `platform.consentPlaceholderMissing`, ≤ 1000
+  characters) — spec C15. To reverse: drop `namesTheFirm` from `UpdateConsentDefaultRequest`.
+- W56 F4a: the live check ran as HTTP calls on the worktree API (8001) with a cookie jar, not in Chrome — no
+  screen in this phase; Chrome rounds stay verify's (as W12, W46, W52). To reverse: n/a.

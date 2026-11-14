@@ -25,7 +25,7 @@ describe('database seed', function () {
             ->and(Firm::first()->id)->toBe(1);
     });
 
-    it('creates the operator, Reinaldo, the team and four specialists, all in Franco', function () {
+    it('creates Reinaldo, the team and four specialists in Franco, and the operator in no firm', function () {
         $this->seed();
 
         expect(User::pluck('username')->sort()->values()->all())->toBe([
@@ -46,7 +46,8 @@ describe('database seed', function () {
             'rafael.antunes',
             'reinaldo',
         ])
-            ->and(User::whereNull('firm_id')->count())->toBe(0)
+            // The operator alone has no firm (rnc-4 F4a, R24); everyone else is Franco's.
+            ->and(User::whereNull('firm_id')->pluck('username')->all())->toBe(['battoni'])
             ->and(User::where('is_specialist', true)->pluck('username')->sort()->values()->all())
             ->toBe(['carlos.prado', 'juliana.reis', 'mariana.toledo', 'rafael.antunes']);
     });

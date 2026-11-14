@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\EnsureAccountActive;
 use App\Http\Middleware\EnsureModuleEnabled;
+use App\Http\Middleware\EnsurePlatformOperator;
 use App\Http\Middleware\EnsureRegistrationOpen;
 use App\Http\Middleware\EnsureUserPermission;
 use App\Http\Middleware\PreventIndexing;
@@ -63,6 +64,8 @@ return Application::configure(basePath: dirname(__DIR__))
             EnsureRegistrationOpen::ALIAS => EnsureRegistrationOpen::class,
             // A module the firm has off answers 404 (rnc-4 R17): `module:<key>[,<key>…]`.
             EnsureModuleEnabled::ALIAS => EnsureModuleEnabled::class,
+            // The platform console (rnc-4 R24): the firm-less `operador` only, after the permission.
+            EnsurePlatformOperator::ALIAS => EnsurePlatformOperator::class,
         ]);
 
         /**

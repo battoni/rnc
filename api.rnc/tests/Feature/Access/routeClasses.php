@@ -136,4 +136,14 @@ return [
     'GET radar/types/{rule}' => 'staff',
     'POST radar/referrals' => 'staff',
     'GET clients/{id}/events' => 'staff',
+
+    // STAFF — rnc-4 F4a the platform console, `platform.firms` / `platform.consent` + the firm-less
+    // operator (`Phase4AccessTest`)
+    'GET platform/firms' => 'staff',
+    'POST platform/firms' => 'staff',
+    'PATCH platform/firms/{id}' => 'staff',
+    'PUT platform/firms/{id}/modules' => 'staff',
+    'POST platform/firms/{id}/manager' => 'staff',
+    'GET platform/consent-default' => 'staff',
+    'PUT platform/consent-default' => 'staff',
 ];

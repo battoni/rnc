@@ -16,6 +16,10 @@
  * `channel.read` / `channel.manage` (the RNC channel, F3a), `assistant.ask` / `assistant.manage` (the
  * Reforma assistant, F4), `contracts.manage` (the contract alert, F6) and `briefing.read` (Reinaldo's
  * briefing, F8). The operator holds them at once; each is granted to ceo or equipe in its own phase.
+ *
+ * rnc-4 F4a adds `platform.firms` / `platform.consent` (the operator's console, R24, R25). They are
+ * the operator's alone and stay so: `RoleService::OPERATOR_ONLY_KEY_PREFIX` refuses them to any
+ * other role, and the console's routes also ask for the firm-less operator itself.
  */
 
 return [
@@ -150,6 +154,15 @@ return [
         'icon' => 'pi pi-sun',
         'permissions' => [
             ['labelKey' => 'rolesAndPermissions.permissions.read', 'key' => 'briefing.read', 'value' => false],
+        ],
+    ],
+    [
+        'id' => 'platform',
+        'nameKey' => 'rolesAndPermissions.groups.platform',
+        'icon' => 'pi pi-server',
+        'permissions' => [
+            ['labelKey' => 'rolesAndPermissions.permissions.manage', 'key' => 'platform.firms', 'value' => false],
+            ['labelKey' => 'rolesAndPermissions.permissions.consent', 'key' => 'platform.consent', 'value' => false],
         ],
     ],
 ];

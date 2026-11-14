@@ -3,6 +3,9 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 2.14.0 — 2026-11-14
+- The platform console's keys (rnc-4 F4a, R24): `platform.firms` and `platform.consent` in a `platform` group; `RoleService::updatePermissions` refuses either to any role but the administrator's (422 `rolesAndPermissions.operatorOnlyKey`, `OPERATOR_ONLY_KEY_PREFIX`). `UserService::resetPassword()` (new password, every session ends) and `findByUsername()` for the console's manager login. Tested by `tests/Feature/Access/Phase4AccessTest`.
+
 ## 2.13.0 — 2026-11-14
 - The sign-in answers carry `firm` and `platform` (rnc-4 F3c, R20): `POST auth/login` and `auth/phone/verify` answer `UserResource::withPlatform()` like `auth/me`, so the SPA knows the firm's modules from the first screen. Tested in `tests/Feature/Auth/MeFirmTest`.
 

@@ -73,13 +73,16 @@
       "channel": "Canal RNC",
       "assistant": "Assistente da Reforma",
       "contracts": "Alerta de contratos",
-      "briefing": "Briefing do dia"
+      "briefing": "Briefing do dia",
+      "platform": "Plataforma"
     },
     "permissions": {
       "import": "Importar",
       "access": "Acessar",
-      "ask": "Perguntar"
-    }
+      "ask": "Perguntar",
+      "consent": "Consentimento padrão"
+    },
+    "operatorOnlyKey": "As permissões da Plataforma são só do perfil Operador e não podem ser dadas a outro perfil."
   },
   "site": {
     "nav": {

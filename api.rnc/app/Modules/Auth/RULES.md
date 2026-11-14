@@ -1,5 +1,5 @@
 ---
-version: 2.13.0
+version: 2.14.0
 origin: pendulum
 based-on: 2.9.0
 ---
@@ -134,6 +134,10 @@ role never holds `permissions.*` — whoever can edit roles can grant themselves
   the role from being deleted. A revoke there is refused for everybody, granting to it is exempt
   from the cap, and a save writes the whole catalogue back (`RoleService::updatePermissions`). The
   cap needs a root that holds everything; a key that left the root could never come back.
+- **The platform keys are the administrator's alone** (`platform.*`, rnc-4 F4a, R24): granting one
+  to any other role is 422 `rolesAndPermissions.operatorOnlyKey` (`RoleService::refuseOperatorOnlyKeys`);
+  revoking passes. The console's routes also ask for the firm-less `operador` itself
+  (`EnsurePlatformOperator`), so a per-user override of the key opens nothing either.
 - **Nobody edits an account that holds more than they do** (`UserService::refuseIfOutranked`, on
   update, archive and delete): a target holding any key the actor lacks is refused with
   `users.cannotManageHigherAccount`. Equal or less is fine; your own row follows the self rules.

@@ -32,6 +32,8 @@ use App\Modules\Partner\Controllers\PortalController;
 use App\Modules\Partner\Controllers\ReferralController;
 use App\Modules\Pipeline\Controllers\AgendaController;
 use App\Modules\Pipeline\Controllers\PipelineLeadController;
+use App\Modules\Platform\Controllers\PlatformConsentController;
+use App\Modules\Platform\Controllers\PlatformFirmController;
 use App\Modules\Portfolio\Controllers\ClientEventController;
 use App\Modules\Portfolio\Controllers\ClientImportController;
 use App\Modules\Portfolio\Controllers\ContractController;
@@ -219,3 +221,17 @@ Route::get('radar/types/{rule}', [RadarController::class, 'type'])->middleware([
 // The batch referral (rnc-2 F10, R27, D13): a row's 10 largest consented clients not yet sent to one
 // covering partner, each through its `carteira` lead.
 Route::post('radar/referrals', [RadarController::class, 'refer'])->middleware(['auth', 'permission:radar.manage'])->middleware('module:radar,partners');
+
+// THE PLATFORM CONSOLE (rnc-4 F4a, R24, R25): the operator's alone — its key AND the firm-less
+// `operador` itself (`platform.operator`), so a key that leaks onto a firm account opens nothing.
+// The firm a route names by id is the one it touches (404 `firms.notFound` for none); the request's
+// own firm, the platform firm, plays no part. A core surface: no `module:`.
+$platformFirms = ['auth', 'permission:platform.firms', 'platform.operator'];
+Route::get('platform/firms', [PlatformFirmController::class, 'index'])->middleware($platformFirms);
+Route::post('platform/firms', [PlatformFirmController::class, 'store'])->middleware($platformFirms);
+Route::patch('platform/firms/{id}', [PlatformFirmController::class, 'update'])->middleware($platformFirms);
+Route::put('platform/firms/{id}/modules', [PlatformFirmController::class, 'modules'])->middleware($platformFirms);
+Route::post('platform/firms/{id}/manager', [PlatformFirmController::class, 'manager'])->middleware($platformFirms);
+$platformConsent = ['auth', 'permission:platform.consent', 'platform.operator'];
+Route::get('platform/consent-default', [PlatformConsentController::class, 'show'])->middleware($platformConsent);
+Route::put('platform/consent-default', [PlatformConsentController::class, 'update'])->middleware($platformConsent);

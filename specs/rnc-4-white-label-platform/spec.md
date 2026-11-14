@@ -442,3 +442,7 @@ the deploy; a per-action audit trail inside view-as; firm self-signup without th
   (`/gestao`, `/management`) redirects to the briefing and, while `briefing` is off, lands on the
   metrics instead of not-found (the Gestão link must open something). Reverse: drop
   `meta.moduleFallback` from the Workspace routes.
+- C15 (F4a, W55) R25's "edits the platform default consent text" refuses a sentence without `{escritorio}`
+  (422 `platform.consentPlaceholderMissing`): a consent that names no firm authorises nobody, and every firm's
+  version 1 fills its own name there (C5). Existing firms' versions are never touched (R13). Reverse: accept any
+  non-empty text.

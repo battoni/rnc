@@ -84,7 +84,7 @@ final readonly class MailBrand
      * platform firm. A link to the root would open the platform's firm, where this firm's lead or
      * report is absent.
      */
-    private static function siteUrlOf(Firm $firm): string
+    public static function siteUrlOf(Firm $firm): string
     {
         $root = (string) config('rnc.frontend_url');
         $host = parse_url($root, PHP_URL_HOST);

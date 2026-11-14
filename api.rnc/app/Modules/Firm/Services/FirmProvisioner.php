@@ -5,24 +5,29 @@ namespace App\Modules\Firm\Services;
 use App\Models\User;
 use App\Modules\Auth\DTOs\UserStoreDTO;
 use App\Modules\Auth\Enums\UserStatus;
+use App\Modules\Auth\Models\Role;
 use App\Modules\Auth\Repositories\RoleRepository;
 use App\Modules\Auth\Services\RoleService;
 use App\Modules\Auth\Services\UserService;
 use App\Modules\Booking\Services\SpecialistService;
 use App\Modules\Content\Services\SectorPageService;
 use App\Modules\Firm\DTOs\CreateFirmDTO;
+use App\Modules\Firm\DTOs\FirmManagerDTO;
+use App\Modules\Firm\DTOs\ManagerLogin;
 use App\Modules\Firm\DTOs\ProvisionedFirm;
 use App\Modules\Firm\Helpers\FirmModules;
 use App\Modules\Firm\Models\Firm;
 use App\Modules\Firm\Repositories\FirmRepository;
 use App\Modules\Lead\Services\ConsentTextService;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 /**
- * Makes a firm ready to sign in to (rnc-4 R21, D17) — `firm:create` today, the platform console
- * (F4a) next. In one transaction, so a refusal half-way leaves nothing behind:
+ * Makes a firm ready to sign in to (rnc-4 R21, D17) — `firm:create` and the platform console
+ * (F4a, which also asks it for a manager login: `provideManager`). In one transaction, so a
+ * refusal half-way leaves nothing behind:
  *
  * - the firm, on the default palette (`#1f4e79` / `#f2a900`) and weekday hours, its name as logo
  *   text and short name, the manager's e-mail as its mailbox;
@@ -90,6 +95,52 @@ class FirmProvisioner
 
         $password = Str::password(self::PASSWORD_LENGTH, symbols: false);
 
+        try {
+            return $this->createAll($dto, $actor, $password);
+        } catch (UniqueConstraintViolationException $exception) {
+            // Two requests raced past the checks above: the loser names what the winner took.
+            throw ValidationException::withMessages($this->firmRepository->findFirmBySlug($dto->slug) instanceof Firm
+                ? ['slug' => [self::SLUG_TAKEN]]
+                : ['manager' => [self::MANAGER_TAKEN]]);
+        }
+    }
+
+    /**
+     * The console's manager login for a firm (rnc-4 R25): a username of that firm's manager gets a
+     * new password (every session it had ends); a free username becomes a new `gestao` account in
+     * that firm. Any other account's username — another firm's, or a member of this firm who is not
+     * its manager — is refused as taken and left as it was, so the console never moves an account
+     * between firms or promotes one. The password is answered once.
+     */
+    public function provideManager(Firm $firm, FirmManagerDTO $dto): ManagerLogin
+    {
+        $password = Str::password(self::PASSWORD_LENGTH, symbols: false);
+        $existing = $this->userService->findByUsername($dto->username);
+
+        if ($existing instanceof User) {
+            if (! self::isManagerOf($existing, $firm)) {
+                throw ValidationException::withMessages(['username' => [self::MANAGER_TAKEN]]);
+            }
+
+            return new ManagerLogin($this->userService->resetPassword($existing, $password), $password, false);
+        }
+
+        $this->refuseEmail($dto->email);
+
+        try {
+            $manager = DB::transaction(fn (): User => $this->currentFirm->runAs(
+                $firm,
+                fn (): User => $this->createManager($dto->username, $dto->email, false, $password),
+            ));
+        } catch (UniqueConstraintViolationException) {
+            throw ValidationException::withMessages(['username' => [self::MANAGER_TAKEN]]);
+        }
+
+        return new ManagerLogin($manager, $password, true);
+    }
+
+    private function createAll(CreateFirmDTO $dto, ?User $actor, string $password): ProvisionedFirm
+    {
         return DB::transaction(function () use ($dto, $actor, $password): ProvisionedFirm {
             $firm = $this->firmRepository->createFirm([
                 'slug' => $dto->slug,
@@ -106,7 +157,7 @@ class FirmProvisioner
                 $this->sectorPageService->startFirm($firm);
                 $this->consentTextService->startFirm($firm->id);
 
-                $manager = $this->createManager($dto, $password);
+                $manager = $this->createManager($dto->manager, $dto->email, $dto->specialist, $password);
 
                 if ($dto->specialist) {
                     $this->specialistService->makeBookable($manager, $firm);
@@ -121,19 +172,27 @@ class FirmProvisioner
         });
     }
 
-    private function createManager(CreateFirmDTO $dto, string $password): User
+    private static function isManagerOf(User $user, Firm $firm): bool
     {
-        [$name, $lastName] = self::namesOf($dto->manager);
+        return $user->firm_id !== null
+            && (int) $user->firm_id === $firm->id
+            && $user->role instanceof Role
+            && $user->role->slug === RoleService::MANAGER_SLUG;
+    }
+
+    private function createManager(string $username, ?string $email, bool $specialist, string $password): User
+    {
+        [$name, $lastName] = self::namesOf($username);
 
         return $this->userService->create(new UserStoreDTO(
             name: $name,
             last_name: $lastName,
-            username: $dto->manager,
+            username: $username,
             role_id: (int) $this->roleRepository->findRoleBySlug(RoleService::MANAGER_SLUG)?->id,
             status: UserStatus::ACTIVE->value,
             password: $password,
-            email: $dto->email,
-            is_specialist: $dto->specialist,
+            email: $email,
+            is_specialist: $specialist,
         ));
     }
 
@@ -159,15 +218,38 @@ class FirmProvisioner
             $errors['manager'] = [self::MANAGER_TAKEN];
         }
 
-        if ($dto->email !== null && filter_var($dto->email, FILTER_VALIDATE_EMAIL) === false) {
-            $errors['email'] = [self::EMAIL_INVALID];
-        } elseif ($dto->email !== null && ! $this->userService->isEmailAvailable($dto->email)) {
-            $errors['email'] = [self::EMAIL_TAKEN];
+        $emailError = $this->emailError($dto->email);
+
+        if ($emailError !== null) {
+            $errors['email'] = [$emailError];
         }
 
         if ($errors !== []) {
             throw ValidationException::withMessages($errors);
         }
+    }
+
+    private function refuseEmail(?string $email): void
+    {
+        $emailError = $this->emailError($email);
+
+        if ($emailError !== null) {
+            throw ValidationException::withMessages(['email' => [$emailError]]);
+        }
+    }
+
+    /** Null when the e-mail is absent, or well formed and nobody's yet (unique across firms, AM2). */
+    private function emailError(?string $email): ?string
+    {
+        if ($email === null) {
+            return null;
+        }
+
+        if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+            return self::EMAIL_INVALID;
+        }
+
+        return $this->userService->isEmailAvailable($email) ? null : self::EMAIL_TAKEN;
     }
 
     /**

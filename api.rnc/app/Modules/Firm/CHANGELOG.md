@@ -2,6 +2,9 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.9.0 — 2026-11-14
+- For the platform console (rnc-4 F4a, R25): `FirmProvisioner::provideManager()` (a username of the firm's manager gets a new password; a free one becomes a new `gestao` in that firm; anyone else's is 422 `users.form.usernameTaken` and left as it was) and `DTOs/FirmManagerDTO`, `DTOs/ManagerLogin`; a slug or username lost to a racing request is 422 `firms.slugTaken` / `users.form.usernameTaken`, no longer a 500. `Services/FirmLookService` + `DTOs/UpdateFirmLookDTO` (the only writer of a firm's look); `PlatformSettings::updateConsentDefault()` + `PlatformSettingRepository::updateOrCreatePlatformSetting()`; `Rules/ReadableUnderWhite` (the 4,5:1 check, now shared by `UpdateBrandRequest`); `MailBrand::siteUrlOf()` public. Tested by `tests/Feature/Platform/*`.
+
 ## 1.8.0 — 2026-11-14
 - `public/firm` answers `modules` (rnc-4 F3c, R17): the firm's opt-in list (`FirmModules::enabled`, under a sub-brand too), so the site hides what is off — the chat. Tested in `tests/Feature/Firm/PublicFirmTest`.
 

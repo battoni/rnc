@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.14.0 — 2026-11-14
+
+### Added
+
+- `local/*.json` (rnc-4 F4a): `rolesAndPermissions.groups.platform`, `rolesAndPermissions.permissions.consent` (the console's two keys on the roles screen) and `rolesAndPermissions.operatorOnlyKey` (the API's refusal to give a platform key to another role). The console's own strings arrive with its screens (F4b).
+
 ## 1.13.0 — 2026-11-14
 
 ### Changed

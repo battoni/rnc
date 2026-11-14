@@ -73,13 +73,16 @@
       "channel": "RNC channel",
       "assistant": "Reforma assistant",
       "contracts": "Contract alert",
-      "briefing": "Daily briefing"
+      "briefing": "Daily briefing",
+      "platform": "Platform"
     },
     "permissions": {
       "import": "Import",
       "access": "Access",
-      "ask": "Ask"
-    }
+      "ask": "Ask",
+      "consent": "Default consent"
+    },
+    "operatorOnlyKey": "Platform permissions belong to the Operator profile alone and cannot be given to another profile."
   },
   "site": {
     "nav": {

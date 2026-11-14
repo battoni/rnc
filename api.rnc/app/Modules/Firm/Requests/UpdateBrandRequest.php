@@ -2,8 +2,7 @@
 
 namespace App\Modules\Firm\Requests;
 
-use App\Modules\Firm\Helpers\Contrast;
-use Closure;
+use App\Modules\Firm\Rules\ReadableUnderWhite;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -26,7 +25,7 @@ class UpdateBrandRequest extends FormRequest
 
     public const PROOF_LABEL_MAX_LENGTH = 60;
 
-    private const COLOUR_PATTERN = '/^#[0-9a-fA-F]{6}$/';
+    public const COLOUR_PATTERN = '/^#[0-9a-fA-F]{6}$/';
 
     public function authorize(): bool
     {
@@ -39,7 +38,7 @@ class UpdateBrandRequest extends FormRequest
             'name' => ['sometimes', 'required', 'string', 'max:'.self::NAME_MAX_LENGTH],
             'short_name' => ['sometimes', 'required', 'string', 'max:'.self::SHORT_NAME_MAX_LENGTH],
             'tagline' => ['sometimes', 'nullable', 'string', 'max:'.self::TAGLINE_MAX_LENGTH],
-            'brand_primary' => ['sometimes', 'bail', 'required', 'string', 'regex:'.self::COLOUR_PATTERN, $this->readableUnderWhite()],
+            'brand_primary' => ['sometimes', 'bail', 'required', 'string', 'regex:'.self::COLOUR_PATTERN, new ReadableUnderWhite],
             'brand_accent' => ['sometimes', 'required', 'string', 'regex:'.self::COLOUR_PATTERN],
             'proof' => ['sometimes', 'required', 'array:'.implode(',', range(0, self::PROOF_POINTS - 1)), 'size:'.self::PROOF_POINTS],
             'proof.*' => ['required', 'array:value,label'],
@@ -66,14 +65,5 @@ class UpdateBrandRequest extends FormRequest
                 $this->merge([$field => strtolower(trim($colour))]);
             }
         }
-    }
-
-    private function readableUnderWhite(): Closure
-    {
-        return function (string $attribute, mixed $value, Closure $fail): void {
-            if (Contrast::whiteOn((string) $value) < Contrast::AA_MINIMUM) {
-                $fail('brand.lowContrast');
-            }
-        };
     }
 }

@@ -221,6 +221,25 @@ class UserService
         return $user;
     }
 
+    /**
+     * A new password for an account, and every session it had ends (rnc-4 F4a: the console's manager
+     * reset). The caller decides whose — this writes the account it is handed.
+     */
+    public function resetPassword(User $user, string $password): User
+    {
+        // Plaintext on purpose: the `hashed` cast on User::password hashes it on save.
+        $user = $this->userRepository->saveUser($user, ['password' => $password]);
+        $this->userRepository->deleteUserSessions($user->id);
+
+        return $user;
+    }
+
+    /** The account with this username, whichever firm it is in; null when there is none. */
+    public function findByUsername(string $username): ?User
+    {
+        return $this->userRepository->findUserByUsername($username);
+    }
+
     public function isUsernameAvailable(string $username, ?int $excludeId = null): bool
     {
         return $this->userRepository->findUserByUsername($username, $excludeId) === null;
