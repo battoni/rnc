@@ -100,7 +100,7 @@ const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
       routeName: FISCAL_ROUTE_NAMES.suppliers,
     },
   ],
-  ceo: [
+  management: [
     // rnc-3 F9: the daily briefing, first — Reinaldo's landing (R26).
     {
       icon: 'pi pi-sun',
@@ -143,7 +143,7 @@ const WORKSPACE_CHILDREN: Record<string, NavItem[] | undefined> = {
       icon: 'pi pi-share-alt',
       label: 'navigation.channel',
       permission: CHANNEL_PERMISSIONS.read,
-      routeName: CHANNEL_ROUTE_NAMES.ceo,
+      routeName: CHANNEL_ROUTE_NAMES.management,
     },
     // rnc-2 F8 and F10: the XML import (R15, R17) and the portfolio Radar (R24–R27).
     {

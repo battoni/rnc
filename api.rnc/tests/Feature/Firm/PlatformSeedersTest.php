@@ -63,7 +63,7 @@ describe('DemoFirmSeeder', function () {
             ->and($alvorada->brand_accent)->toBe('#f4b63f')
             ->and($alvorada->is_platform)->toBeFalse()
             ->and($helena->firm_id)->toBe($alvorada->id)
-            ->and($helena->role->slug)->toBe('ceo')
+            ->and($helena->role->slug)->toBe('gestao')
             ->and($bruno->firm_id)->toBe($alvorada->id)
             ->and($bruno->is_specialist)->toBeTrue()
             ->and(Specialist::withoutGlobalScopes()->where('user_id', $bruno->id)->first()?->hours()->count())->toBeGreaterThan(0);

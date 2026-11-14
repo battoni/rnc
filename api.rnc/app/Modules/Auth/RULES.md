@@ -17,7 +17,7 @@ based-on: 2.9.0
 
 *Retired 07/11/2026 (rnc-1 F1):* `manager-exclusions.local.php`, `user-exclusions.local.php` and
 `ManagerSeeder`. They shaped the bootstrap's `manager` and `user` roles, which this product does not
-have: `RoleSeeder` writes the three hub roles (`operador`, `ceo`, `equipe`) key by key instead, so
+have: `RoleSeeder` writes the three hub roles (`operador`, `gestao`, `equipe`) key by key instead, so
 there is no "everything minus a list" left to subtract from. The protected all-keys role
 (`RoleService::ADMINISTRATOR_SLUG`) is `operador`.
 

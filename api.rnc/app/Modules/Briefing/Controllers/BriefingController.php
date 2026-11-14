@@ -9,7 +9,7 @@ use App\Modules\Briefing\Services\BriefingService;
 use Illuminate\Http\JsonResponse;
 
 /**
- * Reinaldo's briefing (rnc-3 R23): one read behind `briefing.read` (ceo, operador), under the
+ * Reinaldo's briefing (rnc-3 R23): one read behind `briefing.read` (gestao, operador), under the
  * signed-in person's firm. It writes nothing.
  */
 class BriefingController extends Controller

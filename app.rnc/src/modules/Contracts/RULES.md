@@ -1,5 +1,5 @@
 ---
-version: 1.0.1
+version: 1.1.0
 origin: rnc
 based-on: 1.0.1
 ---
@@ -12,8 +12,8 @@ based-on: 1.0.1
 
 Reinaldo's contract alert (rnc-3 R18–R22): the clients' contracts that cross the 2027–2033
 transition without a Reforma price clause, read by the API (api Portfolio module, F6a–F6b) —
-`ContractsView` at `/reinaldo/contratos` (`/ceo/contracts`, route `contract-alert`), behind
-`contracts.manage` (ceo; the operator holds every key), the rail child "Alerta de contratos" last
+`ContractsView` at `/gestao/contratos` (`/management/contracts`, route `contract-alert`), behind
+`contracts.manage` (gestao; the operator holds every key), the rail child "Alerta de contratos" last
 in Reinaldo's group. The screen imports the contracts CSV, sends one contract to a legal partner
 and records "Cláusula incluída"; the API writes everything (api Portfolio RULES → the contract
 routes, api Partner RULES → the legal referral).

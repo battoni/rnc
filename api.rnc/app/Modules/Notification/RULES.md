@@ -1,5 +1,5 @@
 ---
-version: 1.3.0
+version: 1.4.0
 origin: rnc
 ---
 # RULES — Notification Module
@@ -17,7 +17,7 @@ behind `notifications.read` (AM8).
 
 ## Intentional Decisions
 
-- **`TeamNotifier` decides who hears the bell**: every active `equipe` and `ceo` member of the
+- **`TeamNotifier` decides who hears the bell**: every active `equipe` and `gestao` member of the
   current firm. The operator is not paged by a firm's leads. No firm set → nobody.
 - **`notifyUser` rings one person the caller picked** (rnc-3 F4): the Assistant module's hand-off
   rings only the specialist the question went to (`AssistantQuestionNotification`); the caller has

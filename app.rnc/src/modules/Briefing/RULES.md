@@ -1,5 +1,5 @@
 ---
-version: 1.0.1
+version: 1.1.0
 origin: rnc
 based-on: 1.0.1
 ---
@@ -11,8 +11,8 @@ based-on: 1.0.1
 ## Domain
 
 Reinaldo's day in one screen (rnc-3 R26; the demo's `briefing()`, `ceo.js`): `BriefingView` at
-`/reinaldo/briefing` (`/ceo/briefing`, route `briefing`), behind `briefing.read` (ceo; the operator
-holds every key). `/reinaldo` lands here (Home's Workspace routes); the rail child "Briefing do dia"
+`/gestao/briefing` (`/management/briefing`, route `briefing`), behind `briefing.read` (gestao; the operator
+holds every key). `/gestao` lands here (Home's Workspace routes); the rail child "Briefing do dia"
 is first in Reinaldo's group. Read-only: every figure is `GET briefing` (api Briefing module, F8),
 the same payload as the 07:00 e-mail, so the screen and the message never disagree.
 
@@ -30,7 +30,7 @@ router, the rail and Home's landing spec.
   action on the split-payment rule reads `/mês` (`period: mes`). A new kind on the API needs its
   locale key here — the `switch` is exhaustive over `BRIEFING_ACTION_KIND`, so TypeScript asks.
 - **Each action's button is the API's `to`, as is** — a pt-BR path with its filter
-  (`/reinaldo/trilha?parceiro=<id>`, `/equipe/pipeline?etapa=proposta`). The locale guard rewrites
+  (`/gestao/trilha?parceiro=<id>`, `/equipe/pipeline?etapa=proposta`). The locale guard rewrites
   it to the `en` twin with the query kept; the trail and the board honour the query (W83).
 - **São Paulo time everywhere** (`BRIEFING_TIME_ZONE`): the greeting's hour, the date line, the
   meeting times. "Bom dia" from 05:00, "Boa tarde" from 12:00, "Boa noite" from 18:00 to 04:59

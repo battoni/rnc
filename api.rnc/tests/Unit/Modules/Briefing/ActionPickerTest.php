@@ -10,7 +10,7 @@ use App\Modules\Briefing\Helpers\ActionPicker;
  * itself is the screen's and the e-mail's, in their own language) and the screen it opens.
  *
  * The fifth is the Radar's first opportunity type (rnc-3 F6b, W81, now that rnc-2's Radar is merged):
- * its rule, title, clients and range, opening `/reinaldo/radar`.
+ * its rule, title, clients and range, opening `/gestao/radar`.
  */
 function briefingFacts(array $overrides = []): array
 {
@@ -36,7 +36,7 @@ describe('ActionPicker (A22)', function () {
         expect(ActionPicker::pick(briefingFacts())[0])->toBe([
             'kind' => 'sla_breached',
             'params' => ['partner' => 'Andrade Advocacia', 'company' => 'Padaria Sol', 'hours' => 31.5, 'goal_hours' => 24],
-            'to' => '/reinaldo/trilha?parceiro=7',
+            'to' => '/gestao/trilha?parceiro=7',
         ]);
     });
 
@@ -78,7 +78,7 @@ describe('ActionPicker (A22)', function () {
             ->and($actions[2])->toBe([
                 'kind' => 'radar',
                 'params' => ['rule' => 'contratos', 'title' => 'Contratos longos sem cláusula', 'clients' => 12, 'range_cents' => [1200000, 3600000], 'period' => 'ano'],
-                'to' => '/reinaldo/radar',
+                'to' => '/gestao/radar',
             ]);
     });
 

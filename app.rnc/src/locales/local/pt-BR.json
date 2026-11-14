@@ -19,7 +19,7 @@
         "description": "Pipeline de leads, agenda das reuniões e notificações.",
         "upcoming": "O pipeline, a ficha de cada lead e a agenda da equipe chegam aqui."
       },
-      "ceo": {
+      "management": {
         "title": "Reinaldo",
         "description": "Métricas do funil, rede de parceiros, trilha de encaminhamentos e reajuste de honorários.",
         "upcoming": "As métricas, os parceiros, a trilha e o reajuste de honorários chegam aqui."
@@ -33,7 +33,7 @@
   },
   "navigation": {
     "team": "Equipe",
-    "ceo": "Reinaldo",
+    "management": "Reinaldo",
     "operator": "Operador",
     "pipeline": "Pipeline",
     "agenda": "Agenda",

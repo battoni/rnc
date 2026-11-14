@@ -62,7 +62,7 @@ it('refuses the operator, who holds every key but no partner, with portal.noPart
 
 it('refuses staff without the key with 403', function () {
     $this->actingAs(portalUser('equipe'))->getJson('/api/portal/me')->assertForbidden();
-    $this->actingAs(portalUser('ceo'))->getJson('/api/portal/me')->assertForbidden();
+    $this->actingAs(portalUser('gestao'))->getJson('/api/portal/me')->assertForbidden();
 });
 
 it('asks a guest to sign in', function () {

@@ -9,7 +9,7 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Notification as Notifier;
 
 /**
- * Rings the bell of the current firm's team (rnc-1 R17): every active `equipe` and `ceo` member —
+ * Rings the bell of the current firm's team (rnc-1 R17): every active `equipe` and `gestao` member —
  * the people who work the leads. The operator (Battoni Dev) is not paged by a firm's leads.
  * `notifyUser` rings one person the caller already picked (rnc-3 R13: the specialist a question was
  * handed to).

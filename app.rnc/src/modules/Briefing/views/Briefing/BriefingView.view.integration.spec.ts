@@ -49,7 +49,7 @@ function renderBriefing() {
   const pinia = createPinia();
   setActivePinia(pinia);
   useUserStore().setUserAndPermissions(
-    { id: 2, last_name: 'Franco', name: 'Reinaldo', role: 'CEO', role_slug: 'ceo', username: 'reinaldo' },
+    { id: 2, last_name: 'Franco', name: 'Reinaldo', role: 'CEO', role_slug: 'gestao', username: 'reinaldo' },
     ['leads.read', 'briefing.read']
   );
 
@@ -178,7 +178,7 @@ describe('BriefingView', () => {
 
     expect(buttons.map((button) => plain(button.textContent))).toEqual(['See partner', 'Open agenda', 'See pipeline']);
     expect(buttons.map((button) => button.dataset.to)).toEqual([
-      '/reinaldo/trilha?parceiro=7',
+      '/gestao/trilha?parceiro=7',
       '/equipe/agenda',
       '/equipe/pipeline?etapa=proposta',
     ]);
@@ -186,7 +186,7 @@ describe('BriefingView', () => {
     await fireEvent.click(buttons[0]!);
     await fireEvent.click(buttons[2]!);
 
-    expect(navigated).toEqual(['/reinaldo/trilha?parceiro=7', '/equipe/pipeline?etapa=proposta']);
+    expect(navigated).toEqual(['/gestao/trilha?parceiro=7', '/equipe/pipeline?etapa=proposta']);
   });
 
   it('writes the partial-lead and the monthly Radar sentences, and a proposal without a base', async () => {

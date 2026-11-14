@@ -16,7 +16,7 @@ beforeEach(function () {
 
 dataset('seeded people', [
     'operador' => ['battoni', 'operator-secret', 'operador', false],
-    'ceo' => ['reinaldo', 'local-secret', 'ceo', false],
+    'gestao' => ['reinaldo', 'local-secret', 'gestao', false],
     'equipe' => ['patricia', 'local-secret', 'equipe', false],
     'specialist' => ['mariana.toledo', 'local-secret', 'equipe', true],
 ]);

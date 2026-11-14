@@ -19,7 +19,7 @@ function renderAs(permissions: string[]) {
   const pinia = createPinia();
   setActivePinia(pinia);
   useUserStore().setUserAndPermissions(
-    { id: 1, name: 'Reinaldo', last_name: 'Franco', username: 'reinaldo', role: 'CEO', role_slug: 'ceo' },
+    { id: 1, name: 'Reinaldo', last_name: 'Franco', username: 'reinaldo', role: 'CEO', role_slug: 'gestao' },
     permissions
   );
 
@@ -42,7 +42,7 @@ describe('HomeView', () => {
   it('offers Reinaldo the team and his own workspace', () => {
     const { queryAllByTestId } = renderAs(['home.read', 'leads.read', 'metrics.read']);
 
-    expect(queryAllByTestId('workspace-card').map((card) => card.dataset.workspace)).toEqual(['team', 'ceo']);
+    expect(queryAllByTestId('workspace-card').map((card) => card.dataset.workspace)).toEqual(['team', 'management']);
   });
 
   // rnc-2 A4: every refused back-office route falls back to Home, so this is where a partner bounces.

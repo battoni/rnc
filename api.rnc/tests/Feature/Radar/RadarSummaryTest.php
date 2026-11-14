@@ -12,7 +12,7 @@ use Tests\Support\FiscalRows;
 
 /*
  * "Radar da carteira" (rnc-2 F9, R24–R26, A19's Radar Σ, A20; plan AM6), behind `radar.manage`
- * (ceo, operador):
+ * (gestao, operador):
  *
  *   GET /api/radar                {clients, with_opportunity, total_cents, risk_types, types: [row]}
  *   GET /api/radar/types/{rule}   {type: row + detail, clients: [client with range, evidence, keys]}
@@ -61,7 +61,7 @@ beforeEach(function () {
     Http::preventStrayRequests();
     CarbonImmutable::setTestNow('2026-11-09 13:00:00');
     $this->seed([FirmSeeder::class, RoleSeeder::class]);
-    $this->ceo = FiscalRows::person('ceo');
+    $this->ceo = FiscalRows::person('gestao');
 
     // Declares 20 % B2B, but 12 invoices in 90 days say 80 % by value (10 × R$ 1.000 to a CNPJ,
     // 2 × R$ 1.250 to consumers): read as B2B → simples-regular and simples-credito (A20).

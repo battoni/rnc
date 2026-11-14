@@ -86,7 +86,7 @@ Route::patch('leads/{id}/stage', [PipelineLeadController::class, 'updateStage'])
 Route::post('leads/{id}/notes', [PipelineLeadController::class, 'storeNote'])->middleware(['auth', 'permission:leads.update']);
 Route::get('agenda', [AgendaController::class, 'index'])->middleware(['auth', 'permission:agenda.read']);
 
-// The network (rnc-1 F6, R21–R23, AM8): the registry behind `partners.manage` (ceo, operador);
+// The network (rnc-1 F6, R21–R23, AM8): the registry behind `partners.manage` (gestao, operador);
 // routing on the lead detail with the team's own keys — the scores behind `leads.read`, the
 // referral behind `leads.update`; the trail and its filter options behind `referrals.read`.
 Route::get('partners', [PartnerController::class, 'index'])->middleware(['auth', 'permission:partners.manage']);
@@ -116,17 +116,17 @@ Route::get('portal/referrals', [PortalController::class, 'referrals'])->middlewa
 Route::get('portal/referrals/{id}', [PortalController::class, 'referral'])->middleware($portal);
 Route::post('portal/referrals/{id}/transition', [PortalController::class, 'transition'])->middleware($portal);
 // The ledger (rnc-2 F4, R11, D10): the partner's own month on the portal; Franco's network month
-// behind `ledger.read` (ceo, operador) and the one money model behind the registry's key.
+// behind `ledger.read` (gestao, operador) and the one money model behind the registry's key.
 Route::get('portal/statement', [PortalController::class, 'statement'])->middleware($portal);
 Route::get('ledger', [LedgerController::class, 'index'])->middleware(['auth', 'permission:ledger.read']);
 Route::patch('ledger/model', [LedgerController::class, 'updateModel'])->middleware(['auth', 'permission:partners.manage']);
 
-// Reinaldo's funnel (rnc-1 F7, R24, AM8): the last 7 or 30 days behind `metrics.read` (ceo, operador).
+// Reinaldo's funnel (rnc-1 F7, R24, AM8): the last 7 or 30 days behind `metrics.read` (gestao, operador).
 Route::get('metrics/funnel', [FunnelController::class, 'show'])->middleware(['auth', 'permission:metrics.read']);
 
 // Reinaldo's fee repricing (rnc-1 F8, R25–R26, AM8): the portfolio quoted, one client, its letter and
 // the batch mark behind `repricing.manage`; the CSV import and its template behind `clients.import`
-// (ceo, operador — the team holds neither).
+// (gestao, operador — the team holds neither).
 Route::get('repricing', [RepricingController::class, 'index'])->middleware(['auth', 'permission:repricing.manage']);
 Route::get('repricing/{id}', [RepricingController::class, 'show'])->middleware(['auth', 'permission:repricing.manage']);
 Route::get('repricing/{id}/letter', [RepricingController::class, 'letter'])->middleware(['auth', 'permission:repricing.manage']);
@@ -175,7 +175,7 @@ Route::post('assistant/notes/{id}/review', [NoteController::class, 'review'])->m
 Route::post('assistant/notes/{id}/retire', [NoteController::class, 'retire'])->middleware($assistantManage);
 // The contract alert (rnc-3 F6, R17–R19, R22, D10): the clients' contracts that cross 2027–2033
 // without the Reforma clause, their CSV import (lines independent, 10 a minute on its own limiter)
-// and template, and "Cláusula incluída" — behind `contracts.manage` (ceo, operador). Another firm's
+// and template, and "Cláusula incluída" — behind `contracts.manage` (gestao, operador). Another firm's
 // contract is a 404.
 $contracts = ['auth', 'permission:contracts.manage'];
 Route::get('contracts', [ContractController::class, 'index'])->middleware($contracts);
@@ -187,16 +187,16 @@ Route::post('contracts/{id}/clause', [ContractController::class, 'clause'])->whe
 Route::get('contracts/legal-partners', [ContractReferralController::class, 'partners'])->middleware($contracts);
 Route::post('contracts/{id}/referrals', [ContractReferralController::class, 'store'])->whereNumber('id')->middleware($contracts);
 // Reinaldo's briefing (rnc-3 F8, R23–R25): the day's leads, meetings, referrals by SLA, the open
-// pipeline's fee range and the three actions, in one read behind `briefing.read` (ceo, operador).
+// pipeline's fee range and the three actions, in one read behind `briefing.read` (gestao, operador).
 // The same payload is the 07:00 e-mail (`briefing:send`, routes/console.php).
 Route::get('briefing', [BriefingController::class, 'show'])->middleware(['auth', 'permission:briefing.read']);
 // NF-e import (rnc-2 F6a–F6b, R15–R17, D14): one XML or a ZIP, and the firm's batches, behind
-// `fiscal.import` (ceo, operador); the upload 10 a minute on its own limiter. The raw files stay on
+// `fiscal.import` (gestao, operador); the upload 10 a minute on its own limiter. The raw files stay on
 // the private disk; no route serves them (A15).
 Route::post('fiscal/imports', [NfeImportController::class, 'store'])->middleware(['auth', 'permission:fiscal.import', 'throttle:10,1,nfe-import']);
 Route::get('fiscal/imports', [NfeImportController::class, 'index'])->middleware(['auth', 'permission:fiscal.import']);
 // NF-e readiness and supplier credit (rnc-2 F7, R18–R22, D12, D14): the lists, a client's detail and
-// the two timeline lines behind `fiscal.read` (equipe, ceo, operador). "Registrar aviso" and "Propor
+// the two timeline lines behind `fiscal.read` (equipe, gestao, operador). "Registrar aviso" and "Propor
 // revisão" are writes under a read key ON PURPOSE (plan AM13): they only add a line to the client's
 // timeline, no fiscal data changes (Fiscal RULES.md). The timeline itself is Portfolio's.
 Route::get('fiscal/readiness', [ReadinessController::class, 'index'])->middleware(['auth', 'permission:fiscal.read']);
@@ -207,7 +207,7 @@ Route::post('fiscal/supplier-credit/{id}/review', [SupplierCreditController::cla
 Route::get('clients/{id}/events', [ClientEventController::class, 'index'])->middleware(['auth', 'permission:fiscal.read']);
 
 // Radar da carteira (rnc-2 F9–F10, R24–R27): the rules engine over every client with its XML evidence,
-// read only, behind `radar.manage` (ceo, operador). `{rule}` is a `DiagnosticRule` value.
+// read only, behind `radar.manage` (gestao, operador). `{rule}` is a `DiagnosticRule` value.
 Route::get('radar', [RadarController::class, 'index'])->middleware(['auth', 'permission:radar.manage']);
 Route::get('radar/types/{rule}', [RadarController::class, 'type'])->middleware(['auth', 'permission:radar.manage']);
 // The batch referral (rnc-2 F10, R27, D13): a row's 10 largest consented clients not yet sent to one

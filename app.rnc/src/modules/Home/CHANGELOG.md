@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 3.5.0 — 2026-11-14
+
+### Changed
+
+- Back-office paths `/reinaldo/*` → `/gestao/*` and `/ceo/*` → `/management/*`, route names `ceo-*` → `management-*` (rnc-4 F2c1, R14). No redirect is left at the old paths (A13). The workspace key `ceo` → `management`.
+
 ## 3.4.0 — 2026-11-07
 
 ### Changed

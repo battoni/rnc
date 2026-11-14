@@ -130,7 +130,7 @@ beforeEach(function () {
     $this->nexoLogin = ledgerLogin($this->nexo);
     $this->giroLogin = ledgerLogin($this->giro);
     $this->foreignLogin = ledgerLogin($this->foreign);
-    $this->ceo = ledgerStaff('ceo');
+    $this->ceo = ledgerStaff('gestao');
     ledgerAccess($this->nexo, 'granted', '2026-10-05 09:00');
     ledgerAccess($this->giro, 'granted', '2026-10-20 09:00');
     ledgerAccess($this->foreign, 'granted', '2026-10-01 09:00');
@@ -352,7 +352,7 @@ describe('who sees what (A9, D10, D14)', function () {
     });
 
     it('switches only the signed-in person\'s firm, whatever X-Firm says', function () {
-        $otherCeo = ledgerStaff('ceo', $this->other->id);
+        $otherCeo = ledgerStaff('gestao', $this->other->id);
 
         // rnc-4 D5: Franco's header is refused outright, and nothing moves.
         $this->actingAs($otherCeo)->withHeader('X-Firm', 'franco')->patchJson('/api/ledger/model', ['model' => 'assinatura'])->assertForbidden();

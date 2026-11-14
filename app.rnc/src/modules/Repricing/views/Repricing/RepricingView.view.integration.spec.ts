@@ -42,7 +42,7 @@ function renderRepricing(permissions: string[] = ['repricing.manage', 'clients.i
   const pinia = createPinia();
   setActivePinia(pinia);
   useUserStore().setUserAndPermissions(
-    { id: 2, last_name: 'Franco', name: 'Reinaldo', role: 'CEO', role_slug: 'ceo', username: 'reinaldo' },
+    { id: 2, last_name: 'Franco', name: 'Reinaldo', role: 'CEO', role_slug: 'gestao', username: 'reinaldo' },
     permissions
   );
 

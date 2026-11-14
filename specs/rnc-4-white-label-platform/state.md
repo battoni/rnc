@@ -1,5 +1,5 @@
 # State: Reforma hub as a white-label platform for accounting firms
-Stage: build F2b/19
+Stage: build F2c1/19
 Updated: 14/11/2026
 Branch: feature/rnc-4-white-label-platform · Worktree: .claude/worktrees/rnc-4
 ## Done
@@ -102,10 +102,22 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   Existing tests changed: `TheRouteGuard.spec` (mocks `@Composables`' `useFirmBrand`), the two navbar
   organism specs (stub `MNavbarBrand`), `site/brands.spec.ts` (the host firm's header-less boot read is
   allowed beside the brand's; back on the main brand the root wears Franco's row, `data-brand=franco`).
+- **F2c1 Scripted rename — role slug, routes, workspace and locale keys** (A13, A14; R14; AM6) · 14/11 ·
+  scripted with `perl -pi` over `git ls-files api.rnc app.rnc` (CHANGELOGs excluded), tests first then
+  code; per-pattern file counts in the commit body. Role `ceo` → `gestao` (seeders, Briefing's recipients,
+  the bell's team roles, every test); `/reinaldo/*` → `/gestao/*`, `/ceo/*` → `/management/*`, route
+  names `ceo-*` → `management-*`, `WORKSPACES`/rail/channel key `ceo` → `management`, locale keys
+  `navigation.management` / `home.workspaces.management`; e-mail and briefing links → `/gestao`. New tests:
+  `SeededRolesTest` "no `ceo` role" (A14), Workspace `routes.spec` 4 × "matches no route" for `/reinaldo`,
+  `/ceo` and their briefing (A13). 14 units minor-bumped with a CHANGELOG line. **FULL GATE**: 1933 Pest ·
+  1331 Vitest · 200 Playwright (4 flaky on the 1.1 h loaded run — diagnostic, navigation, site, users —
+  green when re-run alone) · pint, PHPStan, vue-tsc, aliases, mirror check, lint/format/sort-locales ·
+  convention reviews done inline (mechanical diff, no finding) · pre-commit green 14/11/2026.
 ## Next
-1. `/battoni-start-session rnc-4` (or the running `/battoni-run rnc-4`) → **F2c1** scripted rename of
-   role slug, route paths/names, workspace and locale keys (plan.md F2c + AM6) — FULL GATE: every Pest,
-   Vitest and Playwright test.
+1. `/battoni-start-session rnc-4` (or the running `/battoni-run rnc-4`) → **F2c2** Franco/Reinaldo
+   strings → `{firm}` / generic (locale VALUES — `navigation.management` and `home.workspaces.management`
+   still read "Reinaldo" —, RoleSeeder's "CEO" label and description, lang, resources), plus
+   `NoTenantNamesTest`, `noTenantNames.spec.ts` and `e2e/brand/no-franco.spec.ts` (A15, A16) — FULL GATE.
 ## Pitfalls
 - (F1a) `UserFactory` now puts every user in the default firm (`franco` under phpunit), creating it
   when absent. A test that creates `Firm::factory(['slug' => 'franco'])` AFTER a user would collide
@@ -152,7 +164,13 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
 - (F2b) `useFirmBrand` reads `sessionStorage` at module load: a Vitest spec about it calls
   `vi.resetModules()` and imports it fresh, and clears `sessionStorage` in `beforeEach`.
 - (plan) `battoni` belongs to Franco until F4a moves it to no firm; from F4a it signs in only at the root.
-- (plan) The role is `ceo` until F2c renames it `gestao`; seeds written before F2c use `ceo`.
+- (F2c1) The role is `gestao` and the paths are `/gestao/*` (`/management/*`); `/reinaldo` and `/ceo`
+  match no route. A local DB seeded before F2c1 still holds a `ceo` role: `make fresh-seed`.
+  _Retired 14/11/2026 (F2c1):_ "The role is `ceo` until F2c renames it" — renamed.
+- (F2c1) A scripted `\bceo-` also matches `$ceo->` in PHP — two files had to be put back; a later bulk
+  rename anchors on what follows the token, not only a word boundary.
+- (F2c1) The full Playwright run took 1.1 h under machine load with 4 flaky specs passing on retry;
+  re-run the flaky files alone with `--retries=0` before calling one red.
 ## QA
 (none yet — rounds in plan.md → QA)
 ## Seeded people (password `seeding.password`; `battoni` uses `seeding.superadmin_password`)
@@ -184,6 +202,8 @@ F1b done
 F2a done
 00:25 F2b started, attempt 1
 F2b done
+02:08 F2c1 started, attempt 1
+F2c1 done
 ## Decided while you were away
 - W1 plan: proposal.html skipped in away mode (spec D27; to reverse: `/battoni-new-proposal rnc-4 final`).
 - W2 plan: the owner's phases are split into 17 builder phases with his labels kept (spec D28); his
@@ -247,3 +267,10 @@ F2b done
 - W23 F2b: `brandPalette`'s 400 is lightened until it reads on the dark canvas and panel (spec C7) —
   `celer-button-link-primary` measured 4.29:1 on Franco's runtime row. To reverse: the plain mix and
   a back-office override of the dark link.
+- W24 F2c1: identifiers that only spell the old name are kept — `RoleSeeder::CEO_EXTRA_KEYS`,
+  `BriefingRepository::CEO_ROLE`/`findActiveCeosOfFirm`, PHP `$ceo` variables, the test helpers'
+  `$this->ceo` — AM6 limits the script to the slug, routes and keys, and a blind `ceo` → `gestao` over
+  identifiers reaches past them. Prose naming the SLUG in comments and RULES.md moved with it. To
+  reverse: rename the identifiers in F2c2.
+- W25 F2c1: the old paths `/reinaldo/*` and `/ceo/*` are dropped with no redirect (A13 asks "not
+  found"); a bookmark to `/reinaldo` lands on Not Found. To reverse: redirect routes from the old paths.

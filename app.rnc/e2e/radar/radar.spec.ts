@@ -15,7 +15,7 @@ const REINALDO = {
   last_name: 'Franco',
   username: 'reinaldo',
   role: 'CEO',
-  role_slug: 'ceo',
+  role_slug: 'gestao',
   permissions: ['leads.read', 'metrics.read', 'radar.manage'],
 };
 
@@ -133,7 +133,7 @@ function rowOf(page: Page, rule: string) {
 test.describe('Radar da carteira', () => {
   test('sends a batch to a covering partner; the row then says every client was sent (A21)', async ({ page }) => {
     await mockApi(page);
-    await page.goto('/reinaldo/radar');
+    await page.goto('/gestao/radar');
 
     await expect(page.getByTestId('radar-clients')).toHaveAttribute('data-value', '500');
     await expect(page.getByTestId('radar-opportunities').getByTestId('radar-type')).toHaveCount(2);
@@ -153,7 +153,7 @@ test.describe('Radar da carteira', () => {
 
   test("opens a row's clients with the proof and the access keys (R25)", async ({ page }) => {
     await mockApi(page);
-    await page.goto('/reinaldo/radar');
+    await page.goto('/gestao/radar');
 
     const row = rowOf(page, 'contratos');
 
@@ -178,7 +178,7 @@ test.describe('Radar da carteira', () => {
 
       await mockApi(page);
       await page.setViewportSize({ width, height: 900 });
-      await page.goto('/reinaldo/radar');
+      await page.goto('/gestao/radar');
       await rowOf(page, 'contratos').getByTestId('radar-open').click();
       await expect(page.getByTestId('radar-client').first()).toBeVisible();
 
@@ -198,7 +198,7 @@ test.describe('Radar da carteira', () => {
     test(`the state words read at 4.5:1 or more, ${scheme}`, async ({ page }) => {
       await mockApi(page);
       await page.emulateMedia({ colorScheme: scheme, reducedMotion: 'reduce' });
-      await page.goto('/reinaldo/radar');
+      await page.goto('/gestao/radar');
       await rowOf(page, 'contratos').getByTestId('radar-open').click();
       await expect(page.getByTestId('radar-client').first()).toBeVisible();
 

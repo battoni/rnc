@@ -13,7 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
- * "Crédito de fornecedores" (rnc-2 R21–R22), behind `fiscal.read` (equipe, ceo) — the review too,
+ * "Crédito de fornecedores" (rnc-2 R21–R22), behind `fiscal.read` (equipe, gestao) — the review too,
  * on purpose (plan AM13, Fiscal RULES.md). Another firm's client, an unknown id and a Simples client
  * are a 404; nothing bought from Simples is a 422 `no_simples_purchases` (`FiscalException`).
  */

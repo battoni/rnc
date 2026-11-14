@@ -20,11 +20,11 @@ describe('visibleWorkspaces', () => {
   });
 
   it('gives Reinaldo the Equipe and Reinaldo groups', () => {
-    expect(keysFor(CEO)).toEqual(['team', 'ceo']);
+    expect(keysFor(CEO)).toEqual(['team', 'management']);
   });
 
   it('gives the operator all three groups', () => {
-    expect(keysFor(OPERADOR)).toEqual(['team', 'ceo', 'operator']);
+    expect(keysFor(OPERADOR)).toEqual(['team', 'management', 'operator']);
   });
 
   it('gives an account without keys nothing', () => {

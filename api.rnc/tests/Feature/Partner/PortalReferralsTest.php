@@ -252,7 +252,7 @@ describe('isolation (R4, A3, AM1)', function () {
 
         $this->actingAs(inboxStaff('operador'))->json($method, $uri, ['to' => 'aceito'])->assertForbidden()->assertJsonPath('error', 'portal.noPartner');
         $this->actingAs(inboxStaff('equipe'))->json($method, $uri, ['to' => 'aceito'])->assertForbidden();
-        $this->actingAs(inboxStaff('ceo'))->json($method, $uri, ['to' => 'aceito'])->assertForbidden();
+        $this->actingAs(inboxStaff('gestao'))->json($method, $uri, ['to' => 'aceito'])->assertForbidden();
 
         expect($referral->fresh()->status)->toBe('enviado');
     })->with([
@@ -514,7 +514,7 @@ describe('Franco hears the partner (R9, A8 Pest half)', function () {
     it('shows Franco\'s routing panel and trail the partner\'s status, SLA and, once closed, the contract value (A8, R10)', function () {
         $referral = inboxReferral($this->nexo);
         $equipe = inboxStaff('equipe');
-        $ceo = inboxStaff('ceo');
+        $ceo = inboxStaff('gestao');
         $panel = fn () => collect($this->actingAs($equipe)->getJson("/api/leads/{$referral->lead_id}/partner-matches")->assertOk()->json('data.matches'))
             ->firstWhere('partner.id', $this->nexo->id)['referral'];
         $trail = fn () => collect($this->actingAs($ceo)->getJson('/api/referrals')->assertOk()->json('data.data'))->firstWhere('id', $referral->id);

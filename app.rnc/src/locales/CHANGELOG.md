@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.12.0 — 2026-11-14
+
+### Changed
+
+- Keys `navigation.ceo` and `home.workspaces.ceo` → `navigation.management` and `home.workspaces.management` (rnc-4 F2c1, R14); their wording is F2c2's.
+
 ## 1.11.0 — 2026-09-21
 
 ### Added

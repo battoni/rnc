@@ -16,7 +16,7 @@ use Carbon\CarbonImmutable;
  */
 final class BriefingMailDTO
 {
-    public const SCREEN = '/reinaldo';
+    public const SCREEN = '/gestao';
 
     private const MILLION = 1_000_000;
 

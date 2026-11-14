@@ -20,7 +20,7 @@ use Tests\Support\FiscalRows;
  * independent: good lines are stored and bad ones named (a bad line never stops the others). The
  * same client + kind + start + end updates its row. An empty clause is "não" on a new row and keeps
  * what is stored on an update; a contract marked through "Cláusula incluída" is never downgraded by
- * a re-import (AM16). Behind `contracts.manage` (ceo, operador), 10 imports a minute.
+ * a re-import (AM16). Behind `contracts.manage` (gestao, operador), 10 imports a minute.
  */
 const CONTRACTS_CSV_HEADER = 'cnpj_cliente;tipo;valor_anual;inicio;fim;clausula_reforma';
 
@@ -29,7 +29,7 @@ function contractsCsv(array $lines, string $header = CONTRACTS_CSV_HEADER, strin
     return UploadedFile::fake()->createWithContent('contratos.csv', $prefix.implode("\n", [$header, ...$lines])."\n");
 }
 
-function importContracts(UploadedFile $file, string|User $who = 'ceo'): TestResponse
+function importContracts(UploadedFile $file, string|User $who = 'gestao'): TestResponse
 {
     return test()->actingAs(is_string($who) ? FiscalRows::person($who) : $who)->post('/api/contracts/import', ['file' => $file], ['Accept' => 'application/json']);
 }
@@ -120,7 +120,7 @@ describe('a contract marked through "Cláusula incluída" (AM16)', function () {
     beforeEach(function () {
         importContracts(contractsCsv(['11222333000181;fornecimento;100000;2024;2030;']))->assertOk();
         $this->contract = ClientContract::withoutGlobalScopes()->sole();
-        $this->actingAs(FiscalRows::person('ceo'))->postJson("/api/contracts/{$this->contract->id}/clause")->assertOk();
+        $this->actingAs(FiscalRows::person('gestao'))->postJson("/api/contracts/{$this->contract->id}/clause")->assertOk();
     });
 
     it('stays marked when re-imported with an empty clause', function () {
@@ -225,13 +225,13 @@ describe('a file it refuses whole', function () {
     it('asks for a csv file of up to 2 MB', function () {
         importContracts(UploadedFile::fake()->create('contratos.csv', 2049, 'text/csv'))->assertUnprocessable()->assertJsonValidationErrors('file');
         importContracts(UploadedFile::fake()->createWithContent('contratos.exe', 'x'))->assertUnprocessable()->assertJsonValidationErrors('file');
-        $this->actingAs(FiscalRows::person('ceo'))->postJson('/api/contracts/import')->assertUnprocessable()->assertJsonValidationErrors('file');
+        $this->actingAs(FiscalRows::person('gestao'))->postJson('/api/contracts/import')->assertUnprocessable()->assertJsonValidationErrors('file');
     });
 });
 
 describe('the template (R18)', function () {
     it('downloads the header row, with a BOM so a spreadsheet opens it as UTF-8', function () {
-        $response = $this->actingAs(FiscalRows::person('ceo'))->get('/api/contracts/template')->assertOk();
+        $response = $this->actingAs(FiscalRows::person('gestao'))->get('/api/contracts/template')->assertOk();
 
         expect($response->streamedContent())->toBe("\xEF\xBB\xBF".CONTRACTS_CSV_HEADER."\n")
             ->and($response->headers->get('Content-Type'))->toBe('text/csv; charset=UTF-8')
@@ -241,7 +241,7 @@ describe('the template (R18)', function () {
 
 describe('who reaches it', function () {
     it('throttles the import at 10 a minute', function () {
-        $reinaldo = FiscalRows::person('ceo');
+        $reinaldo = FiscalRows::person('gestao');
         $statuses = collect(range(1, 11))->map(fn () => importContracts(contractsCsv(['11222333000181;fornecimento;100000;2024;2030;sim']), $reinaldo)->status());
 
         expect($statuses->take(10)->unique()->all())->toBe([200])->and($statuses->last())->toBe(429);

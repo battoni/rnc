@@ -9,8 +9,8 @@ use Illuminate\Notifications\DatabaseNotification;
 
 class NotificationRepository
 {
-    /** The roles whose members hear the bell (plan: "every equipe/ceo user of the firm"). */
-    private const TEAM_ROLES = ['equipe', 'ceo'];
+    /** The roles whose members hear the bell (plan: "every equipe/management user of the firm"). */
+    private const TEAM_ROLES = ['equipe', 'gestao'];
 
     private const LIST_SIZE = 20;
 

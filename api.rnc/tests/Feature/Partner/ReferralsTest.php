@@ -334,7 +334,7 @@ describe('the trail (R23, A2)', function () {
     });
 
     it('shows every referral newest first, with the consent given, who and when', function () {
-        $items = $this->actingAs(routingPerson('ceo'))->getJson('/api/referrals')->assertOk()->json('data.data');
+        $items = $this->actingAs(routingPerson('gestao'))->getJson('/api/referrals')->assertOk()->json('data.data');
 
         expect(array_column(array_column($items, 'lead'), 'company'))->toBe(['Segunda Ltda', 'Primeira Ltda'])
             ->and($items[0])->toMatchArray(['status' => 'enviado', 'at' => '2026-11-19T11:00:00-03:00', 'message' => 'Segunda.'])
@@ -360,6 +360,6 @@ describe('the trail (R23, A2)', function () {
         $foreignPartner = Partner::withoutGlobalScopes()->create(['firm_id' => $this->other->id, 'name' => 'De outra firma', 'specialty' => 'erp_nfe', 'email' => 'x@outra.exemplo', 'active' => true]);
         Referral::withoutGlobalScopes()->create(['firm_id' => $this->other->id, 'lead_id' => $foreignLead->id, 'partner_id' => $foreignPartner->id, 'referred_by' => $this->member->id, 'message' => 'x', 'score' => 70, 'covers' => [], 'consent_text' => 'x', 'consent_version' => 1, 'consent_given_at' => now(), 'status' => 'enviado']);
 
-        expect($this->actingAs(routingPerson('ceo'))->getJson('/api/referrals')->json('data.total'))->toBe(2);
+        expect($this->actingAs(routingPerson('gestao'))->getJson('/api/referrals')->json('data.total'))->toBe(2);
     });
 });

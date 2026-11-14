@@ -10,8 +10,8 @@ describe('RadarModuleRoutes', () => {
     expect(
       RadarModuleRoutes.map((route) => [route.path, route.name, (route.meta as { permission?: string }).permission])
     ).toEqual([
-      ['/ceo/radar', 'portfolio-radar-en', 'radar.manage'],
-      ['/reinaldo/radar', 'portfolio-radar-pt-BR', 'radar.manage'],
+      ['/management/radar', 'portfolio-radar-en', 'radar.manage'],
+      ['/gestao/radar', 'portfolio-radar-pt-BR', 'radar.manage'],
     ]);
   });
 });

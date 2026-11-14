@@ -5,7 +5,7 @@ const ASSISTANT_ROUTE_NAMES = {
   questions: 'assistant-questions',
 } as const;
 
-/** Every screen reads with `assistant.ask` (equipe, ceo); retiring and the gaps are `assistant.manage` (R10, AM4). */
+/** Every screen reads with `assistant.ask` (equipe, gestao); retiring and the gaps are `assistant.manage` (R10, AM4). */
 const ASSISTANT_PERMISSIONS = { ask: 'assistant.ask', manage: 'assistant.manage' } as const;
 
 /** A question's length (`AskRequest`): 3–300 characters. */

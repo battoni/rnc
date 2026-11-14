@@ -14,7 +14,7 @@ use Illuminate\Database\Seeder;
  *
  * - `operador` — Battoni Dev, who runs the product. Every key there is, always: it is the role
  *   `RoleService::ADMINISTRATOR_SLUG` protects from losing a key or being deleted.
- * - `ceo` — Reinaldo. The team's keys plus the network, the numbers and the repricing.
+ * - `gestao` — Reinaldo. The team's keys plus the network, the numbers and the repricing.
  * - `equipe` — Franco's team: the pipeline, the agenda and the bell. A member with
  *   `users.is_specialist` is also bookable by a visitor.
  * - `parceiro` — a partner's portal login (rnc-2 R1): the portal key and nothing else, so every
@@ -78,7 +78,7 @@ class RoleSeeder extends Seeder
             ->all();
 
         $this->seedRole(RoleService::ADMINISTRATOR_SLUG, 'Operador', 'Battoni Dev: opera o produto, todas as permissões', $everyKey);
-        $this->seedRole('ceo', 'CEO', 'Reinaldo: equipe, rede de parceiros, métricas e reajuste', [...self::EQUIPE_KEYS, ...self::CEO_EXTRA_KEYS]);
+        $this->seedRole('gestao', 'CEO', 'Reinaldo: equipe, rede de parceiros, métricas e reajuste', [...self::EQUIPE_KEYS, ...self::CEO_EXTRA_KEYS]);
         $this->seedRole('equipe', 'Equipe', 'Equipe da Franco: pipeline, agenda e notificações', self::EQUIPE_KEYS);
         $this->seedRole(PartnerAccessService::PARTNER_ROLE_SLUG, 'Parceiro', 'Parceiro da rede: só o portal do parceiro', self::PARCEIRO_KEYS);
     }

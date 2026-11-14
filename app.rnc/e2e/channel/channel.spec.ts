@@ -19,7 +19,7 @@ const REINALDO = {
   last_name: 'Franco',
   username: 'reinaldo',
   role: 'CEO',
-  role_slug: 'ceo',
+  role_slug: 'gestao',
   permissions: ['metrics.read', 'channel.read'],
 };
 
@@ -121,7 +121,7 @@ test.describe('Canal RNC — Reinaldo reads it (A9, R9, AM15)', () => {
       await page.setViewportSize({ height: 900, width });
       await page.emulateMedia({ colorScheme: scheme });
       await signedInAs(page, REINALDO, false);
-      await page.goto('/reinaldo/canal-rnc');
+      await page.goto('/gestao/canal-rnc');
 
       await expect(page.getByTestId('channel-firm')).toHaveCount(6);
 
@@ -139,7 +139,7 @@ test.describe('Canal RNC — Reinaldo reads it (A9, R9, AM15)', () => {
 
   test('finds the channel in his rail', async ({ page }) => {
     await signedInAs(page, REINALDO, false);
-    await page.goto('/reinaldo/canal-rnc');
+    await page.goto('/gestao/canal-rnc');
 
     await expect(page.getByRole('link', { name: 'Canal RNC' }).first()).toBeVisible();
   });

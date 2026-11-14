@@ -91,7 +91,7 @@ beforeEach(function () {
     Mail::fake();
     CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-11-16 10:00', 'America/Sao_Paulo'));
     $this->seed([FirmSeeder::class, RoleSeeder::class]);
-    $this->ceo = FiscalRows::person('ceo');
+    $this->ceo = FiscalRows::person('gestao');
 
     // Two covering partners for `contratos` (precificação), one that covers nothing, one inactive.
     $this->margem = batchPartner('Margem Certa (exemplo)', 'precificacao_controladoria');

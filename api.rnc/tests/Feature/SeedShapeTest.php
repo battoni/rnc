@@ -57,7 +57,7 @@ describe('database seed', function () {
         $roles = User::with('role')->get()->mapWithKeys(fn (User $user) => [$user->username => $user->role?->slug]);
 
         expect($roles['battoni'])->toBe('operador')
-            ->and($roles['reinaldo'])->toBe('ceo')
+            ->and($roles['reinaldo'])->toBe('gestao')
             ->and($roles['patricia'])->toBe('equipe')
             ->and($roles['mariana.toledo'])->toBe('equipe');
     });

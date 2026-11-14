@@ -1,5 +1,5 @@
 ---
-version: 3.4.0
+version: 3.5.0
 origin: pendulum
 based-on: 2.0.0
 ---
@@ -11,7 +11,7 @@ based-on: 2.0.0
 ## Domain
 
 The back office's landing (`/painel`, route name `home`) and the three workspace landings the rail
-opens: Equipe (`team-home`), Reinaldo (`ceo-home`) and Operador (`operator-home`).
+opens: Equipe (`team-home`), Reinaldo (`management-home`) and Operador (`operator-home`).
 
 ## Public Barrel
 
@@ -28,11 +28,11 @@ opens: Equipe (`team-home`), Reinaldo (`ceo-home`) and Operador (`operator-home`
   is redirected to `home`, so a key on it would loop.
 - **One `WorkspaceView` for the landings**, told apart by `meta.workspace`. Each was an empty state
   in F1; later phases add their own screens as routes and rail children. The team's landing
-  (`team-home`) now redirects to its pipeline (F5) and Reinaldo's (`ceo-home`) to his daily
+  (`team-home`) now redirects to its pipeline (F5) and Reinaldo's (`management-home`) to his daily
   briefing (rnc-3 F9, R26), by path — Home imports nothing from Pipeline or Briefing. _Retired
   07/11/2026 (rnc-3 F9):_ "Reinaldo's landing redirects to his metrics (F7)" — R26 made "Briefing do
   dia" the screen he opens on; the metrics stay a rail child. The group itself stays on
-  `metrics.read`: every role holding it (ceo, operador) holds `briefing.read` (RoleSeeder).
+  `metrics.read`: every role holding it (gestao, operador) holds `briefing.read` (RoleSeeder).
 
 - **A partner never sees Home** (rnc-2 R3, A4): `HomeView` replaces itself with the portal when
   `usePortalLanding().isPortalOnly` (`portal.access` and no `home.read`) and renders nothing. The

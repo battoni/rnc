@@ -148,7 +148,7 @@ function buildRouter() {
       blankRoute('projects-en', '/projects'),
       blankRoute('project-en', '/projects/:id'),
       blankRoute('team-home-en', '/team'),
-      blankRoute('ceo-home-en', '/ceo'),
+      blankRoute('management-home-en', '/management'),
       blankRoute('operator-home-en', '/operator'),
       blankRoute('users-en', '/users'),
       blankRoute('roles-and-permissions-en', '/roles'),

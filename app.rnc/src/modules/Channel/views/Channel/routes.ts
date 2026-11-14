@@ -19,14 +19,14 @@ const ChannelRoutes: RouteRecordRaw[] = [
     component: () => import('./ChannelView.view.vue'),
   },
   {
-    path: '/ceo/rnc',
-    name: `${CHANNEL_ROUTE_NAMES.ceo}-en`,
+    path: '/management/rnc',
+    name: `${CHANNEL_ROUTE_NAMES.management}-en`,
     meta: { permission: CHANNEL_PERMISSIONS.read },
     component: () => import('./ChannelView.view.vue'),
   },
   {
-    path: '/reinaldo/canal-rnc',
-    name: `${CHANNEL_ROUTE_NAMES.ceo}-pt-BR`,
+    path: '/gestao/canal-rnc',
+    name: `${CHANNEL_ROUTE_NAMES.management}-pt-BR`,
     meta: { permission: CHANNEL_PERMISSIONS.read },
     component: () => import('./ChannelView.view.vue'),
   },

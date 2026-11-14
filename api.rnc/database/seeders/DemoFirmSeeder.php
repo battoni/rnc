@@ -20,8 +20,8 @@ class DemoFirmSeeder extends Seeder
 {
     public const DEMO_SLUG = 'alvorada';
 
-    /** Gestão is still the `ceo` role until F2c renames it. */
-    private const MANAGER_ROLE_SLUG = 'ceo';
+    /** The manager is the `gestao` role (rnc-4 F2c1, R14). */
+    private const MANAGER_ROLE_SLUG = 'gestao';
 
     private const TEAM_ROLE_SLUG = 'equipe';
 

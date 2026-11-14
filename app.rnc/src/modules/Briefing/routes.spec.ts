@@ -10,8 +10,8 @@ describe('BriefingModuleRoutes', () => {
     expect(
       BriefingModuleRoutes.map((route) => [route.path, route.name, (route.meta as { permission?: string }).permission])
     ).toEqual([
-      ['/ceo/briefing', 'briefing-en', 'briefing.read'],
-      ['/reinaldo/briefing', 'briefing-pt-BR', 'briefing.read'],
+      ['/management/briefing', 'briefing-en', 'briefing.read'],
+      ['/gestao/briefing', 'briefing-pt-BR', 'briefing.read'],
     ]);
   });
 });

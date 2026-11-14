@@ -84,7 +84,7 @@ beforeEach(function () {
     Mail::fake();
     CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-11-16 10:00', 'America/Sao_Paulo'));
     $this->seed([FirmSeeder::class, RoleSeeder::class]);
-    $this->reinaldo = FiscalRows::person('ceo');
+    $this->reinaldo = FiscalRows::person('gestao');
 
     $this->andrade = contractRefPartner('Andrade Tributário (exemplo)', 'advocacia_tributaria');
     $this->bastos = contractRefPartner('Bastos Advocacia (exemplo)', 'advocacia_tributaria');

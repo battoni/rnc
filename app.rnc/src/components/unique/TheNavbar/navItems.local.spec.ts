@@ -17,7 +17,7 @@ describe('useLocalNavItems', () => {
 
     expect(items.map((item) => [item.label, item.routeName, item.permission, item.role])).toEqual([
       ['navigation.team', 'team-home', 'leads.read', undefined],
-      ['navigation.ceo', 'ceo-home', 'metrics.read', undefined],
+      ['navigation.management', 'management-home', 'metrics.read', undefined],
       ['navigation.operator', 'operator-home', 'users.read', undefined],
       // rnc-2 A4: the portal for a partner's login only — the key AND the role, so the operator,
       // who holds every key, never sees it, and a partner holds none of the three groups' keys.
@@ -86,7 +86,7 @@ describe('useLocalNavItems', () => {
     const ceo = useLocalNavItems().value[1];
 
     expect(ceo?.children?.map((child) => [child.routeName, child.permission])).toEqual([
-      // rnc-3 F9 (R26): "Briefing do dia" — `briefing.read` (ceo), Reinaldo's landing.
+      // rnc-3 F9 (R26): "Briefing do dia" — `briefing.read` (gestao), Reinaldo's landing.
       ['briefing', 'briefing.read'],
       ['metrics', 'metrics.read'],
       ['partners', 'partners.manage'],
@@ -94,12 +94,12 @@ describe('useLocalNavItems', () => {
       // rnc-2 F4 (R11): "Extrato da rede", behind `ledger.read` (D14).
       ['network-ledger', 'ledger.read'],
       ['repricing', 'repricing.manage'],
-      ['ceo-channel', 'channel.read'],
-      // rnc-2 F8 (R15, R17): "Notas fiscais", the XML import — `fiscal.import` (ceo, D14).
+      ['management-channel', 'channel.read'],
+      // rnc-2 F8 (R15, R17): "Notas fiscais", the XML import — `fiscal.import` (gestao, D14).
       ['nfe-imports', 'fiscal.import'],
-      // rnc-2 F10 (R24–R27): "Radar da carteira" — `radar.manage` (ceo, D14).
+      // rnc-2 F10 (R24–R27): "Radar da carteira" — `radar.manage` (gestao, D14).
       ['portfolio-radar', 'radar.manage'],
-      // rnc-3 F7 (R18–R22): "Alerta de contratos" — `contracts.manage` (ceo).
+      // rnc-3 F7 (R18–R22): "Alerta de contratos" — `contracts.manage` (gestao).
       ['contract-alert', 'contracts.manage'],
     ]);
   });
@@ -112,7 +112,7 @@ describe('useLocalNavItems', () => {
         .map((child) => [child.routeName, child.permission]);
 
     expect(channelOf(operator?.children)).toEqual([['channel', 'channel.read']]);
-    expect(channelOf(ceo?.children)).toEqual([['ceo-channel', 'channel.read']]);
+    expect(channelOf(ceo?.children)).toEqual([['management-channel', 'channel.read']]);
   });
 
   it("puts the partner's statement under its portal, behind the same key and role (rnc-2 R11)", () => {

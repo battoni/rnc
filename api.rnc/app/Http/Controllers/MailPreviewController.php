@@ -136,7 +136,7 @@ class MailPreviewController extends Controller
                 ]],
                 'pipeline' => ['count' => 12, 'range_cents' => [32_400_000, 86_400_000], 'stages' => []],
                 'actions' => [
-                    ['kind' => ActionPicker::SLA_BREACHED, 'params' => ['partner' => 'Andrade Advocacia (exemplo)', 'company' => 'Metalúrgica Aço Forte', 'hours' => 31.5, 'goal_hours' => 24], 'to' => '/reinaldo/trilha?parceiro=1'],
+                    ['kind' => ActionPicker::SLA_BREACHED, 'params' => ['partner' => 'Andrade Advocacia (exemplo)', 'company' => 'Metalúrgica Aço Forte', 'hours' => 31.5, 'goal_hours' => 24], 'to' => '/gestao/trilha?parceiro=1'],
                     ['kind' => ActionPicker::MEETINGS_TODAY, 'params' => ['count' => 2], 'to' => '/equipe/agenda'],
                     ['kind' => ActionPicker::PROPOSALS, 'params' => ['count' => 3, 'range_cents' => [5_400_000, 10_800_000]], 'to' => '/equipe/pipeline?etapa=proposta'],
                 ],

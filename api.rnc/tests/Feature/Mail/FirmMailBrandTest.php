@@ -131,7 +131,7 @@ describe("alvorada's e-mails (A9)", function () {
     });
 
     it("brands the manager's 07:00 briefing with alvorada and links to its host", function () {
-        $helena = mailAlvoradaPerson($this->alvorada, 'helena.alvorada', 'ceo');
+        $helena = mailAlvoradaPerson($this->alvorada, 'helena.alvorada', 'gestao');
 
         CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-11-23 07:00', MAIL_ZONE));
         $this->artisan('briefing:send')->assertSuccessful();

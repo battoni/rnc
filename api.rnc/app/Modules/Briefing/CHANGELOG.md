@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.4.0 — 2026-11-14
+
+### Changed
+
+- The role slug `ceo` → `gestao` in the recipients query, and the links the briefing and its e-mail send go to `/gestao/…` instead of `/reinaldo/…` (rnc-4 F2c1, R14).
+
 ## 1.3.0 — 2026-11-14
 
 ### Changed

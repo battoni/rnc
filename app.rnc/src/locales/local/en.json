@@ -19,7 +19,7 @@
         "description": "Lead pipeline, meeting agenda and notifications.",
         "upcoming": "The pipeline, each lead's file and the team's agenda arrive here."
       },
-      "ceo": {
+      "management": {
         "title": "Reinaldo",
         "description": "Funnel metrics, partner network, referral trail and fee repricing.",
         "upcoming": "Metrics, partners, the trail and fee repricing arrive here."
@@ -33,7 +33,7 @@
   },
   "navigation": {
     "team": "Team",
-    "ceo": "Reinaldo",
+    "management": "Reinaldo",
     "operator": "Operator",
     "pipeline": "Pipeline",
     "agenda": "Agenda",

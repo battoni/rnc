@@ -8,7 +8,7 @@ const BRIEFING_FIXTURE: Briefing = {
     {
       kind: BRIEFING_ACTION_KIND.SLA_BREACHED,
       params: { company: 'Padaria Trigo Dourado', goal_hours: 24, hours: 31.5, partner: 'Margem Certa (exemplo)' },
-      to: '/reinaldo/trilha?parceiro=7',
+      to: '/gestao/trilha?parceiro=7',
     },
     { kind: BRIEFING_ACTION_KIND.MEETINGS_TODAY, params: { count: 2 }, to: '/equipe/agenda' },
     {
@@ -108,7 +108,7 @@ const RADAR_ACTION: Briefing['actions'][number] = {
     rule: 'split-payment',
     title: 'Split payment no caixa',
   },
-  to: '/reinaldo/radar',
+  to: '/gestao/radar',
 };
 
 /** A quiet day on an empty portfolio: nothing applies, no range anywhere. */

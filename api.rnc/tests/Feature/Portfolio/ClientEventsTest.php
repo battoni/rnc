@@ -17,7 +17,7 @@ use Tests\Support\FiscalRows;
  *   GET /api/clients/{id}/events   the lines, newest first: {id, type, data, at, user: {id, name}}
  *
  * Owned by Portfolio (`client_events`); `ClientService::recordEvent` is its only writer — Fiscal's
- * "Registrar aviso" and "Propor revisão" go through it. Behind `fiscal.read` (equipe, ceo), the
+ * "Registrar aviso" and "Propor revisão" go through it. Behind `fiscal.read` (equipe, gestao), the
  * only screens that write it so far.
  */
 beforeEach(function () {

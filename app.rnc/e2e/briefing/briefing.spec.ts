@@ -3,7 +3,7 @@ import { test, expect, mockUser, paginated, seedAuthSession, seedLanguage } from
 
 /*
  * "Briefing do dia" (rnc-3 F9, R26, A23) with the API mocked and the clock fixed at 09:15 in São
- * Paulo: Reinaldo opens `/reinaldo` and lands on the briefing ("Bom dia, Reinaldo", the four KPIs,
+ * Paulo: Reinaldo opens `/gestao` and lands on the briefing ("Bom dia, Reinaldo", the four KPIs,
  * the actions, the countdown, the three panels); every action button lands on the screen it names
  * — the trail filtered by `?parceiro=`, the agenda, the pipeline outlined at `?etapa=`, the Radar.
  * The screen fits 390 and 1440 px with no sideways scroll and no console error, and its words read
@@ -16,7 +16,7 @@ const REINALDO = {
   last_name: 'Franco',
   username: 'reinaldo',
   role: 'CEO',
-  role_slug: 'ceo',
+  role_slug: 'gestao',
   permissions: ['leads.read', 'agenda.read', 'metrics.read', 'referrals.read', 'radar.manage', 'briefing.read'],
 };
 
@@ -28,7 +28,7 @@ const FIRST_ACTIONS = [
   {
     kind: 'sla_breached',
     params: { company: 'Padaria Trigo Dourado', goal_hours: 24, hours: 31.5, partner: 'Margem Certa (exemplo)' },
-    to: '/reinaldo/trilha?parceiro=7',
+    to: '/gestao/trilha?parceiro=7',
   },
   { kind: 'meetings_today', params: { count: 2 }, to: '/equipe/agenda' },
   { kind: 'proposals', params: { count: 3, range_cents: [5_400_000, 9_000_000] }, to: '/equipe/pipeline?etapa=proposta' },
@@ -39,7 +39,7 @@ const LATER_ACTIONS = [
   {
     kind: 'radar',
     params: { clients: 8, period: 'ano', range_cents: [4_000_000, 6_500_000], rule: 'contratos', title: 'Contratos longos sem cláusula' },
-    to: '/reinaldo/radar',
+    to: '/gestao/radar',
   },
 ];
 
@@ -155,13 +155,13 @@ async function mockApi(page: Page, actions: unknown[] = FIRST_ACTIONS) {
 }
 
 test.describe('Briefing do dia', () => {
-  test('/reinaldo lands on the briefing with the greeting, the KPIs, the actions and the countdown (A23)', async ({
+  test('/gestao lands on the briefing with the greeting, the KPIs, the actions and the countdown (A23)', async ({
     page,
   }) => {
     await mockApi(page);
-    await page.goto('/reinaldo');
+    await page.goto('/gestao');
 
-    await expect(page).toHaveURL(/\/reinaldo\/briefing$/);
+    await expect(page).toHaveURL(/\/gestao\/briefing$/);
     await expect(page.getByTestId('briefing-greeting')).toHaveText('Bom dia, Reinaldo');
     await expect(page.getByTestId('briefing-kpi')).toHaveCount(4);
     await expect(page.locator('[data-testid="briefing-kpi"][data-kpi="leads"]')).toContainText('2 nas últimas 24h');
@@ -177,17 +177,17 @@ test.describe('Briefing do dia', () => {
   test('"Ver parceiro" opens the trail filtered by the partner (W83)', async ({ page }) => {
     const requested = await mockApi(page);
 
-    await page.goto('/reinaldo/briefing');
+    await page.goto('/gestao/briefing');
     await page.locator('[data-testid="briefing-action"][data-kind="sla_breached"]').getByTestId('briefing-action-go').click();
 
-    await expect(page).toHaveURL(/\/reinaldo\/trilha\?parceiro=7$/);
+    await expect(page).toHaveURL(/\/gestao\/trilha\?parceiro=7$/);
     await expect.poll(() => requested.map((url) => url.searchParams.get('partner_id'))).toContain('7');
   });
 
   test('"Abrir agenda" opens the agenda', async ({ page }) => {
     await mockApi(page);
 
-    await page.goto('/reinaldo/briefing');
+    await page.goto('/gestao/briefing');
     await page.locator('[data-testid="briefing-action"][data-kind="meetings_today"]').getByTestId('briefing-action-go').click();
 
     await expect(page).toHaveURL(/\/equipe\/agenda$/);
@@ -196,7 +196,7 @@ test.describe('Briefing do dia', () => {
   test('"Ver pipeline" opens the board outlined on Proposta (W83)', async ({ page }) => {
     await mockApi(page);
 
-    await page.goto('/reinaldo/briefing');
+    await page.goto('/gestao/briefing');
     await page.locator('[data-testid="briefing-action"][data-kind="proposals"]').getByTestId('briefing-action-go').click();
 
     await expect(page).toHaveURL(/\/equipe\/pipeline\?etapa=proposta$/);
@@ -208,7 +208,7 @@ test.describe('Briefing do dia', () => {
     await mockApi(page, LATER_ACTIONS);
     await page.setViewportSize({ width: 390, height: 800 });
 
-    await page.goto('/reinaldo/briefing');
+    await page.goto('/gestao/briefing');
     await page.locator('[data-testid="briefing-action"][data-kind="partial_leads"]').getByTestId('briefing-action-go').click();
 
     await expect(page).toHaveURL(/\/equipe\/pipeline\?etapa=lead_parcial$/);
@@ -221,7 +221,7 @@ test.describe('Briefing do dia', () => {
     await page.goBack();
     await page.locator('[data-testid="briefing-action"][data-kind="radar"]').getByTestId('briefing-action-go').click();
 
-    await expect(page).toHaveURL(/\/reinaldo\/radar$/);
+    await expect(page).toHaveURL(/\/gestao\/radar$/);
   });
 
   for (const width of [390, 1440]) {
@@ -235,7 +235,7 @@ test.describe('Briefing do dia', () => {
 
       await mockApi(page);
       await page.setViewportSize({ width, height: 900 });
-      await page.goto('/reinaldo/briefing');
+      await page.goto('/gestao/briefing');
       await expect(page.getByTestId('briefing-action').first()).toBeVisible();
       await expect(page.getByTestId('briefing-stage')).toHaveCount(3);
 
@@ -255,7 +255,7 @@ test.describe('Briefing do dia', () => {
     test(`its words read at 4.5:1 or more, ${scheme}`, async ({ page }) => {
       await mockApi(page);
       await page.emulateMedia({ colorScheme: scheme, reducedMotion: 'reduce' });
-      await page.goto('/reinaldo/briefing');
+      await page.goto('/gestao/briefing');
       await expect(page.getByTestId('briefing-referral').first()).toBeVisible();
 
       // Colours measured through a canvas: a computed `oklab(…)` read by a regex is black (F2 pitfall).

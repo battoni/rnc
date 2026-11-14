@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.23.0 — 2026-11-14
+
+### Changed
+
+- The role slug `ceo` → `gestao` in `RoleSeeder`, `LocalUsersSeeder` and `DemoFirmSeeder` (rnc-4 F2c1, R14, A14); its label and description are F2c2's.
+
 ## 1.22.0 — 2026-11-14
 
 ### Changed

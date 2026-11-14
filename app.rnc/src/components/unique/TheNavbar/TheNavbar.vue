@@ -37,7 +37,7 @@ const { push, resolve } = useRouter();
 const toast = useToast();
 
 /** Routes allowed into the bottom bar. Children never appear there — the bar stays flat. */
-const MOBILE_ROUTE_NAMES = ['home', 'users', 'team-home', 'ceo-home', 'operator-home'];
+const MOBILE_ROUTE_NAMES = ['home', 'users', 'team-home', 'management-home', 'operator-home'];
 
 /** The core entries; the local layer's own are appended and may be store-backed. */
 const CORE_NAV_ITEMS: NavItem[] = [{ icon: 'pi pi-home', label: 'navigation.home', routeName: 'home' }];

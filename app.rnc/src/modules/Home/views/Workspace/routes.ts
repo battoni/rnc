@@ -14,8 +14,8 @@ const WorkspaceRoutes: RouteRecordRaw[] = [
   { path: '/team', name: 'team-home-en', redirect: '/team/pipeline' },
   { path: '/equipe', name: 'team-home-pt-BR', redirect: '/equipe/pipeline' },
   // Reinaldo's landing IS his briefing (rnc-3 F9, R26): the rail's Reinaldo link and the home card arrive on it.
-  { path: '/ceo', name: 'ceo-home-en', redirect: '/ceo/briefing' },
-  { path: '/reinaldo', name: 'ceo-home-pt-BR', redirect: '/reinaldo/briefing' },
+  { path: '/management', name: 'management-home-en', redirect: '/management/briefing' },
+  { path: '/gestao', name: 'management-home-pt-BR', redirect: '/gestao/briefing' },
   {
     path: '/operator',
     name: 'operator-home-en',

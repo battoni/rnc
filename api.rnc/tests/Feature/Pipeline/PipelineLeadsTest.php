@@ -294,6 +294,6 @@ describe('who may (AM8)', function () {
         $this->actingAs($nobody)->patchJson("/api/leads/{$lead->id}/stage", ['stage' => 'cliente'])->assertForbidden();
         $this->actingAs($nobody)->postJson("/api/leads/{$lead->id}/notes", ['text' => 'oi'])->assertForbidden();
 
-        $this->actingAs(pipelineMember('ceo', 'reinaldo'))->patchJson("/api/leads/{$lead->id}/stage", ['stage' => 'cliente'])->assertOk();
+        $this->actingAs(pipelineMember('gestao', 'reinaldo'))->patchJson("/api/leads/{$lead->id}/stage", ['stage' => 'cliente'])->assertOk();
     });
 });

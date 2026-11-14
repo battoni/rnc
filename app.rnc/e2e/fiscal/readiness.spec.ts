@@ -15,7 +15,7 @@ const REINALDO = {
   last_name: 'Franco',
   username: 'reinaldo',
   role: 'CEO',
-  role_slug: 'ceo',
+  role_slug: 'gestao',
   permissions: ['leads.read', 'metrics.read', 'fiscal.read', 'fiscal.import'],
 };
 
@@ -150,7 +150,7 @@ const UPLOAD_BATCH = {
   at: '2026-11-09T17:05:00+00:00',
 };
 
-const SCREENS = ['/equipe/nfe', '/equipe/fornecedores', '/reinaldo/notas'] as const;
+const SCREENS = ['/equipe/nfe', '/equipe/fornecedores', '/gestao/notas'] as const;
 
 function json(body: unknown, status = 200) {
   return { status, contentType: 'application/json', body: JSON.stringify(body) };
@@ -250,7 +250,7 @@ test.describe('Fiscal screens', () => {
 
   test('uploads a ZIP and reads its batch, every refusal by file', async ({ page }) => {
     await mockApi(page);
-    await page.goto('/reinaldo/notas');
+    await page.goto('/gestao/notas');
 
     await expect(page.getByTestId('nfe-batch')).toHaveCount(1);
     await page
@@ -310,7 +310,7 @@ test.describe('Fiscal screens', () => {
           page.locator('[data-testid="readiness-row"], [data-testid="supplier-row"], [data-testid="nfe-batch"]').first()
         ).toBeVisible();
 
-        if (path === '/reinaldo/notas') {
+        if (path === '/gestao/notas') {
           await page
             .getByTestId('nfe-file')
             .setInputFiles({ name: 'notas.zip', mimeType: 'application/zip', buffer: Buffer.from('PK') });

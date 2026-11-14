@@ -47,7 +47,7 @@ class ActionPicker
             $actions[] = [
                 'kind' => self::SLA_BREACHED,
                 'params' => ['partner' => $breached['partner'], 'company' => $breached['company'], 'hours' => $breached['hours'], 'goal_hours' => ReferralSla::HOURS],
-                'to' => '/reinaldo/trilha?parceiro='.$breached['partner_id'],
+                'to' => '/gestao/trilha?parceiro='.$breached['partner_id'],
             ];
         }
 
@@ -64,7 +64,7 @@ class ActionPicker
         }
 
         if ($facts['radar'] !== null) {
-            $actions[] = ['kind' => self::RADAR, 'params' => $facts['radar'], 'to' => '/reinaldo/radar'];
+            $actions[] = ['kind' => self::RADAR, 'params' => $facts['radar'], 'to' => '/gestao/radar'];
         }
 
         return array_slice($actions, 0, self::MAX);

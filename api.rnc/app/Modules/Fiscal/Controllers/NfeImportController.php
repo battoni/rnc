@@ -15,7 +15,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\UploadedFile;
 
 /**
- * The NF-e upload and its batches (rnc-2 R15, R17), behind `fiscal.import` (ceo, operador): the upload
+ * The NF-e upload and its batches (rnc-2 R15, R17), behind `fiscal.import` (gestao, operador): the upload
  * answers 201 with the batch, the list pages the firm's batches newest first.
  */
 class NfeImportController extends Controller

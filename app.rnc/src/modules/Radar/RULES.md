@@ -1,5 +1,5 @@
 ---
-version: 1.0.1
+version: 1.1.0
 origin: rnc
 based-on: 1.0.0
 ---
@@ -11,8 +11,8 @@ based-on: 1.0.0
 ## Domain
 
 Reinaldo's "Radar da carteira" (rnc-2 R24–R27): the Reforma's rules engine over every client of the
-firm, read by the API (api Radar module, F9) — `RadarView` at `/reinaldo/radar` (`/ceo/radar`, route
-`portfolio-radar`), behind `radar.manage` (ceo; the operator holds every key), the rail child
+firm, read by the API (api Radar module, F9) — `RadarView` at `/gestao/radar` (`/management/radar`, route
+`portfolio-radar`), behind `radar.manage` (gestao; the operator holds every key), the rail child
 "Radar da carteira" last in Reinaldo's group. The screen sends a row's batch of portfolio clients
 to a partner; the API writes everything (api Partner RULES → "The Radar's batch referral").
 

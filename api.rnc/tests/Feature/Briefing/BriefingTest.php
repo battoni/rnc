@@ -217,7 +217,7 @@ describe('GET briefing (A21)', function () {
 
         expect(array_column($briefing['actions'], 'kind'))->toBe(['sla_breached', 'meetings_today', 'proposals'])
             ->and($briefing['actions'][0]['params'])->toEqual(['partner' => 'Andrade Advocacia', 'company' => 'Padaria Sol', 'hours' => 32, 'goal_hours' => 24])
-            ->and($briefing['actions'][0]['to'])->toBe("/reinaldo/trilha?parceiro={$andrade->id}")
+            ->and($briefing['actions'][0]['to'])->toBe("/gestao/trilha?parceiro={$andrade->id}")
             ->and($briefing['as_of'])->toBe('2026-11-19T10:00:00-03:00');
     });
 
@@ -233,7 +233,7 @@ describe('GET briefing (A21)', function () {
             ->and($actions)->toBe([[
                 'kind' => 'radar',
                 'params' => ['rule' => $first['rule'], 'title' => $first['title'], 'clients' => $first['clients'], 'range_cents' => $first['range_cents'], 'period' => $first['period']],
-                'to' => '/reinaldo/radar',
+                'to' => '/gestao/radar',
             ]]);
     });
 

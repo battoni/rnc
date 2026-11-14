@@ -26,7 +26,7 @@ const REINALDO = {
   last_name: 'Franco',
   username: 'reinaldo',
   role: 'CEO',
-  role_slug: 'ceo',
+  role_slug: 'gestao',
   partner_id: null,
   permissions: ['home.read', 'leads.read', 'metrics.read', 'partners.manage', 'referrals.read'],
 };
@@ -88,7 +88,7 @@ test.describe('Partner portal — the partner', () => {
     }
   });
 
-  for (const path of ['/painel', '/reinaldo/parceiros', '/equipe/pipeline', '/operador']) {
+  for (const path of ['/painel', '/gestao/parceiros', '/equipe/pipeline', '/operador']) {
     test(`is bounced from ${path} to its portal`, async ({ page }) => {
       await signedInAs(page, PARTNER_LOGIN);
 

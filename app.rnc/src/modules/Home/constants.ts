@@ -10,7 +10,7 @@ import type { Workspace } from './interfaces';
  */
 const WORKSPACES: Workspace[] = [
   { icon: 'pi pi-filter', key: 'team', permission: 'leads.read', routeName: 'team-home' },
-  { icon: 'pi pi-chart-bar', key: 'ceo', permission: 'metrics.read', routeName: 'ceo-home' },
+  { icon: 'pi pi-chart-bar', key: 'management', permission: 'metrics.read', routeName: 'management-home' },
   { icon: 'pi pi-cog', key: 'operator', permission: 'users.read', routeName: 'operator-home' },
 ];
 

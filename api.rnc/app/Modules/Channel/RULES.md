@@ -48,7 +48,7 @@ fee, a share and notes. Onboarding an RNC firm as a firm of its own is outside P
 
 | Route | Key | Answers |
 | --- | --- | --- |
-| `GET channel` | `channel.read` (ceo, operador) | the board |
+| `GET channel` | `channel.read` (gestao, operador) | the board |
 | `POST channel/firms` | `channel.manage` (operador) | 201, the board |
 | `PATCH channel/firms/{id}` | `channel.manage` | the board |
 | `POST channel/firms/{id}/advance` | `channel.manage` | the board |

@@ -10,8 +10,8 @@ describe('ContractsModuleRoutes', () => {
     expect(
       ContractsModuleRoutes.map((route) => [route.path, route.name, (route.meta as { permission?: string }).permission])
     ).toEqual([
-      ['/ceo/contracts', 'contract-alert-en', 'contracts.manage'],
-      ['/reinaldo/contratos', 'contract-alert-pt-BR', 'contracts.manage'],
+      ['/management/contracts', 'contract-alert-en', 'contracts.manage'],
+      ['/gestao/contratos', 'contract-alert-pt-BR', 'contracts.manage'],
     ]);
   });
 });

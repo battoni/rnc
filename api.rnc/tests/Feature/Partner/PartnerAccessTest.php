@@ -22,7 +22,7 @@ use Illuminate\Testing\TestResponse;
  *   POST   /api/partners/{id}/access/password   a new password, once; the old sessions end
  *   DELETE /api/partners/{id}/access            the login deactivated and its sessions ended
  *
- * All behind `partners.manage` (ceo, operador). One active login per partner (409
+ * All behind `partners.manage` (gestao, operador). One active login per partner (409
  * `partner_access_exists`); the user is born in the partner's firm with role `parceiro`; every
  * grant and revoke writes one `partner_access_events` row, which F4's subscription months read.
  */
@@ -31,7 +31,7 @@ function accessFirmId(): int
     return (int) Firm::where('slug', 'franco')->value('id');
 }
 
-function accessManager(string $role = 'ceo'): User
+function accessManager(string $role = 'gestao'): User
 {
     return User::factory()->create([
         'firm_id' => accessFirmId(),

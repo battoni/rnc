@@ -31,7 +31,7 @@ use Tests\Support\NfeFixture;
  *   POST /api/fiscal/imports   multipart `file` (one .xml, ≤ 20 MB, ≤ 1 MB read) → 201 the batch
  *                              `{id, source, user_id, files, stored, refused: [{file, code}], at}`
  *
- * Behind `fiscal.import` (ceo, operador), throttled 10 a minute (`nfe-import`). Each document is
+ * Behind `fiscal.import` (gestao, operador), throttled 10 a minute (`nfe-import`). Each document is
  * matched by CNPJ to the firm's clients: emitted by one → `saida`, addressed to one → `entrada`, both
  * → two rows. The raw file goes to the private disk at `nfe/<firm id>/<client id>/<key>.xml`.
  */
@@ -93,7 +93,7 @@ beforeEach(function () {
 describe('a client\'s sale (A13)', function () {
     it('stores the key, the CRT, the recipient and the item checks as a saída', function () {
         $seller = nfeImportClient(NFE_SELLER_CNPJ);
-        $person = nfeImportPerson('ceo');
+        $person = nfeImportPerson('gestao');
         $xml = NfeXmlBuilder::nfe(['crt' => 3, 'recipient_cpf' => '99900000191', 'total' => '980.10', 'items' => [[], ['group' => false], ['cst' => '']]]);
 
         $data = nfeImportUpload($person, nfeImportFile($xml))->assertCreated()->json('data');
@@ -134,7 +134,7 @@ describe('a client\'s sale (A13)', function () {
     it('stores a purchase addressed to the client as an entrada', function () {
         $buyer = nfeImportClient(NFE_BUYER_CNPJ);
 
-        nfeImportUpload(nfeImportPerson('ceo'), nfeImportFile(NfeXmlBuilder::nfe(['emitter' => NFE_STRANGER_CNPJ, 'recipient' => NFE_BUYER_CNPJ, 'crt' => 1])))
+        nfeImportUpload(nfeImportPerson('gestao'), nfeImportFile(NfeXmlBuilder::nfe(['emitter' => NFE_STRANGER_CNPJ, 'recipient' => NFE_BUYER_CNPJ, 'crt' => 1])))
             ->assertCreated()
             ->assertJsonPath('data.stored', 1);
 
@@ -151,7 +151,7 @@ describe('a client\'s sale (A13)', function () {
     it('refuses a document of no client as client_unknown', function () {
         nfeImportClient(NFE_SELLER_CNPJ);
 
-        $data = nfeImportUpload(nfeImportPerson('ceo'), nfeImportFile(NfeXmlBuilder::nfe(['emitter' => NFE_STRANGER_CNPJ, 'recipient' => '44555666000181']), 'fora.xml'))
+        $data = nfeImportUpload(nfeImportPerson('gestao'), nfeImportFile(NfeXmlBuilder::nfe(['emitter' => NFE_STRANGER_CNPJ, 'recipient' => '44555666000181']), 'fora.xml'))
             ->assertCreated()
             ->json('data');
 
@@ -162,7 +162,7 @@ describe('a client\'s sale (A13)', function () {
 
     it('keeps the same file uploaded twice as one document and one duplicate', function () {
         nfeImportClient(NFE_SELLER_CNPJ);
-        $person = nfeImportPerson('ceo');
+        $person = nfeImportPerson('gestao');
 
         nfeImportUpload($person, nfeImportFile(NfeXmlBuilder::nfe()))->assertCreated();
         $second = nfeImportUpload($person, nfeImportFile(NfeXmlBuilder::nfe(), 'de-novo.xml'))->assertCreated()->json('data');
@@ -176,7 +176,7 @@ describe('a client\'s sale (A13)', function () {
         nfeImportClient(NFE_SELLER_CNPJ);
         $broken = NfeFixture::brokenKey(NfeXmlBuilder::key(NFE_SELLER_CNPJ, 123));
 
-        nfeImportUpload(nfeImportPerson('ceo'), nfeImportFile(NfeXmlBuilder::nfe(['key' => $broken])))
+        nfeImportUpload(nfeImportPerson('gestao'), nfeImportFile(NfeXmlBuilder::nfe(['key' => $broken])))
             ->assertCreated()
             ->assertJsonPath('data.refused', [['file' => 'nota.xml', 'code' => 'invalid_key']]);
 
@@ -186,7 +186,7 @@ describe('a client\'s sale (A13)', function () {
     it('stores a document between two clients twice, and its re-upload reports a duplicate per row (AM4)', function () {
         $seller = nfeImportClient(NFE_SELLER_CNPJ);
         $buyer = nfeImportClient(NFE_BUYER_CNPJ);
-        $person = nfeImportPerson('ceo');
+        $person = nfeImportPerson('gestao');
         $xml = NfeXmlBuilder::nfe(['emitter' => NFE_SELLER_CNPJ, 'recipient' => NFE_BUYER_CNPJ]);
 
         $first = nfeImportUpload($person, nfeImportFile($xml, 'entre.xml'))->assertCreated()->json('data');
@@ -205,7 +205,7 @@ describe('a client\'s sale (A13)', function () {
 
     it('stores only the missing row when one of the two clients already has the document', function () {
         nfeImportClient(NFE_SELLER_CNPJ);
-        $person = nfeImportPerson('ceo');
+        $person = nfeImportPerson('gestao');
         $xml = NfeXmlBuilder::nfe(['emitter' => NFE_SELLER_CNPJ, 'recipient' => NFE_BUYER_CNPJ]);
 
         nfeImportUpload($person, nfeImportFile($xml))->assertCreated()->assertJsonPath('data.stored', 1);
@@ -219,7 +219,7 @@ describe('a client\'s sale (A13)', function () {
     it('stores one saída when the client is both the emitter and the recipient', function () {
         nfeImportClient(NFE_SELLER_CNPJ);
 
-        nfeImportUpload(nfeImportPerson('ceo'), nfeImportFile(NfeXmlBuilder::nfe(['emitter' => NFE_SELLER_CNPJ, 'recipient' => NFE_SELLER_CNPJ])))
+        nfeImportUpload(nfeImportPerson('gestao'), nfeImportFile(NfeXmlBuilder::nfe(['emitter' => NFE_SELLER_CNPJ, 'recipient' => NFE_SELLER_CNPJ])))
             ->assertCreated()
             ->assertJsonPath('data.stored', 1)
             ->assertJsonPath('data.refused', []);
@@ -235,7 +235,7 @@ describe('a file that cannot be read (A14, plan AM3)', function () {
         file_put_contents($target, 'CANARY-XXE-5c2e08');
 
         try {
-            $response = nfeImportUpload(nfeImportPerson('ceo'), nfeImportFile(NfeFixture::withExternalEntity('file://'.$target), 'entidade.xml'))->assertCreated();
+            $response = nfeImportUpload(nfeImportPerson('gestao'), nfeImportFile(NfeFixture::withExternalEntity('file://'.$target), 'entidade.xml'))->assertCreated();
         } finally {
             unlink($target);
         }
@@ -253,7 +253,7 @@ describe('a file that cannot be read (A14, plan AM3)', function () {
     it('refuses the file:///etc/hostname entity as not_nfe', function () {
         nfeImportClient(NFE_SELLER_CNPJ);
 
-        nfeImportUpload(nfeImportPerson('ceo'), nfeImportFile(NfeFixture::withExternalEntity('file:///etc/hostname')))
+        nfeImportUpload(nfeImportPerson('gestao'), nfeImportFile(NfeFixture::withExternalEntity('file:///etc/hostname')))
             ->assertCreated()
             ->assertJsonPath('data.refused', [['file' => 'nota.xml', 'code' => 'not_nfe']]);
 
@@ -263,13 +263,13 @@ describe('a file that cannot be read (A14, plan AM3)', function () {
     it('refuses the billion-laughs file as not_nfe', function () {
         nfeImportClient(NFE_SELLER_CNPJ);
 
-        nfeImportUpload(nfeImportPerson('ceo'), nfeImportFile(NfeFixture::billionLaughs(), 'risos.xml'))
+        nfeImportUpload(nfeImportPerson('gestao'), nfeImportFile(NfeFixture::billionLaughs(), 'risos.xml'))
             ->assertCreated()
             ->assertJsonPath('data.refused', [['file' => 'risos.xml', 'code' => 'not_nfe']]);
     });
 
     it('refuses a .xml whose content is not XML as not_xml', function () {
-        nfeImportUpload(nfeImportPerson('ceo'), nfeImportFile('isto não é uma nota', 'texto.xml'))
+        nfeImportUpload(nfeImportPerson('gestao'), nfeImportFile('isto não é uma nota', 'texto.xml'))
             ->assertCreated()
             ->assertJsonPath('data.refused', [['file' => 'texto.xml', 'code' => 'not_xml']]);
     });
@@ -278,7 +278,7 @@ describe('a file that cannot be read (A14, plan AM3)', function () {
         nfeImportClient(NFE_SELLER_CNPJ);
         $padded = str_replace('</nfeProc>', str_repeat(' ', 1_048_576).'</nfeProc>', NfeXmlBuilder::nfe());
 
-        nfeImportUpload(nfeImportPerson('ceo'), nfeImportFile($padded, 'grande.xml'))
+        nfeImportUpload(nfeImportPerson('gestao'), nfeImportFile($padded, 'grande.xml'))
             ->assertCreated()
             ->assertJsonPath('data.refused', [['file' => 'grande.xml', 'code' => 'too_large']]);
 
@@ -298,7 +298,7 @@ describe('a ZIP of XMLs (A14, plan AM3)', function () {
                 'notas/texto.xml' => 'isto não é uma nota',
                 'notas/entidade.xml' => NfeFixture::withExternalEntity('file://'.$target),
             ]);
-            $response = nfeImportUpload(nfeImportPerson('ceo'), nfeImportFile($zip, 'lote.zip'))->assertCreated();
+            $response = nfeImportUpload(nfeImportPerson('gestao'), nfeImportFile($zip, 'lote.zip'))->assertCreated();
         } finally {
             unlink($target);
         }
@@ -320,7 +320,7 @@ describe('a ZIP of XMLs (A14, plan AM3)', function () {
         nfeImportClient(NFE_SELLER_CNPJ);
         $inner = NfeFixture::zip(['dentro.xml' => NfeXmlBuilder::nfe(['number' => 2])]);
 
-        $data = nfeImportUpload(nfeImportPerson('ceo'), nfeImportFile(NfeFixture::zip([
+        $data = nfeImportUpload(nfeImportPerson('gestao'), nfeImportFile(NfeFixture::zip([
             'pasta/' => '',
             'pasta/nota.XML' => NfeXmlBuilder::nfe(),
             'dentro.zip' => $inner,
@@ -337,7 +337,7 @@ describe('a ZIP of XMLs (A14, plan AM3)', function () {
     it('labels an entry named with ../ by its base name and stores it by key and client id only', function () {
         $seller = nfeImportClient(NFE_SELLER_CNPJ);
 
-        $data = nfeImportUpload(nfeImportPerson('ceo'), nfeImportFile(NfeFixture::zip([
+        $data = nfeImportUpload(nfeImportPerson('gestao'), nfeImportFile(NfeFixture::zip([
             '../../../public/evil.xml' => NfeXmlBuilder::nfe(),
             '..\\..\\windows\\ruim.xml' => 'não é xml',
         ]), 'lote.zip'))->assertCreated()->json('data');
@@ -351,7 +351,7 @@ describe('a ZIP of XMLs (A14, plan AM3)', function () {
         nfeImportClient(NFE_SELLER_CNPJ);
         $bomb = NfeFixture::zip(['bomba.xml' => str_repeat(' ', 64 * 1_048_576), 'boa.xml' => NfeXmlBuilder::nfe()]);
         $file = nfeImportFile($bomb, 'lote.zip');
-        $person = nfeImportPerson('ceo');
+        $person = nfeImportPerson('gestao');
 
         memory_reset_peak_usage();
         $before = memory_get_usage();
@@ -367,7 +367,7 @@ describe('a ZIP of XMLs (A14, plan AM3)', function () {
         nfeImportClient(NFE_SELLER_CNPJ);
         $forged = NfeFixture::zipWithForgedSize('mentira.xml', str_repeat(' ', 64 * 1_048_576), 100);
         $file = nfeImportFile($forged, 'lote.zip');
-        $person = nfeImportPerson('ceo');
+        $person = nfeImportPerson('gestao');
 
         memory_reset_peak_usage();
         $before = memory_get_usage();
@@ -387,7 +387,7 @@ describe('a ZIP of XMLs (A14, plan AM3)', function () {
             $entries["nota-{$number}.xml"] = str_replace('</nfeProc>', str_repeat(' ', 1_040_000 - strlen($xml)).'</nfeProc>', $xml);
         }
 
-        $data = nfeImportUpload(nfeImportPerson('ceo'), nfeImportFile(NfeFixture::zip($entries), 'grande.zip'))->assertCreated()->json('data');
+        $data = nfeImportUpload(nfeImportPerson('gestao'), nfeImportFile(NfeFixture::zip($entries), 'grande.zip'))->assertCreated()->json('data');
 
         expect($data)->toMatchArray(['files' => 21, 'stored' => 20, 'refused' => [['file' => 'nota-21.xml', 'code' => 'too_large']]]);
     });
@@ -399,10 +399,10 @@ describe('a ZIP of XMLs (A14, plan AM3)', function () {
             $entries["n{$number}.txt"] = '';
         }
 
-        nfeImportUpload(nfeImportPerson('ceo'), nfeImportFile(NfeFixture::zip($entries), 'muitos.zip'))
+        nfeImportUpload(nfeImportPerson('gestao'), nfeImportFile(NfeFixture::zip($entries), 'muitos.zip'))
             ->assertCreated()
             ->assertJsonPath('data.refused', [['file' => 'muitos.zip', 'code' => 'too_large']]);
-        nfeImportUpload(nfeImportPerson('ceo'), nfeImportFile(NfeXmlBuilder::nfe(), 'falso.zip'))
+        nfeImportUpload(nfeImportPerson('gestao'), nfeImportFile(NfeXmlBuilder::nfe(), 'falso.zip'))
             ->assertCreated()
             ->assertJsonPath('data.refused', [['file' => 'falso.zip', 'code' => 'not_xml']]);
     });
@@ -439,7 +439,7 @@ describe('the batch list (R17)', function () {
         CarbonImmutable::setTestNow('2026-11-04 09:00:00');
         nfeImportUpload($reinaldo, nfeImportFile(NfeXmlBuilder::nfe(), 'de-novo.xml'))->assertCreated();
         $otherFirm = Firm::factory()->create();
-        nfeImportUpload(nfeImportPerson('ceo', $otherFirm->id), nfeImportFile(NfeXmlBuilder::nfe()))->assertCreated();
+        nfeImportUpload(nfeImportPerson('gestao', $otherFirm->id), nfeImportFile(NfeXmlBuilder::nfe()))->assertCreated();
         CarbonImmutable::setTestNow();
 
         $page = test()->actingAs($reinaldo)->getJson('/api/fiscal/imports')->assertOk()->json('data');
@@ -470,7 +470,7 @@ describe('the batch list (R17)', function () {
     it('is the importer\'s: the ceo and the operator read it, the team and a partner do not', function () {
         test()->getJson('/api/fiscal/imports')->assertUnauthorized();
 
-        test()->actingAs(nfeImportPerson('ceo'))->getJson('/api/fiscal/imports')->assertOk();
+        test()->actingAs(nfeImportPerson('gestao'))->getJson('/api/fiscal/imports')->assertOk();
         test()->actingAs(nfeImportPerson('operador'))->getJson('/api/fiscal/imports')->assertOk();
         test()->actingAs(nfeImportPerson('equipe'))->getJson('/api/fiscal/imports')->assertForbidden();
         test()->actingAs(nfeImportPerson(PartnerAccessService::PARTNER_ROLE_SLUG))->getJson('/api/fiscal/imports')->assertForbidden();
@@ -479,7 +479,7 @@ describe('the batch list (R17)', function () {
 
 describe('the upload itself', function () {
     it('refuses an upload over 20 MB before reading it', function () {
-        nfeImportUpload(nfeImportPerson('ceo'), UploadedFile::fake()->create('enorme.xml', 20 * 1024 + 1))
+        nfeImportUpload(nfeImportPerson('gestao'), UploadedFile::fake()->create('enorme.xml', 20 * 1024 + 1))
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['file']);
 
@@ -489,7 +489,7 @@ describe('the upload itself', function () {
     it('refuses a missing file or another extension', function (?string $name) {
         $payload = $name === null ? [] : ['file' => nfeImportFile(NfeXmlBuilder::nfe(), $name)];
 
-        test()->actingAs(nfeImportPerson('ceo'))->post('/api/fiscal/imports', $payload, ['Accept' => 'application/json'])
+        test()->actingAs(nfeImportPerson('gestao'))->post('/api/fiscal/imports', $payload, ['Accept' => 'application/json'])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['file']);
     })->with([
@@ -500,10 +500,10 @@ describe('the upload itself', function () {
     it('names a refusal by the file\'s base name and stores by key and client id only', function () {
         $seller = nfeImportClient(NFE_SELLER_CNPJ);
 
-        $data = nfeImportUpload(nfeImportPerson('ceo'), nfeImportFile(NfeXmlBuilder::nfe(['key' => NfeFixture::brokenKey(NfeXmlBuilder::key(NFE_SELLER_CNPJ, 123))]), '../../etc/passwd.xml'))
+        $data = nfeImportUpload(nfeImportPerson('gestao'), nfeImportFile(NfeXmlBuilder::nfe(['key' => NfeFixture::brokenKey(NfeXmlBuilder::key(NFE_SELLER_CNPJ, 123))]), '../../etc/passwd.xml'))
             ->assertCreated()
             ->json('data');
-        nfeImportUpload(nfeImportPerson('ceo'), nfeImportFile(NfeXmlBuilder::nfe(), '../../../public/evil.xml'))->assertCreated();
+        nfeImportUpload(nfeImportPerson('gestao'), nfeImportFile(NfeXmlBuilder::nfe(), '../../../public/evil.xml'))->assertCreated();
 
         expect($data['refused'][0]['file'])->toBe('passwd.xml')
             ->and(Storage::disk('local')->allFiles())->toBe(['nfe/'.nfeImportFirmId().'/'.$seller->id.'/'.NfeXmlBuilder::key(NFE_SELLER_CNPJ, 123).'.xml']);
@@ -520,7 +520,7 @@ describe('who may import', function () {
     });
 
     it('throttles the upload at 10 a minute', function () {
-        $person = nfeImportPerson('ceo');
+        $person = nfeImportPerson('gestao');
 
         $statuses = collect(range(1, 11))->map(fn () => nfeImportUpload($person, nfeImportFile('x', 'texto.xml'))->status());
 
@@ -533,7 +533,7 @@ describe('private storage and the firm wall (A15)', function () {
     it('serves the raw XML at no URL and never names its path', function () {
         $seller = nfeImportClient(NFE_SELLER_CNPJ);
 
-        $response = nfeImportUpload(nfeImportPerson('ceo'), nfeImportFile(NfeXmlBuilder::nfe()))->assertCreated();
+        $response = nfeImportUpload(nfeImportPerson('gestao'), nfeImportFile(NfeXmlBuilder::nfe()))->assertCreated();
         $path = 'nfe/'.nfeImportFirmId().'/'.$seller->id.'/'.NfeXmlBuilder::key(NFE_SELLER_CNPJ, 123).'.xml';
 
         $routes = collect(Route::getRoutes()->getRoutes())
@@ -552,22 +552,22 @@ describe('private storage and the firm wall (A15)', function () {
                 'GET api/fiscal/supplier-credit', 'POST api/fiscal/supplier-credit/{id}/review',
             ])
             ->and(test()->get('/storage/'.$path)->status())->not->toBe(200)
-            ->and(test()->actingAs(nfeImportPerson('ceo'))->get('/storage/'.$path)->status())->not->toBe(200)
+            ->and(test()->actingAs(nfeImportPerson('gestao'))->get('/storage/'.$path)->status())->not->toBe(200)
             ->and(test()->get('/storage/app/private/'.$path)->status())->not->toBe(200);
     });
 
     it('matches only the importing firm\'s clients, and each firm sees only its documents', function () {
         $otherFirm = Firm::factory()->create();
         nfeImportClient(NFE_SELLER_CNPJ, $otherFirm->id);
-        $otherPerson = nfeImportPerson('ceo', $otherFirm->id);
+        $otherPerson = nfeImportPerson('gestao', $otherFirm->id);
 
         nfeImportUpload($otherPerson, nfeImportFile(NfeXmlBuilder::nfe()))->assertCreated()->assertJsonPath('data.stored', 1);
-        nfeImportUpload(nfeImportPerson('ceo'), nfeImportFile(NfeXmlBuilder::nfe()))
+        nfeImportUpload(nfeImportPerson('gestao'), nfeImportFile(NfeXmlBuilder::nfe()))
             ->assertCreated()
             ->assertJsonPath('data.refused', [['file' => 'nota.xml', 'code' => 'client_unknown']]);
 
         $ours = nfeImportClient(NFE_SELLER_CNPJ);
-        nfeImportUpload(nfeImportPerson('ceo'), nfeImportFile(NfeXmlBuilder::nfe()))->assertCreated()->assertJsonPath('data.stored', 1);
+        nfeImportUpload(nfeImportPerson('gestao'), nfeImportFile(NfeXmlBuilder::nfe()))->assertCreated()->assertJsonPath('data.stored', 1);
 
         $franco = Firm::where('slug', 'franco')->firstOrFail();
         $currentFirm = app(CurrentFirm::class);

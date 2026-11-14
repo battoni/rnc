@@ -74,7 +74,7 @@ describe('A1 — a visitor on a firm host', function () {
         $patricia = User::where('username', 'patricia')->firstOrFail();
         $alvoradaManager = User::factory()->create([
             'firm_id' => $this->alvorada->id,
-            'role_id' => Role::where('slug', 'ceo')->value('id'),
+            'role_id' => Role::where('slug', 'gestao')->value('id'),
         ]);
 
         expect(hostBoardCount($patricia))->toBe(0)
