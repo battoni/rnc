@@ -296,7 +296,7 @@ verified — `MailSenderTest` reads it), `BCRYPT_ROUNDS` (default 12).
 | Key | Production |
 | --- | --- |
 | `VITE_API_URL` | `/api` — same-origin on every host (D4); never an absolute URL |
-| `VITE_ROOT_DOMAIN` | **Set** — `<root>`: `<slug>.<root>` is a firm, the root and `www` the platform |
+| `VITE_ROOT_DOMAIN` | **Set** — `<root>`: `<slug>.<root>` is a firm, the root and `www` the platform. `vite build` refuses a production build without it (`app.rnc/buildEnv.ts`) |
 | `VITE_APP_URL` | `https://<root>` |
 | `VITE_DEMO_FIRM_SLUG` | the demo firm the product landing links (`alvorada` is local only — empty hides the link until a production demo firm exists) |
 | `VITE_ACTIVE_THEME` | `hub` (the neutral ground; each firm's colours come from its row) |

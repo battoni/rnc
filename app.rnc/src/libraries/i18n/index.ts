@@ -16,7 +16,10 @@ const localMessages: Record<string, MessageTree> = {
   'pt-BR': withFirmPlaceholders(localPtBr),
 };
 
-/** Before the host firm answers: empty, never the raw key a missing link would print. */
+/**
+ * Before the host firm answers. A link that resolves to an empty message still prints its key (vue-i18n's
+ * `linked()`), so a first visit with no stored firm can flash `firm.short` — a Known Gap in `locales/RULES.md`.
+ */
 const NO_FIRM_NAMES = { name: '', short: '' };
 
 const coreMessages = messages as Record<string, MessageTree>;
@@ -67,7 +70,19 @@ document.documentElement.lang = i18n.global.locale.value;
  * usually fills them before the first paint.
  */
 function setFirmNames(names: { name: string; short: string }) {
-  Object.keys(mergedMessages).forEach((locale) => i18n.global.mergeLocaleMessage(locale, { firm: names }));
+  const FIRM = { name: asLiteralMessage(names.name), short: asLiteralMessage(names.short) };
+
+  Object.keys(mergedMessages).forEach((locale) => i18n.global.mergeLocaleMessage(locale, { firm: FIRM }));
+}
+
+/*
+ * A firm's name is data typed in the console, not message syntax (rnc-4 verify P1-S1): stored raw, a `|`
+ * splits it into plural forms ("Souza | Lima" printed "Souza"), an `@` starts a link and a `{` a
+ * parameter. A literal interpolation `{'…'}` prints its content as is — only `'` and `\` are escaped
+ * inside it.
+ */
+function asLiteralMessage(text: string): string {
+  return `{'${text.replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'}`;
 }
 
 export default i18n;

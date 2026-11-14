@@ -3,6 +3,13 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.18.2 — 2026-11-14
+
+### Fixed
+
+- rnc-4 verify P1-S1: the host firm's names are stored as literals (`setFirmNames`), so a `|`, `@`, `{` or `}`
+  in a name prints as typed. Known gap recorded: an empty name prints its linked key until the firm answers.
+
 ## 1.18.1 — 2026-11-14
 
 ### Added

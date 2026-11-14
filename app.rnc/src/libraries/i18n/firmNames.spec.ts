@@ -48,4 +48,13 @@ describe('the firm placeholders', () => {
       'Pela Beira Rio Contábil'
     );
   });
+
+  // rnc-4 verify P1-S1: the name is data typed in the console, not message syntax. A `|` would split it into
+  // plural forms, an `@` start a link and a `{` a parameter — it is stored as a literal.
+  it('print a name with message syntax as it was typed', () => {
+    setFirmNames({ name: "S@L {x} d'Ouro \\ Lda", short: 'Souza | Lima' });
+
+    expect(t('site.landing.proofLabel', {}, { locale: 'pt-BR' })).toBe('Por que a Souza | Lima');
+    expect(t('auth.brand.tagline', {}, { locale: 'pt-BR' })).toContain("O hub da S@L {x} d'Ouro \\ Lda");
+  });
 });
