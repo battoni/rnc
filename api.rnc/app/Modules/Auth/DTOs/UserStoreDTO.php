@@ -17,7 +17,7 @@ class UserStoreDTO extends Data
         public array $permissions = [],
         /** Set by `firm:create` (rnc-4 F3b1); `StoreUserRequest` has no rule for it, so the form never sends one. */
         public ?string $email = null,
-        /** Set by `firm:create --specialist` (rnc-4 F3b1); never from the form, like `email`. */
+        /** From the form (rnc-4 F5a, R31) and from `firm:create --specialist` (F3b1). */
         public bool $is_specialist = false,
     ) {}
 }

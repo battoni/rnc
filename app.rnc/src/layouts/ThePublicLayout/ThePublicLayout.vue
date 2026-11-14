@@ -66,6 +66,7 @@ const footerTagline = computed(() =>
   isProductSite.value ? t('site.product.footer.tagline') : (firm.value?.tagline ?? t('site.footer.tagline'))
 );
 const hoursLines = computed(() => (firm.value?.business_hours ?? []).map(formatHours));
+const credentials = computed(() => (isProductSite.value ? null : firm.value?.credentials || null));
 const logoName = computed(() => firm.value?.logo_text || hostLogoText.value);
 const isShellPending = computed(() => isBrandPending.value || !logoName.value);
 const hasContact = computed(() => Boolean(firm.value?.address || firm.value?.phone_href || firm.value?.mailbox));
@@ -344,15 +345,16 @@ function onProductNavClick(anchor: string) {
         </div>
 
         <div
-          v-if="!isProductSite"
+          v-if="credentials"
           class="text-muted flex flex-col gap-2"
+          data-testid="footer-credentials"
         >
           <span class="text-heading font-semibold">
             {{ $t('site.footer.credentials') }}
           </span>
 
           <span class="leading-relaxed">
-            {{ $t('site.footer.credentialsText') }}
+            {{ credentials }}
           </span>
         </div>
       </div>

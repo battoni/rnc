@@ -3,11 +3,13 @@
 namespace App\Modules\Lead\Services;
 
 use App\Modules\Firm\Models\Firm;
+use App\Modules\Firm\Services\CurrentFirm;
 use App\Modules\Firm\Services\PlatformSettings;
 use App\Modules\Lead\Helpers\ConsentTerms;
 use App\Modules\Lead\Models\FirmConsentVersion;
 use App\Modules\Lead\Models\Lead;
 use App\Modules\Lead\Repositories\FirmConsentVersionRepository;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\UniqueConstraintViolationException;
 
 /**
@@ -29,6 +31,7 @@ class ConsentTextService
     private const VERSION_ATTEMPTS = 3;
 
     public function __construct(
+        private CurrentFirm $currentFirm,
         private FirmConsentVersionRepository $firmConsentVersionRepository,
         private PlatformSettings $platformSettings,
     ) {}
@@ -57,6 +60,37 @@ class ConsentTextService
             // Another request started the firm first: its version 1 is the answer.
             return $this->firmConsentVersionRepository->findLatestFirmConsentVersion($firmId) ?? throw $exception;
         }
+    }
+
+    /**
+     * Every version of the current firm — the signed-in person's — newest first, with its author
+     * (rnc-4 F5a, R33: the manager's history). A firm with none is started at 1 first, so the list is
+     * never empty. Null when no firm is set (never on an authenticated route).
+     *
+     * @return Collection<int, FirmConsentVersion>|null
+     */
+    public function historyOfCurrentFirm(): ?Collection
+    {
+        $firmId = $this->currentFirm->id();
+
+        if ($firmId === null) {
+            return null;
+        }
+
+        $this->currentVersion($firmId);
+
+        return $this->firmConsentVersionRepository->findAllFirmConsentVersions($firmId);
+    }
+
+    /**
+     * The current firm's new text, version n+1, written by `$authorUserId` (rnc-4 F5a, R33). Null when
+     * no firm is set (never on an authenticated route).
+     */
+    public function createForCurrentFirm(string $text, ?int $authorUserId): ?FirmConsentVersion
+    {
+        $firmId = $this->currentFirm->id();
+
+        return $firmId === null ? null : $this->createVersion($firmId, $text, $authorUserId)->load('author');
     }
 
     /** A new text: version n+1 of the firm (a firm with none is started at 1 first). */

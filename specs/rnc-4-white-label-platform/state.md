@@ -1,5 +1,5 @@
 # State: Reforma hub as a white-label platform for accounting firms
-Stage: build F6b/19
+Stage: build F5a/19
 Updated: 14/11/2026
 Branch: feature/rnc-4-white-label-platform · Worktree: .claude/worktrees/rnc-4
 ## Done
@@ -379,11 +379,48 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   `beta_signup`; helpers (1.16.0) `firmSiteUrl`; env `DEMO_FIRM_SLUG` (`VITE_DEMO_FIRM_SLUG=alvorada` in `.env.example`,
   `.env.test` and this worktree's `.env`); API database (1.29.0) `PlatformFirmSeeder::BETA_CONSENT` as hub's v2 (W71).
   Spec: no C# (W68–W74 stay inside R28/R29/D23/D24).
+- **F5a Firm settings — API** (A35–A38; R30–R33; AM2; W31 closed) · 14/11 · full Pest 2233 (new: `Firm/FirmSettingsTest` 16,
+  `Auth/FirmUsersTest` 19, `Booking/SpecialistHoursTest` 15, `Lead/ConsentVersionEndpointTest` 9; `SeededRolesTest` +1; the route
+  matrix's cases for 7 new routes), all green · Vitest full 1448 (`--maxWorkers=2`; +2: `ThePublicLayout.spec` credentials case,
+  `ThePublicLayout.noCredentials.spec`), all green · Playwright `e2e/site` 25 (the footer's dir; no e2e file added or edited),
+  all green · `make check-app` (aliases 34, vue-tsc), `make check-api` (Pint, PHPStan), `check-portal` (no portal, skipped by the
+  target), `sync-mirror-check`, `sanitize` (lint, format, sort-locales) green; vue, design and arcus reviews inline (fixed: the
+  settings request's three `max:255` folded into `TEXT_MAX_LENGTH`, a redundant comment in `ThePublicLayout` dropped). Phase gate
+  green 14/11/2026 — NOT the full `/battoni-pre-commit`: skipped the full Playwright suite (plan Defaults/D30; only the touched
+  `e2e/site` dir ran) and `check-cortex` (skipped by design here).
+  Red first (negative tests written first, security): 52 of the first run's 69 cases (the four new files + `SeededRolesTest`) failed before the code (the guest 401s, the
+  team's 403s on `auth/users`, and AM2's 404s on another firm's/the operator's account already held from F1a — as they should);
+  both new layout cases failed before the footer change. Mutations seen red: `TeamRole` off (2), the create's firm stamp nulled
+  (4), the bookable filter off (1), a re-flag resetting hours (1), the update's flag ignored (1), the look in the settings answer
+  (1), `firm.settings` off the routes (2), hours' closing-after-opening rule off (1), the consent author dropped (2), the
+  `{escritorio}` rule off (1), `credentials` off `public/firm` (2), the consent history unscoped (2).
+  P6-style list (user management is a privilege boundary): a role is refused in `AssignableRole` (key cap) AND `TeamRole`
+  (`operador`/`parceiro` from any firm member); `firm_id`/`partner_id` have no rule (never reach `UserService`); every user read by
+  id goes through `findFirmUserById` (F1a); the settings, consent and hours routes take no id but the specialist's, and work on
+  `CurrentFirm` (`FirmScope` 404s another firm's specialist).
+  Live (worktree API on 8001, HTTP with a cookie jar, W80): `helena.alvorada` → `GET firm/settings` alvorada, credentials null;
+  `PATCH` credentials + `brand_primary` → `public/firm` shows the line, the colour unchanged; consent v2 201 with Helena as author,
+  history [2, 1]; `POST auth/users` with role `operador` 422 (`cannotAssignUnheldRole` + `roleNotAssignable`); `GET specialists`
+  Bruno, Camila; `X-Firm: franco` 403. Re-seeded after (`make fresh-seed`).
+  What changed: Firm (1.10.0) `FirmSettingsController` (`GET/PATCH firm/settings`), `UpdateFirmSettingsRequest`,
+  `UpdateFirmContactDTO`, `FirmSettingsResource`, `FirmSettingsService::current`/`updateContact`, `firms.credentials` (+ `Firm`,
+  `PublicFirmResource`); Auth (2.15.0) `Rules/TeamRole`, `is_specialist` on the user requests/DTOs, `UserService` starts a newly
+  flagged specialist through Booking, `ResolvesActorPermissions::actorIsPlatformOperator`, permission group `firm` (`firm.settings`);
+  Booking (1.6.0) `SpecialistHoursController` (`GET specialists`, `GET/PUT specialists/{id}/hours`), request, DTO (`#[Present]`),
+  `SpecialistResource`, `SpecialistHourResource`, `SpecialistService::startOnFirmHours`/`list`/`find`/`updateHours`, bookable =
+  flagged; Lead (1.10.0) `ConsentVersionController` (`GET/POST firm/consent-versions`), `StoreConsentVersionRequest`,
+  `StoreConsentVersionDTO`, `ConsentVersionResource`, `ConsentTextService::historyOfCurrentFirm`/`createForCurrentFirm`,
+  `FirmConsentVersion::author()`; database (1.30.0) `create_firms` + `credentials`, `FirmSeeder::CREDENTIALS`,
+  `RoleSeeder::GESTAO_FIRM_KEYS`; routes in `api.local.php` (7, `routeClasses.php`: staff). app.rnc: `ThePublicLayout` reads
+  `firm.credentials` (no block when null, none on the product site), `PublicFirm.credentials`, `site.footer.credentialsText` removed,
+  `rolesAndPermissions.groups.firm` (locales 1.16.0); Site (1.8.1) Known Gap retired; `helpers/RULES.md` table re-padded by Prettier
+  (sanitize). Spec C16, C17.
 ## Next
-1. `/battoni-start-session rnc-4` (or the running `/battoni-run rnc-4`) → **F5a** Firm settings — API (A35–A38;
-   R30–R33): `firm.settings` + `users.*` keys for `gestao`, `GET/PATCH firm/settings`, user create/update scoped to the
-   manager's firm, specialist hours, consent versions for the manager. Read plan.md → F5a and `## Plan review` (AM2's
-   user scoping already landed in F1a).
+1. `/battoni-start-session rnc-4` (or the running `/battoni-run rnc-4`) → **F5b** Firm settings — SPA (A39, A40; R30–R33): module
+   `FirmSettings` on F5a's endpoints — `GET/PATCH firm/settings` (contact, hours, credentials line), `auth/users` with
+   `is_specialist` (role limited to `equipe`/`gestao`; a 422 `users.form.roleNotAssignable` needs its locale), `GET specialists` +
+   `PUT specialists/{id}/hours`, `GET/POST firm/consent-versions` (preview fills `{escritorio}`; 422
+   `leads.consentPlaceholderMissing` needs its locale). Read plan.md → F5b.
 ## Pitfalls
 - (F1a) `UserFactory` now puts every user in the default firm (`franco` under phpunit), creating it
   when absent. A test that creates `Firm::factory(['slug' => 'franco'])` AFTER a user would collide
@@ -513,6 +550,13 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   `ground()` has the same pattern and only works because no brand there has a zero blue.
 - (F6b) Repeated logins in a live script hit the login throttle (429) a few accounts in — space them or log each account
   in once.
+- (F5a) A specialist is bookable only while its person is flagged `is_specialist`: a test that builds a `Specialist` row for a
+  person created without the flag gets no slots and no row in `GET specialists` — `assistantPerson(..., specialist: true)`.
+- (F5a) `PATCH auth/users/{id}` with `is_specialist: true` makes the person bookable on the firm's hours only the first time; a
+  person with a row (even switched off) keeps its old hours.
+- (F5a) In this sandbox `curl` through `rtk` fails and a `php artisan serve &` inside a script never answered; the live check ran
+  the server as a background task and a Python `urllib` script with a cookie jar on `127.0.0.1:8001` (API only — the SPA rule P1
+  is about the browser).
 ## QA
 (none yet — rounds in plan.md → QA)
 ## Seeded people (password `seeding.password`; `battoni` uses `seeding.superadmin_password`)
@@ -564,6 +608,8 @@ F4b done
 F6a done
 10:52 F6b started, attempt 1
 F6b done
+11:27 F5a started, attempt 1
+F5a done
 ## Decided while you were away
 - W1 plan: proposal.html skipped in away mode (spec D27; to reverse: `/battoni-new-proposal rnc-4 final`).
 - W2 plan: the owner's phases are split into 17 builder phases with his labels kept (spec D28); his
@@ -779,3 +825,22 @@ F6b done
 - W74 F6b: `e2e/product/landing.spec.ts` was written after the components, so it was not seen red before the code; its
   contrast sweep was proven by a mutation instead (hero lede in `text-muted` → 1.21:1, red). The Vitest and Pest files
   were red first. To reverse: n/a.
+- W75 F5a: the credentials line (W31) is a nullable `firms.credentials` string, answered by `public/firm` and edited by the manager
+  in `PATCH firm/settings` (not the operator's look form); Franco's line comes from `FirmSeeder::CREDENTIALS`, every other firm starts
+  with none and its footer drops the "Credenciais" block; the product site shows none. The line is the firm's own words in one
+  language — the English site prints it as written (spec C16). To reverse: a look field in the console, or keep a static fallback.
+- W76 F5a: a firm member can never give `operador` or `parceiro`, even holding every key of the role (`Rules\TeamRole`, 422
+  `users.form.roleNotAssignable`), on create AND update — AM2 named only `operador`; a partner login is the partner screen's, made
+  with its partner. Only the firm-less operator passes. To reverse: drop `TeamRole` and rely on `AssignableRole`'s key cap.
+- W77 F5a: the manager gets `users.read|create|update|archive|reset_password` but NOT `users.delete` (deactivate is R31's word) and
+  not `users.search` (no route uses it). To reverse: add the keys to `RoleSeeder::GESTAO_FIRM_KEYS`.
+- W78 F5a: "a newly flagged specialist starts on the firm's hours" — flagging (create or `PATCH is_specialist: true`) makes the row
+  through `SpecialistService::startOnFirmHours`; a person who already had a row keeps its hours. Switching the flag off keeps the row
+  and hides the person from the agenda and the hours list (bookable = flagged), so its hours and past meetings survive (spec C17).
+  A `GET specialists` list was added beside the plan's `GET/PUT specialists/{id}/hours` (the hours screen needs the people). To
+  reverse: delete the row on unflag; drop the list.
+- W79 F5a: a new consent text must hold `{escritorio}` (422 `leads.consentPlaceholderMissing`, ≤ 1000) like the platform default
+  (C15); the history answers the stored words unfilled (the SPA previews them) with `author {id, name}` or null. To reverse: accept
+  any non-empty text.
+- W80 F5a: the live check ran as HTTP calls on the worktree API (8001) with a cookie jar — no screen in this phase; Chrome rounds stay
+  verify's (as W56). To reverse: n/a.

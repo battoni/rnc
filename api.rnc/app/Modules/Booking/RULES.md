@@ -1,5 +1,5 @@
 ---
-version: 1.5.0
+version: 1.6.0
 origin: rnc
 ---
 # RULES — Booking Module
@@ -77,14 +77,28 @@ horário acabou de ser reservado"), `slot_unavailable` 422 (not a slot the agend
 
 `leads` (Lead), through `LeadService`; `users` (the specialist's name, through `Specialist::user`).
 
+## The manager's hours (rnc-4 F5a, R31, R32)
+
+- `GET specialists`, `GET specialists/{id}/hours`, `PUT specialists/{id}/hours` (`firm.settings`,
+  `SpecialistHoursController`): the CURRENT firm's bookable specialists; another firm's id is 404.
+  The PUT replaces the whole week (`UpdateSpecialistHoursRequest`: ISO weekday, `HH:MM`, closing after
+  opening; an empty list empties it). The visitor's availability reads the new hours on its next call.
+- **Bookable = a specialist row whose person is flagged `is_specialist`** (`SpecialistRepository`):
+  switching the flag off takes the person out of the agenda and the hours list, and the row — its
+  hours, its past appointments — stays; switching it back on keeps those hours.
+- **A newly flagged person** is made bookable by Auth's `UserService` through
+  `SpecialistService::startOnFirmHours` (the firm's business hours, or the row it already had).
+  Auth calls this service; Booking never writes `users`.
+
 ## Known Gaps
 
 - *Retired 14/11/2026 (rnc-4 F2a, D11):* "the sender is the firm's mailbox, on a domain nobody
   verified" — the sender is now `mail.from.address`, the one domain `MailSenderTest` checks, and the
   firm's mailbox is the reply-to.
 
-- **No screen edits a specialist's hours or flags a new specialist** — the seeder is the source; a
-  member flagged `is_specialist` later has no hours until it runs again.
+- *Retired 14/11/2026 (rnc-4 F5a, R31, R32):* "no screen edits a specialist's hours or flags a new
+  specialist" — the manager edits hours through `PUT specialists/{id}/hours`, and flagging a person
+  (`auth/users`) starts it on the firm's hours (`SpecialistService::startOnFirmHours`).
 - **No rescheduling or cancelling by the visitor**: the e-mail says to reply or call; the team's
   pipeline (F5) moves the lead, but the appointment itself has no edit yet.
 - **State and city holidays are not in the list** (São Paulo's 25/01, 09/07): a closed national list

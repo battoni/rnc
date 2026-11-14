@@ -21,6 +21,9 @@ use Illuminate\Support\Facades\Schema;
  * (160), `proof` (four `{value, label}`, json), `logo_path` (a file on the `public` disk, F4c) — and
  * `modules`, the list of opt-in module keys (core is code, never stored). `modules` has no database
  * default: MySQL refuses a literal default on a json column, so the model's `$attributes` gives `[]`.
+ *
+ * rnc-4 F5a (R30, W31): `credentials`, the public footer's credentials line (certifications, a
+ * network), the firm's own and edited by its manager in the settings; null shows no line.
  */
 return new class extends Migration
 {
@@ -34,6 +37,7 @@ return new class extends Migration
             $table->string('short_name', 40);
             $table->string('tagline', 160)->nullable();
             $table->json('proof')->nullable();
+            $table->string('credentials')->nullable();
             $table->string('logo_path')->nullable();
             $table->string('brand_primary', 7);
             $table->string('brand_accent', 7);

@@ -156,6 +156,18 @@ return [
             ['labelKey' => 'rolesAndPermissions.permissions.read', 'key' => 'briefing.read', 'value' => false],
         ],
     ],
+    // rnc-4 F5a (R30–R33): the firm's own settings — contact, hours, credentials line, the
+    // specialists' hours and the consent's versions. The manager's (`gestao`); never the look nor
+    // the modules, which stay the operator's console.
+    [
+        'id' => 'firm',
+        'nameKey' => 'rolesAndPermissions.groups.firm',
+        'icon' => 'pi pi-building',
+        'permissions' => [
+            ['labelKey' => 'rolesAndPermissions.permissions.manage', 'key' => 'firm.settings', 'value' => false],
+        ],
+    ],
+
     [
         'id' => 'platform',
         'nameKey' => 'rolesAndPermissions.groups.platform',

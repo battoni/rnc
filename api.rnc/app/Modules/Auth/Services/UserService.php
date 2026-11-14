@@ -9,6 +9,7 @@ use App\Modules\Auth\Enums\UserStatus;
 use App\Modules\Auth\Repositories\RoleRepository;
 use App\Modules\Auth\Repositories\UserPermissionRepository;
 use App\Modules\Auth\Repositories\UserRepository;
+use App\Modules\Booking\Services\SpecialistService;
 use App\Modules\Firm\Services\CurrentFirm;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -24,6 +25,7 @@ class UserService
         private CurrentFirm $currentFirm,
         private PermissionService $permissionService,
         private RoleRepository $roleRepository,
+        private SpecialistService $specialistService,
         private UserPermissionRepository $userPermissionRepository,
         private UserRepository $userRepository,
     ) {}
@@ -82,6 +84,10 @@ class UserService
                 );
             }
 
+            if ($dto->is_specialist) {
+                $this->startSpecialist($user);
+            }
+
             return $user;
         });
 
@@ -116,6 +122,7 @@ class UserService
             'role_id' => $dto->role_id,
             'status' => $dto->status,
             'password' => $dto->password,
+            'is_specialist' => $dto->is_specialist,
         ];
 
         foreach ($updateCandidates as $field => $value) {
@@ -141,6 +148,10 @@ class UserService
         DB::transaction(function () use ($id, $data, $dto, $user): void {
             if (! empty($data)) {
                 $this->userRepository->updateUser($id, $data);
+            }
+
+            if (($data['is_specialist'] ?? false) === true) {
+                $this->startSpecialist($user);
             }
 
             if ($dto->permissions instanceof Optional) {
@@ -272,6 +283,22 @@ class UserService
             fn (bool $value, string $key) => $value !== (bool) ($rolePermissions[$key] ?? false),
             ARRAY_FILTER_USE_BOTH
         );
+    }
+
+    /**
+     * A person just flagged a specialist is bookable on the firm's business hours (rnc-4 R32); one
+     * who was a specialist before keeps its own hours (`SpecialistService::startOnFirmHours`). The
+     * row lands in the person's own firm — the one this request runs as, which is the person's.
+     */
+    private function startSpecialist(User $user): void
+    {
+        $firm = $this->currentFirm->get();
+
+        if (! $firm) {
+            return;
+        }
+
+        $this->specialistService->startOnFirmHours($user, $firm);
     }
 
     /**

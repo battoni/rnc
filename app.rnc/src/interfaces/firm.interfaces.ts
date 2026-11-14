@@ -13,6 +13,8 @@ interface PublicFirm {
   brand_accent: string;
   brand_primary: string;
   business_hours: PublicFirmHours[];
+  /** The footer's credentials line (rnc-4 F5a, W31), the firm's own; null or absent shows none. */
+  credentials?: string | null;
   is_platform?: boolean;
   logo_text: string;
   logo_url?: string | null;

@@ -2,6 +2,16 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.10.0 — 2026-11-14
+
+### Added
+
+- The manager's consent versions (rnc-4 F5a, R33): `ConsentVersionController` (`GET/POST
+  firm/consent-versions`, `firm.settings`), `StoreConsentVersionRequest`, `StoreConsentVersionDTO`,
+  `ConsentVersionResource`; `ConsentTextService::historyOfCurrentFirm` / `createForCurrentFirm`;
+  `FirmConsentVersionRepository::findAllFirmConsentVersions`; `FirmConsentVersion::author()`. Tested by
+  `tests/Feature/Lead/ConsentVersionEndpointTest`.
+
 ## 1.9.0 — 2026-11-14
 
 ### Added

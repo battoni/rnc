@@ -38,6 +38,7 @@ describe('GET /api/public/firm', function () {
                     ['weekdays' => [1, 2, 3, 4], 'from' => '08:00', 'to' => '18:00'],
                     ['weekdays' => [5], 'from' => '08:00', 'to' => '17:00'],
                 ],
+                'credentials' => 'ISO 9001:2015 · PQEC Sescon-SP · Rede Nacional de Contabilidade',
                 'platform' => ['name' => 'Hub da Reforma'],
                 'modules' => ['portfolio', 'fiscal', 'radar', 'partners', 'contracts', 'chat', 'assistant', 'briefing', 'brands', 'channel'],
             ]]);

@@ -1,7 +1,7 @@
 ---
-version: 1.9.0
+version: 1.10.0
 origin: rnc
-based-on: 1.9.0
+based-on: 1.10.0
 ---
 # RULES — Lead Module
 
@@ -91,6 +91,16 @@ and `BetaSignupService` refuses again. The platform firm's team hears it by bell
 - **The visitor is kept by UUID** (`visitor_uuid`), not a foreign key to Tracking's `visitors`: the
   diagnostic may start before the visit's beacon lands, and the two meet on (firm, uuid).
 - **Children carry no firm column** (`lead_consents`, `lead_events`): they belong to their lead.
+
+## The manager's consent versions (rnc-4 F5a, R33)
+
+- `GET firm/consent-versions` (newest first: version, the stored words with `{escritorio}` unfilled,
+  date, author `{id, name}` or null) and `POST firm/consent-versions` (`{text}` → version n+1 with the
+  signed-in person as author), `firm.settings`, through `ConsentTextService::historyOfCurrentFirm` /
+  `createForCurrentFirm` — always the CURRENT firm. The words must hold `{escritorio}`
+  (`StoreConsentVersionRequest`, 422 `leads.consentPlaceholderMissing`, ≤ 1000), as the platform
+  default (C15). A stored answer keeps its version and words; nothing is edited in place.
+- `FirmConsentVersion::author()` reads `users` (Auth's table) for the name — a read, declared here.
 
 ## Known Gaps
 - **A beta signup has no dedupe**: the same firm sending twice is two `beta` leads; the throttle

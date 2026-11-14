@@ -446,3 +446,8 @@ the deploy; a per-action audit trail inside view-as; firm self-signup without th
   (422 `platform.consentPlaceholderMissing`): a consent that names no firm authorises nobody, and every firm's
   version 1 fills its own name there (C5). Existing firms' versions are never touched (R13). Reverse: accept any
   non-empty text.
+- C16 (F5a, W75) R30's contact data includes the public footer's credentials line: `firms.credentials`, edited by the manager,
+  answered by `public/firm`; a firm without one shows no credentials block (Franco keeps its line by seed). Closes the Site Known Gap
+  W31 left. Reverse: a static footer line again.
+- C17 (F5a, W78) R31's specialist flag switched off keeps the specialist's row and hours and takes the person out of the agenda;
+  switched on again it keeps those hours (R32's "starts on the firm's hours" is the first flag only). Reverse: delete the row on unflag.

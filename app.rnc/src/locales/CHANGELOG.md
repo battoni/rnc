@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.16.0 — 2026-11-14
+
+### Changed
+
+- `local/*.json` (rnc-4 F5a): `rolesAndPermissions.groups.firm` for the new `firm.settings` key on the roles screen; `site.footer.credentialsText` removed — the credentials line is the firm's own field (W31).
+
 ## 1.15.0 — 2026-11-14
 
 ### Added

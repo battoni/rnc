@@ -2,6 +2,7 @@
 
 namespace App\Modules\Auth\Requests\Concerns;
 
+use App\Http\Middleware\EnsurePlatformOperator;
 use App\Models\User;
 use App\Modules\Auth\Services\PermissionService;
 
@@ -23,5 +24,13 @@ trait ResolvesActorPermissions
         $actor = $this->user();
 
         return $actor instanceof User ? app(PermissionService::class)->forUser($actor) : [];
+    }
+
+    /** The firm-less `operador` (rnc-4 F4a): the one actor who may give a role outside a firm's team (`TeamRole`). */
+    protected function actorIsPlatformOperator(): bool
+    {
+        $actor = $this->user();
+
+        return $actor instanceof User && EnsurePlatformOperator::isPlatformOperator($actor);
     }
 }

@@ -148,4 +148,13 @@ return [
     'POST platform/firms/{id}/manager' => 'staff',
     'GET platform/consent-default' => 'staff',
     'PUT platform/consent-default' => 'staff',
+
+    // STAFF — rnc-4 F5a the firm's settings, `firm.settings` (the manager, `gestao`)
+    'GET firm/settings' => 'staff',
+    'PATCH firm/settings' => 'staff',
+    'GET firm/consent-versions' => 'staff',
+    'POST firm/consent-versions' => 'staff',
+    'GET specialists' => 'staff',
+    'GET specialists/{id}/hours' => 'staff',
+    'PUT specialists/{id}/hours' => 'staff',
 ];

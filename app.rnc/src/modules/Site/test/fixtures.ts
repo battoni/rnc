@@ -9,6 +9,8 @@ const FIRM_FIXTURE: PublicFirm = {
     { from: '08:00', to: '18:00', weekdays: [1, 2, 3, 4] },
     { from: '08:00', to: '17:00', weekdays: [5] },
   ],
+  // rnc-4 F5a (W31): the footer's line, as `FirmSeeder` writes it.
+  credentials: 'ISO 9001:2015 · PQEC Sescon-SP · Rede Nacional de Contabilidade',
   logo_text: 'Franco Contabilidade',
   mailbox: 'saf@franco-rnc.com.br',
   name: 'Franco Contabilidade',

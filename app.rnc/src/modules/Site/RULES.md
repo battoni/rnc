@@ -1,5 +1,5 @@
 ---
-version: 1.8.0
+version: 1.8.1
 origin: rnc
 ---
 
@@ -122,10 +122,12 @@ index.ts`, `constants.ts`), so `@SiteModule` still answers for every name it exp
 
 ## Known Gaps
 
-- **The footer's credentials line is one firm's** (`site.footer.credentialsText`: ISO 9001:2015 ·
-  PQEC Sescon-SP · Rede Nacional de Contabilidade). It names no tenant, so R15 holds, but another
-  firm's site shows Franco's certifications. It belongs on the firm's row with the other brand fields
-  — the console phases (F3/F4) decide where; until then it is static copy.
+- ~~The footer's credentials line is one firm's~~ — retired 14/11/2026 (rnc-4 F5a, W31): the line is
+  the firm's own field (`firms.credentials`, answered by `public/firm` as `credentials`, edited by the
+  manager in `PATCH firm/settings`). `ThePublicLayout` prints it under "Credenciais" and shows no
+  block for a firm without one (and none on the product site); Franco keeps its line through
+  `FirmSeeder::CREDENTIALS`. The static `site.footer.credentialsText` is gone, so the line is in the
+  firm's own language only (an English visitor reads Franco's line in Portuguese, like its tagline).
 
 - **No server-side rendering** (D4): crawlers that run no JavaScript see an empty shell.
 - **`index.html` and the API still say `noindex`** (the bootstrap's back-office default). The public

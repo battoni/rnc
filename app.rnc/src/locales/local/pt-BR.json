@@ -60,6 +60,7 @@
   },
   "rolesAndPermissions": {
     "groups": {
+      "firm": "Escritório",
       "leads": "Leads",
       "agenda": "Agenda",
       "notifications": "Notificações",
@@ -225,7 +226,6 @@
       "contact": "Contato",
       "hours": "Atendimento",
       "credentials": "Credenciais",
-      "credentialsText": "ISO 9001:2015 · PQEC Sescon-SP · Rede Nacional de Contabilidade",
       "disclaimer": "Os valores do site e do diagnóstico são estimativas, não cálculo fiscal.",
       "hoursRange": "{days}, {from} às {to}",
       "dayRange": "{first} a {last}",

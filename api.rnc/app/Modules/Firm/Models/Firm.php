@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $short_name
  * @property string|null $tagline
  * @property list<array{value: string, label: string}>|null $proof four points; null keeps the site's own copy
+ * @property string|null $credentials the public footer's credentials line (rnc-4 F5a, W31); null shows none
  * @property string|null $logo_path a file on the `public` disk (rnc-4 F4c); null shows `logo_text`
  * @property list<string> $modules the opt-in module keys (rnc-4 D15); core is code, never stored
  * @property bool $is_platform
@@ -33,7 +34,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $partner_commission_rate_bp basis points: 1000 = 10 %
  * @property int $partner_monthly_fee_cents
  */
-#[Fillable(['name', 'slug', 'logo_text', 'short_name', 'tagline', 'proof', 'logo_path', 'brand_primary', 'brand_accent', 'address', 'phone', 'mailbox', 'business_hours', 'partner_money_model', 'partner_commission_rate_bp', 'partner_monthly_fee_cents', 'is_platform', 'modules'])]
+#[Fillable(['name', 'slug', 'logo_text', 'short_name', 'tagline', 'proof', 'credentials', 'logo_path', 'brand_primary', 'brand_accent', 'address', 'phone', 'mailbox', 'business_hours', 'partner_money_model', 'partner_commission_rate_bp', 'partner_monthly_fee_cents', 'is_platform', 'modules'])]
 class Firm extends Model
 {
     /** @use HasFactory<FirmFactory> */

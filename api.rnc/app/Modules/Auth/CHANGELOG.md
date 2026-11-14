@@ -3,6 +3,16 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 2.15.0 — 2026-11-14
+
+### Added
+
+- The firm's manager runs its team (rnc-4 F5a, R31, AM2): `Rules/TeamRole` (no `operador` or
+  `parceiro` from a firm member), `is_specialist` on `StoreUserRequest` / `UpdateUserRequest` /
+  `UserUpdateDTO`, `UserService` starts a newly flagged specialist (Booking's `SpecialistService`),
+  `ResolvesActorPermissions::actorIsPlatformOperator`; the `firm` permission group (`firm.settings`).
+  Tested by `tests/Feature/Auth/FirmUsersTest`, `SeededRolesTest`.
+
 ## 2.14.0 — 2026-11-14
 - The platform console's keys (rnc-4 F4a, R24): `platform.firms` and `platform.consent` in a `platform` group; `RoleService::updatePermissions` refuses either to any role but the administrator's (422 `rolesAndPermissions.operatorOnlyKey`, `OPERATOR_ONLY_KEY_PREFIX`). `UserService::resetPassword()` (new password, every session ends) and `findByUsername()` for the console's manager login. Tested by `tests/Feature/Access/Phase4AccessTest`.
 

@@ -31,6 +31,9 @@ use Illuminate\Support\Facades\Storage;
  * core is always on and never listed): the site hides what the firm has off, the chat receptionist
  * above all. The firm's, under a sub-brand too — a brand has no modules of its own.
  *
+ * `credentials` is the footer's credentials line (rnc-4 F5a, W31), the firm's under a sub-brand too;
+ * null shows none.
+ *
  * @mixin Firm
  */
 class PublicFirmResource extends JsonResource
@@ -70,6 +73,7 @@ class PublicFirmResource extends JsonResource
             'phone_href' => $this->phone ? self::BRAZIL_DIALING_PREFIX.preg_replace('/\D/', '', $this->phone) : null,
             'mailbox' => $this->mailbox,
             'business_hours' => $this->business_hours,
+            'credentials' => $this->credentials,
             'platform' => ['name' => (string) config('platform.name')],
             'modules' => FirmModules::enabled($this->resource),
         ];

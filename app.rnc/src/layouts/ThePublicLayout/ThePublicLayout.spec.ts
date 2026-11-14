@@ -63,6 +63,16 @@ describe('ThePublicLayout', () => {
     expect(footer.find('a[href="mailto:saf@franco-rnc.com.br"]').exists()).toBe(true);
   });
 
+  // rnc-4 F5a (W31): the credentials line is the firm's own field, edited in its settings (a firm
+  // without one: `ThePublicLayout.noCredentials.spec.ts`, since the firm is read once per page load).
+  it("writes the firm's own credentials line in the footer", async () => {
+    const footer = (await mountLayout()).find('footer');
+
+    expect(footer.find('[data-testid="footer-credentials"]').text()).toContain(
+      'ISO 9001:2015 · PQEC Sescon-SP · Rede Nacional de Contabilidade'
+    );
+  });
+
   it('writes the business hours from the API, a run of days as a range', async () => {
     const footer = (await mountLayout()).find('footer');
 

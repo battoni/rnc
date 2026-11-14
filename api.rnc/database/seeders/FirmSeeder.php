@@ -22,6 +22,9 @@ class FirmSeeder extends Seeder
     /** Franco's own consent since rnc-1 (AM12), `{escritorio}` where its name was. */
     public const CONSENT_V1 = 'Autorizo a {escritorio} a me apresentar a especialistas da Rede de Especialistas Franco quando o diagnóstico indicar.';
 
+    /** The public footer's credentials line (rnc-4 F5a, W31): the site printed it as static copy until now. */
+    public const CREDENTIALS = 'ISO 9001:2015 · PQEC Sescon-SP · Rede Nacional de Contabilidade';
+
     /** @var list<array{value: string, label: string}> */
     private const PROOF = [
         ['value' => '35 anos', 'label' => 'em São Paulo'],
@@ -39,6 +42,7 @@ class FirmSeeder extends Seeder
                 'logo_text' => 'Franco Contabilidade',
                 'short_name' => 'Franco',
                 'proof' => self::PROOF,
+                'credentials' => self::CREDENTIALS,
                 // Every module, `channel` and `brands` included: the network's channel and Express/Prime are its (rnc-4 R16).
                 'modules' => FirmModules::ALL,
                 'brand_primary' => '#00375a',

@@ -1,5 +1,5 @@
 ---
-version: 2.14.0
+version: 2.15.0
 origin: pendulum
 based-on: 2.9.0
 ---
@@ -54,6 +54,21 @@ there is no "everything minus a list" left to subtract from. The protected all-k
   `firm` (Firm's `FirmSummaryResource`, null for a firm-less account) and `platform: {name,
   is_operator, view_as}` — `is_operator` is the `operador` role, `view_as` Firm's `ViewAsFirm` (null
   until F4c). A user in a list or the login answer does not carry them.
+
+## The firm's manager runs its team (rnc-4 F5a, R31, AM2, LOCAL)
+
+- `gestao` holds `users.read|create|update|archive|reset_password` and `firm.settings`
+  (`RoleSeeder::GESTAO_FIRM_KEYS`); never `users.delete` nor `permissions.*` (the roles screen).
+- **A firm member gives team roles only** (`Rules\TeamRole`, on create and update): `operador` and
+  `parceiro` are refused (`users.form.roleNotAssignable`) to anyone but the firm-less platform
+  operator, even holding every key of the role — beside `AssignableRole`'s key cap. `firm_id` and
+  `partner_id` have no rule, so they never reach the service: a new account is stamped with the
+  current firm (C3) and partner logins are the partner screen's.
+- `is_specialist` is accepted on create and update; newly true makes the person bookable through
+  Booking's `SpecialistService::startOnFirmHours` (this module calls it; it never writes Booking's
+  tables itself).
+- Reaching another firm's account or the firm-less operator is 404 (F1a's scoped reads,
+  `findFirmUserById`). Tested by `tests/Feature/Auth/FirmUsersTest`.
 
 ## Domain
 

@@ -6,6 +6,7 @@ use App\Modules\Auth\Repositories\UserPermissionRepository;
 use App\Modules\Auth\Repositories\UserRepository;
 use App\Modules\Auth\Services\PermissionService;
 use App\Modules\Auth\Services\UserService;
+use App\Modules\Booking\Services\SpecialistService;
 use App\Modules\Firm\Models\Firm;
 use App\Modules\Firm\Services\CurrentFirm;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -28,7 +29,7 @@ function makeUserService(
         $roleRepo->shouldReceive('getRolePermissions')->andReturn([]);
     }
 
-    return new UserService(userServiceFirm(), $permService, $roleRepo, $permRepo, $userRepo);
+    return new UserService(userServiceFirm(), $permService, $roleRepo, Mockery::mock(SpecialistService::class), $permRepo, $userRepo);
 }
 
 const USER_SERVICE_FIRM_ID = 7;

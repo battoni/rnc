@@ -1,5 +1,5 @@
 ---
-version: 1.9.0
+version: 1.10.0
 origin: rnc
 ---
 # RULES — Firm Module
@@ -104,6 +104,17 @@ firms records of the Channel module, with no tenant.
   Partner's `LedgerService` reads them through `CurrentFirm`. The rate and the fee have no write
   path yet: they change in the seeder or the database (Known Gaps).
 - `PublicFirmResource` is an allow-list, so none of this reaches the public site.
+
+## The manager's settings (rnc-4 F5a, R30, D25)
+
+- `GET/PATCH firm/settings` (`firm.settings`, granted to `gestao`; `FirmSettingsController`): the
+  CURRENT firm's name and slug to read, and its address, phone, mailbox, business hours and
+  `credentials` (the public footer's line, W31) to edit — `FirmSettingsService::updateContact`, the
+  same only writer. `UpdateFirmSettingsRequest` has no rule for the look, the slug, the modules or the
+  money model, so a manager sending them changes nothing (the operator's console keeps them). An
+  explicit null clears a field; `business_hours: []` is a closed week.
+- `firms.credentials` (nullable, 255) is answered by `public/firm` as `credentials`; Franco's line
+  is `FirmSeeder::CREDENTIALS`, every other firm starts with none.
 
 ## Modules per firm (rnc-4 F3a, R16–R20, D15, D16)
 

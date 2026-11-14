@@ -1,5 +1,13 @@
 # Changelog — Site Module
 
+## 1.8.1 — 2026-11-14
+
+### Changed
+
+- The footer's credentials line is the firm's own (rnc-4 F5a, W31): `ThePublicLayout` reads
+  `public/firm`'s `credentials` and drops the block when it is null; `site.footer.credentialsText`
+  removed. Known Gap retired. Tested by `ThePublicLayout.spec` and `ThePublicLayout.noCredentials.spec`.
+
 ## 1.8.0 — 2026-11-14
 
 ### Added

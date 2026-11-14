@@ -60,6 +60,7 @@
   },
   "rolesAndPermissions": {
     "groups": {
+      "firm": "Firm",
       "leads": "Leads",
       "agenda": "Agenda",
       "notifications": "Notifications",
@@ -225,7 +226,6 @@
       "contact": "Contact",
       "hours": "Opening hours",
       "credentials": "Credentials",
-      "credentialsText": "ISO 9001:2015 · PQEC Sescon-SP · National Accounting Network",
       "disclaimer": "The values on this site and in the diagnostic are estimates, not a tax calculation.",
       "hoursRange": "{days}, {from} to {to}",
       "dayRange": "{first} to {last}",

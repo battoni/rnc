@@ -14,15 +14,18 @@ use App\Modules\Assistant\Controllers\AssistantController;
 use App\Modules\Assistant\Controllers\NoteController;
 use App\Modules\Booking\Controllers\PublicBookingController;
 use App\Modules\Booking\Controllers\PublicReportController;
+use App\Modules\Booking\Controllers\SpecialistHoursController;
 use App\Modules\Briefing\Controllers\BriefingController;
 use App\Modules\Channel\Controllers\ChannelController;
 use App\Modules\Content\Controllers\PublicSectorPageController;
 use App\Modules\Diagnostic\Controllers\PublicDiagnosticController;
 use App\Modules\Firm\Controllers\BrandController;
+use App\Modules\Firm\Controllers\FirmSettingsController;
 use App\Modules\Firm\Controllers\PublicFirmController;
 use App\Modules\Fiscal\Controllers\NfeImportController;
 use App\Modules\Fiscal\Controllers\ReadinessController;
 use App\Modules\Fiscal\Controllers\SupplierCreditController;
+use App\Modules\Lead\Controllers\ConsentVersionController;
 use App\Modules\Lead\Controllers\PublicBetaSignupController;
 use App\Modules\Metrics\Controllers\FunnelController;
 use App\Modules\Notification\Controllers\NotificationController;
@@ -243,3 +246,16 @@ Route::post('platform/firms/{id}/manager', [PlatformFirmController::class, 'mana
 $platformConsent = ['auth', 'permission:platform.consent', 'platform.operator'];
 Route::get('platform/consent-default', [PlatformConsentController::class, 'show'])->middleware($platformConsent);
 Route::put('platform/consent-default', [PlatformConsentController::class, 'update'])->middleware($platformConsent);
+
+// THE FIRM'S SETTINGS (rnc-4 F5a, R30–R33): its manager's (`firm.settings`, role `gestao`). Every
+// route works on the CURRENT firm — the signed-in person's — and a specialist of another firm is 404
+// (`BelongsToFirm`). The team's logins are `auth/users` (routes/api.php, scoped since F1a). Core
+// surfaces: no `module:`.
+$firmSettings = ['auth', 'permission:firm.settings'];
+Route::get('firm/settings', [FirmSettingsController::class, 'show'])->middleware($firmSettings);
+Route::patch('firm/settings', [FirmSettingsController::class, 'update'])->middleware($firmSettings);
+Route::get('firm/consent-versions', [ConsentVersionController::class, 'index'])->middleware($firmSettings);
+Route::post('firm/consent-versions', [ConsentVersionController::class, 'store'])->middleware($firmSettings);
+Route::get('specialists', [SpecialistHoursController::class, 'index'])->middleware($firmSettings);
+Route::get('specialists/{id}/hours', [SpecialistHoursController::class, 'show'])->middleware($firmSettings);
+Route::put('specialists/{id}/hours', [SpecialistHoursController::class, 'update'])->middleware($firmSettings);

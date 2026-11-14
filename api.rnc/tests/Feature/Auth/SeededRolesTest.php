@@ -82,6 +82,7 @@ describe('the seeded roles', function () {
             'channel.read',
             'clients.import',
             'contracts.manage',
+            'firm.settings',
             'fiscal.import',
             'fiscal.read',
             'home.read',
@@ -94,6 +95,11 @@ describe('the seeded roles', function () {
             'radar.manage',
             'referrals.read',
             'repricing.manage',
+            'users.archive',
+            'users.create',
+            'users.read',
+            'users.reset_password',
+            'users.update',
         ]);
     });
 
@@ -139,9 +145,22 @@ describe('the seeded roles', function () {
             ->and(seededRoleKeys('parceiro'))->not->toContain('briefing.read');
     });
 
-    it('keep the staff directory and the permission matrix with the operator', function () {
-        foreach (['gestao', 'equipe', 'parceiro'] as $slug) {
+    /*
+     * Retired 14/11/2026 (rnc-4 F5a, R31): "keep the staff directory with the operator" — the firm's
+     * manager now manages its own team's logins (list, create, edit, deactivate, reset a password),
+     * scoped to its firm since F1a. Deleting an account and the roles screen stay the operator's.
+     */
+    it("give the manager its firm's team logins and settings, never the delete nor the permission matrix (rnc-4 R30, R31)", function () {
+        expect(seededRoleKeys('gestao'))->toContain('firm.settings', 'users.read', 'users.create', 'users.update', 'users.archive', 'users.reset_password')
+            ->not->toContain('users.delete')
+            ->not->toContain('permissions.read')
+            ->not->toContain('permissions.update');
+    });
+
+    it('keep the staff directory, the settings and the permission matrix from the team and the partner', function () {
+        foreach (['equipe', 'parceiro'] as $slug) {
             expect(seededRoleKeys($slug))->not->toContain('users.read')
+                ->and(seededRoleKeys($slug))->not->toContain('firm.settings')
                 ->and(seededRoleKeys($slug))->not->toContain('permissions.update');
         }
     });

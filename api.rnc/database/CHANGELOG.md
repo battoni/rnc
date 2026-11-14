@@ -3,6 +3,14 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.30.0 — 2026-11-14
+
+### Added
+
+- `firms.credentials` (nullable string), folded into `create_firms` (rnc-4 F5a, W31); `FirmSeeder::CREDENTIALS`
+  writes Franco's footer line. `RoleSeeder::GESTAO_FIRM_KEYS` grants the manager its firm's settings and
+  team logins (R30, R31).
+
 ## 1.29.0 — 2026-11-14
 - `PlatformFirmSeeder` (rnc-4 F6b, W66): the platform firm's consent is the beta signup's — "contact about the beta" (`BETA_CONSENT`, with `{escritorio}`) — written as its version 2 over the copied version 1, only while the firm is still at version 1, so a re-seed never stacks a version on the operator's own words. Tested by `tests/Feature/Firm/PlatformSeedersTest`.
 

@@ -3,20 +3,32 @@
 namespace App\Modules\Booking\Repositories;
 
 use App\Modules\Booking\Models\Specialist;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
-/** Every read is firm-scoped by `BelongsToFirm`: another firm's specialist is simply not found. */
+/**
+ * Every read is firm-scoped by `BelongsToFirm`: another firm's specialist is simply not found. A
+ * bookable specialist is a row whose person is still flagged `is_specialist` (rnc-4 F5a, R31): the
+ * manager's switch off takes the person out of the agenda, and the row — its hours, its past
+ * appointments — stays for the day the switch goes back on.
+ */
 class SpecialistRepository
 {
-    /** @return Collection<int, Specialist> the current firm's specialists, with the person and the hours */
+    /** @return Collection<int, Specialist> the current firm's bookable specialists, with the person and the hours */
     public function findAllSpecialistsWithHours(): Collection
     {
-        return Specialist::query()->with(['user', 'hours'])->orderBy('id')->get();
+        return $this->bookable()->with(['user', 'hours'])->orderBy('id')->get();
     }
 
     public function findSpecialistWithHoursById(int $id): ?Specialist
     {
-        return Specialist::query()->with(['user', 'hours'])->find($id);
+        return $this->bookable()->with(['user', 'hours'])->find($id);
+    }
+
+    /** The person's specialist row in the current firm, flagged or not; null when it never had one. */
+    public function findSpecialistByUserId(int $userId): ?Specialist
+    {
+        return Specialist::query()->where('user_id', $userId)->first();
     }
 
     /**
@@ -39,5 +51,11 @@ class SpecialistRepository
     {
         $specialist->hours()->delete();
         $specialist->hours()->createMany($hours);
+    }
+
+    /** @return Builder<Specialist> */
+    private function bookable(): Builder
+    {
+        return Specialist::query()->whereHas('user', fn (Builder $query) => $query->where('is_specialist', true));
     }
 }
