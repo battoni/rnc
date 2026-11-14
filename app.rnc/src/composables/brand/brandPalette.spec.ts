@@ -8,6 +8,8 @@ import { brandPalette, contrastRatio } from './brandPalette';
  * any accent the operator picks: one that would not read is lightened until it does.
  */
 const DARK_PANEL = '#141413';
+/** The dark scheme's canvas (battoni-dev), under the back office's links. */
+const DARK_CANVAS = '#0a0a09';
 const WHITE = '#ffffff';
 const AA = 4.5;
 
@@ -18,6 +20,9 @@ const BRANDS = {
   murky: ['#1d3b2a', '#20302a'],
   // A primary right at the API's floor (white on it 4,54:1): the hero's tints must go almost white.
   atTheFloor: ['#767676', '#ff8a3d'],
+  // rnc-4: the firms' own rows, painted on the back office too.
+  franco: ['#00375a', '#14c3ff'],
+  alvorada: ['#0f5c4d', '#f4b63f'],
 } as const;
 
 describe('contrastRatio', () => {
@@ -68,6 +73,10 @@ describe('brandPalette', () => {
     expect(contrastRatio(step(950), step(200))).toBeGreaterThanOrEqual(AA);
     // The brand word in the dark scheme (`--color-primary-text` is the 300 there).
     expect(contrastRatio(step(300), DARK_PANEL)).toBeGreaterThanOrEqual(AA);
+    // The dark scheme's link (`celer-button-link-primary` is the 400 there), on the canvas and the
+    // panel (rnc-4 F2b: the back office paints the firm's ramp now).
+    expect(contrastRatio(step(400), DARK_CANVAS)).toBeGreaterThanOrEqual(AA);
+    expect(contrastRatio(step(400), DARK_PANEL)).toBeGreaterThanOrEqual(AA);
     // The hero lede and kicker on the band's darkest and lightest ends.
     expect(contrastRatio(step(100), step(500))).toBeGreaterThanOrEqual(AA);
     expect(contrastRatio(step(200), step(500))).toBeGreaterThanOrEqual(AA);

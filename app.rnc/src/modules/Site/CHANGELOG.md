@@ -1,5 +1,16 @@
 # Changelog — Site Module
 
+## 1.6.0 — 2026-11-14
+
+### Changed
+
+- The brand composables moved to `src/composables/brand/` (rnc-4 F2b, D10) — `publicBrand`,
+  `brandPalette`, `useBrandTheme` (now also `useSubBrandTheme`) and the `BRAND_*` constants — and are
+  re-exported here. `PublicFirm` moved to `@Interfaces` (with `is_platform`, `logo_url`, `platform`) and
+  is re-exported. `usePublicFirm` takes the main brand's firm and `isFirmMissing` from `useFirmBrand`.
+- `ThePublicLayout` calls `useSubBrandTheme` (the firm's palette is `App.vue`'s) and writes the firm's
+  `logo_text` in the mark.
+
 ## 1.5.0 — 2026-11-13
 
 ### Added

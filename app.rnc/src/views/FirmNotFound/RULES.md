@@ -1,5 +1,5 @@
 ---
-version: 1.0.0
+version: 1.0.1
 origin: rnc
 ---
 
@@ -11,7 +11,7 @@ origin: rnc
 
 What a subdomain the API does not know renders (rnc-4 R3): the product mark, "Escritório não
 encontrado", what to check, and a link to the root. Shown by `TheRouteGuard` in place of any path when
-`usePublicFirm().isFirmMissing` is true (the boot `GET public/firm` answered 404 `firms.notFound`).
+`useFirmBrand().isFirmMissing` (`@Composables`, rnc-4 F2b) is true (the boot `GET public/firm` answered 404 `firms.notFound`).
 
 ## Intentional Decisions
 

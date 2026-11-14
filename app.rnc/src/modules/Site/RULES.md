@@ -1,5 +1,5 @@
 ---
-version: 1.5.0
+version: 1.6.0
 origin: rnc
 ---
 
@@ -51,7 +51,7 @@ No login. The CTA's destination `/diagnostico` is the Diagnostic module's (F3); 
 - **A site `RouterLink` that can match the current page sets `exact-active-class`** (empty, or
   `text-heading` in the nav): the theme paints `.router-link-exact-active` with the rail's glowing
   bar, which on the site drew a bar beside the logo and every link to `/`.
-- **Prose is sans on this theme** (`franco.css`, W13), not battoni-dev's mono.
+- **Prose is sans on this theme** (`hub.css`, as `franco.css` before it — W13), not battoni-dev's mono.
 - **The motion is the demo's feel, in the repo's grammar** (`src/directives/RULES.md`): what is on
   screen at load enters on mount in CSS (`motion-enter`, `AWordRise`), what is below the fold waits
   for `v-reveal`, and nothing is hidden unless the browser has confirmed it can show it again. The
@@ -73,9 +73,19 @@ No login. The CTA's destination `/diagnostico` is the Diagnostic module's (F3); 
 - **Every public call goes through `publicApi`** — never `API` straight — so `X-Brand` is on all of
   them (C1) and a refused brand is retried once as the main brand: a stale tab lands on Franco, not on
   an error. The events beacon cannot carry a header; the API counts it on the main brand (AM21).
-- **`usePublicFirm().isFirmMissing`** (rnc-4 R3) is true only after the read answered 404
-  `firms.notFound` — the host names a firm the API does not know. `TheRouteGuard` reads it; any
+- **`usePublicFirm().isFirmMissing`** (rnc-4 R3) is `useFirmBrand`'s (`@Composables`): true only after
+  the host firm's boot read answered 404 `firms.notFound`. `TheRouteGuard` reads it from there; any
   other failure leaves it false.
+- **The brand composables live in `@Composables` now** (rnc-4 D10): `publicBrand`, `brandPalette`,
+  `useBrandTheme`/`useSubBrandTheme` and the `BRAND_*` constants moved to `src/composables/brand/`,
+  because the back office paints the firm's brand too. This module re-exports them (`composables/
+index.ts`, `constants.ts`), so `@SiteModule` still answers for every name it exported. On the main
+  brand `usePublicFirm` takes `useFirmBrand`'s boot answer — one `public/firm` per page load — and
+  asks only a sub-brand itself.
+- **The firm's colours are `App.vue`'s; a sub-brand's are this shell's** (`useSubBrandTheme`, rnc-4
+  R10): while a public page is up its sub-brand's ramp is laid over the firm's, and the firm's comes
+  back after the route fade. The mark writes the firm's `logo_text` (the tab's last answer until this
+  page's arrives) and stays unseen while none is known.
 - **The brand's colours go on `<html>`, inline** (`useBrandTheme`), not on the layout's element:
   PrimeVue's `--p-primary-*`, the dark scheme's `--color-primary-text` and every teleported overlay
   are declared on the root and resolve there. The ramp is `brandPalette`'s — Franco's shape (500 the

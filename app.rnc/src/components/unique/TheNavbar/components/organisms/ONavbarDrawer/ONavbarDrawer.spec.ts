@@ -20,7 +20,7 @@ const drawerStub = {
 };
 
 const primevueStubs = {
-  ALogo: { template: '<div class="logo-stub" />' },
+  MNavbarBrand: { template: '<div class="logo-stub" />' },
   Button: {
     props: ['icon'],
     emits: ['click'],

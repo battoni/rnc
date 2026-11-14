@@ -6,7 +6,7 @@ import { COLOR_SCHEME } from '@Enums';
  * `@ActiveTheme` Vite alias, so both stay in sync from one place. Used here for
  * non-CSS concerns (e.g. picking brand assets).
  */
-const ACTIVE_THEME = import.meta.env.VITE_ACTIVE_THEME || 'franco';
+const ACTIVE_THEME = import.meta.env.VITE_ACTIVE_THEME || 'hub';
 
 /**
  * Default color scheme when the user has no stored preference.

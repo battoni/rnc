@@ -24,7 +24,7 @@ vi.mock('@Helpers', async (importOriginal) => ({
   currentFirmSlug: () => firmHost.slug,
 }));
 
-vi.mock('@SiteModule', async () => {
+vi.mock('@Composables', async (importOriginal) => {
   const { ref } = await import('vue');
   const IS_FIRM_MISSING = ref(false);
 
@@ -34,7 +34,10 @@ vi.mock('@SiteModule', async () => {
     return Promise.resolve();
   });
 
-  return { usePublicFirm: () => ({ isFirmMissing: IS_FIRM_MISSING, load: loadFirm }) };
+  return {
+    ...((await importOriginal()) as Record<string, unknown>),
+    useFirmBrand: () => ({ isFirmMissing: IS_FIRM_MISSING, load: loadFirm }),
+  };
 });
 
 vi.mock('@sentry/vue', () => ({ captureException }));

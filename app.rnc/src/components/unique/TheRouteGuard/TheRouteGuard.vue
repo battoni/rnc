@@ -3,8 +3,8 @@ import { onBeforeMount, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useRoute } from 'vue-router';
 import { FirmNotFoundView } from '@/views';
+import { useFirmBrand } from '@Composables';
 import { currentFirmSlug, isReachableSignedOut } from '@Helpers';
-import { usePublicFirm } from '@SiteModule';
 import { GetMeService, useUserStore } from '@UserModule';
 import useValidationCases from './useValidationCases';
 
@@ -12,7 +12,7 @@ const userStore = useUserStore();
 const { isAuthenticated } = storeToRefs(userStore);
 
 const ROUTE = useRoute();
-const { isFirmMissing, load: loadFirm } = usePublicFirm();
+const { isFirmMissing, load: loadFirm } = useFirmBrand();
 const {
   NAVIGATION_MODES,
   isRedirecting,
@@ -45,7 +45,8 @@ function onSessionResolved() {
 /*
  * rnc-4 R3: on a firm host the firm is asked once, at the hard navigation. A 404 `firms.notFound`
  * swaps every path — site, login, back office — for "Escritório não encontrado". The root always
- * has the platform firm, so it never asks here.
+ * has the platform firm, so it never asks here. The read is `useFirmBrand`'s (D10) — the same boot
+ * read `App.vue`'s brand theme paints from — without the tab's sub-brand.
  */
 function onFirmHostCheck() {
   if (!currentFirmSlug()) return;

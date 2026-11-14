@@ -5,7 +5,7 @@ import { mountWithPlugins } from '@/test/mount';
 import ONavbarDesktop from './ONavbarDesktop.vue';
 
 const primevueStubs = {
-  ALogo: { template: '<div class="logo-stub" />' },
+  MNavbarBrand: { template: '<div class="logo-stub" />' },
   // Renders a real <button> because that is what PrimeVue renders, and because the group
   // toggles are Buttons too now — the class is `button-stub`, not `button-stub`, since this
   // stands in for five of them. Attributes fall through to the root, so a test can still ask

@@ -408,3 +408,8 @@ the deploy; a per-action audit trail inside view-as; firm self-signup without th
   the footer go to the firm's own host (`<slug>.<host>` of `rnc.frontend_url`; the root for the
   platform firm). A root link opened the platform's firm, where the firm's lead is absent.
   Reverse: `config('rnc.frontend_url')` again.
+- C7 (F2b, W23) R11's 4.5:1 reaches the runtime ramp's 400: `brandPalette` lightens it until it reads
+  on the dark canvas and panel, because it is the dark scheme's link (`celer-button-link-primary`) and
+  the back office now paints the firm's ramp (the plain mix measured 4.29:1 on Franco's row). Franco's
+  400 moves from `#0a7dad` to a lighter cyan; the 500 and 300 are unchanged. Reverse: the plain mix,
+  and a dark-scheme override of the link in `button.css`.

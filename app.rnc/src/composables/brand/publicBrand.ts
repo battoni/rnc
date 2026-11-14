@@ -8,7 +8,7 @@ import {
   BRAND_QUERY,
   BRAND_SLUG_PATTERN,
   BRAND_STORAGE_KEY,
-} from '../constants';
+} from './constants';
 
 /*
  * The sub-brand of this tab (rnc-3 R2, D2). There is one local host, so the brand rides in the

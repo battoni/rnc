@@ -3,6 +3,14 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.7.0 — 2026-11-14
+
+### Added
+
+- `MNavbarBrand` (rnc-4 F2b, R10): the firm's tile, logo text and `platform.name` at the top of the rail
+  and the drawer, replacing the bare `ALogo` tile. `MNavbarBrand.spec.ts` (new); the organisms' specs
+  stub it in place of `ALogo`.
+
 ## 1.6.3 — 2026-09-17
 
 ### Fixed

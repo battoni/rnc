@@ -67,7 +67,11 @@ const BRANDS = {
 const brandsSent: (string | null)[] = [];
 
 async function mockSiteApi(page: Page) {
-  const json = (data: unknown, status = 200) => ({ status, contentType: 'application/json', body: JSON.stringify(data) });
+  const json = (data: unknown, status = 200) => ({
+    status,
+    contentType: 'application/json',
+    body: JSON.stringify(data),
+  });
 
   await page.route('**/public/firm', (route) => {
     const brand = route.request().headers()['x-brand'] ?? null;
@@ -83,7 +87,9 @@ async function mockSiteApi(page: Page) {
     );
   });
   await page.route('**/public/sectors', (route) => route.fulfill(json({ data: [] })));
-  await page.route('**/public/events', (route) => route.fulfill({ status: 201, contentType: 'application/json', body: '[]' }));
+  await page.route('**/public/events', (route) =>
+    route.fulfill({ status: 201, contentType: 'application/json', body: '[]' })
+  );
 }
 
 function rootColour(page: Page, property: string) {
@@ -173,7 +179,9 @@ test.describe('the site under a sub-brand (A2)', () => {
     await page.goto('/?marca=express');
 
     await expect(page.getByRole('banner')).toContainText('Franco Express Contabilidade');
-    await expect(page.getByTestId('hero-kicker')).toContainText('A contabilidade da Franco no ritmo da pequena empresa');
+    await expect(page.getByTestId('hero-kicker')).toContainText(
+      'A contabilidade da Franco no ritmo da pequena empresa'
+    );
     await expect(page.getByTestId('proof')).toContainText('Pequenas');
     await expect(page.getByTestId('site-footer').locator('a[href="tel:+551137325500"]')).toBeVisible();
     await expect(page).toHaveTitle(/· Franco Express Contabilidade$/);
@@ -183,13 +191,17 @@ test.describe('the site under a sub-brand (A2)', () => {
     await page.goto('/');
 
     await expect(page.getByRole('banner')).toContainText('Franco Express Contabilidade');
-    expect(brandsSent.every((brand) => brand === 'express')).toBe(true);
+    // Every public read carries the brand, except the host firm's own boot read (rnc-4 D10), which
+    // paints the firm's colours under the back office and is never the brand's.
+    expect(brandsSent.filter((brand) => brand !== null).every((brand) => brand === 'express')).toBe(true);
+    expect(brandsSent).toContain('express');
 
     await page.goto('/?marca=franco');
 
     await expect(page.getByRole('banner')).toContainText('Franco Contabilidade');
     await expect(page.getByRole('banner')).not.toContainText('Express');
-    await expect(page.locator('html')).not.toHaveAttribute('data-brand', /.+/);
+    // rnc-4 R10: back on the main brand the root wears the FIRM's palette, painted from its row.
+    await expect(page.locator('html')).toHaveAttribute('data-brand', 'franco');
     expect(await rootColour(page, '--color-primary-500')).toBe('#00375a');
   });
 
@@ -198,7 +210,9 @@ test.describe('the site under a sub-brand (A2)', () => {
 
     await expect(page.getByRole('banner')).toContainText('Franco Contabilidade');
     await expect(page).toHaveURL('/');
-    expect(brandsSent.slice(0, 2)).toEqual(['velha', null]);
+    // The refused brand is asked again as the main brand (the host firm's boot read may come first).
+    expect(brandsSent).toContain('velha');
+    expect(brandsSent.slice(brandsSent.indexOf('velha') + 1)).toContain(null);
   });
 });
 
@@ -249,7 +263,10 @@ for (const slug of Object.keys(BRANDS)) {
       for (const pair of pairs) {
         const ratio = contrastRatio(parseRgb(pair.colour), parseRgb(pair.background));
 
-        expect(ratio, `${pair.label} (${scheme}): ${ratio.toFixed(2)}:1 ${pair.colour} on ${pair.background}`).toBeGreaterThanOrEqual(4.5);
+        expect(
+          ratio,
+          `${pair.label} (${scheme}): ${ratio.toFixed(2)}:1 ${pair.colour} on ${pair.background}`
+        ).toBeGreaterThanOrEqual(4.5);
       }
     });
   }

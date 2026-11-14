@@ -1,39 +1,7 @@
 import type { TRACKING_EVENT_TYPE, TRAFFIC_SOURCE } from './enums';
-
-/**
- * `PublicFirmResource` — the firm's brand and public contact, as the API sends it. Under a sub-brand
- * (rnc-3 R2) the look is the brand's — `brand` its slug, the name, colours, tagline and proof — and
- * the contact stays the firm's. The main brand answers `brand`, `short_name`, `tagline` and `proof` null.
- */
-interface PublicFirm {
-  address: string | null;
-  brand?: string | null;
-  brand_accent: string;
-  brand_primary: string;
-  business_hours: PublicFirmHours[];
-  logo_text: string;
-  mailbox: string | null;
-  name: string;
-  phone: string | null;
-  phone_href: string | null;
-  proof?: PublicBrandProof[] | null;
-  short_name?: string | null;
-  slug: string;
-  tagline?: string | null;
-}
-
-/** One of a sub-brand's four proof points (rnc-3 R1). */
-interface PublicBrandProof {
-  label: string;
-  value: string;
-}
-
-/** ISO weekdays (1 = Monday) and the opening hours on them. */
-interface PublicFirmHours {
-  from: string;
-  to: string;
-  weekdays: number[];
-}
+// The host firm's resource moved to `@Interfaces` with the brand composables (rnc-4 D10); the
+// Site module keeps re-exporting it, so `PublicFirm` still comes from `@SiteModule`.
+import type { PublicBrandProof, PublicFirm, PublicFirmHours } from '@Interfaces';
 
 /** `PublicSectorPageSummaryResource` — a card of the landing's sector grid. */
 interface SectorPageSummary {

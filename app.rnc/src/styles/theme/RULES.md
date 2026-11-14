@@ -1,5 +1,5 @@
 ---
-version: 2.6.0
+version: 2.7.0
 origin: pendulum
 based-on: 2.5.1
 ---
@@ -10,6 +10,17 @@ A **multi-theme**, **light/dark** token system. One active brand theme is chosen
 build time; the user toggles light/dark at runtime. Components consume **role tokens**
 (structure) and **state palettes** (meaning) — never raw brand ramps — so they retheme
 and flip schemes with zero per-component edits.
+
+**In rnc the brand ramp is painted at runtime, per firm** (rnc-4 R10, D10): `useBrandTheme`
+(`composables/brand/`, mounted by `App.vue`) writes the host firm's `--color-primary-*` inline on
+`<html>`, from its row, on both layouts. The active theme is `hub` — a neutral slate ramp on
+`franco.css`'s shape — and is only what a tab's first page shows before the firm answers; every
+other token (roles, states, relief, type, print) still comes from the file. `franco.css` stays as
+the reverse (`VITE_ACTIVE_THEME=franco`). The contrast specs therefore measure the RUNTIME palette:
+the suite's default `public/firm` answer is Franco's, and `e2e/brand/two-palettes.spec.ts` measures
+Franco's and Alvorada's in both schemes. `brandPalette`'s 400 is the dark scheme's link
+(`celer-button-link-primary`), so it is lightened until it reads on the dark canvas and panel: the
+mix it used to be measured 4.29:1 on Franco's row once the back office painted it.
 
 ---
 

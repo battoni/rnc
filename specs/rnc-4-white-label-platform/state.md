@@ -1,5 +1,5 @@
 # State: Reforma hub as a white-label platform for accounting firms
-Stage: build F2a/19
+Stage: build F2b/19
 Updated: 14/11/2026
 Branch: feature/rnc-4-white-label-platform · Worktree: .claude/worktrees/rnc-4
 ## Done
@@ -72,9 +72,40 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   `DailyBriefingCommandTest` (links on `franco.localhost`, C6), `PlatformSeedersTest` (seeders called
   through the container), `BriefingMailActionTest` (DTO's brand). `MailSenderTest` unchanged: it
   reads `.env`, and D11 keeps `MAIL_FROM_ADDRESS` as the sender.
+- **F2b Runtime brand in both layouts — SPA** (A11, A12; R9, R10, R11) · 14/11 · full Vitest 1327
+  (+16: `composables/brand/useFirmBrand.spec` 5, `useBrandTheme.spec` 7, `MNavbarBrand.spec` 2,
+  `brandPalette.spec` +2 brands (franco, alvorada) and the 400 on the dark grounds; file moved) · Playwright: new
+  `e2e/brand/two-palettes.spec.ts` 17 (2 firms × 2 schemes × landing/diagnostic/home/pipeline + the
+  rail's names and title) and the touched `site/brands.spec.ts` 11, plus the adjacent folders theme,
+  site, tenancy, diagnostic, navigation, pipeline, users, auth — 141, all green · Pest not run (no API
+  change) · vue-tsc, aliases, ESLint, Prettier, sanitize, Pint, PHPStan, mirror check green ·
+  pre-commit green 14/11/2026 without the full Playwright suite (F2c1 runs it; vue + design reviews
+  inline: nothing left to fix).
+  Red first: all 12 new composable cases and both `MNavbarBrand` cases failed before the code (modules
+  absent); the new 400 assertions failed for express, prime, murky and franco on the old 400 (4.29:1 on Franco's row, dark canvas).
+  Mutations seen red: the stored firm not read at boot (2 specs), the sub-brand painted with no public
+  layout up, the rail block rendered before a firm is known, `useBrandTheme()` dropped from `App.vue`
+  (4 e2e).
+  What changed: `src/composables/brand/` — `useFirmBrand` (one `public/firm` per page load, no
+  `X-Brand`, kept in `sessionStorage` `app.rnc:firm-brand` and read at boot; `isFirmMissing` moved here
+  from `usePublicFirm`), `useBrandTheme` (mounted by `App.vue`: the firm's ramp on `<html>` for both
+  layouts, `platform.name` as `document.title` off public pages) + `useSubBrandTheme` (`ThePublicLayout`:
+  a sub-brand over the firm's only while a public layout is up), moved `brandPalette`, `publicBrand`, the
+  `BRAND_*` constants; `PublicFirm` moved to `@Interfaces` (+ `is_platform`, `logo_url`, `platform`).
+  The Site module re-exports all of it; `usePublicFirm` takes the main brand from `useFirmBrand` (one
+  request, not two). `TheRouteGuard` reads `useFirmBrand`. `MNavbarBrand` (new molecule) in the rail and
+  the drawer: firm tile + logo text + `platform.name`. `ThePublicLayout`'s mark writes the firm's
+  `logo_text`. `hub.css` neutral slate theme (franco.css's shape), `VITE_ACTIVE_THEME` default `hub`
+  (`vite.config.ts`, `theme.constant.ts`, `.env.example`, `.env.test` with its retired comment, this
+  worktree's `app.rnc/.env`); `index.html` title "Carregando…". `brandPalette`'s 400 is lightened to
+  read on the dark canvas/panel (C7).
+  Existing tests changed: `TheRouteGuard.spec` (mocks `@Composables`' `useFirmBrand`), the two navbar
+  organism specs (stub `MNavbarBrand`), `site/brands.spec.ts` (the host firm's header-less boot read is
+  allowed beside the brand's; back on the main brand the root wears Franco's row, `data-brand=franco`).
 ## Next
-1. `/battoni-start-session rnc-4` (or the running `/battoni-run rnc-4`) → **F2b** Runtime brand in
-   both layouts — SPA (plan.md F2b).
+1. `/battoni-start-session rnc-4` (or the running `/battoni-run rnc-4`) → **F2c1** scripted rename of
+   role slug, route paths/names, workspace and locale keys (plan.md F2c + AM6) — FULL GATE: every Pest,
+   Vitest and Playwright test.
 ## Pitfalls
 - (F1a) `UserFactory` now puts every user in the default firm (`franco` under phpunit), creating it
   when absent. A test that creates `Firm::factory(['slug' => 'franco'])` AFTER a user would collide
@@ -108,6 +139,18 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   links in e-mails are on `<slug>.localhost:5173` (C6), so a test asserting a URL names the firm host.
 - (F2a) A seeder with dependencies in `run()` is called `app()->call([app(X::class), 'run'])` or
   `$this->seed(X::class)`, never `->run()` bare.
+- (F2b) The firm's palette is painted from `public/firm` at runtime on every page; the theme file is
+  `hub` (neutral slate). An e2e spec that mocks no `public/firm` measures the hub ramp — or, if the main
+  checkout's API holds :8000, Franco's real row through the test server's proxy (seen in
+  `theme/contrast.spec.ts` on `/login`). Measure contrast with a mocked firm, never by accident.
+- (F2b) `.p-button` is `position: relative` and outvotes Tailwind's `absolute`: the drawer's close
+  button is a flex item, so a `w-full` sibling squeezed it to 38px (touch-chrome spec). Siblings there
+  take `min-w-0 flex-1`.
+- (F2b) Under heavy machine load (load average 55 during F2b, other runs alongside) the full Vitest
+  run times out a different 3–4 unrelated specs each time; `npx vitest run --maxWorkers=2` ran
+  1327/1327 green. A failure that moves between runs is the load, not the code.
+- (F2b) `useFirmBrand` reads `sessionStorage` at module load: a Vitest spec about it calls
+  `vi.resetModules()` and imports it fresh, and clears `sessionStorage` in `beforeEach`.
 - (plan) `battoni` belongs to Franco until F4a moves it to no firm; from F4a it signs in only at the root.
 - (plan) The role is `ceo` until F2c renames it `gestao`; seeds written before F2c use `ceo`.
 ## QA
@@ -139,6 +182,8 @@ F1a done
 F1b done
 00:02 F2a started, attempt 1
 F2a done
+00:25 F2b started, attempt 1
+F2b done
 ## Decided while you were away
 - W1 plan: proposal.html skipped in away mode (spec D27; to reverse: `/battoni-new-proposal rnc-4 final`).
 - W2 plan: the owner's phases are split into 17 builder phases with his labels kept (spec D28); his
@@ -189,3 +234,16 @@ F2a done
 - W19 F2a: a firm with no consent version gets v1 from the platform default lazily on first need, as
   a safety net beside the seeders and `firm:create` (F3b1). To reverse: answer without consent words
   (or 409) until a version exists.
+- W20 F2b: the host firm's read is its own composable (`useFirmBrand`, no `X-Brand`), and
+  `usePublicFirm` reuses its answer on the main brand — the plan's single "boot fetch" read under a
+  sub-brand would have put Express's colours on the back office. To reverse: one read carrying
+  `X-Brand` for both layouts.
+- W21 F2b: the "logo text" test is `MNavbarBrand.spec.ts`, not `TheLayout.spec.ts` — the rail's block
+  is a new molecule shared by rail and drawer, and `TheLayout` stubs the navbar. To reverse: render
+  the name in `TheLayout` itself.
+- W22 F2b: off public pages `document.title` is `platform.name` alone; a public page keeps `useSeo`'s
+  "page · firm". `index.html` reads "Carregando…" until then. To reverse: "firm · platform" in the
+  back office.
+- W23 F2b: `brandPalette`'s 400 is lightened until it reads on the dark canvas and panel (spec C7) —
+  `celer-button-link-primary` measured 4.29:1 on Franco's runtime row. To reverse: the plain mix and
+  a back-office override of the dark link.

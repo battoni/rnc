@@ -3,6 +3,23 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.7.0 — 2026-11-14
+
+### Added
+
+- `brand/` (rnc-4 F2b, R10, D10): `useFirmBrand` (the host firm's one boot read, kept for the tab),
+  `useBrandTheme` (mounted by `App.vue`: the firm's palette on both layouts, `platform.name` as the
+  title) and `useSubBrandTheme` (a sub-brand over it on public pages only); `brandPalette`,
+  `publicBrand` and the `BRAND_*` constants moved here from the Site module. Specs:
+  `useFirmBrand.spec.ts`, `useBrandTheme.spec.ts` (new), `brandPalette.spec.ts` (moved).
+
+### Changed
+
+- `brandPalette`'s 400 is lightened until it reads on the dark canvas and panel (4.5:1): it is the dark
+  scheme's link (`celer-button-link-primary`), and the plain accent/primary mix measured 4.29:1 on
+  Franco's row once the back office painted it. `brandPalette.spec.ts` measures it for every brand,
+  Franco's and Alvorada's rows included.
+
 ## 1.6.0 — 2026-09-17
 
 ### Added

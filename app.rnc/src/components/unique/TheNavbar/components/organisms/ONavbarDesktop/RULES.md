@@ -1,5 +1,5 @@
 ---
-version: 1.4.1
+version: 1.4.2
 origin: pendulum
 based-on: 1.4.1
 ---
@@ -18,7 +18,8 @@ The sticky left sidebar navigation for desktop viewports (lg+). Hidden below lg.
 - **`lg:sticky lg:top-8`**: the sidebar sticks as the user scrolls. The `h-[calc(100dvh-4rem)]` on the Card ensures it fills the viewport.
 - **Custom `RouterLink` with `v-slot`**: uses the render prop pattern to access `isExactActive` and `href` for custom link styling. This is required because PrimeVue's `Menu` component doesn't support custom active-state classes.
 - **`isExactActive` not `isActive`**: parent route segments do not get highlighted — only the exact active route.
-- **Logo renders `ALogo` with `variant="min"`**: only the icon variant on desktop sidebar.
+- **The top of the rail is `MNavbarBrand`** (rnc-4 R10): the firm's tile, logo text and `platform.name`.
+  _Retired 14/11/2026:_ "Logo renders `ALogo` with `variant=\"min\"`" — a bare tile could not say which firm or which product.
 - **Settings section is in the Card `#footer` slot** (sticky bottom), not inside the scrollable content area.
 - **Only the middle block scrolls.** `pt:body` and `pt:content` carry `min-h-0` so the flex chain's min-content floor is broken and the item list — not the rail, not the page — takes the overflow. Logo stays pinned above it, settings below it in the footer, and expanding a group only ever grows this one scroll area. Removing either `min-h-0` makes the whole rail grow past the viewport instead.
 - **The scroll surface is `scrollbar-brand`**, the house treatment (terracotta thumb, transparent track, `scrollbar-width: thin`) shared with the week grid and `MMainDialog`. Never restyle a scrollbar locally.

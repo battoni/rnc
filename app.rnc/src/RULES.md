@@ -1,5 +1,5 @@
 ---
-version: 1.3.1
+version: 1.4.0
 origin: pendulum
 based-on: 1.3.1
 ---
@@ -28,7 +28,8 @@ Application root component. Mounts the global `Toast` provider, then `TheRouteGu
 
 ## Do Not
 
-- **Do not add layout, more guards, or composables** to `App.vue` — use router guards or the layout components instead. Two exceptions are deliberate and are the only ones: `TheRouteGuard` wraps the `RouterView` (the hard-navigation gate has to sit around the outlet, before any view mounts), and `useLocaleFromQuery()` is called here (the app has exactly one router and one global locale, so `?locale=` is read once, at the root).
+- **Do not add layout, more guards, or composables** to `App.vue` — use router guards or the layout components instead. Three exceptions are deliberate and are the only ones: `TheRouteGuard` wraps the `RouterView` (the hard-navigation gate has to sit around the outlet, before any view mounts), `useLocaleFromQuery()` is called here (the app has exactly one router and one global locale, so `?locale=` is read once, at the root), and `useBrandTheme()` is called here (rnc-4 R10: the host firm's palette and the product's title belong to every layout at once, so the one painter sits above them all).
+  _Retired 14/11/2026 (rnc-4 F2b):_ "Two exceptions … are the only ones" — the firm's brand is painted on both layouts, and a layout-level painter flashed the theme's colours between a public page and the back office.
   _Retired:_ "Do not add layout, auth guards, or composables to `App.vue`" — it was written before both exceptions existed and `App.vue` contradicted it.
 - **Do not add a second `<Toast>`** anywhere in the component tree — one global instance is sufficient.
 - **Do not drop `mode="out-in"`** for a simultaneous fade + absolute leave — that is how global page scrollbars returned.

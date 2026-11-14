@@ -1,5 +1,5 @@
 ---
-version: 1.6.0
+version: 1.7.0
 origin: pendulum
 based-on: 1.6.0
 ---
@@ -79,6 +79,23 @@ Every "resend in 42s" uses it; do not count ticks in a component.
   shows the button disabled.
 - A spec fakes only `['Date', 'setInterval', 'clearInterval']` and models a suspension by moving
   the clock (`vi.setSystemTime`) without running the interval.
+
+## `brand/` — the host firm's brand on both layouts (rnc-4 D10)
+
+- **`useFirmBrand`** reads `GET public/firm` once per page load, WITHOUT `X-Brand`: the back office of
+  a firm is the firm's, whatever sub-brand the tab last browsed. It keeps the answer in
+  `sessionStorage` (`app.rnc:firm-brand`) and STARTS from it, so a second page paints the firm's
+  colours, logo text and `platform.name` before the API answers. `isFirmMissing` is its 404
+  `firms.notFound` (R3, read by `TheRouteGuard`); any other failure is forgotten and asked again.
+- **`useBrandTheme()` is mounted once, by `App.vue`**, and paints the firm's ramp (`brandPalette`) on
+  `<html>` for both layouts; `useSubBrandTheme(firm)` is `ThePublicLayout`'s and lays a sub-brand's
+  ramp over it only while a public layout is up, handing back after the route fade. One painter, two
+  layers: `paintCurrent()` is the only writer of `--color-primary-*` on the root. The document title is
+  `platform.name` wherever no public page is up (a public page writes its own, `useSeo`).
+- **`publicBrand`** (`?marca=`, `X-Brand`, `publicApi`) and the `BRAND_*` constants moved here from the
+  Site module with it; the Site module re-exports them, so `@SiteModule` still answers for them.
+- The palette's colours come from the firm's row, never the theme file: `VITE_ACTIVE_THEME=hub` is
+  only the neutral ground of a tab's first page. A firm with no colours keeps the theme's.
 
 ## Conventions
 

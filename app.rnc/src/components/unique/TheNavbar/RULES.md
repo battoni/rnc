@@ -1,5 +1,5 @@
 ---
-version: 1.6.3
+version: 1.7.0
 origin: pendulum
 based-on: 1.6.3
 ---
@@ -31,6 +31,12 @@ Orchestrator for all three navbar variants (desktop sidebar, tablet/mobile drawe
 - **Logout navigates to `/login` (literal path), not a named route**: this is intentional to avoid i18n route resolution on logout.
 - **`personalizationWithRoute` computed**: resolves localized `/personalization` path and is passed to all navbar organisms. Dark mode is **not** toggled in the navbar.
 - **`drawerClass` / `drawerPosition` are computed and passed to `ONavbarDrawer`**: mobile uses `position='full'` and class `'nav-drawer-mobile'`; tablet uses `position='left'` and class `'w-54'`.
+
+- **The brand block is `MNavbarBrand`** (rnc-4 R10, `components/molecules/`): the host firm's tile and
+  logo text and the product's name (`platform.name`), from `useFirmBrand` — the same block at the top
+  of the rail and of the drawer. It renders nothing until a firm is known (the tab's last answer or the
+  API's), so no name the build carries ever shows. A molecule that reads a composable, not a prop: the
+  rail and the drawer are presentational and the firm is the app's, not the navigation's.
 
 ## Prop & Emit Contract
 

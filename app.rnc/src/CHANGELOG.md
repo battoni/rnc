@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.4.0 — 2026-11-14
+
+### Changed
+
+- `App.vue` mounts `useBrandTheme()` (rnc-4 F2b, R10): the host firm's palette and `platform.name` on both layouts. RULES: a third deliberate exception, the old "two exceptions" retired with its reason.
+
 ## 1.3.1 — 2026-09-22
 
 ### Fixed

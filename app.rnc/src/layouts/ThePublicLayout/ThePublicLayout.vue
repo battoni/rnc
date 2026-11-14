@@ -4,14 +4,15 @@ import type { DeepReadonly } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import type { PublicFirmHours } from '@SiteModule';
+import { useFirmBrand } from '@Composables';
 import {
   brandOfTab,
   isBrandPreview,
   SECTOR_GRID_ANCHOR,
   SITE_ROUTE_NAMES,
   TRACKING_EVENT_TYPE,
-  useBrandTheme,
   usePublicFirm,
+  useSubBrandTheme,
   useTracking,
 } from '@SiteModule';
 
@@ -26,13 +27,18 @@ import {
  * writes the brand — both marks, the footer's tagline and the copyright — waits unseen on
  * `usePublicFirm`'s one `isBrandPending` (review S1), so Franco's name never flashes on an Express page. The operator's "Ver como" tab (`?previa=1`,
  * R5) wears a banner saying so.
+ *
+ * rnc-4 R10: the firm's own palette is `App.vue`'s (`useBrandTheme`, both layouts); this shell only
+ * lays a sub-brand's over it while it is up. The mark writes the firm's logo text — the tab's last
+ * answer (`useFirmBrand`) until this page's own arrives — and stays unseen while neither is known.
  */
-const { firm, isBrandPending: isShellPending, load } = usePublicFirm();
+const { logoText: hostLogoText } = useFirmBrand();
+const { firm, isBrandPending, load } = usePublicFirm();
 const { push } = useRouter();
 const { t } = useI18n();
 const { track } = useTracking();
 
-useBrandTheme(firm);
+useSubBrandTheme(firm);
 
 const CURRENT_YEAR = new Date().getFullYear();
 const NAV_LINKS = [
@@ -42,9 +48,10 @@ const NAV_LINKS = [
 
 const isPreview = ref(false);
 
-const brandName = computed(() => (firm.value?.brand ? firm.value.name : null));
 const footerTagline = computed(() => firm.value?.tagline ?? t('site.footer.tagline'));
 const hoursLines = computed(() => (firm.value?.business_hours ?? []).map(formatHours));
+const logoName = computed(() => firm.value?.logo_text || hostLogoText.value);
+const isShellPending = computed(() => isBrandPending.value || !logoName.value);
 
 watch(firm, onFirmChange);
 // A refused brand was dropped on the way (AM21): the shell asks for the main brand's firm.
@@ -135,12 +142,12 @@ function onDiagnosticClick() {
           <span class="sm:hidden">
             <ALogo
               variant="min"
-              :name="brandName"
+              :name="logoName"
             />
           </span>
 
           <span class="hidden sm:inline">
-            <ALogo :name="brandName" />
+            <ALogo :name="logoName" />
           </span>
         </RouterLink>
 
@@ -210,7 +217,7 @@ function onDiagnosticClick() {
         >
           <ALogo
             class="text-lg"
-            :name="brandName"
+            :name="logoName"
           />
 
           <p class="text-muted leading-relaxed">

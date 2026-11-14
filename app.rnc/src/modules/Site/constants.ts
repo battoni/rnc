@@ -1,3 +1,13 @@
+import {
+  BRAND_HEADER,
+  BRAND_NOT_FOUND_CODE,
+  BRAND_PALETTE_STORAGE_KEY,
+  BRAND_PREVIEW_STORAGE_KEY,
+  BRAND_QUERY,
+  BRAND_SLUG_PATTERN,
+  BRAND_STORAGE_KEY,
+} from '@Composables';
+
 /** The site's route names — what another module links to (`celer-05`, "Reaching another module's screen"). */
 const SITE_ROUTE_NAMES = {
   diagnostic: 'site-diagnostic',
@@ -28,28 +38,6 @@ const PARTNER_MEDIUMS = ['affiliate', 'parceiro', 'partner'];
 
 /** The longest `utm_medium` the API stores. */
 const MEDIUM_MAX_LENGTH = 60;
-
-/**
- * The sub-brand the tab is shown under (rnc-3 R2, D2): `?marca=<slug>` once, then kept for the tab in
- * `sessionStorage` and sent as `X-Brand` on every public call. `?marca=franco` is the main brand.
- */
-const BRAND_STORAGE_KEY = 'app.rnc:brand';
-
-/** "Ver como" (rnc-3 R5): `?previa=1` beside `?marca=` marks the tab as the operator's preview. */
-const BRAND_PREVIEW_STORAGE_KEY = 'app.rnc:brand-preview';
-
-/** The brand's colours as last answered, so the next page of the visit paints them before the API does. */
-const BRAND_PALETTE_STORAGE_KEY = 'app.rnc:brand-palette';
-
-/** The address-bar words of the sub-brand (R2, R5). */
-const BRAND_QUERY = { brand: 'marca', main: 'franco', preview: 'previa', previewOn: '1' } as const;
-
-/** The header every public call carries under a sub-brand, and the API's refusal of a stale one (C1). */
-const BRAND_HEADER = 'X-Brand';
-const BRAND_NOT_FOUND_CODE = 'brands.notFound';
-
-/** The shape of a slug the API could know (`firm_brands.slug`, 40): anything else is never sent. */
-const BRAND_SLUG_PATTERN = /^[a-z0-9-]{1,40}$/;
 
 /** The landing's proof points (R5, facts.md §1): the figure, then the i18n key of its caption. */
 const PROOF_POINTS = [

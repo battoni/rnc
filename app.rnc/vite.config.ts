@@ -23,7 +23,7 @@ export default defineConfig(({ mode }) => {
   // Single source of truth for the active brand theme. `@ActiveTheme` (imported
   // by src/styles/theme/colors.css) and the ACTIVE_THEME constant both resolve
   // from VITE_ACTIVE_THEME, so switching themes is a one-line .env change.
-  const activeTheme = process.env.VITE_ACTIVE_THEME || 'franco';
+  const activeTheme = process.env.VITE_ACTIVE_THEME || 'hub';
 
   // Plain http when no certificate is named (rnc-1 AM1: `http://localhost:5173`, no Valet). A
   // project serving through Valet names its key and cert and gets https + wss as before.
