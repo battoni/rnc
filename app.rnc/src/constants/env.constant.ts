@@ -13,6 +13,8 @@ const DOCS_URL = import.meta.env.VITE_DOCS_URL || '';
 
 /** The platform's root domain: `<slug>.<root>` is a firm's host, the root and `www` the platform's. */
 const ROOT_DOMAIN = import.meta.env.VITE_ROOT_DOMAIN || 'localhost';
+/** The demo firm the product's landing links (rnc-4 D24): `<slug>.<root>`. Empty hides the link. */
+const DEMO_FIRM_SLUG = import.meta.env.VITE_DEMO_FIRM_SLUG || '';
 const SENTRY_AUTH_TOKEN = import.meta.env.VITE_SENTRY_AUTH_TOKEN || null;
 const SENTRY_DNS = import.meta.env.VITE_SENTRY || null;
 const SENTRY_PROPAGATION_TARGETS = import.meta.env.VITE_SENTRY_PROPAGATION_TARGETS || null;
@@ -21,6 +23,7 @@ export {
   API_URL,
   APP_URL,
   DEFAULT_LANGUAGE,
+  DEMO_FIRM_SLUG,
   DOCS_URL,
   IS_PROD,
   LOGIN_FLOW,

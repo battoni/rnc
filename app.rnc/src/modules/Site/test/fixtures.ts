@@ -1,4 +1,4 @@
-import type { PublicFirm, SectorPage, SectorPageSummary } from '../interfaces';
+import type { BetaConsent, PublicFirm, SectorPage, SectorPageSummary } from '../interfaces';
 
 /* The API's answers as the Site specs need them — the shapes of the `Public*` resources. */
 const FIRM_FIXTURE: PublicFirm = {
@@ -87,4 +87,37 @@ const AGRO_PAGE_FIXTURE: SectorPage = {
   title: 'Reforma Tributária para o agro',
 };
 
-export { AGRO_PAGE_FIXTURE, EXPRESS_FIRM_FIXTURE, FIRM_FIXTURE, PRIME_FIRM_FIXTURE, SECTORS_FIXTURE };
+/* The platform firm the root serves (rnc-4 D3, `PlatformFirmSeeder`): the product's own site. */
+const PLATFORM_FIRM_FIXTURE: PublicFirm = {
+  address: null,
+  brand_accent: '#f2a900',
+  brand_primary: '#1f4e79',
+  business_hours: [{ from: '09:00', to: '18:00', weekdays: [1, 2, 3, 4, 5] }],
+  is_platform: true,
+  logo_text: 'Hub da Reforma',
+  mailbox: null,
+  modules: [],
+  name: 'Hub da Reforma',
+  phone: null,
+  phone_href: null,
+  platform: { name: 'Hub da Reforma' },
+  proof: null,
+  short_name: 'Hub da Reforma',
+  slug: 'hub',
+};
+
+/* `GET public/beta-signups/consent` (rnc-4 W61): the platform firm's current words, its name filled. */
+const BETA_CONSENT_FIXTURE: BetaConsent = {
+  text: 'Autorizo a equipe do Hub da Reforma a entrar em contato comigo sobre o programa beta.',
+  version: 2,
+};
+
+export {
+  AGRO_PAGE_FIXTURE,
+  BETA_CONSENT_FIXTURE,
+  EXPRESS_FIRM_FIXTURE,
+  FIRM_FIXTURE,
+  PLATFORM_FIRM_FIXTURE,
+  PRIME_FIRM_FIXTURE,
+  SECTORS_FIXTURE,
+};

@@ -13,7 +13,8 @@ import { useNotificationStore } from '../../../store';
  * "marcar como lida", and "marcar todas". Meeting times are São Paulo's (AM9). A partner's move
  * (rnc-2 R9: aceitou, recusou, fechou contrato) reads its title and sentence by kind AND status —
  * one `referral_status` kind, three lines. The Reforma assistant's question, answer and
- * expiring review (rnc-3 F5) are three more kinds; the review's last day is São Paulo's too.
+ * expiring review (rnc-3 F5) are three more kinds; the review's last day is São Paulo's too. A firm's
+ * beta signup on the root site (rnc-4 R29, `beta_signup`) names the firm and its city.
  */
 const notificationStore = useNotificationStore();
 
@@ -25,6 +26,7 @@ const KIND_ICONS: Record<string, string> = {
   [NOTIFICATION_KIND.ASSISTANT_ANSWER]: 'pi pi-comment',
   [NOTIFICATION_KIND.ASSISTANT_NOTE_EXPIRING]: 'pi pi-clock',
   [NOTIFICATION_KIND.ASSISTANT_QUESTION]: 'pi pi-question-circle',
+  [NOTIFICATION_KIND.BETA_SIGNUP]: 'pi pi-sparkles',
   [NOTIFICATION_KIND.MEETING_BOOKED]: 'pi pi-calendar',
   [NOTIFICATION_KIND.NEW_LEAD]: 'pi pi-user-plus',
   [`${NOTIFICATION_KIND.REFERRAL_STATUS}_aceito`]: 'pi pi-check-circle',
@@ -65,11 +67,13 @@ function sentenceOf(notification: BellNotification): string {
   return t(`notifications.kinds.${lineOf(notification)}`, {
     answeredBy: notification.answered_by ?? '',
     askedBy: notification.asked_by ?? '',
+    city: notification.city ?? '',
     company,
     expiresOn: notification.expires_on ? formatDay(notification.expires_on) : '',
     partner: notification.partner ?? '',
     question: notification.question ?? '',
     specialist: notification.specialist ?? '',
+    uf: notification.uf ?? '',
     value: notification.deal_value_cents ? formatReal(notification.deal_value_cents) : '',
     when,
   });

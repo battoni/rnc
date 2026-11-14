@@ -1,5 +1,5 @@
 # State: Reforma hub as a white-label platform for accounting firms
-Stage: build F6a/19
+Stage: build F6b/19
 Updated: 14/11/2026
 Branch: feature/rnc-4-white-label-platform · Worktree: .claude/worktrees/rnc-4
 ## Done
@@ -354,13 +354,36 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   (`throttle:5,1,beta-signup`, `platform.firm`, `brand`) and `GET public/beta-signups/consent` (`routeClasses.php`:
   both public); mail views 1.4.0 `beta-signup` (+ text), `mail.beta_signup.*` pt_BR/en, `/mail-preview/beta-signup`.
   Spec: no C# (W61–W66 stay inside R29/D29).
+- **F6b Product site on the root — SPA** (A32–A34; R28, R29; W66 fixed) · 14/11 · Vitest full 1446 (199 files), all
+  green — new: `ProductLandingView.view.integration.spec` 8, `MBetaSignupForm.spec` 7, `productSite.spec` 5, `MLeadCard`
+  +1 (Beta chip), `MNotificationBell` +1 (`beta_signup`); Playwright `e2e/product/landing.spec.ts` 11 (new) + the dirs the
+  shell and the routes touch (`e2e/site`, `brand`, `diagnostic`, `tenancy`): 78 run, all green; Pest Firm, Lead, Platform,
+  Access 679 (+2 in `PlatformSeedersTest`), all green. Gate: `make check-app` (aliases + vue-tsc), `make check-api` (Pint
+  `--test` + PHPStan), `check-portal` (no portal — skipped by the target), `sync-mirror-check`, `sanitize` (lint, format,
+  sort-locales), `wt-test` (128) green; vue/design/arcus reviews inline (1 finding fixed: the band pick moved out of the
+  template into `onBandPick`). Phase gate green 14/11/2026 — NOT the full `/battoni-pre-commit`: skipped the full
+  Playwright suite and the full Pest suite (plan Defaults/D30: touched dirs only), `check-cortex` (skipped by design here).
+  Red first: the 3 new Vitest files failed on import and the chip/bell cases on the missing key before the code; the API's
+  2 seeder cases failed before `BETA_CONSENT`. The e2e file was written after the components (W74). Mutations seen red:
+  `loadHomeView`/`firmSiteOnly` always platform (3), consent check off in the form (1), the seeder's "only at version 1"
+  guard off (2), the hero lede in `text-muted` (the e2e contrast sweep, 1.21:1 light / 2.53:1 dark).
+  Live (worktree API on 8001 after `migrate:fresh --seed`, HTTP with cookie jars, W73): `GET public/beta-signups/consent`
+  at the root → v2, the beta words; `POST public/beta-signups` 201; `gestao.hub`'s `GET leads` has the lead with channel
+  `beta`; `reinaldo`'s (franco, 40 cards) has none. The local DB keeps that lead ("Contábil Ao Vivo") on hub.
+  What changed: Site (1.8.0) `ProductLandingView`, organisms `OProductHero`, `OProductUrgency` (W70), `OProductHowItWorks`,
+  `OProductModules`, `OProductBeta`, `OProductFaq`, molecule `MBetaSignupForm`, services `GetBetaConsentService`,
+  `SignUpForBetaService`, `productSite` (`loadHomeView`, `firmSiteOnly`, `scrollToSection`, `useProductSite`), constants
+  `PRODUCT_*`, `BETA_MESSAGE_MAX_LENGTH`, enum `BETA_CLIENTS_BAND`, locales `site.product.*` (pt-BR + en);
+  `ThePublicLayout` product mode (nav, CTA, footer); `/` route → `loadHomeView` (W68), `/reforma/:slug` and Diagnostic
+  (1.5.0) `/diagnostico` → `firmSiteOnly` (W69); Pipeline (1.6.0) `LEAD_CHANNEL.BETA` + chip; Notification (1.3.0)
+  `beta_signup`; helpers (1.16.0) `firmSiteUrl`; env `DEMO_FIRM_SLUG` (`VITE_DEMO_FIRM_SLUG=alvorada` in `.env.example`,
+  `.env.test` and this worktree's `.env`); API database (1.29.0) `PlatformFirmSeeder::BETA_CONSENT` as hub's v2 (W71).
+  Spec: no C# (W68–W74 stay inside R28/R29/D23/D24).
 ## Next
-1. `/battoni-start-session rnc-4` (or the running `/battoni-run rnc-4`) → **F6b** Product site on the root — SPA
-   (A32–A34; R28, R29). The API is ready: `POST public/beta-signups` (body `company, name, role, email, phone, city,
-   uf, clients_band` [`ate_100|de_101_a_300|de_301_a_1000|acima_1000`], `message?`, `consent: true`, `source?`,
-   `medium?`; 201 `{company, channel}`; 422 field errors; 429) and `GET public/beta-signups/consent` (`{text,
-   version}`). F6b also needs the bell's `beta_signup` line (`{lead_id, company, city, uf}`) and the board's "Beta"
-   chip; the timeline line is the existing `contato.capturado`.
+1. `/battoni-start-session rnc-4` (or the running `/battoni-run rnc-4`) → **F5a** Firm settings — API (A35–A38;
+   R30–R33): `firm.settings` + `users.*` keys for `gestao`, `GET/PATCH firm/settings`, user create/update scoped to the
+   manager's firm, specialist hours, consent versions for the manager. Read plan.md → F5a and `## Plan review` (AM2's
+   user scoping already landed in F1a).
 ## Pitfalls
 - (F1a) `UserFactory` now puts every user in the default firm (`franco` under phpunit), creating it
   when absent. A test that creates `Firm::factory(['slug' => 'franco'])` AFTER a user would collide
@@ -475,10 +498,21 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
 - (F4b) The main checkout's `php artisan serve` still held :8000; the live check used :8001 again.
 - (F6a) The beta routes 404 on every tenant AND on `X-Firm: hub` (AM9): the SPA's beta form must call them from
   the root host WITHOUT `X-Firm` — `ApiProvider` adds it only when the host has a slug (`FIRM_SLUG`), so the root is fine.
-- (F6a) The beta form's consent words are the platform firm's current version, which today is the generic
-  partner-introduction sentence ("Autorizo Hub da Reforma a me apresentar a especialistas parceiros…") — W66.
+- (F6a) The beta form's consent words are the platform firm's current version — since F6b hub's v2, the beta words
+  (`PlatformFirmSeeder::BETA_CONSENT`, W71); a test that counts hub's versions expects two after the seed.
+  _Retired 14/11/2026 (F6b):_ "today the generic partner-introduction sentence" — the seeder now writes the beta's own.
 - (F6a) A test that rings hub's team creates hub's people with `assistantPerson('gestao', firm: $hub)`;
   `PlatformManagerSeeder` (`gestao.hub`) is local-only.
+- (F6b) `/` resolves its view from `useFirmBrand().load()` (`loadHomeView`): a spec or e2e at the root must answer
+  `public/firm` with `is_platform: true`, or it gets the firm landing. A firm-host e2e that mocks no `public/firm` still
+  gets the firm landing (a failed read is a firm).
+- (F6b) PrimeVue's `Select` picks an option on `mousedown`: a Vitest spec fires `fireEvent.mouseDown(option)`; Playwright's
+  real `click()` works as is.
+- (F6b) A contrast helper that treats any colour ending in ", 0)" as transparent misreads an accent with no blue
+  (`#f2a900` → `rgb(242, 169, 0)`): read the alpha (`e2e/product/landing.spec.ts` `alphaOf`). `e2e/site/brands.spec.ts`'s
+  `ground()` has the same pattern and only works because no brand there has a zero blue.
+- (F6b) Repeated logins in a live script hit the login throttle (429) a few accounts in — space them or log each account
+  in once.
 ## QA
 (none yet — rounds in plan.md → QA)
 ## Seeded people (password `seeding.password`; `battoni` uses `seeding.superadmin_password`)
@@ -528,6 +562,8 @@ F4a done
 F4b done
 10:38 F6a started, attempt 1
 F6a done
+10:52 F6b started, attempt 1
+F6b done
 ## Decided while you were away
 - W1 plan: proposal.html skipped in away mode (spec D27; to reverse: `/battoni-new-proposal rnc-4 final`).
 - W2 plan: the owner's phases are split into 17 builder phases with his labels kept (spec D28); his
@@ -719,3 +755,27 @@ F6a done
   new version applies. Not a hard stop. To reverse: a beta-specific consent text (spec change).
 - W67 F6a: the live check ran as HTTP calls on the worktree API (8001), no screen in this phase; Chrome rounds stay
   verify's (as W56). To reverse: n/a.
+- W68 F6b: the `/` route picks its view from the host firm's `is_platform` (the boot read) in a lazy loader
+  (`loadHomeView`), instead of the plan's "picked by the public layout"; the layout follows the same flag for its nav, CTA
+  and footer (`useProductSite`). A firm that could not be read gets the firm landing (an outage must not turn a firm's
+  site into the product's). To reverse: one view at `/` switching inside `ThePublicLayout`.
+- W69 F6b: R28's "the diagnostic never shows at the root" is a `beforeEnter` (`firmSiteOnly`) on `/diagnostico` and on
+  `/reforma/:slug` (a firm's sector pages), landing on `/`; `/relatorio/:token` stays open (it is reached by a token in an
+  e-mail). To reverse: drop the `beforeEnter`s.
+- W70 F6b: the landing gained an `OProductUrgency` organism (three dated facts, the law, the day checked, the CBS's
+  requested delay as news) beside the plan's five; the module menu leaves out `channel` (one network's, operator-only);
+  the demo link opens in a new tab. To reverse: fold the facts into the hero; add `channel` to `PRODUCT_OPT_IN_MODULES`.
+- W71 F6b: W66 fixed — `PlatformFirmSeeder` writes hub's consent v2 = `BETA_CONSENT` ("Autorizo a equipe do {escritorio}
+  a entrar em contato comigo e com o meu escritório … sobre o programa beta … conforme a LGPD"), only while hub is still at
+  version 1, so a re-seed never stacks a version on the operator's own words; the platform default (what new firms copy)
+  is untouched. To reverse: drop the block; the operator writes the words in the console.
+- W72 F6b: on a 422 the beta form shows its own per-field sentence for each field the API names, never the API's message
+  (the API answers in its own locale and prose); a 429 says to wait a minute; other failures say to try again. To reverse:
+  show `errors.<field>[0]` through `translateError`.
+- W73 F6b: the live check ran as HTTP calls on the worktree API (8001) with cookie jars — consent v2, signup 201, the lead
+  on `gestao.hub`'s board with channel `beta`, not on `reinaldo`'s; `helena.alvorada`'s login hit the login throttle (429)
+  after the run's earlier logins, so alvorada's board was not read live (firm scoping is Pest-proven since F1a). The
+  Chrome rounds (QA round 1) stay verify's (as W56). To reverse: n/a.
+- W74 F6b: `e2e/product/landing.spec.ts` was written after the components, so it was not seen red before the code; its
+  contrast sweep was proven by a mutation instead (hero lede in `text-muted` → 1.21:1, red). The Vitest and Pest files
+  were red first. To reverse: n/a.

@@ -3,6 +3,10 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.16.0 — 2026-11-14
+
+- `firmSiteUrl(slug, location, rootDomain)` (rnc-4 F6b, D24): a firm's site on the page's scheme and port — the product landing's demo link; an empty slug is none.
+
 ## 1.15.0 — 2026-11-14
 
 - `attachAuthGuard` closes a route of a module the firm has off (rnc-4 F3c, R17): `meta.module` → the not-found view at the same address; a landing that redirected there names `meta.moduleFallback` (`/gestao` → metrics without `briefing`). Order: the key, then the module (the API's, W36).

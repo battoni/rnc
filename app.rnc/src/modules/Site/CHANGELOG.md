@@ -1,5 +1,17 @@
 # Changelog — Site Module
 
+## 1.8.0 — 2026-11-14
+
+### Added
+
+- The product's own site on the root (rnc-4 F6b, R28, R29): `ProductLandingView` with `OProductHero`
+  (product name, the CBS countdown, beta CTA, demo link), `OProductUrgency` (three dated facts, LC
+  214/2025), `OProductHowItWorks`, `OProductModules`, `OProductBeta` (D23's price line) and
+  `OProductFaq`; `MBetaSignupForm` on `GetBetaConsentService` / `SignUpForBetaService`; `productSite`
+  (`loadHomeView`, `firmSiteOnly`, `scrollToSection`, `useProductSite`). `ThePublicLayout` has a
+  product mode. Tested by `ProductLandingView.view.integration.spec`, `MBetaSignupForm.spec`,
+  `productSite.spec` and `e2e/product/landing.spec`.
+
 ## 1.7.0 — 2026-11-14
 
 ### Changed

@@ -1,5 +1,9 @@
 # Changelog — Notification Module (app)
 
+## 1.3.0 — 2026-11-14
+
+- rnc-4 F6b: the bell writes `beta_signup` — "{company} ({city}/{uf}) se inscreveu no beta" — with its title and icon. Tests: `MNotificationBell.spec`.
+
 ## 1.2.0 — 2026-11-07
 
 - rnc-3 F5: the bell writes the Reforma assistant's three kinds — a question handed to a specialist, the specialist's answer, a review that runs out in 7 days — with their titles and icons; `BellNotification`'s lead fields become optional. Tests: `MNotificationBell.spec`.

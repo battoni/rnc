@@ -10,6 +10,7 @@ export {
   publicApi,
   useSubBrandTheme,
 } from '@Composables';
+export { firmSiteOnly, loadHomeView, scrollToSection, useProductSite } from './productSite';
 export { usePublicFirm } from './usePublicFirm';
 export { useSeo } from './useSeo';
 export { deriveTrafficOrigin, resetTrafficOrigin, useTracking } from './useTracking';

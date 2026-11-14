@@ -3,6 +3,8 @@ enum NOTIFICATION_KIND {
   ASSISTANT_ANSWER = 'assistant_answer',
   ASSISTANT_NOTE_EXPIRING = 'assistant_note_expiring',
   ASSISTANT_QUESTION = 'assistant_question',
+  /** A firm signed up for the beta on the root site (rnc-4 R29): the platform firm's team only. */
+  BETA_SIGNUP = 'beta_signup',
   MEETING_BOOKED = 'meeting_booked',
   NEW_LEAD = 'new_lead',
   REFERRAL_STATUS = 'referral_status',

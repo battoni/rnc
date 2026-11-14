@@ -11,6 +11,8 @@ enum LEAD_STAGE {
 
 /** How a lead came in (rnc-2 R14) — the API's `LeadChannel`; fixed once the lead exists. */
 enum LEAD_CHANNEL {
+  /** A firm that signed up for the beta on the root site (rnc-4 R29): the platform firm's board only. */
+  BETA = 'beta',
   CARTEIRA = 'carteira',
   CHAT = 'chat',
   FORMULARIO = 'formulario',

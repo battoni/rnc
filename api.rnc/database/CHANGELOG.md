@@ -3,6 +3,9 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.29.0 — 2026-11-14
+- `PlatformFirmSeeder` (rnc-4 F6b, W66): the platform firm's consent is the beta signup's — "contact about the beta" (`BETA_CONSENT`, with `{escritorio}`) — written as its version 2 over the copied version 1, only while the firm is still at version 1, so a re-seed never stacks a version on the operator's own words. Tested by `tests/Feature/Firm/PlatformSeedersTest`.
+
 ## 1.28.0 — 2026-11-14
 - `SuperAdminSeeder` (rnc-4 F4a, R24): `battoni` has no firm — it signs in at the root only and works in the platform firm; a database seeded before loses the firm on the next seed. Tested by `tests/Feature/Platform/OperatorSignInTest` and `SeedShapeTest`.
 

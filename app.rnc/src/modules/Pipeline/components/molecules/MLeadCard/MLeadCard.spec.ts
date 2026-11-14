@@ -71,6 +71,16 @@ describe('MLeadCard — the channel chip (R14, A12)', () => {
     expect(screen.getByTestId('lead-channel').textContent?.trim()).toBe('Portfolio');
   });
 
+  it('shows "Beta" on a firm that signed up for the beta on the root site (rnc-4 A33)', () => {
+    renderCard(LEAD_CHANNEL.BETA);
+
+    const chip = screen.getByTestId('lead-channel');
+
+    expect(chip.getAttribute('data-channel')).toBe('beta');
+    expect(chip.textContent?.trim()).toBe('Beta');
+    expect(chip.getAttribute('title')).toBe('Channel: Beta');
+  });
+
   it('shows no chip on a form lead', () => {
     renderCard(LEAD_CHANNEL.FORMULARIO);
 

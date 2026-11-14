@@ -242,6 +242,229 @@
     },
     "preview": {
       "banner": "Prévia: o site como a {name} aparece ao visitante."
+    },
+    "product": {
+      "nav": {
+        "label": "Site do produto",
+        "howItWorks": "Como funciona",
+        "modules": "Módulos",
+        "beta": "Beta",
+        "faq": "Perguntas"
+      },
+      "cta": {
+        "join": "Quero participar do beta",
+        "demo": "Veja um escritório de exemplo"
+      },
+      "seo": {
+        "title": "Hub da Reforma Tributária para escritórios de contabilidade",
+        "description": "Site com diagnóstico gratuito, agendamento, pipeline e métricas com a marca do seu escritório. A CBS começa a ser cobrada em 01/01/2027: entre no beta."
+      },
+      "hero": {
+        "kicker": "Para escritórios de contabilidade",
+        "title": "Seus clientes vão perguntar da Reforma.",
+        "ask": "Seu escritório de contabilidade responde com diagnóstico, reunião e proposta.",
+        "lede": "O {product} põe no ar, com a marca do seu escritório, um site da Reforma Tributária com diagnóstico gratuito para empresários. Quem faz o diagnóstico vira lead no seu pipeline e marca reunião com os seus especialistas.",
+        "preview": {
+          "example": "Exemplo: o pipeline de um escritório",
+          "firm": "Contábil Exemplo",
+          "live": "Site no ar",
+          "bell": "Novo lead: Padaria Bom Grão",
+          "stages": {
+            "lead": "Lead",
+            "meeting": "Reunião",
+            "proposal": "Proposta"
+          },
+          "cards": {
+            "bakery": {
+              "initials": "BG",
+              "company": "Padaria Bom Grão",
+              "detail": "Comércio · 4 oportunidades, 1 risco"
+            },
+            "clinic": {
+              "initials": "VP",
+              "company": "Clínica Vida Plena",
+              "detail": "Saúde · reunião qui, 14:00"
+            },
+            "software": {
+              "initials": "AT",
+              "company": "Atlas Soluções em TI",
+              "detail": "Serviços · proposta enviada"
+            }
+          },
+          "metrics": {
+            "diagnostics": {
+              "value": "38",
+              "label": "diagnósticos"
+            },
+            "meetings": {
+              "value": "14",
+              "label": "reuniões"
+            },
+            "proposals": {
+              "value": "6",
+              "label": "propostas"
+            }
+          }
+        }
+      },
+      "urgency": {
+        "kicker": "Por que agora",
+        "title": "A CBS começa a ser cobrada em 01/01/2027. As perguntas dos seus clientes chegam antes.",
+        "facts": {
+          "testYear": "Ano-teste: CBS de 0,9% e IBS de 0,1% destacados na nota fiscal, compensáveis com PIS/Cofins.",
+          "cbs": "A CBS passa a ser cobrada integralmente e PIS/Cofins deixam de existir. Começa o Imposto Seletivo.",
+          "transition": "ICMS e ISS caem ano a ano até a extinção em 2033, quando IBS e CBS ficam integrais."
+        },
+        "source": "Fonte: Lei Complementar 214/2025 (LC 214/2025). Datas conferidas em 14/11/2026.",
+        "news": "Entidades pediram o adiamento da CBS para 2028 (notícia de 04/11/2026). Até a lei mudar, vale 01/01/2027."
+      },
+      "steps": {
+        "kicker": "Como funciona",
+        "title": "Do primeiro clique do empresário à reunião com o seu escritório",
+        "lede": "Quatro passos, todos com a marca do seu escritório. A sua equipe só entra quando há uma conversa a ter.",
+        "items": {
+          "diagnostic": {
+            "title": "Diagnóstico gratuito",
+            "text": "O empresário responde em 5 minutos e vê as oportunidades e os riscos da Reforma para a empresa dele, com valores estimados por faixa."
+          },
+          "booking": {
+            "title": "Agendamento",
+            "text": "Ele escolhe um horário na agenda dos seus especialistas, e o horário fica bloqueado na hora. Confirmação e lembrete por e-mail."
+          },
+          "pipeline": {
+            "title": "Pipeline",
+            "text": "Cada diagnóstico vira um cartão com o perfil da empresa, o que foi encontrado e a reunião marcada. A equipe move de etapa em etapa."
+          },
+          "metrics": {
+            "title": "Métricas",
+            "text": "De onde vem cada visita, onde o empresário desiste e qual página de setor traz mais diagnósticos."
+          }
+        }
+      },
+      "modules": {
+        "kicker": "Módulos",
+        "title": "O essencial já vem ligado. O resto, quando fizer sentido.",
+        "lede": "Cada escritório liga só o que usa. Um módulo desligado sai das telas da equipe.",
+        "core": "Sempre ligados",
+        "optIn": "Opcionais",
+        "items": {
+          "site": "Nome, cores e logo do seu escritório, num endereço com o nome dele, e páginas da Reforma por setor.",
+          "diagnostic": "Perguntas sobre a empresa, oportunidades e riscos com valores estimados e o Relatório de Impacto por e-mail.",
+          "booking": "A agenda dos seus especialistas no site, sem conflito de horário.",
+          "pipeline": "Todo empresário que entrou pelo site, do visitante ao cliente, com a ficha e a linha do tempo.",
+          "metrics": "O funil do site por origem e por página de setor, semana a semana.",
+          "briefing": "O resumo da manhã por e-mail: o que entrou, o que está marcado e o que precisa da equipe.",
+          "chat": "O empresário faz o diagnóstico conversando, no lugar do formulário.",
+          "assistant": "Responde a equipe só com as notas que os seus especialistas revisaram; o resto vai para um especialista.",
+          "radar": "Os clientes da carteira com a conversa que a Reforma abre para cada um, estimada por faixa de faturamento.",
+          "portfolio": "Os clientes que o escritório já atende, importados por planilha, com o reajuste de honorários sugerido.",
+          "contracts": "Os contratos dos clientes, do mais exposto à Reforma ao menos, ano a ano até 2033.",
+          "fiscal": "Os XMLs das notas dos clientes viram a prontidão da NF-e e o crédito perdido com fornecedores do Simples.",
+          "partners": "Encaminhe clientes a especialistas parceiros, com a autorização registrada e o extrato do mês.",
+          "brands": "Submarcas do escritório com nome, cores e posicionamento próprios, no mesmo back office."
+        }
+      },
+      "beta": {
+        "kicker": "Programa beta",
+        "title": "Poucos escritórios, cerca de três meses, perto de quem constrói o produto",
+        "points": {
+          "few": {
+            "title": "Poucos escritórios",
+            "text": "Um grupo pequeno, para acompanhar cada escritório de perto desde o primeiro dia."
+          },
+          "duration": {
+            "title": "Cerca de três meses",
+            "text": "Tempo para o site ir ao ar, os primeiros diagnósticos chegarem e as reuniões acontecerem."
+          },
+          "price": {
+            "title": "Preço",
+            "text": "Preço promocional para os escritórios do beta — fale com a gente"
+          },
+          "voice": {
+            "title": "Vocês no produto",
+            "text": "A sua equipe fala direto com quem constrói, e o que vocês pedirem pesa no que vem a seguir."
+          }
+        }
+      },
+      "form": {
+        "title": "Quero participar do beta",
+        "lede": "Leva 2 minutos. A gente responde pelo e-mail ou pelo telefone que você deixar.",
+        "company": "Escritório",
+        "name": "Seu nome",
+        "role": "Cargo",
+        "email": "E-mail",
+        "phone": "Telefone ou WhatsApp",
+        "phonePlaceholder": "(11) 98888-7777",
+        "city": "Cidade",
+        "uf": "UF",
+        "ufPlaceholder": "Selecione",
+        "band": "Quantos clientes o escritório atende?",
+        "bands": {
+          "ate_100": "Até 100",
+          "de_101_a_300": "101 a 300",
+          "de_301_a_1000": "301 a 1.000",
+          "acima_1000": "Mais de 1.000"
+        },
+        "message": "Algo que a gente deva saber? (opcional)",
+        "privacy": "Usamos estes dados só para falar com você sobre o beta.",
+        "submit": "Quero participar do beta",
+        "consentFailed": "Não conseguimos carregar o formulário agora.",
+        "retry": "Tentar de novo",
+        "errors": {
+          "required": "Preencha este campo.",
+          "invalid": "Confira este campo.",
+          "email": "Informe um e-mail válido.",
+          "phone": "Informe o telefone com DDD.",
+          "uf": "Escolha a UF.",
+          "band": "Escolha uma faixa.",
+          "consent": "Para falarmos com você, precisamos da sua autorização.",
+          "messageTooLong": "Até {max} caracteres.",
+          "tooMany": "Muitas tentativas seguidas. Espere um minuto e tente de novo.",
+          "failed": "Não conseguimos enviar agora. Tente de novo em instantes."
+        },
+        "success": {
+          "title": "Inscrição recebida",
+          "text": "Obrigado! A inscrição da {company} chegou à equipe do {product}, que vai falar com você pelo e-mail ou pelo telefone informado."
+        }
+      },
+      "faq": {
+        "kicker": "Perguntas",
+        "title": "O que os escritórios perguntam antes de entrar",
+        "items": {
+          "setup": {
+            "question": "Preciso de equipe de TI ou de um site novo?",
+            "answer": "Não. O {product} vai ao ar com a marca do seu escritório num endereço com o nome dele. A gente configura com vocês o nome, as cores, o logo e os horários dos especialistas."
+          },
+          "data": {
+            "question": "Os dados dos meus clientes ficam separados dos outros escritórios?",
+            "answer": "Sim. Cada escritório vê só os próprios leads, clientes e métricas, e a separação é feita em cada consulta ao banco, não só na tela."
+          },
+          "cbsDate": {
+            "question": "E se a data da CBS mudar?",
+            "answer": "O site mostra a data da lei: 01/01/2027 (LC 214/2025). Há um pedido de adiamento para 2028 em discussão; se a lei mudar, a data e a contagem mudam com ela."
+          },
+          "diagnostic": {
+            "question": "O diagnóstico substitui o trabalho do contador?",
+            "answer": "Não. Ele mostra estimativas por faixa, não cálculo fiscal, e leva o empresário à reunião com o seu especialista, que é quem fecha a conta."
+          },
+          "price": {
+            "question": "Quanto custa?",
+            "answer": "Preço promocional para os escritórios do beta — fale com a gente."
+          },
+          "who": {
+            "question": "Quem pode participar?",
+            "answer": "Escritórios de contabilidade que atendem empresas e querem levar a conversa da Reforma até elas. Na inscrição, conte quantos clientes vocês atendem."
+          }
+        }
+      },
+      "closing": {
+        "title": "A Reforma vai abrir conversas. Que elas comecem no seu escritório.",
+        "text": "Inscreva o escritório no beta e tenha o site da Reforma com a sua marca antes de 2027."
+      },
+      "footer": {
+        "tagline": "O hub da Reforma Tributária para escritórios de contabilidade.",
+        "disclaimer": "Datas da Reforma pela LC 214/2025, conferidas em 14/11/2026. Os valores do diagnóstico são estimativas, não cálculo fiscal."
+      }
     }
   },
   "diagnostic": {
@@ -507,6 +730,7 @@
     "markRead": "Marcar como lida",
     "markAllRead": "Marcar todas como lidas",
     "kinds": {
+      "beta_signup": "{company} ({city}/{uf}) se inscreveu no beta",
       "new_lead": "{company} deixou o contato no diagnóstico",
       "meeting_booked": "{company} marcou reunião com {specialist} para {when}",
       "assistant_question": "{askedBy} encaminhou a você: “{question}”",
@@ -517,6 +741,7 @@
       "referral_status_fechado": "{partner} fechou contrato de {value} com {company}"
     },
     "kindTitles": {
+      "beta_signup": "Inscrição no beta",
       "new_lead": "Novo lead",
       "meeting_booked": "Reunião marcada",
       "assistant_question": "Pergunta para especialista",
@@ -701,6 +926,7 @@
     },
     "brandChip": "Lead da {name}",
     "channels": {
+      "beta": "Beta",
       "formulario": "Formulário",
       "chat": "Chat",
       "carteira": "Carteira"

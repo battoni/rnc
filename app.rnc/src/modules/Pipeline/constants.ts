@@ -44,6 +44,7 @@ const STAGE_ACCENT_CLASSES: Record<LEAD_STAGE, string> = {
 /** The screens this module owns, linked by name (celer-05): the bell and the home link here. */
 /** The icon each channel's chip carries beside its name. */
 const LEAD_CHANNEL_ICONS: Record<LEAD_CHANNEL, string> = {
+  [LEAD_CHANNEL.BETA]: 'pi pi-sparkles',
   [LEAD_CHANNEL.CARTEIRA]: 'pi pi-briefcase',
   [LEAD_CHANNEL.CHAT]: 'pi pi-comments',
   [LEAD_CHANNEL.FORMULARIO]: 'pi pi-list-check',

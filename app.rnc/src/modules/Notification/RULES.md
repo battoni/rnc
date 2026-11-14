@@ -1,5 +1,5 @@
 ---
-version: 1.2.0
+version: 1.3.0
 origin: rnc
 ---
 
@@ -23,6 +23,8 @@ or all), through `useNotificationStore`.
 - **One kind, three lines** (rnc-2 R9): `referral_status` is read by kind AND status
   (`referral_status_aceito`, `_recusado`, `_fechado` — title, sentence and icon); a closing says
   its first-year value (`formatReal`).
+- **`beta_signup`** (rnc-4 R29): a firm's signup on the root site names the firm and its city/UF; only
+  the platform firm's team is rung (API `TeamNotifier`). `city` and `uf` are optional on `BellNotification`.
 - **Granular updates**: mark-as-read replaces the one entry from the API's answer.
 
 ## Known Gaps

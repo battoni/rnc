@@ -31,4 +31,13 @@ function rootSiteUrl(location: Pick<Location, 'port' | 'protocol'>, rootDomain: 
   return `${location.protocol}//${rootDomain}${PORT}/`;
 }
 
-export { currentFirmSlug, firmSlugFromHost, rootSiteUrl };
+/** A firm's own site, on the scheme and port the page is on (`<slug>.<root>`); none without a slug. */
+function firmSiteUrl(slug: string, location: Pick<Location, 'port' | 'protocol'>, rootDomain: string): string | null {
+  if (!slug) return null;
+
+  const PORT = location.port ? `:${location.port}` : '';
+
+  return `${location.protocol}//${slug}.${rootDomain}${PORT}/`;
+}
+
+export { currentFirmSlug, firmSiteUrl, firmSlugFromHost, rootSiteUrl };

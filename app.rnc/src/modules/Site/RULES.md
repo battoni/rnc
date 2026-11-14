@@ -1,5 +1,5 @@
 ---
-version: 1.7.0
+version: 1.8.0
 origin: rnc
 ---
 
@@ -99,6 +99,26 @@ index.ts`, `constants.ts`), so `@SiteModule` still answers for every name it exp
 - **Under a sub-brand the copy that is Franco's own gives way**: the header and footer mark and the
   copyright carry the brand's name, the footer and the hero kicker its tagline, the proof strip its
   points. The rest of the site's words keep "a Franco" — the sub-brands keep the Franco name (D1).
+
+- **The root is the product's own site** (rnc-4 R28, F6b). `/` asks the host firm's boot read
+  (`useFirmBrand`, `is_platform`) through `loadHomeView`: the platform firm gets `ProductLandingView`,
+  any firm its `LandingView`, and a firm that could not be read is a firm — an outage never turns a
+  firm's site into the product's. The pages only a firm serves (`/diagnostico`, `/reforma/:slug`) take
+  `firmSiteOnly` as `beforeEnter` and land on `/` at the root. The product's name is `platform.name`
+  (the one config value), never a firm's; the landing names no tenant and shows no price (D23).
+- **The product landing's Reforma statements are dated and sourced**: the dates are data
+  (`PRODUCT_FACTS`), the words i18n under `site.product`, with the law (LC 214/2025), the day they were
+  checked and the CBS's requested delay said as news. A new statement brings its date and source.
+- **The shell follows `useProductSite`**: on the platform firm `ThePublicLayout`'s nav walks the
+  landing's sections (`PRODUCT_ANCHORS`, smooth through `scrollToSection`, at once under reduced
+  motion), its CTA goes to the beta form, and the footer drops a firm's hours and credentials and shows
+  the platform firm's contact only where it has one.
+- **The beta form (`MBetaSignupForm`) owns its two calls** — `GET public/beta-signups/consent` for the
+  words, `POST public/beta-signups` for the signup — and its success state. It sends no `X-Firm` (the
+  root has no slug; the routes 404 on any firm, F6a AM9). A 422 puts this form's own sentence on each
+  field the API names, never the API's prose; a 429 says to wait a minute. PrimeVue's `Select` picks on
+  `mousedown`, which a spec must fire instead of `click`.
+- **The demo link is `VITE_DEMO_FIRM_SLUG`** (D24, `firmSiteUrl`): empty hides it.
 
 ## Known Gaps
 

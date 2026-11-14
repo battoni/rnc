@@ -3,6 +3,9 @@
 use App\Models\User;
 use App\Modules\Booking\Models\Specialist;
 use App\Modules\Firm\Models\Firm;
+use App\Modules\Firm\Services\PlatformSettings;
+use App\Modules\Lead\Models\FirmConsentVersion;
+use App\Modules\Lead\Services\ConsentTextService;
 use Database\Seeders\DatabaseSeeder;
 use Database\Seeders\DemoFirmSeeder;
 use Database\Seeders\FirmSeeder;
@@ -28,6 +31,32 @@ describe('PlatformFirmSeeder', function () {
         expect($hub->is_platform)->toBeTrue()
             ->and($hub->name)->toBe('Outro Hub')
             ->and(Firm::where('is_platform', true)->count())->toBe(1);
+    });
+
+    it("gives the platform firm the beta signup's consent as its version 2, once", function () {
+        $this->seed(PlatformFirmSeeder::class);
+        $this->seed(PlatformFirmSeeder::class);
+
+        $hub = Firm::where('slug', 'hub')->sole();
+        $versions = FirmConsentVersion::withoutGlobalScopes()->where('firm_id', $hub->id)->orderBy('version')->get();
+
+        expect($versions->pluck('version')->all())->toBe([1, 2])
+            ->and($versions[0]->text)->toBe(app(PlatformSettings::class)->consentDefault())
+            ->and($versions[1]->text)->toBe(PlatformFirmSeeder::BETA_CONSENT)
+            ->and(PlatformFirmSeeder::BETA_CONSENT)->toContain('{escritorio}')
+            ->and(PlatformFirmSeeder::BETA_CONSENT)->toContain('beta')
+            ->and(app(ConsentTextService::class)->forFirm($hub)['text'])->toContain($hub->name);
+    });
+
+    it("never stacks the beta consent over the operator's own words on a re-seed", function () {
+        $this->seed(PlatformFirmSeeder::class);
+        $hub = Firm::where('slug', 'hub')->sole();
+        app(ConsentTextService::class)->createVersion($hub->id, 'Autorizo {escritorio} a falar comigo.', null);
+
+        $this->seed(PlatformFirmSeeder::class);
+
+        expect(FirmConsentVersion::withoutGlobalScopes()->where('firm_id', $hub->id)->orderBy('version')->pluck('version')->all())->toBe([1, 2, 3])
+            ->and(app(ConsentTextService::class)->currentVersion($hub->id)->text)->toBe('Autorizo {escritorio} a falar comigo.');
     });
 
     it('runs in production too', function () {

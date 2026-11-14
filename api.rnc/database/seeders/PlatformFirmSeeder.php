@@ -20,6 +20,15 @@ class PlatformFirmSeeder extends Seeder
 {
     public const PLATFORM_SLUG = 'hub';
 
+    /**
+     * What the root's only form — the beta signup (R29) — asks consent for (rnc-4 F6b, W66): contact
+     * about the beta, not the partner introduction every firm's version 1 copies. Written as the
+     * platform firm's next version, once; the operator's later edits stay theirs.
+     */
+    public const BETA_CONSENT = 'Autorizo a equipe do {escritorio} a entrar em contato comigo e com o meu escritório por e-mail, telefone ou WhatsApp sobre o programa beta, e a guardar estes dados só para isso, conforme a LGPD.';
+
+    private const FIRST_CONSENT_VERSION = 1;
+
     private const PRIMARY = '#1f4e79';
 
     private const ACCENT = '#f2a900';
@@ -51,6 +60,11 @@ class PlatformFirmSeeder extends Seeder
             ]
         );
 
-        $consentTextService->startFirm($firm->id);
+        $first = $consentTextService->startFirm($firm->id);
+
+        // Only over the copied version 1: a re-seed never stacks a version on the operator's own words.
+        if ($first->version === self::FIRST_CONSENT_VERSION) {
+            $consentTextService->createVersion($firm->id, self::BETA_CONSENT, null);
+        }
     }
 }

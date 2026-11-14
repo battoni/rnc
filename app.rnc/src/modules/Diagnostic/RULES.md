@@ -1,5 +1,5 @@
 ---
-version: 1.4.0
+version: 1.5.0
 origin: rnc
 ---
 
@@ -14,6 +14,8 @@ confirmation, and the "Relatório de Impacto" at `/relatorio/:token` (route `DIA
 
 ## Intentional Decisions
 
+- **Never at the root** (rnc-4 R28): `/diagnostico` takes the Site module's `firmSiteOnly` as
+  `beforeEnter`; on the platform firm (the product's own site) it lands on `/`. Firm hosts keep it.
 - **The chat is the `chat` module's** (rnc-4 F3c, R17): the mode toggle renders only while `public/firm`'s `modules` lists `chat` (`hasChat`) — hidden until the firm answers, and on the platform firm's root site, where a chat start is 422 `modules.disabled`.
 - **`useDiagnostic` owns the flow**; the view only lays the steps out. Picking a path starts the
   lead (`POST public/diagnostics`) and keeps its token; each later step is saved when the visitor
