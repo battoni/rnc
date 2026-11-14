@@ -11,14 +11,23 @@ const props = defineProps<{
 
 const COPIED_FEEDBACK_MS = 2000;
 
+const copyFailed = ref(false);
 const hasCopied = ref(false);
 
 // EVENTS
+/*
+ * A browser can refuse the clipboard (no permission, an insecure origin where `navigator.clipboard` is missing):
+ * the password is shown only this once, so the refusal is said beside it — copy it by hand (rnc-4 verify P2-S6).
+ */
 function onCopy() {
-  navigator.clipboard.writeText(props.password).then(onCopied);
+  Promise.resolve()
+    .then(() => navigator.clipboard.writeText(props.password))
+    .then(onCopied)
+    .catch(() => (copyFailed.value = true));
 }
 
 function onCopied() {
+  copyFailed.value = false;
   hasCopied.value = true;
 
   setTimeout(() => (hasCopied.value = false), COPIED_FEEDBACK_MS);
@@ -49,6 +58,15 @@ function onCopied() {
         @click="onCopy"
       />
     </div>
+
+    <p
+      v-if="copyFailed"
+      class="text-danger-700 text-sm"
+      data-testid="password-copy-failed"
+      role="alert"
+    >
+      {{ $t('platform.password.copyFailed') }}
+    </p>
 
     <p
       class="text-body text-sm"

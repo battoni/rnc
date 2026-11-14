@@ -85,6 +85,7 @@ const PLATFORM_ERROR_KEYS: Record<string, string> = {
   'platform.logoTooWide': 'platform.errors.logoTooWide',
   'platform.logoType': 'platform.errors.logoType',
   'platform.viewAsActive': 'platform.errors.viewAsActive',
+  'platform.viewAsOffboarded': 'platform.errors.viewAsOffboarded',
   'platform.viewAsPlatformFirm': 'platform.errors.viewAsPlatformFirm',
   'platform.consentPlaceholderMissing': 'platform.errors.placeholderMissing',
   'users.form.emailInvalid': 'platform.errors.emailInvalid',

@@ -34,11 +34,27 @@ function onLeave() {
   isLeaving.value = true;
 
   StopViewAsService()
-    .then(() => userStore.fetchMe())
-    .then(() => reload())
-    .then(() => router.push({ name: getI18nRouteName(PLATFORM_ROUTE_NAMES.firms) }))
+    .then(onLeft)
     .catch(onLeaveFailed)
     .finally(() => (isLeaving.value = false));
+}
+
+/*
+ * The view-as is closed on the API: the banner goes now, whatever happens next. A failed session or brand read
+ * afterwards still lands on the console, whose route guard reads the session again — never a "could not leave"
+ * over a view-as that is already over (rnc-4 verify P2-S5).
+ */
+function onLeft() {
+  userStore.endViewAs();
+
+  return userStore
+    .fetchMe()
+    .then(() => reload())
+    .then(goToConsole, goToConsole);
+}
+
+function goToConsole() {
+  return router.push({ name: getI18nRouteName(PLATFORM_ROUTE_NAMES.firms) });
 }
 
 function onLeaveFailed() {

@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 2.4.0 — 2026-11-14
+
+### Added
+
+- rnc-4 verify P2-S5: `endViewAs()` — sets `platform.view_as` to null once the API closed the view-as, so the banner does not outlive it when the following `fetchMe` fails.
+
 ## 2.3.0 — 2026-11-14
 
 - View-as modules (rnc-4 F7, W93): `UserPlatform.view_as` carries the viewed firm's `modules`, and `hasModule(key)` answers from them while a view-as is set, so the rail offers the viewed firm's opt-in screens.

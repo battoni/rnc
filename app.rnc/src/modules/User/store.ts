@@ -54,6 +54,15 @@ const useUserStore = defineStore('user', {
       this.platform = null;
       persistSessionHint(null);
     },
+    /**
+     * The API closed the operator's view-as (rnc-4 verify P2-S5): forget it at once, so the banner goes even when
+     * the `auth/me` read that follows fails.
+     */
+    endViewAs(): void {
+      if (!this.platform) return;
+
+      this.platform = { ...this.platform, view_as: null };
+    },
     hasSessionHint(): boolean {
       return localStorage.getItem(SESSION_HINT_KEY) === '1';
     },

@@ -1,5 +1,5 @@
 ---
-version: 1.2.0
+version: 1.3.0
 origin: rnc
 ---
 
@@ -55,6 +55,15 @@ storage:link` in api.rnc.
 - **The banner is `OViewAsBanner`, in `TheLocalOverlays`** — TheLayout's project-owned slot, so the
   synced layout is not edited. It sits in `<main>`'s column with `order-first`: in flow above the
   scroller, so it never scrolls away and never covers a row, on every back-office screen.
+- **A "Sair" the API accepted ends the banner at once** (rnc-4 verify P2-S5): `useUserStore().endViewAs()` runs
+  on the stop's answer, before `auth/me` and the brand are read again; a failure of either afterwards still goes
+  to the console (whose guard reads the session) and never shows "could not leave". Only a refused stop keeps the
+  banner and its error toast.
+- **A refused clipboard is said beside the password** (`MOneTimePassword`, rnc-4 verify P2-S6): no permission or
+  no `navigator.clipboard` (an insecure origin) shows `platform.password.copyFailed` (`role="alert"`) — the
+  password is shown only once, so a copy button that silently did nothing would be believed.
+- **An offboarded firm is not accessed as support**: 422 `platform.viewAsOffboarded` (code `view_as_offboarded`,
+  the API's verify batch) is in `PLATFORM_ERROR_KEYS` and shown beside the row like the other view-as refusals.
 
 ## Known Gaps
 

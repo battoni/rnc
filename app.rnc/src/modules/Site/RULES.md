@@ -1,5 +1,5 @@
 ---
-version: 1.9.0
+version: 1.10.0
 origin: rnc
 ---
 
@@ -126,6 +126,12 @@ index.ts`, `constants.ts`), so `@SiteModule` still answers for every name it exp
   key from the API needs its sentence in both locales. It answers at the root too, where the platform
   is the controller of what the beta form keeps and no operator line shows (W106). The footer links to
   it beside the copyright on every public page, and the diagnostic's consent links to it (Diagnostic).
+
+- **Copy that dates the CBS as ahead has a post-date twin** (rnc-4 verify P2-S2): `cbsKey(key)` (`composables/cbsStart.ts`)
+  picks `<key>Started` from 01/01/2027 on — the countdown's own condition (`CBS_START`), so the title never says
+  "começa a ser cobrada" beside a countdown saying "é cobrada desde". Today: `site.landing.title`,
+  `site.seo.landingDescription`, `site.product.seo.description`, `site.product.urgency.title`,
+  `site.product.closing.text`. A new sentence that speaks of the date as future gets its twin in both locales.
 
 ## Known Gaps
 

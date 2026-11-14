@@ -1,6 +1,6 @@
 import { screen, waitFor } from '@testing-library/vue';
 import { http, HttpResponse } from 'msw';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { server } from '@/test/msw/server';
 import { renderWithPlugins } from '@/test/render';
 import AWordRise from '../../components/atoms/AWordRise/AWordRise.vue';
@@ -131,5 +131,32 @@ describe('ProductLandingView', () => {
 
     expect(sendBeacon).toHaveBeenCalledTimes(1);
     await waitFor(() => expect(document.title).toContain('Reforma hub for accounting firms'));
+  });
+});
+
+/*
+ * rnc-4 verify P2-S2: from 01/01/2027 "your clients' questions come before that", "before 2027" and "is charged
+ * from" read as a promise about a date already gone. On the countdown's own condition the urgency title, the
+ * closing line and the description say the CBS is charged since then.
+ */
+describe('ProductLandingView after 01/01/2027', () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date(2027, 0, 2, 10));
+  });
+
+  afterEach(() => vi.useRealTimers());
+
+  it('speaks of the CBS as already charged', async () => {
+    const { container } = renderProductLanding();
+
+    expect(container.textContent).not.toContain('before 2027');
+    expect(container.textContent).not.toContain('come before that');
+    expect(container.textContent).toContain('The CBS has been charged since 01/01/2027.');
+    await waitFor(() =>
+      expect(document.head.querySelector('meta[name="description"]')?.getAttribute('content')).toContain(
+        'has been charged since 01/01/2027'
+      )
+    );
   });
 });

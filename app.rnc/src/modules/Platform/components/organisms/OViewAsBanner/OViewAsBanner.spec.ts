@@ -98,4 +98,32 @@ describe('OViewAsBanner', () => {
     expect(push).toHaveBeenCalledWith({ name: 'platform-firms-en' });
     expect(screen.queryByTestId('view-as-banner')).toBeNull();
   });
+
+  // rnc-4 verify P2-S5: once the API closed the view-as, the banner must not outlive it because a later read
+  // (the session, the brand) failed — it would offer "Sair" from a view-as that no longer exists.
+  it.each([
+    ['the session read', 'http://localhost/auth/me'],
+    ['the brand read', 'http://localhost/public/firm'],
+  ])('a closed view-as leaves no banner when %s fails afterwards', async (_label, url) => {
+    server.use(http.get(url, () => HttpResponse.json({ message: 'down' }, { status: 500 })));
+    renderBanner({ name: 'Alvorada Contabilidade', slug: 'alvorada' });
+
+    await fireEvent.click(screen.getByTestId('view-as-leave'));
+
+    await waitFor(() => expect(screen.queryByTestId('view-as-banner')).toBeNull());
+    expect(stops).toBe(1);
+    expect(useUserStore().platform?.view_as).toBeNull();
+    await waitFor(() => expect(push).toHaveBeenCalledWith({ name: 'platform-firms-en' }));
+  });
+
+  it('a "Sair" the API refused keeps the banner', async () => {
+    server.use(http.delete('http://localhost/platform/view-as', () => HttpResponse.json({}, { status: 500 })));
+    renderBanner({ name: 'Alvorada Contabilidade', slug: 'alvorada' });
+
+    await fireEvent.click(screen.getByTestId('view-as-leave'));
+
+    await waitFor(() => expect(screen.getByTestId('view-as-leave').hasAttribute('disabled')).toBe(false));
+    expect(screen.getByTestId('view-as-banner')).toBeTruthy();
+    expect(push).not.toHaveBeenCalled();
+  });
 });

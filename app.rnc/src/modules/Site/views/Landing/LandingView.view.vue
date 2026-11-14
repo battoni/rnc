@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 import type { SectorPageSummary } from '../../interfaces';
 import { vCountUp, vReveal, vSpotlight } from '@Directives';
-import { usePublicFirm, useSeo, useTracking } from '../../composables';
+import { cbsKey, usePublicFirm, useSeo, useTracking } from '../../composables';
 import { SECTOR_GRID_ANCHOR, SITE_ROUTE_NAMES, WHAT_CHANGES } from '../../constants';
 import { TRACKING_EVENT_TYPE } from '../../enums';
 import { GetSectorPagesService } from '../../services';
@@ -14,6 +14,9 @@ const route = useRoute();
 const { push } = useRouter();
 const { t } = useI18n();
 const { track } = useTracking();
+
+// The CBS's date as still ahead, or as passed — on the countdown's own condition (rnc-4 verify P2-S2).
+const TITLE_KEY = cbsKey('site.landing.title');
 
 const hasFailed = ref(false);
 const isLoading = ref(true);
@@ -28,7 +31,7 @@ const sectors = ref<SectorPageSummary[]>([]);
  * entrance animation drives the opacity) while a brand is pending (W38, review S1).
  */
 const kicker = computed(() => firm.value?.tagline ?? t('site.landing.kicker'));
-const titleWordCount = computed(() => t('site.landing.title').split(' ').length);
+const titleWordCount = computed(() => t(TITLE_KEY).split(' ').length);
 const wordCount = computed(() => titleWordCount.value + t('site.landing.ask').split(' ').length);
 
 const proofPoints = computed(() =>
@@ -40,7 +43,7 @@ const proofPoints = computed(() =>
 );
 
 const seo = computed(() => ({
-  description: t('site.seo.landingDescription'),
+  description: t(cbsKey('site.seo.landingDescription')),
   siteName: firm.value?.name ?? null,
   title: t('site.seo.landingTitle'),
 }));
@@ -149,7 +152,7 @@ function onSectorsSettled() {
               <AWordRise
                 class="block"
                 :start-index="1"
-                :text="$t('site.landing.title')"
+                :text="$t(TITLE_KEY)"
               />
 
               <AWordRise

@@ -1,5 +1,11 @@
 # Changelog — Site Module
 
+## 1.10.0 — 2026-11-14
+
+### Added
+
+- rnc-4 verify P2-S2: `cbsKey` / `hasCbsStarted` — the landing's and the product landing's copy that dates the CBS as still ahead switches to its `<key>Started` twin from 01/01/2027, on the countdown's condition.
+
 ## 1.9.0 — 2026-11-14
 
 ### Added

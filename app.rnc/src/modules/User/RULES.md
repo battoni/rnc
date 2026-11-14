@@ -1,5 +1,5 @@
 ---
-version: 2.3.0
+version: 2.4.0
 origin: pendulum
 based-on: 2.1.0
 ---
@@ -55,12 +55,13 @@ interface User {
 
 The single source of truth for the authenticated session.
 
-| Action                                     | Purpose                                                                            |
-| ------------------------------------------ | ---------------------------------------------------------------------------------- |
-| `setUserAndPermissions(user, permissions)` | Set user after login                                                               |
-| `clearUser()`                              | Clear on logout                                                                    |
-| `fetchMe()`                                | Re-fetch session user from API (called by auth guard and after permission changes) |
-| `hasPermission(key)`                       | Check if session user has a specific permission string                             |
+| Action                                     | Purpose                                                                                                           |
+| ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| `setUserAndPermissions(user, permissions)` | Set user after login                                                                                              |
+| `clearUser()`                              | Clear on logout                                                                                                   |
+| `fetchMe()`                                | Re-fetch session user from API (called by auth guard and after permission changes)                                |
+| `hasPermission(key)`                       | Check if session user has a specific permission string                                                            |
+| `endViewAs()`                              | Forget the operator's view-as the API just closed (rnc-4 verify P2-S5) — the banner goes before `fetchMe` answers |
 
 `permissions` is stored separately from `user.permissions` because permission updates (after role save) must be reflected immediately without re-fetching the full user object.
 

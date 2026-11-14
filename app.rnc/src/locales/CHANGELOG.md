@@ -3,6 +3,14 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.19.0 — 2026-11-14
+
+### Added
+
+- rnc-4 verify P2-S2: post-date twins `site.landing.titleStarted`, `site.seo.landingDescriptionStarted`, `site.product.seo.descriptionStarted`, `site.product.urgency.titleStarted`, `site.product.closing.textStarted` (read through `cbsKey`).
+- rnc-4 verify P2-S6: `platform.password.copyFailed`.
+- rnc-4 verify (API batch): `platform.errors.viewAsOffboarded`.
+
 ## 1.18.2 — 2026-11-14
 
 ### Fixed

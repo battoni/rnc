@@ -5,7 +5,7 @@ import { useRoute } from 'vue-router';
 import { DEMO_FIRM_SLUG, ROOT_DOMAIN } from '@Constants';
 import { vReveal } from '@Directives';
 import { firmSiteUrl } from '@Helpers';
-import { scrollToSection, usePublicFirm, useSeo, useTracking } from '../../composables';
+import { cbsKey, scrollToSection, usePublicFirm, useSeo, useTracking } from '../../composables';
 import { PRODUCT_ANCHORS } from '../../constants';
 import { TRACKING_EVENT_TYPE } from '../../enums';
 
@@ -23,12 +23,13 @@ const { t } = useI18n();
 const { track } = useTracking();
 
 const ANCHORS = Object.values(PRODUCT_ANCHORS) as string[];
+const CLOSING_TEXT_KEY = cbsKey('site.product.closing.text');
 const DEMO_URL = firmSiteUrl(DEMO_FIRM_SLUG, window.location, ROOT_DOMAIN);
 
 const productName = computed(() => firm.value?.platform?.name || firm.value?.name || '');
 
 const seo = computed(() => ({
-  description: t('site.product.seo.description'),
+  description: t(cbsKey('site.product.seo.description')),
   siteName: productName.value || null,
   title: t('site.product.seo.title'),
 }));
@@ -107,7 +108,7 @@ function onHashChange() {
             </h2>
 
             <p class="text-primary-100 text-base sm:text-lg">
-              {{ $t('site.product.closing.text') }}
+              {{ $t(CLOSING_TEXT_KEY) }}
             </p>
           </div>
 

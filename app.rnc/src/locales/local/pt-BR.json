@@ -107,6 +107,7 @@
     "seo": {
       "landingTitle": "Reforma Tributária 2026–2033: o que muda na sua empresa",
       "landingDescription": "A CBS começa a ser cobrada em 01/01/2027. Veja o que muda de 2026 a 2033 e faça o diagnóstico gratuito da Reforma Tributária para a sua empresa.",
+      "landingDescriptionStarted": "A CBS é cobrada desde 01/01/2027. Veja o que muda de 2026 a 2033 e faça o diagnóstico gratuito da Reforma Tributária para a sua empresa.",
       "diagnosticTitle": "Diagnóstico gratuito da Reforma Tributária",
       "diagnosticDescription": "Em 5 minutos, as oportunidades e os riscos da Reforma Tributária para a sua empresa, com valores estimados."
     },
@@ -131,6 +132,7 @@
     "landing": {
       "kicker": "Reforma Tributária · LC 214/2025",
       "title": "A CBS começa a ser cobrada em 01/01/2027.",
+      "titleStarted": "A CBS é cobrada desde 01/01/2027.",
       "ask": "Sua empresa já sabe quanto isso muda?",
       "lede": "Em 5 minutos o diagnóstico gratuito mostra as oportunidades e os riscos da Reforma para o seu negócio, com valores estimados. Um especialista explica o detalhe em uma reunião.",
       "sectorsLink": "Ver o que muda no meu setor",
@@ -263,7 +265,8 @@
       },
       "seo": {
         "title": "Hub da Reforma Tributária para escritórios de contabilidade",
-        "description": "Site com diagnóstico gratuito, agendamento, pipeline e métricas com a marca do seu escritório. A CBS começa a ser cobrada em 01/01/2027: entre no beta."
+        "description": "Site com diagnóstico gratuito, agendamento, pipeline e métricas com a marca do seu escritório. A CBS começa a ser cobrada em 01/01/2027: entre no beta.",
+        "descriptionStarted": "Site com diagnóstico gratuito, agendamento, pipeline e métricas com a marca do seu escritório. A CBS é cobrada desde 01/01/2027: entre no beta."
       },
       "hero": {
         "kicker": "Para escritórios de contabilidade",
@@ -316,6 +319,7 @@
       "urgency": {
         "kicker": "Por que agora",
         "title": "A CBS começa a ser cobrada em 01/01/2027. As perguntas dos seus clientes chegam antes.",
+        "titleStarted": "A CBS é cobrada desde 01/01/2027. As perguntas dos seus clientes já chegaram.",
         "facts": {
           "testYear": "Ano-teste: CBS de 0,9% e IBS de 0,1% destacados na nota fiscal, compensáveis com PIS/Cofins.",
           "cbs": "A CBS passa a ser cobrada integralmente e PIS/Cofins deixam de existir. Começa o Imposto Seletivo.",
@@ -465,7 +469,8 @@
       },
       "closing": {
         "title": "A Reforma vai abrir conversas. Que elas comecem no seu escritório.",
-        "text": "Inscreva o escritório no beta e tenha o site da Reforma com a sua marca antes de 2027."
+        "text": "Inscreva o escritório no beta e tenha o site da Reforma com a sua marca antes de 2027.",
+        "textStarted": "Inscreva o escritório no beta e tenha o site da Reforma com a sua marca durante a transição."
       },
       "footer": {
         "tagline": "O hub da Reforma Tributária para escritórios de contabilidade.",
@@ -2198,6 +2203,7 @@
       "logoTooWide": "A imagem passa de 1024 px de lado. Escolha uma menor.",
       "logoType": "Use uma imagem PNG, JPEG ou WebP — SVG e outros arquivos não são aceitos.",
       "viewAsActive": "Você já está acessando um escritório. Saia dele primeiro.",
+      "viewAsOffboarded": "Este escritório foi encerrado e não é mais acessado como suporte.",
       "viewAsPlatformFirm": "O escritório da plataforma não é acessado como suporte."
     },
     "firms": {
@@ -2292,6 +2298,7 @@
     "password": {
       "copied": "Copiada",
       "copy": "Copiar",
+      "copyFailed": "Não foi possível copiar: selecione a senha e copie à mão.",
       "once": "Copie agora: ela não será mostrada de novo. Uma nova pode ser gerada no login do gestor.",
       "title": "Senha"
     },

@@ -107,6 +107,7 @@
     "seo": {
       "landingTitle": "Tax reform 2026–2033: what changes for your company",
       "landingDescription": "CBS is charged from 01/01/2027. See what changes from 2026 to 2033 and take the free tax reform diagnostic for your company.",
+      "landingDescriptionStarted": "CBS has been charged since 01/01/2027. See what changes from 2026 to 2033 and take the free tax reform diagnostic for your company.",
       "diagnosticTitle": "Free tax reform diagnostic",
       "diagnosticDescription": "In 5 minutes, the tax reform's opportunities and risks for your company, with estimated values."
     },
@@ -131,6 +132,7 @@
     "landing": {
       "kicker": "Tax reform · LC 214/2025",
       "title": "CBS starts being charged on 01/01/2027.",
+      "titleStarted": "CBS has been charged since 01/01/2027.",
       "ask": "Does your company know how much it changes?",
       "lede": "In 5 minutes the free diagnostic shows the reform's opportunities and risks for your business, with estimated values. A specialist explains the detail in a meeting.",
       "sectorsLink": "See what changes in my sector",
@@ -263,7 +265,8 @@
       },
       "seo": {
         "title": "The Reforma hub for accounting firms",
-        "description": "A site with a free diagnostic, booking, pipeline and metrics under your firm's brand. The CBS is charged from 01/01/2027: join the beta."
+        "description": "A site with a free diagnostic, booking, pipeline and metrics under your firm's brand. The CBS is charged from 01/01/2027: join the beta.",
+        "descriptionStarted": "A site with a free diagnostic, booking, pipeline and metrics under your firm's brand. The CBS has been charged since 01/01/2027: join the beta."
       },
       "hero": {
         "kicker": "For accounting firms",
@@ -316,6 +319,7 @@
       "urgency": {
         "kicker": "Why now",
         "title": "The CBS is charged from 01/01/2027. Your clients' questions come before that.",
+        "titleStarted": "The CBS has been charged since 01/01/2027. Your clients' questions are already here.",
         "facts": {
           "testYear": "Test year: CBS at 0.9% and IBS at 0.1% shown on the invoice, offset against PIS/Cofins.",
           "cbs": "The CBS is charged in full and PIS/Cofins cease to exist. The Selective Tax starts.",
@@ -465,7 +469,8 @@
       },
       "closing": {
         "title": "The Reforma will open conversations. Let them start at your firm.",
-        "text": "Sign your firm up for the beta and have the Reforma site under your brand before 2027."
+        "text": "Sign your firm up for the beta and have the Reforma site under your brand before 2027.",
+        "textStarted": "Sign your firm up for the beta and have the Reforma site under your brand through the transition."
       },
       "footer": {
         "tagline": "The Reforma Tributária hub for accounting firms.",
@@ -2198,6 +2203,7 @@
       "logoTooWide": "The image is over 1024 px on a side. Pick a smaller one.",
       "logoType": "Use a PNG, JPEG or WebP image — SVG and other files are not accepted.",
       "viewAsActive": "You are already accessing a firm. Leave it first.",
+      "viewAsOffboarded": "This firm was closed and can no longer be accessed as support.",
       "viewAsPlatformFirm": "The platform firm is not accessed as support."
     },
     "firms": {
@@ -2292,6 +2298,7 @@
     "password": {
       "copied": "Copied",
       "copy": "Copy",
+      "copyFailed": "Could not copy: select the password and copy it by hand.",
       "once": "Copy it now: it will not be shown again. A new one can be generated from the manager login.",
       "title": "Password"
     },

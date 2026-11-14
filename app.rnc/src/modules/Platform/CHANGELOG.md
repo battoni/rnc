@@ -3,6 +3,14 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.3.0 — 2026-11-14
+
+### Fixed
+
+- rnc-4 verify P2-S5: `OViewAsBanner` drops the banner as soon as the API closed the view-as (`endViewAs`), even when the later `auth/me` or brand read fails; it then still lands on the console.
+- rnc-4 verify P2-S6: `MOneTimePassword` says "copy it by hand" (`platform.password.copyFailed`) when the clipboard is refused or missing.
+- rnc-4 verify (API batch): `platform.viewAsOffboarded` mapped in `PLATFORM_ERROR_KEYS` (pt-BR, en).
+
 ## 1.2.0 — 2026-11-14
 
 ### Changed

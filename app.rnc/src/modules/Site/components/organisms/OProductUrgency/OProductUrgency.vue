@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { vReveal, vSpotlight } from '@Directives';
+import { cbsKey } from '../../../composables';
 import { PRODUCT_FACTS } from '../../../constants';
 
 /*
  * Why a firm should move now (rnc-4 R28): the three dates of the transition a firm's clients will
  * ask about, each dated and from the law (LC 214/2025, facts of rnc-1 §2), with the source, the day
- * the dates were checked and the CBS's requested delay, said as what it is — news, not law.
+ * the dates were checked and the CBS's requested delay, said as what it is — news, not law. The title has a
+ * post-date twin (`cbsKey`, rnc-4 verify P2-S2).
  */
+const TITLE_KEY = cbsKey('site.product.urgency.title');
 </script>
 
 <template>
@@ -26,7 +29,7 @@ import { PRODUCT_FACTS } from '../../../constants';
         </p>
 
         <h2 class="text-heading text-2xl font-bold tracking-tight text-balance sm:text-3xl">
-          {{ $t('site.product.urgency.title') }}
+          {{ $t(TITLE_KEY) }}
         </h2>
       </header>
 

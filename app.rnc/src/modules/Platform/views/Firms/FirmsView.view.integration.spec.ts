@@ -289,5 +289,22 @@ describe('FirmsView', () => {
       expect((await screen.findByTestId('firm-view-as-error')).textContent).toContain('already');
       expect(routerPush).not.toHaveBeenCalled();
     });
+
+    // rnc-4 verify (API batch): an offboarded firm is never accessed as support — 422 `platform.viewAsOffboarded`.
+    it('names the refusal on an offboarded firm', async () => {
+      server.use(
+        http.post('http://localhost/platform/firms/:id/view-as', () =>
+          HttpResponse.json({ code: 'view_as_offboarded', error: 'platform.viewAsOffboarded' }, { status: 422 })
+        )
+      );
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      renderFirms();
+
+      await fireEvent.click(within(await waitFor(() => rowOf('alvorada'))).getByTestId('firm-view-as'));
+
+      expect((await screen.findByTestId('firm-view-as-error')).textContent).toContain('closed');
+      expect(routerPush).not.toHaveBeenCalled();
+    });
   });
 });

@@ -107,6 +107,32 @@ describe('LandingView', () => {
 });
 
 /*
+ * rnc-4 verify P2-S2: from 01/01/2027 "the CBS starts being charged on 01/01/2027" is false. On the countdown's
+ * own condition (the date has passed, so it shows `site.countdown.started`) the title and the description say
+ * it is charged since then.
+ */
+describe('LandingView after 01/01/2027', () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date(2027, 0, 2, 10));
+  });
+
+  afterEach(() => vi.useRealTimers());
+
+  it('says the CBS has been charged since the date, in the title and the description', async () => {
+    renderLanding();
+
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toContain('CBS has been charged since 01/01/2027.');
+    expect(screen.getByRole('heading', { level: 1 }).textContent).not.toContain('starts');
+    await waitFor(() =>
+      expect(document.head.querySelector('meta[name="description"]')?.getAttribute('content')).toContain(
+        'has been charged since 01/01/2027'
+      )
+    );
+  });
+});
+
+/*
  * A2 (rnc-3 F2, R3): under `?marca=prime` the hero carries Prime's tagline, the proof strip Prime's
  * four points and the title Prime's name; on the main brand the landing keeps Franco's own copy.
  */
