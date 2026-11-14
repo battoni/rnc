@@ -349,4 +349,30 @@ QA doc can be made after with `/battoni-new-qa-session`.
 - View-as ends on Sair, logout or session end (`expirou` at next sign-in).
 
 ## Plan review
-pending — the coordinator runs a Fable plan review after this commit (`fable-reviewer`, #fable session).
+`fable-reviewer`, 13/11/2026, on 465924c — P0: 4 · P1: 5 · P2: 2. Verdict: ready to run after AM1–AM9.
+Applied verbatim by the coordinator. **These amendments OVERRIDE the spec, the phases and the defaults above.**
+
+**Phase order after the amendments** (the run builds them in this order; commit subjects use these labels):
+F1a · F1b · F2a · F2b · F2c1 · F2c2 · F3a · F3b1 · F3b2 · F3c · F4a · F4b · F6a · F6b · F5a · F5b · F4c · F4d · F7 · (F9a · F9b optional) · verify.
+
+Findings in short: P0-1 a firm-less operator gets a null CurrentFirm (`PublicFirmController.php:26`, `BelongsToFirm.php:28-34`, `ReferralSla.php:49` → 500s); P0-2 users are not firm-scoped (`User.php:25`, `UserRepository.php:25-167`, `LoginCodeService.php:62,87`, `routes/api.php:58-63`) and the fix came only in F5a; P0-3 F1b's live diagnostic check needs sector pages and consent that only arrive in F2a/F3b; P0-4 D4's wiring is incomplete (Vite `server` only when `isLocal`, `vite.config.ts:35-56`; live `.env` not edited; Sanctum default stateful list has no `*.localhost:5173`, `config/sanctum.php:21`; `.env.test:8` comment); P1-1 F2c too big (68 API + 154 SPA files); P1-2 F3b is two phases (~1,800 seeder lines); P1-3 F1a/F1b gates too narrow; P1-4 QA login-as must obey the firm rule; P1-5 `hub` reserved slug vs `X-Firm: hub`; P2-1 `/storage` outside `/api`; P2-2 stale session cookie on `localhost`. D5, D6, D21, D27, D31 confirmed.
+
+**AM1 (F1a, overrides "signed-in with NO firm → nothing set").** A signed-in user with `firm_id` null resolves to `findPlatformFirm()`, or to the F4c view-as firm later. `CurrentFirm` is never null for an authenticated request; if no platform firm exists, answer 403 `firms.required`. Test: a firm-less operator calling `public/firm` gets hub, a firm-scoped list returns hub's rows only, and a create stores hub's id. F4a records under Platform `RULES.md` → Known Gaps: "until F4c the operator reaches other firms only through the console."
+
+**AM2 (F1a, moved from F5a).** Scope user reads now: `findAllActiveUsers`, `findSoleUserByPhone` and `findAllUsers` filter by `CurrentFirm::id()`; `findUserById` gains a firm-checked variant used by every `auth/users/{id}` route (another firm's id → 404); username and e-mail uniqueness stay global. Tests in `tests/Feature/Auth/UsersFirmScopeTest.php`: support names, phone code, index, show, update, archive and delete from firm A against a firm-B user. F5a keeps only the grants and the create rules, plus tests that a manager cannot set role `operador`, `firm_id` or `partner_id`, and cannot touch a firm-less user.
+
+**AM3 (F1b).** Replace the live diagnostic check with: `public/firm` on `alvorada.localhost:5173` names Alvorada; `patricia` is refused there and accepted on `franco.localhost:5173`; `helena.alvorada`'s pipeline is empty while patricia's shows Franco's leads. The alvorada diagnostic check moves to F3b2's Done line.
+
+**AM4 (F1a/F1b).** Put `proxy['/api']` in both the local and the test-mode `server` config. Update the worktree's `api.rnc/.env` and `app.rnc/.env` with the same keys as `.env.example`, and say so in `state.md`. Replace the `.env.test` comment with its retirement reason. Add `tests/Feature/Auth/StatefulHostTest.php`: login with `Origin: http://franco.localhost:5173` then `auth/me` returns 200 on the session, and an unlisted origin returns 401. If the wildcard fails, stop the phase as blocked and record a W# rather than switching to CORS.
+
+**AM5 (gates).** F1a's Done requires the full Pest suite. F1b's Done requires the full Vitest and the full Playwright suites.
+
+**AM6 (F2c split into F2c1 and F2c2, each with a FULL GATE).** F2c1: scripted (`sed`/`perl -pi`) rename of role slug, route paths and names, workspace and locale keys, API and SPA together; no string content changes; record the per-pattern file count in the commit body. F2c2: Franco/Reinaldo strings → `{firm}`, plus both guards and `no-franco.spec.ts`. Never open files one by one for the rename.
+
+**AM7 (F3b split into F3b1 and F3b2).** F3b1: `FirmProvisioner` + `firm:create` (A22). F3b2: seeders per firm + `DemoFirmSeeder` (A23) + AM3's moved check. Demo data must not enter any seed path that Pest runs by default; if it does, gate it behind `app()->environment('local')` and test that explicitly.
+
+**AM8 (F1a).** `QaLoginAsController` applies the same firm rule as `AuthService`. QA (below and in `## QA`): the Chrome driver opens `http://<firm-host>:5173/api/qa/login-as/<username>`, never port 8000, and clears cookies for `localhost` first.
+
+**AM9 (F1a).** The platform slug is reachable only header-less: `X-Firm: hub` is a 404. Tests needing the platform firm set `config(['firms.default_slug' => 'hub'])`.
+
+**AM10 (F7).** The runbook's vhost also serves `/storage` per host.

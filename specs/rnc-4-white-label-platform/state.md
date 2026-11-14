@@ -1,5 +1,5 @@
 # State: Reforma hub as a white-label platform for accounting firms
-Stage: plan
+Stage: build F1a/19
 Updated: 13/11/2026
 Branch: feature/rnc-4-white-label-platform · Worktree: .claude/worktrees/rnc-4
 ## Done
@@ -7,8 +7,7 @@ Intent approved 13/11 (delegated) · spec closed 13/11 (40 R · 49 A · 31 D, ow
 plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b F5a F5b F4c F4d F7
 (+ optional F9a F9b), then verify. Nothing built. Baseline suites: 1851 Pest · 1289 Vitest · 180 Playwright.
 ## Next
-1. Coordinator: Fable plan review (plan.md → `## Plan review`, pending); apply its findings as
-   amendments before F1a.
+1. Plan review done (plan.md → `## Plan review`, AM1–AM10 override the phases; F2c and F3b split).
 2. `/loop /battoni-run rnc-4` → F1a Firm by host — API (plan.md). Phases run in the listed order.
 ## Pitfalls
 - (plan) `phpunit.xml` pins `DEFAULT_FIRM_SLUG=franco` (D6): a test about the platform firm must
@@ -39,6 +38,7 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
 - Mail goes to `api.rnc/storage/logs/laravel.log` (`MAIL_MAILER=log`).
 ## Away run
 Stop at: draft PR after verify · Reviewer: fable-reviewer (#fable session) · Chrome QA: on
+Started: 2026-11-13 23:58
 ## Decided while you were away
 - W1 plan: proposal.html skipped in away mode (spec D27; to reverse: `/battoni-new-proposal rnc-4 final`).
 - W2 plan: the owner's phases are split into 17 builder phases with his labels kept (spec D28); his
