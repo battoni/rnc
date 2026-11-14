@@ -8,8 +8,8 @@ import { SiteRoutes } from '@SiteModule';
  * must not be sent to the login screen.
  */
 describe('SiteRoutes', () => {
-  it('serves the landing and the sector pages', () => {
-    expect(SiteRoutes.map((route) => route.path)).toEqual(['/', '/reforma/:slug']);
+  it('serves the landing, the sector pages and the privacy notice', () => {
+    expect(SiteRoutes.map((route) => route.path)).toEqual(['/', '/reforma/:slug', '/privacidade']);
   });
 
   it('opens every site route to a signed-out visitor', () => {

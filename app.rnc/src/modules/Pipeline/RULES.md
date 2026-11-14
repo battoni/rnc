@@ -1,5 +1,5 @@
 ---
-version: 1.6.0
+version: 1.7.0
 origin: rnc
 ---
 
@@ -52,6 +52,14 @@ The team's screens (R18–R20): the board (`/equipe/pipeline`, route `pipeline`)
   (`data-focused`, `aria-current`) and scrolled into view inside the board's own sideways scroll
   (`smooth`, `auto` under reduced motion). Every column stays: the team moves cards across them. A
   value that is not a `LEAD_STAGE` is ignored — it never reaches `querySelector`.
+
+- **A lead's own data (rnc-4 R39, F9b)**: the detail's "Dados do lead (LGPD)" panel shows to whoever holds
+  `leads.update` AND `firm.settings` (`canManageData`, W101) — the team sees neither button. "Exportar
+  dados" saves `GET leads/{id}/export`'s answer as `lead-<id>-dados.json`; "Anonimizar" asks first in a
+  `ConfirmPopup` (group `lead-anonymise`) that says it cannot be undone, then puts the API's anonymised
+  detail in place (no refetch). `anonymised_at` set shows "Dados anonimizados em …" to everyone and
+  hides "Anonimizar"; the export stays. The `dados.anonimizados` line has its own sentence, by `via`
+  (`pedido`, or `saida_do_escritorio` → `ANONYMISED_ON_EXIT`).
 
 ## Known Gaps
 

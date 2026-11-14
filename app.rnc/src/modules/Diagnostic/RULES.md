@@ -1,5 +1,5 @@
 ---
-version: 1.5.0
+version: 1.6.0
 origin: rnc
 ---
 
@@ -78,6 +78,10 @@ confirmation, and the "Relatório de Impacto" at `/relatorio/:token` (route `DIA
   on a quick reply does not open a phone's keyboard.
 - **The log is the live region** (`role="log"`, polite): the error line inside it carries no
   `role="alert"`, or a screen reader would say it twice.
+
+- **The consent links to the firm's privacy notice** (rnc-4 F9b, R38): `MDiagnosticContactForm` puts a link
+  to `SITE_ROUTE_NAMES.privacy` under the consent — outside its `<label>`, so following it never ticks
+  the box, and in a new tab, so the diagnostic in progress (its token lives only in the page) stays (W107).
 
 ## Known Gaps
 

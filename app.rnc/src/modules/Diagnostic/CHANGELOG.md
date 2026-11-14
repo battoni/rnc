@@ -2,6 +2,13 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.6.0 — 2026-11-14
+
+### Added
+
+- The contact step links to the firm's privacy notice under the consent (rnc-4 F9b, R38, W107):
+  `diagnostic.contact.privacy`. Tested by `MDiagnosticContactForm.spec`.
+
 ## 1.5.0 — 2026-11-14
 
 - Never at the root (rnc-4 F6b, R28): `/diagnostico` takes the Site module's `firmSiteOnly` as `beforeEnter` — on the platform firm it lands on the product's landing. Tested by `productSite.spec` and `e2e/product/landing.spec`.

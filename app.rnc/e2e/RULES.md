@@ -1,5 +1,5 @@
 ---
-version: 1.22.1
+version: 1.23.0
 origin: pendulum
 based-on: 1.8.2
 ---
@@ -118,6 +118,14 @@ too — the chat toggle needs `chat` (`diagnostic/chat.spec.ts`).
 
 `/` is Franco's public site (rnc-1 AM15) and renders no rail; a spec that measures the back office
 goes to `/painel`, the `home` route.
+
+## A confirm popup is clicked without a scroll
+
+PrimeVue's `ConfirmPopup` closes on any scroll of its anchor's scroll container, and Playwright
+scrolls a control into view before it clicks — the scroll lands after the popup opened, so the accept
+button detaches mid-click and the test times out (rnc-4 F9b, `pipeline/lead-privacy.spec.ts`). Give
+the test a viewport where the anchor is already on screen (`setViewportSize`); a person clicks a button
+they can see.
 
 ## Known Gaps
 

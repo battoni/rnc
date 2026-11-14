@@ -459,3 +459,6 @@ the deploy; a per-action audit trail inside view-as; firm self-signup without th
 - C20 (F9a, W102) R40's `firm:offboard` also anonymises every lead of the firm after the export (A48's rules) and takes a
   `--confirm` flag (without it nothing is written); it refuses the platform firm and a firm already closed. "Inactive" is
   `firms.offboarded_at`: host 404, nobody belongs to the firm, an open session refused 403 `firms.offboarded`. Reverse: close only.
+- C21 (F9b, W106) R38's notice also answers at the root (`/privacidade` on the platform firm, unlike `/diagnostico` and
+  `/reforma/:slug`, R28): there the platform is the controller of what the beta form keeps, so the page names it as controller and
+  shows no operator line. Reverse: `firmSiteOnly` on the route and no footer link at the root.

@@ -1,5 +1,5 @@
 # State: Reforma hub as a white-label platform for accounting firms
-Stage: build F9a/19 (optional F9a done; F9b not built)
+Stage: build F9b/19 (optional F9a and F9b done; verify next)
 Updated: 14/11/2026
 Branch: feature/rnc-4-white-label-platform · Worktree: .claude/worktrees/rnc-4
 ## Done
@@ -559,10 +559,29 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   nobody belongs to it, a session of its people 403 `firms.offboarded`, `forEachFirm` skips it. Docs: Firm 1.12.0, Lead 1.11.0,
   Pipeline 1.3.0, Auth 2.18.0 (`findAllFirmUsers`); Known Gaps: offboard anonymises leads only, offboarded firm still in the
   console, referral messages kept. Spec: C19, C20.
+- **F9b LGPD — SPA** (A47; R38, R39) · 14/11 · full Vitest 1523 (+10: `PrivacyView.view.integration.spec` 4,
+  `LeadView.privacy.integration.spec` 4, `ThePublicLayout.spec` 1, `MDiagnosticContactForm.spec` 1; `routes.spec` case changed to list
+  `/privacidade`), `--maxWorkers=2`, all green · Playwright: only the two new files, 7/7 green (`e2e/site/privacy.spec.ts` 4,
+  `e2e/pipeline/lead-privacy.spec.ts` 3) — the full Playwright suite NOT run (phase gate) · full Pest 2397 (no API change), green ·
+  phase gate 14/11/2026 — NOT the full `/battoni-pre-commit`: ran `make check-app` (aliases + type-check), `make check-api` (Pint +
+  PHPStan), `make sync-mirror-check`, `make sanitize` (lint, format, sort-locales — nothing changed outside this phase's files; ESLint
+  on `src` + `e2e` 0 problems), full Vitest, full Pest, the two new e2e files; skipped: the full Playwright run (`test-all`'s e2e, by
+  the phase gate), `check-portal` (no portal), `check-cortex` (skipped by design here). Reviews inline: vue conventions (no finding
+  left; the confirm is `useConfirm` + `ConfirmPopup` in the `<aside>`, celer-07), design conventions (role tokens, `text-brand-word`
+  for the brand as a word, `touch-target` on the hand-written links, `gap-3` between the two data buttons); arcus not applicable
+  (no api.rnc change).
+  Red first: both e2e files failed before the code (6 of 7; the team case passed — nothing rendered yet), and the four Vitest files
+  failed (no view, no buttons, no footer link, no consent link). Mutations seen red: `canManageData` without `firm.settings` (the
+  team cases in Vitest and e2e), "Anonimizar" calling the API before the confirmation (e2e: a POST before the popup's yes).
+  What changed: Site 1.9.0 — `/privacidade` (`PrivacyView`, `SITE_ROUTE_NAMES.privacy`, `GetPublicPrivacyService`, `PublicPrivacy`),
+  open at the root too (W106, C21), every word `site.privacy.*`; the footer's `footer-privacy` link beside the copyright. Diagnostic
+  1.6.0 — the consent's link to the notice, new tab, outside the label (W107). Pipeline 1.7.0 — the lead detail's "Dados do lead
+  (LGPD)" panel for `leads.update` + `firm.settings` (W101): "Exportar dados" saves `lead-<id>-dados.json`, "Anonimizar" behind a
+  `ConfirmPopup` that says it cannot be undone, then the API's anonymised detail; "Dados anonimizados em …" for every reader (W108);
+  the `dados.anonimizados` timeline sentence by `via`. Locales 1.18.1 (also `firms.offboarded`, W110); e2e 1.23.0 (RULES: a confirm
+  popup is clicked without a scroll). Spec: C21.
 ## Next
-1. F9a done. F9b (SPA `/privacidade` from `GET public/privacy`, A47; the lead detail's "Exportar dados" / "Anonimizar" buttons;
-   locales for `firms.offboarded`) is optional — build it only if quota remains, else list it as owed in the PR.
-   Then `/battoni-verify rnc-4`: full gate (full Playwright included), `fable-reviewer` with spec + `main..HEAD` (P6 points of F1a,
+1. F9a and F9b done (every builder phase built). Then `/battoni-verify rnc-4`: full gate (full Playwright included), `fable-reviewer` with spec + `main..HEAD` (P6 points of F1a,
    F4a, F4c, and F9a's `ResolveCurrentFirm` offboarded branch + `FirmResolver::belongsTo`), Chrome QA rounds 1–6, draft PR. The owner,
    before any deploy: the MySQL 8 run in `docs/deploy/runbook.md` → "Database".
 ## Pitfalls
@@ -735,6 +754,15 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   invalidating it, not by `logout()`.
 - (F9a) `firm:offboard` writes its export with `Storage::disk('local')`: a test fakes `local` first, or the file lands in
   `storage/app/private/offboarding/`.
+- (F9b) A Playwright route regex like `/\/leads\/7$/` also matches the PAGE `/equipe/leads/7` and answers the document with JSON
+  (the screen never mounts): anchor a back-office mock on `/api/` (`/\/api\/leads\/7$/`).
+- (F9b) PrimeVue's `ConfirmPopup` closes on any scroll of its anchor's scroll container (`.main-scroll`), and Playwright's pre-click
+  scroll lands after the popup opened — the accept button detaches and the click times out. Use a viewport where the anchor is on
+  screen (`e2e/RULES.md`, "A confirm popup is clicked without a scroll").
+- (F9b) In a Vitest spec, `vi.stubGlobal('URL', { ...URL, createObjectURL })` drops the class itself and every API call then fails
+  (axios builds `new URL`): add `createObjectURL`/`revokeObjectURL` onto `URL` with `Object.assign` instead.
+- (F9b) This sandbox refuses Bash calls mixing heredocs or several commands with git; multi-file edits went through a Python script
+  in the scratchpad run by path, and `rtk git status` alone.
 ## QA
 (none yet — rounds in plan.md → QA)
 ## Seeded people (password `seeding.password`; `battoni` uses `seeding.superadmin_password`)
@@ -800,6 +828,8 @@ F4d done
 F7 done
 13:50 F9a started, attempt 1
 F9a done
+14:12 F9b started, attempt 1
+F9b done
 ## Decided while you were away
 - W1 plan: proposal.html skipped in away mode (spec D27; to reverse: `/battoni-new-proposal rnc-4 final`).
 - W2 plan: the owner's phases are split into 17 builder phases with his labels kept (spec D28); his
@@ -1110,3 +1140,20 @@ F9a done
   operator = `platform.name`, requests = the firm's mailbox and phone) — the notice's prose stays in F9b's template. To reverse:
   prose from the API.
 - W105 F9a: the live check ran on the API alone (8001, Python urllib with a cookie jar); no SPA change, so no browser. To reverse: n/a.
+- W106 F9b: `/privacidade` answers at the root too (no `firmSiteOnly`), and the footer links to it there: the beta form keeps a firm's
+  contact under the platform's consent, so the platform is a controller with a notice of its own; with `is_platform` the page names it
+  controller and drops the operator line. Spec C21. To reverse: `beforeEnter: firmSiteOnly` and hide the footer link on the product site.
+- W107 F9b: the diagnostic's privacy link sits under the consent, outside its `<label>` (following it never ticks the box), and opens in
+  a new tab (`target="_blank"`): the diagnostic's token lives only in the page, so leaving it would start the visitor over. To reverse:
+  same-tab link.
+- W108 F9b: "Anonimizar" asks in a `ConfirmPopup` (celer-07: a yes/no destructive action is a popup, not an `MMainDialog`) whose message
+  says it cannot be undone; after it, "Anonimizar" is gone, "Exportar dados" stays (the export of what is left), and "Dados anonimizados
+  em …" shows to every reader of the lead, not only the manager. The panel is "Dados do lead (LGPD)" in the detail's side column. To
+  reverse: an `MMainDialog` confirmation; the notice for managers only.
+- W109 F9b: no live check against the real API and no browser on 5173: the two endpoints were proven live in F9a (W105) and the SPA side by
+  the two new e2e files with the API mocked; the Chrome rounds stay verify's (as W56, W94). To reverse: run QA round 6 now.
+- W110 F9b: the API's 403 `firms.offboarded` gets its sentence (`firms.offboarded` in both locales) and no handler of its own — the API has
+  already invalidated the session, so the next call is a 401 and the existing handler takes the person to the login screen. To reverse:
+  treat it like `firms.mismatch` in `errorHandler`.
+- W111 F9b: the export downloads as `lead-<id>-dados.json`, the API's `data` as it came, indented (2 spaces), built in the browser from the
+  JSON answer (no file endpoint). To reverse: a `Content-Disposition` download from the API.

@@ -103,6 +103,8 @@ interface LeadProfile {
 
 /** `LeadDetailResource`: the lead detail (R19). */
 interface LeadDetail {
+  /** rnc-4 R39: when who the lead was got wiped; null while the lead is whole. */
+  anonymised_at: string | null;
   brand: LeadBrand | null;
   channel: LEAD_CHANNEL;
   cnpj: string | null;

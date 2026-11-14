@@ -1,4 +1,4 @@
-import type { BetaConsent, PublicFirm, SectorPage, SectorPageSummary } from '../interfaces';
+import type { BetaConsent, PublicFirm, PublicPrivacy, SectorPage, SectorPageSummary } from '../interfaces';
 
 /* The API's answers as the Site specs need them — the shapes of the `Public*` resources. */
 const FIRM_FIXTURE: PublicFirm = {
@@ -114,12 +114,46 @@ const BETA_CONSENT_FIXTURE: BetaConsent = {
   version: 2,
 };
 
+/* `GET public/privacy` on alvorada (rnc-4 F9a's live check): the firm controls, the platform operates. */
+const PRIVACY_FIXTURE: PublicPrivacy = {
+  collected: [
+    'company',
+    'cnpj',
+    'contact_name',
+    'email',
+    'phone',
+    'diagnostic_answers',
+    'meeting',
+    'site_visits',
+    'consent_records',
+  ],
+  controller: { address: 'Rua das Palmeiras, 120, Centro, Campinas-SP', is_platform: false, name: 'Alvorada Contábil' },
+  operator: { name: 'Hub da Reforma' },
+  requests: { email: 'contato@alvorada.exemplo.com.br', phone: '19 3200-1100' },
+  retention: [
+    { data: 'lead_data', rule: 'until_request_or_firm_exit' },
+    { data: 'consent_records', rule: 'kept_as_proof' },
+    { data: 'site_visits', rule: 'pseudonymous' },
+  ],
+  sharing: ['partner_network'],
+};
+
+/* The same at the root: the platform is the controller itself, and no network shares anything. */
+const PLATFORM_PRIVACY_FIXTURE: PublicPrivacy = {
+  ...PRIVACY_FIXTURE,
+  controller: { address: null, is_platform: true, name: 'Hub da Reforma' },
+  requests: { email: null, phone: null },
+  sharing: [],
+};
+
 export {
   AGRO_PAGE_FIXTURE,
   BETA_CONSENT_FIXTURE,
   EXPRESS_FIRM_FIXTURE,
   FIRM_FIXTURE,
   PLATFORM_FIRM_FIXTURE,
+  PLATFORM_PRIVACY_FIXTURE,
   PRIME_FIRM_FIXTURE,
+  PRIVACY_FIXTURE,
   SECTORS_FIXTURE,
 };

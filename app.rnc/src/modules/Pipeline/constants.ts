@@ -13,6 +13,7 @@ const BOARD_STAGES: LEAD_STAGE[] = [
 
 /** Each timeline type's sentence under `pipeline.lead.timeline.events` (a key cannot hold the API's dots). */
 const TIMELINE_EVENT_KEYS: Record<LEAD_EVENT_TYPE, string> = {
+  [LEAD_EVENT_TYPE.ANONYMISED]: 'anonymised',
   [LEAD_EVENT_TYPE.CNPJ_LOOKED_UP]: 'cnpjLookedUp',
   [LEAD_EVENT_TYPE.CONTACT_CAPTURED]: 'contactCaptured',
   [LEAD_EVENT_TYPE.DIAGNOSTIC_STARTED]: 'diagnosticStarted',
@@ -53,7 +54,22 @@ const LEAD_CHANNEL_ICONS: Record<LEAD_CHANNEL, string> = {
 const PIPELINE_ROUTE_NAMES = { agenda: 'agenda', board: 'pipeline', lead: 'pipeline-lead' } as const;
 
 /** The keys that open and change the pipeline (plan AM8). */
-const PIPELINE_PERMISSIONS = { agenda: 'agenda.read', read: 'leads.read', update: 'leads.update' } as const;
+/*
+ * rnc-4 R39 (W101): a lead's export and anonymisation need `leads.update` AND `firm.settings` — the
+ * manager's own key, so the team (who holds the first only) never sees the two buttons.
+ */
+const PIPELINE_PERMISSIONS = {
+  agenda: 'agenda.read',
+  firmSettings: 'firm.settings',
+  read: 'leads.read',
+  update: 'leads.update',
+} as const;
+
+/** rnc-4 C20: the `via` of a lead anonymised because its firm left the platform (`firm:offboard`). */
+const ANONYMISED_ON_EXIT = 'saida_do_escritorio';
+
+/** The export's file type: the API's JSON as it came, indented to be read. */
+const LEAD_EXPORT_TYPE = 'application/json;charset=utf-8';
 
 /** The drag payload's type: only a card of this board is a drop the columns take. */
 const LEAD_DRAG_TYPE = 'application/x-rnc-lead';
@@ -68,11 +84,13 @@ const SEARCH_DEBOUNCE_MS = 300;
 const LOST_REASON_MAX_LENGTH = 300;
 
 export {
+  ANONYMISED_ON_EXIT,
   LEAD_CHANNEL_ICONS,
   BOARD_STAGES,
   LEAD_DRAG_TYPE,
   LOST_REASON_MAX_LENGTH,
   MAIN_BRAND_FILTER,
+  LEAD_EXPORT_TYPE,
   PIPELINE_PERMISSIONS,
   PIPELINE_ROUTE_NAMES,
   SEARCH_DEBOUNCE_MS,

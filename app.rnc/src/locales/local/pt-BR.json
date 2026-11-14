@@ -234,7 +234,8 @@
       "disclaimer": "Os valores do site e do diagnóstico são estimativas, não cálculo fiscal.",
       "hoursRange": "{days}, {from} às {to}",
       "dayRange": "{first} a {last}",
-      "copyright": "© {year} {name}"
+      "copyright": "© {year} {name}",
+      "privacy": "Privacidade"
     },
     "weekdaysInSentence": {
       "d1": "segunda",
@@ -470,6 +471,69 @@
         "tagline": "O hub da Reforma Tributária para escritórios de contabilidade.",
         "disclaimer": "Datas da Reforma pela LC 214/2025, conferidas em 14/11/2026. Os valores do diagnóstico são estimativas, não cálculo fiscal."
       }
+    },
+    "privacy": {
+      "kicker": "LGPD",
+      "title": "Privacidade e proteção de dados",
+      "seoDescription": "Quem trata os seus dados neste site, o que é guardado, por quanto tempo e como pedir para ver, corrigir ou apagar.",
+      "lede": "Como {name} trata os dados de quem usa este site, o diagnóstico e o agendamento — conforme a Lei Geral de Proteção de Dados (Lei 13.709/2018).",
+      "loadFailed": "Não foi possível carregar a política de privacidade.",
+      "retry": "Tentar de novo",
+      "controller": {
+        "title": "Quem é o responsável",
+        "text": "{name} é a controladora dos seus dados: decide para que eles são usados e responde por eles.",
+        "platformText": "{name} é a controladora dos dados deixados neste site: decide para que eles são usados e responde por eles.",
+        "address": "Endereço: {address}"
+      },
+      "operator": {
+        "title": "Quem opera a plataforma",
+        "text": "{name} é a operadora: hospeda este site e o sistema do escritório e trata os seus dados apenas em nome de {controller}, seguindo as instruções dele."
+      },
+      "collected": {
+        "title": "O que guardamos",
+        "purpose": "Usamos esses dados para calcular o diagnóstico, preparar a reunião com o especialista e falar com você sobre ela.",
+        "items": {
+          "company": "O nome da empresa",
+          "cnpj": "O CNPJ",
+          "contact_name": "O seu nome",
+          "email": "O seu e-mail",
+          "phone": "O seu telefone ou WhatsApp",
+          "diagnostic_answers": "As respostas do diagnóstico (setor, regime, faturamento e as demais perguntas)",
+          "meeting": "A reunião marcada com o especialista",
+          "site_visits": "As páginas visitadas neste site",
+          "consent_records": "As suas respostas aos pedidos de autorização, com o texto que você leu e a data"
+        }
+      },
+      "retention": {
+        "title": "Por quanto tempo",
+        "data": {
+          "lead_data": "Os seus dados e as respostas do diagnóstico",
+          "consent_records": "As autorizações",
+          "site_visits": "As visitas ao site"
+        },
+        "rules": {
+          "until_request_or_firm_exit": "guardados até você pedir que sejam apagados, ou até o escritório deixar a plataforma — então são anonimizados",
+          "kept_as_proof": "guardadas como prova do que você autorizou, mesmo depois de uma anonimização",
+          "pseudonymous": "registradas com um identificador aleatório deste navegador, sem o seu IP e sem o seu nome"
+        }
+      },
+      "sharing": {
+        "title": "Com quem compartilhamos",
+        "operatorOnly": "Fora isso, os seus dados não saem do escritório e da operadora da plataforma.",
+        "items": {
+          "partner_network": "Com um especialista da rede de parceiros do escritório, só se você marcar a autorização no diagnóstico e só para a indicação que ela cobre."
+        }
+      },
+      "rights": {
+        "title": "Os seus direitos",
+        "text": "Você pode pedir para ver, corrigir, receber uma cópia ou apagar os seus dados, e retirar uma autorização quando quiser."
+      },
+      "requests": {
+        "title": "Como fazer um pedido",
+        "text": "Fale com {name}:",
+        "phone": "Telefone: {phone}",
+        "none": "Use o contato no rodapé desta página."
+      }
     }
   },
   "diagnostic": {
@@ -572,7 +636,8 @@
       "phone": "WhatsApp ou telefone",
       "email": "E-mail",
       "hint": "Basta um dos dois. Seus dados ficam com a {firmShort} e não são compartilhados sem a sua autorização.",
-      "consentOptional": "Opcional: o resultado vem do mesmo jeito."
+      "consentOptional": "Opcional: o resultado vem do mesmo jeito.",
+      "privacy": "Como tratamos os seus dados"
     },
     "actions": {
       "continue": "Continuar",
@@ -902,13 +967,26 @@
           "stageLost": "{from} → {to}: {reason}",
           "noteAdded": "Nota: {text}",
           "unknown": "Evento {type}",
-          "referralSent": "Encaminhado a {partner} ({score}%)"
+          "referralSent": "Encaminhado a {partner} ({score}%)",
+          "anonymised": "Dados anonimizados a pedido",
+          "anonymisedOnExit": "Dados anonimizados na saída do escritório da plataforma"
         },
         "vias": {
           "botao": "botão",
           "arrastar": "arrastado",
           "ficha": "pela ficha"
         }
+      },
+      "data": {
+        "title": "Dados do lead (LGPD)",
+        "lede": "Exporte os dados deste lead quando ele pedir uma cópia, ou anonimize-o quando ele pedir para ser apagado.",
+        "export": "Exportar dados",
+        "anonymise": "Anonimizar",
+        "cancel": "Cancelar",
+        "anonymiseConfirm": "Anonimizar apaga para sempre o nome, o e-mail, o telefone, o CNPJ e a empresa deste lead. Isto não pode ser desfeito.",
+        "anonymisedAt": "Dados anonimizados em {date}",
+        "anonymisedText": "Este lead foi anonimizado: quem ele era não está mais guardado. A exportação traz o que restou.",
+        "anonymisedToast": "Lead anonimizado."
       }
     },
     "agenda": {
@@ -2354,5 +2432,8 @@
       "platformAuthor": "Padrão da plataforma",
       "loadFailed": "Não foi possível carregar o consentimento."
     }
+  },
+  "firms": {
+    "offboarded": "Este escritório deixou a plataforma e o acesso foi encerrado."
   }
 }

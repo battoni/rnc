@@ -1,5 +1,15 @@
 # Changelog — Site Module
 
+## 1.9.0 — 2026-11-14
+
+### Added
+
+- `/privacidade` (`SITE_ROUTE_NAMES.privacy`, `PrivacyView`, rnc-4 F9b, R38, A47): the firm's privacy
+  notice worded from `GET public/privacy` (`GetPublicPrivacyService`, `PublicPrivacy`), open at the root
+  too (W106); `site.privacy.*` in both locales. The public footer links to it (`footer-privacy`).
+  Tested by `PrivacyView.view.integration.spec`, `ThePublicLayout.spec`, `routes.spec` and
+  `e2e/site/privacy.spec.ts`.
+
 ## 1.8.1 — 2026-11-14
 
 ### Changed

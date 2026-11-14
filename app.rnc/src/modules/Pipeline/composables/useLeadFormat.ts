@@ -1,7 +1,7 @@
 import { useI18n } from 'vue-i18n';
 import type { LeadTimelineEvent } from '../interfaces';
 import { MEETING_TIME_ZONE } from '@DiagnosticModule';
-import { TIMELINE_EVENT_KEYS } from '../constants';
+import { ANONYMISED_ON_EXIT, TIMELINE_EVENT_KEYS } from '../constants';
 import { LEAD_EVENT_TYPE, LEAD_STAGE } from '../enums';
 
 const MEETING_FORMAT: Intl.DateTimeFormatOptions = {
@@ -70,6 +70,9 @@ function useLeadFormat() {
     const key = `pipeline.lead.timeline.events.${name}`;
 
     if (event.type === LEAD_EVENT_TYPE.STAGE_CHANGED) return stageChangeSentence(data);
+
+    if (event.type === LEAD_EVENT_TYPE.ANONYMISED)
+      return t(textOf(data.via) === ANONYMISED_ON_EXIT ? `${key}OnExit` : key);
 
     if (event.type === LEAD_EVENT_TYPE.DIAGNOSTIC_STARTED) {
       return t(key, { path: t(`pipeline.lead.profile.paths.${textOf(data.path) || 'quiz'}`) });

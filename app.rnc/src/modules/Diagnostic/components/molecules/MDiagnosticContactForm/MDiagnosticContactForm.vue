@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { DiagnosticContactDraft } from '../../../interfaces';
+import { SITE_ROUTE_NAMES } from '@SiteModule';
 
 /*
  * The contact, asked right after step 1 (rnc-1 R11): the company, the person's name, one way to
@@ -7,6 +8,9 @@ import type { DiagnosticContactDraft } from '../../../interfaces';
  * partners, unticked until the visitor ticks it (AM12). The words of the consent are the API's, so
  * the text shown is the text stored. The fields are `useDiagnostic`'s contact draft, the one the
  * chat receptionist fills too (rnc-2 R14): what was typed in either shows in the other.
+ *
+ * rnc-4 F9b (R38): under the consent, a link to the firm's privacy notice — in a new tab, so the
+ * diagnostic in progress stays, and outside the label, so following it never ticks the box (W107).
  */
 const props = defineProps<{
   consentText: string;
@@ -129,6 +133,16 @@ function onSubmit() {
         </span>
       </span>
     </label>
+
+    <RouterLink
+      class="touch-target text-muted hover:text-heading self-start text-xs underline underline-offset-4"
+      data-testid="contact-privacy"
+      rel="noopener"
+      target="_blank"
+      :to="{ name: SITE_ROUTE_NAMES.privacy }"
+    >
+      {{ $t('diagnostic.contact.privacy') }}
+    </RouterLink>
 
     <p
       v-if="props.errorKey"

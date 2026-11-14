@@ -27,6 +27,8 @@ enum MOVE_VIA {
 
 /** The timeline's line types — the API's `LeadEventType`. */
 enum LEAD_EVENT_TYPE {
+  /** rnc-4 R39: who the lead was is wiped — `data.via` is `pedido` or `saida_do_escritorio`. */
+  ANONYMISED = 'dados.anonimizados',
   CNPJ_LOOKED_UP = 'cnpj.consultado',
   CONTACT_CAPTURED = 'contato.capturado',
   DIAGNOSTIC_STARTED = 'diagnostico.inicio',

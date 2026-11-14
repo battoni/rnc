@@ -3,6 +3,14 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.18.1 — 2026-11-14
+
+### Added
+
+- rnc-4 F9b: `site.privacy.*` (the privacy notice), `site.footer.privacy`, `diagnostic.contact.privacy`,
+  `pipeline.lead.data.*`, `pipeline.lead.timeline.events.anonymised` / `anonymisedOnExit`, and the API's
+  `firms.offboarded` refusal (F9a) as a top-level `firms` key in `local/*.json`.
+
 ## 1.18.0 — 2026-11-14
 
 ### Added

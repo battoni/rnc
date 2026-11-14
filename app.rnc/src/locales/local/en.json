@@ -234,7 +234,8 @@
       "disclaimer": "The values on this site and in the diagnostic are estimates, not a tax calculation.",
       "hoursRange": "{days}, {from} to {to}",
       "dayRange": "{first} to {last}",
-      "copyright": "© {year} {name}"
+      "copyright": "© {year} {name}",
+      "privacy": "Privacy"
     },
     "weekdaysInSentence": {
       "d1": "Monday",
@@ -470,6 +471,69 @@
         "tagline": "The Reforma Tributária hub for accounting firms.",
         "disclaimer": "Reforma dates per LC 214/2025, checked on 14/11/2026. The diagnostic's values are estimates, not a tax calculation."
       }
+    },
+    "privacy": {
+      "kicker": "LGPD",
+      "title": "Privacy and data protection",
+      "seoDescription": "Who handles your data on this site, what is kept, for how long, and how to ask to see, correct or delete it.",
+      "lede": "How {name} handles the data of whoever uses this site, the diagnostic and the booking — under Brazil’s General Data Protection Law (Law 13,709/2018).",
+      "loadFailed": "The privacy notice could not be loaded.",
+      "retry": "Try again",
+      "controller": {
+        "title": "Who is responsible",
+        "text": "{name} is the controller of your data: it decides what it is used for and answers for it.",
+        "platformText": "{name} is the controller of the data left on this site: it decides what it is used for and answers for it.",
+        "address": "Address: {address}"
+      },
+      "operator": {
+        "title": "Who runs the platform",
+        "text": "{name} is the processor: it hosts this site and the firm’s system and handles your data only on behalf of {controller}, following its instructions."
+      },
+      "collected": {
+        "title": "What we keep",
+        "purpose": "We use this data to work out the diagnostic, prepare the meeting with the specialist and talk to you about it.",
+        "items": {
+          "company": "The company’s name",
+          "cnpj": "The CNPJ",
+          "contact_name": "Your name",
+          "email": "Your e-mail",
+          "phone": "Your phone or WhatsApp",
+          "diagnostic_answers": "The diagnostic’s answers (sector, regime, revenue and the other questions)",
+          "meeting": "The meeting booked with the specialist",
+          "site_visits": "The pages visited on this site",
+          "consent_records": "Your answers to the requests for consent, with the words you read and the date"
+        }
+      },
+      "retention": {
+        "title": "For how long",
+        "data": {
+          "lead_data": "Your data and the diagnostic’s answers",
+          "consent_records": "The consents",
+          "site_visits": "The visits to the site"
+        },
+        "rules": {
+          "until_request_or_firm_exit": "kept until you ask for them to be deleted, or until the firm leaves the platform — then they are anonymised",
+          "kept_as_proof": "kept as proof of what you agreed to, even after an anonymisation",
+          "pseudonymous": "recorded with a random id of this browser, without your IP and without your name"
+        }
+      },
+      "sharing": {
+        "title": "Who we share it with",
+        "operatorOnly": "Beyond that, your data stays with the firm and the platform’s processor.",
+        "items": {
+          "partner_network": "With a specialist of the firm’s partner network, only if you tick the consent in the diagnostic and only for the introduction it covers."
+        }
+      },
+      "rights": {
+        "title": "Your rights",
+        "text": "You may ask to see, correct, get a copy of or delete your data, and withdraw a consent whenever you like."
+      },
+      "requests": {
+        "title": "How to make a request",
+        "text": "Contact {name}:",
+        "phone": "Phone: {phone}",
+        "none": "Use the contact in this page’s footer."
+      }
     }
   },
   "diagnostic": {
@@ -572,7 +636,8 @@
       "phone": "WhatsApp or phone",
       "email": "E-mail",
       "hint": "One of the two is enough. Your data stays with {firmShort} and is not shared without your permission.",
-      "consentOptional": "Optional: you get the result either way."
+      "consentOptional": "Optional: you get the result either way.",
+      "privacy": "How we handle your data"
     },
     "actions": {
       "continue": "Continue",
@@ -902,13 +967,26 @@
           "stageLost": "{from} → {to}: {reason}",
           "noteAdded": "Note: {text}",
           "unknown": "Event {type}",
-          "referralSent": "Referred to {partner} ({score}%)"
+          "referralSent": "Referred to {partner} ({score}%)",
+          "anonymised": "Data anonymised on request",
+          "anonymisedOnExit": "Data anonymised when the firm left the platform"
         },
         "vias": {
           "botao": "button",
           "arrastar": "dragged",
           "ficha": "from the detail"
         }
+      },
+      "data": {
+        "title": "Lead data (LGPD)",
+        "lede": "Export this lead’s data when they ask for a copy, or anonymise it when they ask to be deleted.",
+        "export": "Export data",
+        "anonymise": "Anonymise",
+        "cancel": "Cancel",
+        "anonymiseConfirm": "Anonymising deletes this lead’s name, e-mail, phone, CNPJ and company for good. This cannot be undone.",
+        "anonymisedAt": "Data anonymised on {date}",
+        "anonymisedText": "This lead was anonymised: who they were is no longer kept. The export carries what is left.",
+        "anonymisedToast": "Lead anonymised."
       }
     },
     "agenda": {
@@ -2354,5 +2432,8 @@
       "platformAuthor": "Platform default",
       "loadFailed": "The consent could not be loaded."
     }
+  },
+  "firms": {
+    "offboarded": "This firm has left the platform and access has ended."
   }
 }

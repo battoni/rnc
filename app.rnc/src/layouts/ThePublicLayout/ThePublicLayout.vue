@@ -373,12 +373,23 @@ function onProductNavClick(anchor: string) {
         >
           <span>{{ isProductSite ? $t('site.product.footer.disclaimer') : $t('site.footer.disclaimer') }}</span>
 
-          <span
-            data-testid="footer-copyright"
-            :class="['motion-quick transition-opacity', { 'opacity-0': isShellPending }]"
-          >
-            {{ $t('site.footer.copyright', { year: CURRENT_YEAR, name: firm?.name ?? '' }) }}
-          </span>
+          <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <RouterLink
+              class="touch-target hover:text-heading underline underline-offset-4"
+              data-testid="footer-privacy"
+              exact-active-class=""
+              :to="{ name: SITE_ROUTE_NAMES.privacy }"
+            >
+              {{ $t('site.footer.privacy') }}
+            </RouterLink>
+
+            <span
+              data-testid="footer-copyright"
+              :class="['motion-quick transition-opacity', { 'opacity-0': isShellPending }]"
+            >
+              {{ $t('site.footer.copyright', { year: CURRENT_YEAR, name: firm?.name ?? '' }) }}
+            </span>
+          </div>
         </div>
       </div>
     </footer>

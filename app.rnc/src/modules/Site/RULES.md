@@ -1,5 +1,5 @@
 ---
-version: 1.8.1
+version: 1.9.0
 origin: rnc
 ---
 
@@ -119,6 +119,13 @@ index.ts`, `constants.ts`), so `@SiteModule` still answers for every name it exp
   field the API names, never the API's prose; a 429 says to wait a minute. PrimeVue's `Select` picks on
   `mousedown`, which a spec must fire instead of `click`.
 - **The demo link is `VITE_DEMO_FIRM_SLUG`** (D24, `firmSiteUrl`): empty hides it.
+
+- **`/privacidade` is the firm's privacy notice** (rnc-4 R38, A47, F9b): `GET public/privacy` says who
+  (the firm as controller, the platform as operator, the firm's mailbox and phone) and which, as stable
+  keys (`collected`, `retention`, `sharing`); every word is `site.privacy.*` here (F9a W104), so a new
+  key from the API needs its sentence in both locales. It answers at the root too, where the platform
+  is the controller of what the beta form keeps and no operator line shows (W106). The footer links to
+  it beside the copyright on every public page, and the diagnostic's consent links to it (Diagnostic).
 
 ## Known Gaps
 

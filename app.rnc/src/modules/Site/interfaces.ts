@@ -80,6 +80,25 @@ interface ArrivalContext {
   search: string;
 }
 
+/**
+ * `PublicPrivacyResource` (rnc-4 R38, W104): the data the privacy notice is worded from. Every list is
+ * a stable key the SPA words (`site.privacy.*`); only the names and the contact are the firm's.
+ */
+interface PublicPrivacy {
+  collected: string[];
+  controller: { address: string | null; is_platform: boolean; name: string };
+  operator: { name: string };
+  requests: { email: string | null; phone: string | null };
+  retention: PublicPrivacyRetention[];
+  sharing: string[];
+}
+
+/** One line of the notice's retention list: which data, under which rule. */
+interface PublicPrivacyRetention {
+  data: string;
+  rule: string;
+}
+
 /** Search-engine metadata a public page sets for itself (R8). */
 interface SeoMeta {
   description: string;
@@ -94,6 +113,8 @@ export type {
   PublicBrandProof,
   PublicFirm,
   PublicFirmHours,
+  PublicPrivacy,
+  PublicPrivacyRetention,
   SectorFact,
   SectorPage,
   SectorPageSummary,

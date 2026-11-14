@@ -12,6 +12,8 @@ import {
 const SITE_ROUTE_NAMES = {
   diagnostic: 'site-diagnostic',
   home: 'site-home',
+  // rnc-4 R38 (F9b): the firm's privacy notice — linked from the footer and the diagnostic's consent.
+  privacy: 'site-privacy',
   sector: 'site-sector',
 } as const;
 

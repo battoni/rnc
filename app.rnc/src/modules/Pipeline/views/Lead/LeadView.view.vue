@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
+import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
@@ -8,9 +9,9 @@ import { FIRM_MODULE } from '@Enums';
 import { getI18nRouteName, toRouteId, translateError } from '@Helpers';
 import { useUserStore } from '@UserModule';
 import { contactLinks, useLeadFormat } from '../../composables';
-import { BOARD_STAGES, PIPELINE_PERMISSIONS, PIPELINE_ROUTE_NAMES } from '../../constants';
+import { BOARD_STAGES, LEAD_EXPORT_TYPE, PIPELINE_PERMISSIONS, PIPELINE_ROUTE_NAMES } from '../../constants';
 import { LEAD_STAGE, MOVE_VIA } from '../../enums';
-import { GetLeadService, MoveLeadStageService } from '../../services';
+import { AnonymiseLeadService, ExportLeadService, GetLeadService, MoveLeadStageService } from '../../services';
 
 /*
  * The lead detail (rnc-1 R19): who the lead is and how to reach them (real `tel:`, `mailto:` and
@@ -18,6 +19,10 @@ import { GetLeadService, MoveLeadStageService } from '../../services';
  * answer as given, the meeting, the team's notes and the timeline. The stage moves from here too
  * (`via: ficha`); perdido asks for the reason. Under the diagnostic, the routing panel (F6, R22,
  * the Partner module's `MLeadRouting`): a referral lands on the timeline, the stage stays.
+ *
+ * rnc-4 R39 (F9b): the firm's manager (`leads.update` + `firm.settings`, W101) downloads the lead's data
+ * as JSON and anonymises it behind a confirmation that says it cannot be undone; the detail then shows
+ * the API's anonymised answer, and an anonymised lead says so to everyone who opens it.
  */
 interface LoadError {
   response?: { status?: number };
@@ -34,6 +39,7 @@ const TOAST_LIFE_MS = 3500;
 
 const userStore = useUserStore();
 
+const confirm = useConfirm();
 const route = useRoute();
 const { t } = useI18n();
 const toast = useToast();
@@ -41,6 +47,8 @@ const { formatDate, formatMeeting, formatMoment, stageLabel } = useLeadFormat();
 
 const dialogVisible = ref(false);
 const hasFailed = ref(false);
+const isAnonymising = ref(false);
+const isExporting = ref(false);
 const isLoading = ref(true);
 const isMissing = ref(false);
 const isMoving = ref(false);
@@ -48,8 +56,10 @@ const lead = ref<LeadDetail | null>(null);
 const pendingLost = ref<PendingLostMove | null>(null);
 
 const canUpdate = computed(() => userStore.hasPermission(PIPELINE_PERMISSIONS.update));
+const canManageData = computed(() => canUpdate.value && userStore.hasPermission(PIPELINE_PERMISSIONS.firmSettings));
 // rnc-4 W38: the partner matches and the referral are the partner network's (404 without `partners`).
 const hasPartners = computed(() => userStore.hasModule(FIRM_MODULE.PARTNERS));
+const isAnonymised = computed(() => Boolean(lead.value?.anonymised_at));
 const leadId = computed(() => toRouteId(route.params.id));
 const links = computed(() => contactLinks(lead.value?.phone ?? null, lead.value?.email ?? null));
 const stageOptions = computed(() => BOARD_STAGES.map((stage) => ({ label: stageLabel(stage), value: stage })));
@@ -96,6 +106,16 @@ function formatCnpj(cnpj: string): string {
   return cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
 }
 
+function saveExport(id: number, data: Record<string, unknown>) {
+  const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: LEAD_EXPORT_TYPE }));
+  const link = document.createElement('a');
+
+  link.href = url;
+  link.download = `lead-${id}-dados.json`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
 function formatPhone(phone: string): string {
   return phone.replace(/^55(\d{2})(\d{4,5})(\d{4})$/, '($1) $2-$3');
 }
@@ -119,6 +139,57 @@ function applyMove(move: LeadMove) {
 }
 
 // EVENTS
+function onAnonymiseClick(event: Event) {
+  confirm.require({
+    accept: onAnonymiseAccept,
+    acceptProps: { class: 'celer-button-danger', label: t('pipeline.lead.data.anonymise') },
+    group: 'lead-anonymise',
+    message: t('pipeline.lead.data.anonymiseConfirm'),
+    rejectProps: { class: 'celer-button-secondary', label: t('pipeline.lead.data.cancel') },
+    target: event.currentTarget as HTMLElement,
+  });
+}
+
+function onAnonymiseAccept() {
+  const current = lead.value;
+
+  if (!current || isAnonymising.value) return;
+
+  isAnonymising.value = true;
+
+  AnonymiseLeadService(current.id)
+    .then(onAnonymised)
+    .catch(onDataFailed)
+    .finally(() => (isAnonymising.value = false));
+}
+
+function onAnonymised({ data }: { data: LeadDetail }) {
+  lead.value = data;
+
+  toast.add({ life: TOAST_LIFE_MS, severity: 'success', summary: t('pipeline.lead.data.anonymisedToast') });
+}
+
+function onDataFailed(failure: MoveError) {
+  toast.add({
+    life: TOAST_LIFE_MS,
+    severity: 'error',
+    summary: failure.translatedMessage ?? translateError('errors.unexpected'),
+  });
+}
+
+function onExportClick() {
+  const current = lead.value;
+
+  if (!current || isExporting.value) return;
+
+  isExporting.value = true;
+
+  ExportLeadService(current.id)
+    .then((response) => saveExport(current.id, response.data))
+    .catch(onDataFailed)
+    .finally(() => (isExporting.value = false));
+}
+
 function onLoadFailed(failure: LoadError) {
   lead.value = null;
 
@@ -288,6 +359,19 @@ function onNoteSaved(note: LeadTimelineEvent) {
             data-testid="lead-lost-reason"
           >
             {{ $t('pipeline.lead.lostBecause', { reason: lead.lost_reason }) }}
+          </p>
+
+          <p
+            v-if="isAnonymised"
+            class="text-muted bg-panel-muted flex w-fit items-center gap-2 rounded-sm px-2 py-1 text-sm"
+            data-testid="lead-anonymised"
+          >
+            <i
+              aria-hidden="true"
+              class="pi pi-eye-slash text-subtle"
+            />
+
+            {{ $t('pipeline.lead.data.anonymisedAt', { date: formatMoment(lead.anonymised_at ?? '') }) }}
           </p>
         </div>
 
@@ -517,6 +601,41 @@ function onNoteSaved(note: LeadTimelineEvent) {
             </p>
           </section>
 
+          <section
+            v-if="canManageData"
+            class="bg-panel shadow-lift flex flex-col gap-3 rounded-lg p-5"
+            data-testid="lead-data"
+          >
+            <h3 class="text-heading text-lg font-semibold">{{ $t('pipeline.lead.data.title') }}</h3>
+
+            <p class="text-muted text-sm">
+              {{ isAnonymised ? $t('pipeline.lead.data.anonymisedText') : $t('pipeline.lead.data.lede') }}
+            </p>
+
+            <div class="flex flex-wrap gap-3">
+              <Button
+                data-testid="lead-export"
+                icon="pi pi-download"
+                severity="secondary"
+                size="small"
+                :label="$t('pipeline.lead.data.export')"
+                :loading="isExporting"
+                @click="onExportClick"
+              />
+
+              <Button
+                v-if="!isAnonymised"
+                data-testid="lead-anonymise"
+                icon="pi pi-eye-slash"
+                severity="danger"
+                size="small"
+                :label="$t('pipeline.lead.data.anonymise')"
+                :loading="isAnonymising"
+                @click="onAnonymiseClick"
+              />
+            </div>
+          </section>
+
           <section class="bg-panel shadow-lift flex flex-col gap-4 rounded-lg p-5">
             <h3 class="text-heading text-lg font-semibold">{{ $t('pipeline.lead.notes.title') }}</h3>
 
@@ -559,6 +678,8 @@ function onNoteSaved(note: LeadTimelineEvent) {
     </article>
 
     <aside class="contents">
+      <ConfirmPopup group="lead-anonymise" />
+
       <MMainDialog
         v-model:visible="dialogVisible"
         isFooterless

@@ -2,6 +2,14 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.7.0 — 2026-11-14
+
+- The lead's own data (rnc-4 F9b, R39): `ExportLeadService`, `AnonymiseLeadService`, `LeadDetail.anonymised_at`,
+  `PIPELINE_PERMISSIONS.firmSettings`, `LEAD_EXPORT_TYPE`, `ANONYMISED_ON_EXIT`, `LEAD_EVENT_TYPE.ANONYMISED`
+  and its two timeline sentences; `LeadView`'s "Dados do lead (LGPD)" panel (export, anonymise behind a
+  confirmation) and the anonymised notice. Tested by `LeadView.privacy.integration.spec` and
+  `e2e/pipeline/lead-privacy.spec.ts`.
+
 ## 1.6.0 — 2026-11-14
 
 - `LEAD_CHANNEL.BETA` (rnc-4 F6b, R29): a firm that signed up for the beta wears the "Beta" chip on the platform firm's board. Tested by `MLeadCard.spec`.
