@@ -1,5 +1,5 @@
 ---
-version: 1.6.0
+version: 1.10.0
 origin: pendulum
 based-on: 1.6.0
 ---
@@ -79,6 +79,36 @@ Every "resend in 42s" uses it; do not count ticks in a component.
   shows the button disabled.
 - A spec fakes only `['Date', 'setInterval', 'clearInterval']` and models a suspension by moving
   the clock (`vi.setSystemTime`) without running the interval.
+
+## `brand/` — the host firm's brand on both layouts (rnc-4 D10)
+
+- **`useFirmBrand`** reads `GET public/firm` once per page load, WITHOUT `X-Brand`: the back office of
+  a firm is the firm's, whatever sub-brand the tab last browsed. It keeps the answer in
+  `sessionStorage` (`app.rnc:firm-brand`) and STARTS from it, so a second page paints the firm's
+  colours, logo text and `platform.name` before the API answers. `isFirmMissing` is its 404
+  `firms.notFound` (R3, read by `TheRouteGuard`); any other failure is forgotten and asked again.
+- **`logoUrl` and `reload()`** (rnc-4 F4d): `logoUrl` is the firm's uploaded logo as a path on this
+  origin (`toStorageAssetPath`); `reload()` forgets the page's answer, DROPS the kept one and asks again —
+  called when a view-as starts or ends, because the root's session then answers `public/firm` for another
+  firm. The new answer replaces the tab's stored one, and `useBrandTheme` repaints from the watched `firm`.
+- **The kept answer is the host's and the session's** (Chrome QA 5.21): stored as `{ firm, host }` and read
+  only on that host; `forget()` — the navbar's logout — drops the firm at once and asks again, so the root's
+  login never shows the firm a view-as showed. The view-as banner's "Sair" reloads even when `auth/me` fails.
+- **`useBrandTheme()` is mounted once, by `App.vue`**, and paints the firm's ramp (`brandPalette`) on
+  `<html>` for both layouts; `useSubBrandTheme(firm)` is `ThePublicLayout`'s and lays a sub-brand's
+  ramp over it only while a public layout is up, handing back after the route fade. One painter, two
+  layers: `paintCurrent()` is the only writer of `--color-primary-*` on the root. The document title is
+  `platform.name` wherever no public page is up (a public page writes its own, `useSeo`).
+- **`publicBrand`** (`?marca=`, `X-Brand`, `publicApi`) and the `BRAND_*` constants moved here from the
+  Site module with it; the Site module re-exports them, so `@SiteModule` still answers for them.
+- **The firm's names fill the translations** (rnc-4 R14): `useBrandTheme` calls `setFirmNames`
+  (`@Libraries/i18n`) with the host firm's `short_name || name` and `name`, behind every `{firmShort}` /
+  `{firmName}` in `locales/local`. The host firm's on both layouts — a sub-brand changes the colours and
+  the mark, not the firm the copy speaks for. Until a firm is known the names are empty.
+- **`?marca=principal` or the host firm's own slug is the main brand** (`publicBrand`).
+  _Retired 14/11/2026 (rnc-4 F2c2):_ "`?marca=franco` is the main brand" — one tenant's slug in the build.
+- The palette's colours come from the firm's row, never the theme file: `VITE_ACTIVE_THEME=hub` is
+  only the neutral ground of a tab's first page. A firm with no colours keeps the theme's.
 
 ## Conventions
 

@@ -3,6 +3,26 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 2.5.0 — 2026-11-14
+
+### Changed
+
+- Chrome QA 5.2: `UsersView` routes are the operator's role's (`meta.role`), as the rail's Operador group is.
+
+## 2.4.0 — 2026-11-14
+
+### Added
+
+- rnc-4 verify P2-S5: `endViewAs()` — sets `platform.view_as` to null once the API closed the view-as, so the banner does not outlive it when the following `fetchMe` fails.
+
+## 2.3.0 — 2026-11-14
+
+- View-as modules (rnc-4 F7, W93): `UserPlatform.view_as` carries the viewed firm's `modules`, and `hasModule(key)` answers from them while a view-as is set, so the rail offers the viewed firm's opt-in screens.
+
+## 2.2.0 — 2026-11-14
+
+- Session firm and modules (rnc-4 F3c, R20): `useUserStore` keeps `firm` and `platform` from `auth/me` and the sign-in answers (`User.firm`, `UserFirm`, `UserPlatform`); `hasModule(key)` answers for the firm's opt-in modules, none for a firm-less account. A payload without `firm` (a profile save) keeps what the session knew; `clearUser` drops both.
+
 ## 2.1.0 — 2026-09-17
 
 ### Fixed

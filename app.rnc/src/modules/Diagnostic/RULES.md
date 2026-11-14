@@ -1,5 +1,5 @@
 ---
-version: 1.3.2
+version: 1.6.0
 origin: rnc
 ---
 
@@ -14,6 +14,9 @@ confirmation, and the "Relatório de Impacto" at `/relatorio/:token` (route `DIA
 
 ## Intentional Decisions
 
+- **Never at the root** (rnc-4 R28): `/diagnostico` takes the Site module's `firmSiteOnly` as
+  `beforeEnter`; on the platform firm (the product's own site) it lands on `/`. Firm hosts keep it.
+- **The chat is the `chat` module's** (rnc-4 F3c, R17): the mode toggle renders only while `public/firm`'s `modules` lists `chat` (`hasChat`) — hidden until the firm answers, and on the platform firm's root site, where a chat start is 422 `modules.disabled`.
 - **`useDiagnostic` owns the flow**; the view only lays the steps out. Picking a path starts the
   lead (`POST public/diagnostics`) and keeps its token; each later step is saved when the visitor
   leaves it (`PATCH`), so a visitor who gives the contact and goes away is a lead parcial with its
@@ -75,6 +78,10 @@ confirmation, and the "Relatório de Impacto" at `/relatorio/:token` (route `DIA
   on a quick reply does not open a phone's keyboard.
 - **The log is the live region** (`role="log"`, polite): the error line inside it carries no
   `role="alert"`, or a screen reader would say it twice.
+
+- **The consent links to the firm's privacy notice** (rnc-4 F9b, R38): `MDiagnosticContactForm` puts a link
+  to `SITE_ROUTE_NAMES.privacy` under the consent — outside its `<label>`, so following it never ticks
+  the box, and in a new tab, so the diagnostic in progress (its token lives only in the page) stays (W107).
 
 ## Known Gaps
 

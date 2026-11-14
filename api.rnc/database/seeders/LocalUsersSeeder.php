@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use App\Modules\Auth\Models\Role;
 use App\Modules\Firm\Models\Firm;
+use Database\Seeders\Concerns\DemoEnvironment;
 use Illuminate\Database\Seeder;
 
 /**
@@ -17,7 +18,7 @@ class LocalUsersSeeder extends Seeder
 {
     /** @var list<array{username: string, name: string, last_name: string, role: string, is_specialist: bool}> */
     private const PEOPLE = [
-        ['username' => 'reinaldo', 'name' => 'Reinaldo', 'last_name' => 'Franco', 'role' => 'ceo', 'is_specialist' => false],
+        ['username' => 'reinaldo', 'name' => 'Reinaldo', 'last_name' => 'Franco', 'role' => 'gestao', 'is_specialist' => false],
         ['username' => 'patricia', 'name' => 'Patrícia', 'last_name' => 'Gomes', 'role' => 'equipe', 'is_specialist' => false],
         ['username' => 'mariana.toledo', 'name' => 'Mariana', 'last_name' => 'Toledo', 'role' => 'equipe', 'is_specialist' => true],
         ['username' => 'carlos.prado', 'name' => 'Carlos', 'last_name' => 'Prado', 'role' => 'equipe', 'is_specialist' => true],
@@ -29,7 +30,7 @@ class LocalUsersSeeder extends Seeder
 
     public function run(): void
     {
-        if (app()->environment('production')) {
+        if (! DemoEnvironment::allows()) {
             return;
         }
 

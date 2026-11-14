@@ -42,7 +42,19 @@ function seededRoleKeys(string $slug): array
 
 describe('the seeded roles', function () {
     it('are exactly the four of the product', function () {
-        expect(Role::pluck('slug')->sort()->values()->all())->toBe(['ceo', 'equipe', 'operador', 'parceiro']);
+        expect(Role::pluck('slug')->sort()->values()->all())->toBe(['equipe', 'gestao', 'operador', 'parceiro']);
+    });
+
+    it('leave no `ceo` role behind the rename to `gestao` (rnc-4 R14, A14)', function () {
+        expect(Role::where('slug', 'ceo')->exists())->toBeFalse()
+            ->and(Role::where('slug', 'gestao')->exists())->toBeTrue();
+    });
+
+    it('label the manager "Gestão" and name no person or firm in any role (rnc-4 R14, R15)', function () {
+        expect(Role::where('slug', 'gestao')->value('name'))->toBe('Gestão');
+
+        Role::all()->each(fn (Role $role) => expect("{$role->name} {$role->description}")
+            ->not->toMatch('/Franco|Reinaldo|CEO/'));
     });
 
     it('give a partner only the portal (rnc-2 R1)', function () {
@@ -62,7 +74,7 @@ describe('the seeded roles', function () {
     });
 
     it('give Reinaldo the team keys plus the network, the numbers, the repricing, the channel, the knowledge base, the contract alert and the briefing', function () {
-        expect(seededRoleKeys('ceo'))->toBe([
+        expect(seededRoleKeys('gestao'))->toBe([
             'agenda.read',
             'assistant.ask',
             'assistant.manage',
@@ -70,6 +82,7 @@ describe('the seeded roles', function () {
             'channel.read',
             'clients.import',
             'contracts.manage',
+            'firm.settings',
             'fiscal.import',
             'fiscal.read',
             'home.read',
@@ -82,6 +95,11 @@ describe('the seeded roles', function () {
             'radar.manage',
             'referrals.read',
             'repricing.manage',
+            'users.archive',
+            'users.create',
+            'users.read',
+            'users.reset_password',
+            'users.update',
         ]);
     });
 
@@ -97,7 +115,7 @@ describe('the seeded roles', function () {
 
     it("keep Phase 3's keys with the operator until their own phase grants them (rnc-3 R28)", function () {
         $phase3 = ['brands.manage', 'channel.read', 'channel.manage', 'assistant.ask', 'assistant.manage', 'contracts.manage', 'briefing.read'];
-        $granted = ['ceo' => ['assistant.ask', 'assistant.manage', 'briefing.read', 'channel.read', 'contracts.manage'], 'equipe' => ['assistant.ask'], 'parceiro' => []];
+        $granted = ['gestao' => ['assistant.ask', 'assistant.manage', 'briefing.read', 'channel.read', 'contracts.manage'], 'equipe' => ['assistant.ask'], 'parceiro' => []];
 
         expect(seededRoleKeys('operador'))->toContain(...$phase3);
 
@@ -108,28 +126,41 @@ describe('the seeded roles', function () {
 
     it('let the team ask the assistant and keep retiring notes and the gaps with Reinaldo and the operator (rnc-3 F4, AM4)', function () {
         expect(seededRoleKeys('equipe'))->toContain('assistant.ask')->not->toContain('assistant.manage')
-            ->and(seededRoleKeys('ceo'))->toContain('assistant.ask', 'assistant.manage');
+            ->and(seededRoleKeys('gestao'))->toContain('assistant.ask', 'assistant.manage');
     });
 
     it('keep the channel\'s writes and its price with the operator: Reinaldo reads it (rnc-3 F3a, R9)', function () {
-        expect(seededRoleKeys('ceo'))->toContain('channel.read')->not->toContain('channel.manage')
+        expect(seededRoleKeys('gestao'))->toContain('channel.read')->not->toContain('channel.manage')
             ->and(seededRoleKeys('equipe'))->not->toContain('channel.read');
     });
 
     it('give Reinaldo the contract alert and keep it from the team (rnc-3 F6, R18)', function () {
-        expect(seededRoleKeys('ceo'))->toContain('contracts.manage')
+        expect(seededRoleKeys('gestao'))->toContain('contracts.manage')
             ->and(seededRoleKeys('equipe'))->not->toContain('contracts.manage');
     });
 
     it('give Reinaldo the briefing and keep it from the team and the partner (rnc-3 F8, R23)', function () {
-        expect(seededRoleKeys('ceo'))->toContain('briefing.read')
+        expect(seededRoleKeys('gestao'))->toContain('briefing.read')
             ->and(seededRoleKeys('equipe'))->not->toContain('briefing.read')
             ->and(seededRoleKeys('parceiro'))->not->toContain('briefing.read');
     });
 
-    it('keep the staff directory and the permission matrix with the operator', function () {
-        foreach (['ceo', 'equipe', 'parceiro'] as $slug) {
+    /*
+     * Retired 14/11/2026 (rnc-4 F5a, R31): "keep the staff directory with the operator" — the firm's
+     * manager now manages its own team's logins (list, create, edit, deactivate, reset a password),
+     * scoped to its firm since F1a. Deleting an account and the roles screen stay the operator's.
+     */
+    it("give the manager its firm's team logins and settings, never the delete nor the permission matrix (rnc-4 R30, R31)", function () {
+        expect(seededRoleKeys('gestao'))->toContain('firm.settings', 'users.read', 'users.create', 'users.update', 'users.archive', 'users.reset_password')
+            ->not->toContain('users.delete')
+            ->not->toContain('permissions.read')
+            ->not->toContain('permissions.update');
+    });
+
+    it('keep the staff directory, the settings and the permission matrix from the team and the partner', function () {
+        foreach (['equipe', 'parceiro'] as $slug) {
             expect(seededRoleKeys($slug))->not->toContain('users.read')
+                ->and(seededRoleKeys($slug))->not->toContain('firm.settings')
                 ->and(seededRoleKeys($slug))->not->toContain('permissions.update');
         }
     });

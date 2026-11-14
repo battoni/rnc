@@ -4,7 +4,9 @@ import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
 import type { ContractAlert, ContractAlertRow, ContractImportResult, LegalPartner } from '../../interfaces';
 import { vCountUp } from '@Directives';
+import { FIRM_MODULE } from '@Enums';
 import { formatReal } from '@Helpers';
+import { useUserStore } from '@UserModule';
 import { GetContractsService, GetLegalPartnersService, MarkContractClauseService } from '../../services';
 
 /*
@@ -16,6 +18,8 @@ import { GetContractsService, GetLegalPartnersService, MarkContractClauseService
  * read again rather than patched here (as the Radar and the ledger, W41).
  */
 const TOAST_LIFE_MS = 4000;
+const userStore = useUserStore();
+
 const { t } = useI18n();
 const toast = useToast();
 
@@ -28,6 +32,8 @@ const partners = ref<LegalPartner[]>([]);
 
 let partnersRequest: Promise<void> | null = null;
 
+// rnc-4 R19: the legal referral is the partner network's; without `partners` it is not offered.
+const canRefer = computed(() => userStore.hasModule(FIRM_MODULE.PARTNERS));
 const topExposureCents = computed(() => alert.value?.contracts[0]?.exposure_cents ?? 0);
 
 onMounted(load);
@@ -37,7 +43,7 @@ function load() {
   loading.value = true;
   loadFailed.value = false;
 
-  Promise.all([GetContractsService(), loadPartnersOnce()])
+  Promise.all([GetContractsService(), canRefer.value ? loadPartnersOnce() : Promise.resolve()])
     .then(([response]) => (alert.value = response.data))
     .catch(() => (loadFailed.value = true))
     .finally(() => (loading.value = false));
@@ -161,8 +167,8 @@ function onSent(contract: ContractAlertRow, partner: LegalPartner) {
 
     <template v-else-if="alert">
       <section
-        class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4"
         :aria-label="$t('contracts.kpis.label')"
+        :class="['grid grid-cols-1 gap-3 sm:grid-cols-2', canRefer ? 'xl:grid-cols-4' : 'xl:grid-cols-3']"
       >
         <div class="bg-panel shadow-lift motion-enter flex min-w-0 flex-col gap-1 rounded-lg p-4">
           <span class="text-muted text-sm">{{ $t('contracts.kpis.atRisk') }}</span>
@@ -207,6 +213,7 @@ function onSent(contract: ContractAlertRow, partner: LegalPartner) {
         </div>
 
         <div
+          v-if="canRefer"
           class="bg-panel shadow-lift motion-enter flex min-w-0 flex-col gap-1 rounded-lg p-4"
           :style="{ '--reveal-index': 3 }"
         >
@@ -252,6 +259,7 @@ function onSent(contract: ContractAlertRow, partner: LegalPartner) {
           <MContractRow
             v-for="contract in alert.contracts"
             :key="contract.id"
+            :canRefer
             :contract
             :isMarking="markingId === contract.id"
             :partners

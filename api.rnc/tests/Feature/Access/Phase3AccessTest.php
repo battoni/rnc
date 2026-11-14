@@ -74,7 +74,7 @@ describe('F1 brands (A25)', function () {
     })->with('phase 3 brand routes');
 
     it('refuses Reinaldo with 403 (D3: the operator edits brands)', function (string $method, string $uri) {
-        $this->actingAs(phase3Person('ceo'))->json($method, str_replace('{id}', (string) $this->express->id, $uri))->assertForbidden();
+        $this->actingAs(phase3Person('gestao'))->json($method, str_replace('{id}', (string) $this->express->id, $uri))->assertForbidden();
     })->with('phase 3 brand routes');
 
     it('asks a guest to sign in', function (string $method, string $uri) {
@@ -96,7 +96,7 @@ describe('F1 brands (A25)', function () {
     });
 });
 
-/** F3a — the RNC channel (`channel.read` ceo + operador, `channel.manage` operador only: R28, R9). */
+/** F3a — the RNC channel (`channel.read` gestao + operador, `channel.manage` operador only: R28, R9). */
 dataset('phase 3 channel routes', [
     'GET channel' => ['GET', '/api/channel', true],
     'POST channel/firms' => ['POST', '/api/channel/firms', false],
@@ -114,7 +114,7 @@ describe('F3a channel (A25)', function () {
     })->with('phase 3 channel routes');
 
     it('lets Reinaldo read and refuses him every write with 403 (R9)', function (string $method, string $uri, bool $read) {
-        $response = $this->actingAs(phase3Person('ceo'))->json($method, str_replace('{id}', (string) $this->channelFirm->id, $uri), ['to' => 'ativo']);
+        $response = $this->actingAs(phase3Person('gestao'))->json($method, str_replace('{id}', (string) $this->channelFirm->id, $uri), ['to' => 'ativo']);
 
         $read ? $response->assertOk() : $response->assertForbidden();
     })->with('phase 3 channel routes');
@@ -139,7 +139,7 @@ describe('F3a channel (A25)', function () {
     });
 });
 
-/** F4 — the Reforma assistant (`assistant.ask` equipe + ceo, `assistant.manage` ceo + operador: R28, AM4). */
+/** F4 — the Reforma assistant (`assistant.ask` equipe + ceo, `assistant.manage` gestao + operador: R28, AM4). */
 dataset('phase 3 assistant routes', [
     'POST assistant/ask' => ['POST', '/api/assistant/ask', false],
     'GET assistant/suggestions' => ['GET', '/api/assistant/suggestions', false],
@@ -263,7 +263,7 @@ describe('F5 questions (A25)', function () {
     });
 });
 
-/** F6 — the contract alert (`contracts.manage`, ceo + operador: R18, R28). */
+/** F6 — the contract alert (`contracts.manage`, gestao + operador: R18, R28). */
 dataset('phase 3 contract routes', [
     'GET contracts' => ['GET', '/api/contracts'],
     'POST contracts/import' => ['POST', '/api/contracts/import'],
@@ -299,7 +299,7 @@ describe('F6 contracts (A25)', function () {
     })->with('phase 3 contract routes');
 
     it('lets Reinaldo read the alert and mark a clause', function () {
-        $reinaldo = phase3Person('ceo');
+        $reinaldo = phase3Person('gestao');
 
         $this->actingAs($reinaldo)->getJson('/api/contracts')->assertOk()->assertJsonPath('data.summary.at_risk', 1);
         $this->actingAs($reinaldo)->postJson("/api/contracts/{$this->contract->id}/clause")->assertOk();
@@ -315,7 +315,7 @@ describe('F6 contracts (A25)', function () {
             'firm_id' => $firmB->id, 'client_id' => $theirClient->id, 'kind' => 'fornecimento',
             'annual_value_cents' => 90_000_000, 'start_year' => 2024, 'end_year' => 2033, 'has_reforma_clause' => false,
         ]);
-        $reinaldo = phase3Person('ceo');
+        $reinaldo = phase3Person('gestao');
 
         $this->actingAs($reinaldo)->postJson("/api/contracts/{$theirs->id}/clause")->assertNotFound();
         $lawyer = Partner::withoutGlobalScopes()->create([
@@ -345,13 +345,13 @@ describe('F6 contracts (A25)', function () {
             'firm_id' => $firmB->id, 'name' => 'Advocacia da Firma B', 'specialty' => 'advocacia_tributaria', 'email' => 'adv@firmab.exemplo', 'active' => true,
         ]);
 
-        $ids = collect($this->actingAs(phase3Person('ceo'))->getJson('/api/contracts/legal-partners')->assertOk()->json('data'))->pluck('id');
+        $ids = collect($this->actingAs(phase3Person('gestao'))->getJson('/api/contracts/legal-partners')->assertOk()->json('data'))->pluck('id');
 
         expect($ids->all())->toBe([$ours->id]);
     });
 });
 
-/** F8 — Reinaldo's briefing (`briefing.read`, ceo + operador: R23, R28). */
+/** F8 — Reinaldo's briefing (`briefing.read`, gestao + operador: R23, R28). */
 dataset('phase 3 briefing routes', [
     'GET briefing' => ['GET', '/api/briefing'],
 ]);
@@ -374,7 +374,7 @@ describe('F8 briefing (A25)', function () {
         Lead::factory()->create(['firm_id' => $firmB->id, 'stage' => 'proposta']);
         Lead::factory()->create(['firm_id' => $this->franco->id, 'stage' => 'proposta']);
 
-        $briefing = $this->actingAs(phase3Person('ceo'))->getJson('/api/briefing')->assertOk()->json('data');
+        $briefing = $this->actingAs(phase3Person('gestao'))->getJson('/api/briefing')->assertOk()->json('data');
         $this->actingAs(phase3Person('operador'))->getJson('/api/briefing')->assertOk();
 
         expect($briefing['leads']['last_7_days'])->toBe(1)

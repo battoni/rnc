@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.2.2 — 2026-11-14
+
+### Changed
+
+- `AuthFlowLayout` draws `MFirmLogo` (the host firm's mark) in the aside and above the card (rnc-4 F2c2, R15).
+
 ## 1.2.1 — 2026-09-17
 
 ### Fixed

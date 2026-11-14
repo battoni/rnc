@@ -9,6 +9,10 @@ use App\Modules\Booking\Mail\MeetingReminder;
 use App\Modules\Briefing\DTOs\BriefingMailDTO;
 use App\Modules\Briefing\Helpers\ActionPicker;
 use App\Modules\Briefing\Mail\DailyBriefingMail;
+use App\Modules\Firm\Services\FirmResolver;
+use App\Modules\Firm\Services\MailBrand;
+use App\Modules\Lead\DTOs\BetaSignupMailDTO;
+use App\Modules\Lead\Mail\BetaSignupMail;
 use App\Modules\Partner\DTOs\ReferralMailDTO;
 use App\Modules\Partner\Mail\ReferralSent;
 use Carbon\CarbonImmutable;
@@ -25,6 +29,9 @@ use Illuminate\Mail\Mailable;
  * LOCAL ONLY. Registered behind `app()->isLocal()` in `routes/web.php`, because these
  * routes render with sample data and no authentication, and the sample data is the whole
  * point. Nothing here should ever answer in production.
+ *
+ * Every message wears a firm's brand (rnc-4 R12): `?firma=<slug>` picks the firm, else the default
+ * firm; with no firm at all, the platform's own look.
  */
 class MailPreviewController extends Controller
 {
@@ -52,14 +59,28 @@ class MailPreviewController extends Controller
                 'make' => fn (): Mailable => (new MeetingReminder($this->sampleMeeting()))->locale('pt_BR'),
             ],
             'referral-sent' => [
-                'label' => 'Network — a referral to a partner (company and Franco\'s contact, never the lead\'s)',
+                'label' => 'Network — a referral to a partner (company and the firm\'s contact, never the lead\'s)',
                 'make' => fn (): Mailable => (new ReferralSent($this->sampleReferral()))->locale('pt_BR'),
             ],
             'daily-briefing' => [
-                'label' => 'Briefing — Reinaldo\'s 07:00 e-mail on business days (rnc-3 F8)',
+                'label' => 'Briefing — the manager\'s 07:00 e-mail on business days (rnc-3 F8)',
                 'make' => fn (): Mailable => (new DailyBriefingMail($this->sampleBriefing()))->locale('pt_BR'),
             ],
+            'beta-signup' => [
+                'label' => 'Platform — a firm signed up for the beta on the root site (rnc-4 F6a), to the platform firm\'s team',
+                'make' => fn (): Mailable => (new BetaSignupMail($this->sampleBetaSignup()))->locale('pt_BR'),
+            ],
         ];
+    }
+
+    /** The firm `?firma=` names, else the default firm, else the platform's own look. */
+    private function sampleBrand(): MailBrand
+    {
+        $resolver = app(FirmResolver::class);
+        $slug = request()->query('firma');
+        $firm = (is_string($slug) ? $resolver->findTenantBySlug($slug) : null) ?? $resolver->findDefaultFirm();
+
+        return $firm ? MailBrand::fromFirm($firm) : MailBrand::platform();
     }
 
     /** A meeting as a visitor of the demo would book it (invented names, rnc-1 F4). */
@@ -74,10 +95,11 @@ class MailPreviewController extends Controller
             minutes: 30,
             opportunities: 3,
             risks: 2,
-            reportUrl: config('rnc.frontend_url').'/relatorio/exemplo',
-            firmName: (string) config('rnc.brand.name'),
-            firmAddress: 'Av. Corifeu de Azevedo Marques, 2333, Butantã, São Paulo-SP',
-            firmPhone: '11 3732-5500',
+            reportUrl: $this->sampleBrand()->siteUrl.'/relatorio/exemplo',
+            firmName: $this->sampleBrand()->name,
+            firmAddress: 'Rua das Acácias, 120, Centro, Cidade Exemplo-SP',
+            firmPhone: '11 4000-1234',
+            brand: $this->sampleBrand(),
         );
     }
 
@@ -90,12 +112,31 @@ class MailPreviewController extends Controller
             company: 'Consultoria Prisma',
             sector: 'servicos',
             covers: ['Crédito do Simples limitado', 'Regime de 30% para serviços', 'Contratos de longo prazo'],
-            message: 'A Franco indica a Consultoria Prisma. Podem fazer o primeiro contato em até 24 horas úteis?',
+            message: 'Indicamos a Consultoria Prisma. Podem fazer o primeiro contato em até 24 horas úteis?',
             referredBy: 'Patrícia Gomes',
-            firmName: (string) config('rnc.brand.name'),
-            firmPhone: '11 3732-5500',
-            firmMailbox: 'contato@exemplo.com.br',
-            firmAddress: 'Av. Corifeu de Azevedo Marques, 2333, Butantã, São Paulo-SP',
+            firmName: $this->sampleBrand()->name,
+            firmPhone: '11 4000-1234',
+            firmMailbox: $this->sampleBrand()->mailbox,
+            firmAddress: 'Rua das Acácias, 120, Centro, Cidade Exemplo-SP',
+            brand: $this->sampleBrand(),
+        );
+    }
+
+    /** A beta signup as the root site's form would send it (invented names, rnc-4 F6a). */
+    private function sampleBetaSignup(): BetaSignupMailDTO
+    {
+        return new BetaSignupMailDTO(
+            leadId: 1,
+            company: 'Contábil Horizonte (exemplo)',
+            name: 'Marta Ribeiro',
+            role: 'Sócia',
+            email: 'marta@horizonte.example',
+            phone: '5531988887777',
+            city: 'Belo Horizonte',
+            uf: 'MG',
+            clientsBand: 'de_101_a_300',
+            message: 'Queremos testar com a nossa carteira de comércio.',
+            brand: $this->sampleBrand(),
         );
     }
 
@@ -103,9 +144,9 @@ class MailPreviewController extends Controller
     private function sampleBriefing(): BriefingMailDTO
     {
         return new BriefingMailDTO(
-            firstName: 'Reinaldo',
-            firmName: (string) config('rnc.brand.name'),
-            frontendUrl: (string) config('rnc.frontend_url'),
+            firstName: 'Helena',
+            firmName: $this->sampleBrand()->name,
+            frontendUrl: $this->sampleBrand()->siteUrl,
             briefing: [
                 'as_of' => '2026-11-19T07:00:00-03:00',
                 'leads' => ['last_7_days' => 23, 'last_24_hours' => 4],
@@ -119,11 +160,12 @@ class MailPreviewController extends Controller
                 ]],
                 'pipeline' => ['count' => 12, 'range_cents' => [32_400_000, 86_400_000], 'stages' => []],
                 'actions' => [
-                    ['kind' => ActionPicker::SLA_BREACHED, 'params' => ['partner' => 'Andrade Advocacia (exemplo)', 'company' => 'Metalúrgica Aço Forte', 'hours' => 31.5, 'goal_hours' => 24], 'to' => '/reinaldo/trilha?parceiro=1'],
+                    ['kind' => ActionPicker::SLA_BREACHED, 'params' => ['partner' => 'Andrade Advocacia (exemplo)', 'company' => 'Metalúrgica Aço Forte', 'hours' => 31.5, 'goal_hours' => 24], 'to' => '/gestao/trilha?parceiro=1'],
                     ['kind' => ActionPicker::MEETINGS_TODAY, 'params' => ['count' => 2], 'to' => '/equipe/agenda'],
                     ['kind' => ActionPicker::PROPOSALS, 'params' => ['count' => 3, 'range_cents' => [5_400_000, 10_800_000]], 'to' => '/equipe/pipeline?etapa=proposta'],
                 ],
             ],
+            brand: $this->sampleBrand(),
         );
     }
 

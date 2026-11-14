@@ -1,38 +1,34 @@
-import type { TRACKING_EVENT_TYPE, TRAFFIC_SOURCE } from './enums';
+import type { BETA_CLIENTS_BAND, TRACKING_EVENT_TYPE, TRAFFIC_SOURCE } from './enums';
+// The host firm's resource moved to `@Interfaces` with the brand composables (rnc-4 D10); the
+// Site module keeps re-exporting it, so `PublicFirm` still comes from `@SiteModule`.
+import type { PublicBrandProof, PublicFirm, PublicFirmHours } from '@Interfaces';
 
-/**
- * `PublicFirmResource` — the firm's brand and public contact, as the API sends it. Under a sub-brand
- * (rnc-3 R2) the look is the brand's — `brand` its slug, the name, colours, tagline and proof — and
- * the contact stays the firm's. The main brand answers `brand`, `short_name`, `tagline` and `proof` null.
- */
-interface PublicFirm {
-  address: string | null;
-  brand?: string | null;
-  brand_accent: string;
-  brand_primary: string;
-  business_hours: PublicFirmHours[];
-  logo_text: string;
-  mailbox: string | null;
+/** `GET public/beta-signups/consent` — the words the beta form asks consent under (rnc-4 W61). */
+interface BetaConsent {
+  text: string;
+  version: number;
+}
+
+/** What `POST public/beta-signups` validates (`BetaSignupRequest`), key for key. */
+interface BetaSignupPayload {
+  city: string;
+  clients_band: BETA_CLIENTS_BAND;
+  company: string;
+  consent: true;
+  email: string;
+  medium: string | null;
+  message: string | null;
   name: string;
-  phone: string | null;
-  phone_href: string | null;
-  proof?: PublicBrandProof[] | null;
-  short_name?: string | null;
-  slug: string;
-  tagline?: string | null;
+  phone: string;
+  role: string;
+  source: TRAFFIC_SOURCE;
+  uf: string;
 }
 
-/** One of a sub-brand's four proof points (rnc-3 R1). */
-interface PublicBrandProof {
-  label: string;
-  value: string;
-}
-
-/** ISO weekdays (1 = Monday) and the opening hours on them. */
-interface PublicFirmHours {
-  from: string;
-  to: string;
-  weekdays: number[];
+/** `PublicBetaSignupResource` — an allow-list: the firm's name for the success state and the channel. */
+interface BetaSignupResult {
+  channel: string;
+  company: string;
 }
 
 /** `PublicSectorPageSummaryResource` — a card of the landing's sector grid. */
@@ -84,6 +80,25 @@ interface ArrivalContext {
   search: string;
 }
 
+/**
+ * `PublicPrivacyResource` (rnc-4 R38, W104): the data the privacy notice is worded from. Every list is
+ * a stable key the SPA words (`site.privacy.*`); only the names and the contact are the firm's.
+ */
+interface PublicPrivacy {
+  collected: string[];
+  controller: { address: string | null; is_platform: boolean; name: string };
+  operator: { name: string };
+  requests: { email: string | null; phone: string | null };
+  retention: PublicPrivacyRetention[];
+  sharing: string[];
+}
+
+/** One line of the notice's retention list: which data, under which rule. */
+interface PublicPrivacyRetention {
+  data: string;
+  rule: string;
+}
+
 /** Search-engine metadata a public page sets for itself (R8). */
 interface SeoMeta {
   description: string;
@@ -92,9 +107,14 @@ interface SeoMeta {
 
 export type {
   ArrivalContext,
+  BetaConsent,
+  BetaSignupPayload,
+  BetaSignupResult,
   PublicBrandProof,
   PublicFirm,
   PublicFirmHours,
+  PublicPrivacy,
+  PublicPrivacyRetention,
   SectorFact,
   SectorPage,
   SectorPageSummary,

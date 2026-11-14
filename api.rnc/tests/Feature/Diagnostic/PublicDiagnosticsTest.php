@@ -26,7 +26,8 @@ use Illuminate\Support\Str;
  */
 const DIAGNOSTIC_VISITOR = '6f1c2a4e-8b3d-4c5a-9e7f-1a2b3c4d5e6f';
 const VALID_CNPJ = '11222333000181';
-const CONSENT_TEXT = 'Autorizo a Franco a me apresentar a especialistas da Rede de Especialistas Franco quando o diagnóstico indicar.';
+/** Franco's v1 (rnc-4 F2a, C5): its own words since rnc-1, its name in the placeholder. */
+const CONSENT_TEXT = 'Autorizo a Franco Contabilidade a me apresentar a especialistas da Rede de Especialistas Franco quando o diagnóstico indicar.';
 
 function startDiagnostic(array $overrides = []): string
 {

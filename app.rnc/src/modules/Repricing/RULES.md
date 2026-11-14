@@ -1,5 +1,5 @@
 ---
-version: 1.1.0
+version: 1.2.1
 origin: rnc
 ---
 
@@ -9,17 +9,17 @@ origin: rnc
 
 ## Domain
 
-Reinaldo's fee repricing (R25–R26): `/reinaldo/reajuste` (route `repricing`, `/ceo/repricing` its
+Reinaldo's fee repricing (R25–R26): `/gestao/reajuste` (route `repricing`, `/management/repricing` its
 `en` twin) — the yearly uplift the Reforma's extra work is worth over Franco's portfolio, the
 spread by band of percent, the sector and regime filters, the client list, one client's items and
 "Gerar carta de reajuste", the batch mark and the CSV import. The letter is
-`/reinaldo/reajuste/:id/carta` (route `repricing-letter`). API: the `Portfolio` module
+`/gestao/reajuste/:id/carta` (route `repricing-letter`). API: the `Portfolio` module
 (`GET repricing`, `GET repricing/{id}`, `GET repricing/{id}/letter`, `POST repricing/mark`,
 `POST clients/import`, `GET clients/import/template`).
 
 ## Intentional Decisions
 
-- **Permissions (AM8)**: the screens need `repricing.manage` (ceo, operador); the team has no
+- **Permissions (AM8)**: the screens need `repricing.manage` (gestao, operador); the team has no
   Reajuste in the rail and the routes bounce (the API answers 403 as well). "Importar CSV" shows
   only with `clients.import` — a missing key hides the button, never grants it.
 - **The API quotes, the screen formats.** Every number — the suggested fee, `pct`, the uplift, the

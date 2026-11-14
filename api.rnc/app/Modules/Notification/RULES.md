@@ -1,5 +1,5 @@
 ---
-version: 1.3.0
+version: 1.5.0
 origin: rnc
 ---
 # RULES — Notification Module
@@ -17,13 +17,16 @@ behind `notifications.read` (AM8).
 
 ## Intentional Decisions
 
-- **`TeamNotifier` decides who hears the bell**: every active `equipe` and `ceo` member of the
+- **`TeamNotifier` decides who hears the bell**: every active `equipe` and `gestao` member of the
   current firm. The operator is not paged by a firm's leads. No firm set → nobody.
 - **`notifyUser` rings one person the caller picked** (rnc-3 F4): the Assistant module's hand-off
   rings only the specialist the question went to (`AssistantQuestionNotification`); the caller has
   already checked that person is an active specialist of the firm. F5 adds two more, one person
   each: the specialist's answer rings the asker (`AssistantAnswerNotification`), and a review in its
   last 7 days rings its reviewer (`AssistantNoteExpiringNotification`, `assistant:notify-expiring`).
+- **`mailTeam` e-mails the same team** (rnc-4 F6a): the beta signup rings the platform firm's team
+  by bell and e-mail (R29). One copy per member, so no member sees another's address; members
+  without an e-mail are skipped. The Mailable is the caller's (Lead's `BetaSignupMail`).
 - **A notification stores data, not sentences**: `kind` plus the fields; the SPA writes the pt-BR
   line from them, so wording changes never need a data migration.
 - **Database channel only, not queued**: it is one insert per person in the request.

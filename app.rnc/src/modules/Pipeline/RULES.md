@@ -1,5 +1,5 @@
 ---
-version: 1.4.0
+version: 1.8.0
 origin: rnc
 ---
 
@@ -14,6 +14,7 @@ The team's screens (R18–R20): the board (`/equipe/pipeline`, route `pipeline`)
 
 ## Intentional Decisions
 
+- **The lead's partner routing is the Partner module's** (rnc-4 W38): `LeadView` mounts `MLeadRouting` only while the firm has `partners` (`hasPartners`), so a firm without it never asks `leads/{id}/partner-matches`.
 - **The routing panel is the Partner module's** (`MLeadRouting`, F6): `LeadView` mounts it under the
   diagnostic with `canRefer` = `leads.update` and prepends the `encaminhamento.enviado` line it
   emits. The stage does not change on a referral.
@@ -22,8 +23,9 @@ The team's screens (R18–R20): the board (`/equipe/pipeline`, route `pipeline`)
   ◀ ▶ ✕, the drag, the stage select and the note form, `agenda.read` the agenda. A missing key hides
   the control; the API refuses it too.
 - **The channel chip (rnc-2 R14)**: the board card names the channel only when it is not the form
-  (chat, carteira) — the usual case would repeat "Formulário" on every card; the lead detail
-  always names it (`MLeadChannelChip`).
+  (chat, carteira, beta) — the usual case would repeat "Formulário" on every card; the lead detail
+  always names it (`MLeadChannelChip`). `beta` (rnc-4 R29) is a firm's signup on the root site, so it
+  only ever shows on the platform firm's board.
 - **One way to move a card** — `MoveLeadStageService` with `via` (`botao` for ◀ ▶ ✕, `arrastar` for a
   drop, `ficha` for the detail's select). Perdido never moves directly: the view opens
   `MLostReasonForm` in its `MMainDialog`, which owns the call (celer-07 "a destructive action that
@@ -41,6 +43,10 @@ The team's screens (R18–R20): the board (`/equipe/pipeline`, route `pipeline`)
   Paulo's (AM9, `MEETING_TIME_ZONE` from Diagnostic).
 - **Contact actions are real links** (`contactLinks`): `tel:+55…`, `https://wa.me/55…`, `mailto:`.
 - **Sector, regime and band labels are Diagnostic's** (`diagnostic.sectors.*` …): one wording.
+- **A beta signup shows its own form** (rnc-4 R29, Chrome QA 1.10): for a `beta` lead the profile is the
+  beta form's role, city/UF, clients band (`site.product.form.bands.*`, the Site's wording) and message,
+  not the empty diagnostic rows; its consent summary reads "contacted about the beta"
+  (`pipeline.lead.consent.beta.*`), never "introduced to partners" — the stored text and version stay as given.
 
 - **The "Marca" filter's options come with the board** (`GET leads` → `brands`), not from
   `GET brands`, which is `brands.manage` — the team holds `leads.read` only. `main` is the main
@@ -50,6 +56,14 @@ The team's screens (R18–R20): the board (`/equipe/pipeline`, route `pipeline`)
   (`data-focused`, `aria-current`) and scrolled into view inside the board's own sideways scroll
   (`smooth`, `auto` under reduced motion). Every column stays: the team moves cards across them. A
   value that is not a `LEAD_STAGE` is ignored — it never reaches `querySelector`.
+
+- **A lead's own data (rnc-4 R39, F9b)**: the detail's "Dados do lead (LGPD)" panel shows to whoever holds
+  `leads.update` AND `firm.settings` (`canManageData`, W101) — the team sees neither button. "Exportar
+  dados" saves `GET leads/{id}/export`'s answer as `lead-<id>-dados.json`; "Anonimizar" asks first in a
+  `ConfirmPopup` (group `lead-anonymise`) that says it cannot be undone, then puts the API's anonymised
+  detail in place (no refetch). `anonymised_at` set shows "Dados anonimizados em …" to everyone and
+  hides "Anonimizar"; the export stays. The `dados.anonimizados` line has its own sentence, by `via`
+  (`pedido`, or `saida_do_escritorio` → `ANONYMISED_ON_EXIT`).
 
 ## Known Gaps
 

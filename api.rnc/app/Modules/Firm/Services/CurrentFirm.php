@@ -2,6 +2,7 @@
 
 namespace App\Modules\Firm\Services;
 
+use App\Modules\Firm\Helpers\FirmModules;
 use App\Modules\Firm\Models\Firm;
 use Closure;
 
@@ -32,6 +33,12 @@ class CurrentFirm
         $this->firm = $firm;
     }
 
+    /** Whether the current firm has the module on (rnc-4 R16); no firm has none. */
+    public function hasModule(string $module): bool
+    {
+        return $this->firm !== null && FirmModules::isEnabled($this->firm, $module);
+    }
+
     /**
      * Run a callback as one firm and put back whatever was current before — a command's step, a
      * seeder's rows. The previous firm comes back even when the callback throws.
@@ -54,12 +61,28 @@ class CurrentFirm
     }
 
     /**
-     * What a scheduled command does: the same work once per firm, each run seeing only its rows.
+     * What a scheduled command does: the same work once per firm, each run seeing only its rows. An
+     * offboarded firm (rnc-4 F9a) is skipped: no reminder, briefing or digest goes out for it.
      *
      * @param  Closure(Firm): void  $callback
      */
     public function forEachFirm(Closure $callback): void
     {
-        Firm::query()->orderBy('id')->each(fn (Firm $firm) => $this->runAs($firm, fn () => $callback($firm)));
+        Firm::query()->whereNull('offboarded_at')->orderBy('id')->each(fn (Firm $firm) => $this->runAs($firm, fn () => $callback($firm)));
+    }
+
+    /**
+     * `forEachFirm()` over the firms with the module on (rnc-4 R17): scheduled work of a module
+     * skips a firm that has it off.
+     *
+     * @param  Closure(Firm): void  $callback
+     */
+    public function forEachFirmWithModule(string $module, Closure $callback): void
+    {
+        $this->forEachFirm(function (Firm $firm) use ($module, $callback) {
+            if (FirmModules::isEnabled($firm, $module)) {
+                $callback($firm);
+            }
+        });
     }
 }

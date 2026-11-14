@@ -62,7 +62,7 @@ it('refuses the operator, who holds every key but no partner, with portal.noPart
 
 it('refuses staff without the key with 403', function () {
     $this->actingAs(portalUser('equipe'))->getJson('/api/portal/me')->assertForbidden();
-    $this->actingAs(portalUser('ceo'))->getJson('/api/portal/me')->assertForbidden();
+    $this->actingAs(portalUser('gestao'))->getJson('/api/portal/me')->assertForbidden();
 });
 
 it('asks a guest to sign in', function () {
@@ -73,11 +73,19 @@ it('never finds a partner of another firm, whatever X-Firm says (AM1)', function
     $other = Firm::factory()->create();
     $foreign = portalPartner($other->id, 'De outra firma');
 
-    $this->actingAs(portalUser('parceiro', $foreign->id))
-        ->withHeader('X-Firm', $other->slug)
+    $login = portalUser('parceiro', $foreign->id);
+
+    $this->actingAs($login)
         ->getJson('/api/portal/me')
         ->assertForbidden()
         ->assertJsonPath('error', 'portal.noPartner');
+
+    // rnc-4 D5: naming the partner's firm in the header used to be ignored; it is now refused.
+    $this->actingAs($login)
+        ->withHeader('X-Firm', $other->slug)
+        ->getJson('/api/portal/me')
+        ->assertForbidden()
+        ->assertJsonPath('error', 'firms.mismatch');
 });
 
 it('refuses a partner login whose partner was deactivated', function () {

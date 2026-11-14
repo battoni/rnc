@@ -1,0 +1,92 @@
+---
+description: > End a working session with nothing left behind: no stray file, no merged branch or dead Invoke with /battoni-close-session.
+alwaysApply: false
+---
+# Close Session
+
+> End a working session with nothing left behind: no stray file, no merged branch or dead
+> worktree, no loose end nobody wrote down, no lesson only this conversation knows. Checks first,
+> read-only; then **one** question listing everything it would delete or save; then it acts and
+> reports in one screen.
+>
+> **Usage:** `/battoni-close-session` — from the monorepo root, at the end of a session (before
+> `/clear`). Not a handoff: work that continues goes to the feature's `state.md` or
+> `/battoni-agent-handoff`, and this command only checks that it did.
+
+Why it exists (owner, 10/11/2026): "I'm not sure if we need to delete a file, a git worktree and
+save something to memory. That happens quite often." The boanerges-3 retro ended with a handoff to
+delete, two merged branches, two dead agent worktrees, 32 merged branches from older sessions and a
+memory to update, all found by hand.
+
+## Step 1 — Look (read-only, one batch)
+
+Use the rtk forms (`~/.claude/RTK.md`), so auto mode does not ask twice.
+
+1. **Fetch:** `rtk git fetch -q --prune origin`, so "merged" means merged on GitHub.
+2. **Every worktree — the sweep:** `rtk make wt-gc` (it fetches too). It already tears down each
+   worktree that passes every check (PR merged, nothing ahead of `origin/main`, clean, only
+   regenerable ignored files, no session in it for 30 min, Vite quiet): its
+   folder and branch. This session's own worktree is always `kept` (its transcript is recent).
+   What it prints is the list for Step 2: `kept: <id> <check>` (unfinished work: report, never
+   touch) and `left behind: <id> <reason>`, naming the discard dry run, `rtk make wt-discard
+   ID=<id>` (PR closed unmerged, or no commit and no session for 7 days; `wt-down` refuses
+   unmerged work, `wt-discard` throws it away).
+3. **Local branches** merged into `origin/main`, minus `main`, the sync's vendor branch
+   (`pendulum-upstream` / `rnc-upstream`) and the branch of any live worktree. Their GitHub
+   copies too (`git ls-remote --heads origin <branch>`).
+4. **Open PRs** (`rtk gh pr list --state open`) and, for each, CI and draft state.
+5. **Loose files:** `handoffs/` (a handoff whose work is done is deleted; one for work still
+   open stays), untracked files in the main checkout, files this session wrote in the scratchpad.
+6. **Feature folders:** `grep -H '^Stage:' specs/*/state.md` on `main` and on each open feature
+   branch; a `delivered` feature with a `## QA` line still pending, or a `W#` still waiting for the
+   owner, is a loose end. A human round still out (a `Layer 3 … pending` line) keeps its branch while
+   the PR is open; once merged, `/battoni-qa-result <link>` finds it on `main`, so nothing is kept for it.
+7. **This conversation:** decisions, corrections and facts that are not in the repo, a commit, a
+   spec or a decision file. Check `MEMORY.md` for a memory that already covers each one (update
+   it, never duplicate) and for a memory this session proved wrong (delete it).
+
+## Step 2 — Ask once
+
+One `AskUserQuestion` (rule 3), each question with the exact list, the recommendation first:
+
+- **Delete** — the merged branches (local and GitHub), the done handoffs, the scratch files.
+  Recommended: all of them. (The clean merged worktrees are already gone: `wt-gc` did it.)
+- **Left behind** — one question per left-behind worktree, with its reason: keep it or discard it
+  (`rtk make wt-discard ID=<id>`). Recommended: keep, when its branch has commits not in
+  `origin/main` (after a discard they survive only through the restore line it prints); discard,
+  when it has none.
+- **Save** — each memory to write or update, one line each, with its file name.
+- **Loose ends** — what stays open and where it is written (a `state.md` Next, a PR, `00-plano.md`).
+  Anything open and written nowhere gets a line in `plans/00-plano.md` or the feature's `state.md`.
+
+Never deleted without this yes, and never at all: a dirty worktree, a branch with commits not in
+`origin/main` (except a left-behind worktree the owner answered "discard" for, through
+`wt-discard` only), an untracked file you did not create (the owner's), the boanerges-4-style
+worktree of a feature still building.
+
+## Step 3 — Act
+
+- Worktree: `rtk make wt-down ID=<id>`, never `git worktree remove` by hand: it re-runs every
+  check, names the one that fails and then touches nothing; once they pass it removes the folder
+  and deletes the branch (in a Valet/MySQL project it first undoes the Valet sites and drops the
+  `<project>_<label>` DB; rnc has neither). A refusal is reported, not
+  worked around.
+- Left-behind worktree answered "discard": first the dry run, `rtk make wt-discard ID=<id>`, which
+  runs the same checks and lists what goes (folder, branch with its tip SHA); show
+  that list to the owner; then `rtk make wt-discard ID=<id> CONFIRM=<id>`. Report the
+  `git branch <branch> <sha>` restore line it prints. An open PR (`close PR #<n> first`) or any
+  failed check is reported, never bypassed; the remote is never touched.
+- Branch: `git branch -d`. It refuses a branch whose GitHub copy is behind, even when it is in
+  `origin/main`; then, and only after `merge-base --is-ancestor <branch> origin/main` says yes,
+  `git branch -D`. GitHub copy: `rtk git push origin --delete <branch>`.
+- `rtk find` refuses `-delete`, `-not` and `-exec`: use `/usr/bin/find`.
+- Memory: the files and the `MEMORY.md` index line, as the memory instructions say.
+- Leave Chrome open (owner's rule).
+- The main checkout ends on `main`, pulled (`rtk git -C <main checkout> pull --ff-only`), clean
+  apart from the owner's own untracked files.
+
+## Step 4 — Report
+
+One screen: what was deleted (counts), what was saved (memory names as links), what stays open and
+where it is written, and anything the owner must do (a PR to merge, a person to message). Then:
+`/clear`.

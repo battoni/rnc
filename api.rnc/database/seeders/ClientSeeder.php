@@ -2,16 +2,20 @@
 
 namespace Database\Seeders;
 
+use App\Modules\Firm\Helpers\FirmModules;
 use App\Modules\Firm\Models\Firm;
 use App\Modules\Firm\Services\CurrentFirm;
 use App\Modules\Portfolio\Models\Client;
 use Carbon\CarbonImmutable;
+use Database\Seeders\Concerns\DemoEnvironment;
+use Database\Seeders\Concerns\SeedsEachDemoFirm;
 use Illuminate\Database\Seeder;
 use Random\Engine\Mt19937;
 use Random\Randomizer;
 
 /**
- * Franco's portfolio to reprice (rnc-1 F8, R25), outside production only: 500 invented companies
+ * Each demo firm's portfolio to reprice (rnc-1 F8, R25; per firm since rnc-4 F3b2 — Alvorada gets
+ * `DEMO_COUNT` from its own seeds), outside production only: Franco's 500 invented companies
  * across the six sectors, the three regimes and the five bands, with a monthly fee by band and regime
  * (the demo's W27: R$ 900–9.000, ±10 %, rounded to R$ 50). Deterministic (a seeded Mersenne
  * Twister), so the repricing screen shows the same numbers on every `make fresh-seed`.
@@ -26,7 +30,14 @@ use Random\Randomizer;
  */
 class ClientSeeder extends Seeder
 {
+    use SeedsEachDemoFirm;
+
     public const COUNT = 500;
+
+    /** The demo firm Alvorada's portfolio — its landing claims "300+ empresas" (rnc-4 F3b2, R22: ≥ 200). */
+    public const DEMO_COUNT = 320;
+
+    private const SEED_STEP = 100;
 
     private const RANDOM_SEED = 2027;
 
@@ -91,30 +102,25 @@ class ClientSeeder extends Seeder
 
     public function run(CurrentFirm $currentFirm): void
     {
-        if (app()->environment('production')) {
+        if (! DemoEnvironment::allows()) {
             return;
         }
 
-        $firm = Firm::where('slug', FirmSeeder::FRANCO_SLUG)->first();
-
-        if (! $firm) {
-            return;
-        }
-
-        $currentFirm->runAs($firm, fn () => Client::query()->insert($this->clientsOf($firm)));
+        $this->forEachDemoFirm($currentFirm, fn (Firm $firm, int $ordinal) => Client::query()->insert($this->clientsOf($firm, $ordinal)), FirmModules::PORTFOLIO);
     }
 
     /** @return list<array<string, mixed>> */
-    private function clientsOf(Firm $firm): array
+    private function clientsOf(Firm $firm, int $ordinal): array
     {
-        $random = new Randomizer(new Mt19937(self::RANDOM_SEED));
-        $consentRandom = new Randomizer(new Mt19937(self::CONSENT_RANDOM_SEED));
+        // Another demo firm draws its own portfolio from its own seeds (rnc-4 F3b2); Franco's stays the same.
+        $random = new Randomizer(new Mt19937(self::RANDOM_SEED + $ordinal * self::SEED_STEP));
+        $consentRandom = new Randomizer(new Mt19937(self::CONSENT_RANDOM_SEED + $ordinal * self::SEED_STEP));
         $sectors = array_keys(self::B2B_RANGE);
         $now = CarbonImmutable::now();
         $names = [];
         $rows = [];
 
-        for ($number = 1; $number <= self::COUNT; $number++) {
+        for ($number = 1; $number <= ($ordinal === 0 ? self::COUNT : self::DEMO_COUNT); $number++) {
             $sector = $sectors[($number - 1) % count($sectors)];
             $band = $this->weighted($random, self::BAND_WEIGHTS);
             $regime = $this->weighted($random, self::REGIME_WEIGHTS[$band]);

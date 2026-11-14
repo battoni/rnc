@@ -3,6 +3,42 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.10.0 — 2026-11-14
+
+### Fixed
+
+- `useFirmBrand` (Chrome QA 5.21): the kept answer names its host (`{ firm, host }`) and is read only there — the old shape is never painted; `reload()` drops it before asking, so a failed read leaves nothing stale; new `forget()` (signing out) drops the firm at once and asks again, so the root's login never wears the firm a view-as showed.
+- `publicBrand.spec` (Chrome QA 4.11/4.12): a diagnostic started after `?marca=prime` then `?marca=principal` — or the host firm's own slug (W27) — leaves without `X-Brand`.
+
+## 1.9.0 — 2026-11-14
+
+### Added
+
+- `useFirmBrand` (rnc-4 F4d): `logoUrl` (the uploaded logo on this origin) and `reload()` (asks again within the page load — a view-as starting or ending changes the firm the root's session answers for).
+
+## 1.8.0 — 2026-11-14
+
+### Changed
+
+- `brand/`: `useBrandTheme` fills the translations' `{firmShort}` / `{firmName}` with the host firm's short and full name (`setFirmNames`, rnc-4 F2c2, R14); `?marca=` drops the sub-brand on `principal` or the host firm's own slug — the word was Franco's slug (R15).
+
+## 1.7.0 — 2026-11-14
+
+### Added
+
+- `brand/` (rnc-4 F2b, R10, D10): `useFirmBrand` (the host firm's one boot read, kept for the tab),
+  `useBrandTheme` (mounted by `App.vue`: the firm's palette on both layouts, `platform.name` as the
+  title) and `useSubBrandTheme` (a sub-brand over it on public pages only); `brandPalette`,
+  `publicBrand` and the `BRAND_*` constants moved here from the Site module. Specs:
+  `useFirmBrand.spec.ts`, `useBrandTheme.spec.ts` (new), `brandPalette.spec.ts` (moved).
+
+### Changed
+
+- `brandPalette`'s 400 is lightened until it reads on the dark canvas and panel (4.5:1): it is the dark
+  scheme's link (`celer-button-link-primary`), and the plain accent/primary mix measured 4.29:1 on
+  Franco's row once the back office painted it. `brandPalette.spec.ts` measures it for every brand,
+  Franco's and Alvorada's rows included.
+
 ## 1.6.0 — 2026-09-17
 
 ### Added

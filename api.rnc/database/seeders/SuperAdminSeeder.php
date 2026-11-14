@@ -5,12 +5,13 @@ namespace Database\Seeders;
 use App\Models\User;
 use App\Modules\Auth\Models\Role;
 use App\Modules\Auth\Services\RoleService;
-use App\Modules\Firm\Models\Firm;
 use Illuminate\Database\Seeder;
 
 /**
  * The operator's account (Battoni Dev) — the only account a production database is seeded with.
- * It belongs to Franco like everyone in Phase 1 (plan AM6); multi-firm access is Phase 3.
+ * It belongs to no firm (rnc-4 F4a, R24): it signs in at the root only, works in the platform firm
+ * and reaches the other firms through the console. A database seeded before keeps the account and
+ * loses its firm on the next seed.
  */
 class SuperAdminSeeder extends Seeder
 {
@@ -24,8 +25,6 @@ class SuperAdminSeeder extends Seeder
             ]
         );
 
-        $firmId = Firm::where('slug', FirmSeeder::FRANCO_SLUG)->value('id');
-
         $user = User::firstOrCreate(
             ['username' => 'battoni'],
             [
@@ -34,11 +33,11 @@ class SuperAdminSeeder extends Seeder
                 // Plaintext on purpose: the `hashed` cast on User::password hashes it on save.
                 'password' => config('seeding.superadmin_password'),
                 'role_id' => $role->id,
-                'firm_id' => $firmId,
+                'firm_id' => null,
                 'username' => 'battoni',
             ]
         );
 
-        $user->update(['role_id' => $role->id, 'firm_id' => $firmId]);
+        $user->update(['role_id' => $role->id, 'firm_id' => null]);
     }
 }

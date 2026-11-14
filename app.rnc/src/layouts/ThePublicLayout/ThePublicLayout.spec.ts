@@ -12,7 +12,7 @@ const sendBeacon = vi.fn<(url: string, body: Blob) => boolean>(() => true);
 
 vi.mock('vue-router', async (importOriginal) => ({ ...(await importOriginal<object>()), useRouter: () => ({ push }) }));
 
-const RouterLinkStub = { props: ['to'], template: '<a><slot /></a>' };
+const RouterLinkStub = { props: ['to'], template: '<a :data-to="JSON.stringify(to)"><slot /></a>' };
 
 async function mountLayout() {
   const wrapper = mountWithPlugins(ThePublicLayout, {
@@ -61,6 +61,24 @@ describe('ThePublicLayout', () => {
     expect(footer.text()).toContain('11 3732-5500');
     expect(footer.find('a[href="tel:+551137325500"]').exists()).toBe(true);
     expect(footer.find('a[href="mailto:saf@franco-rnc.com.br"]').exists()).toBe(true);
+  });
+
+  // rnc-4 F9b (R38): every public page links to the firm's privacy notice from the footer.
+  it("links to the firm's privacy notice in the footer", async () => {
+    const link = (await mountLayout()).find('footer [data-testid="footer-privacy"]');
+
+    expect(JSON.parse(link.attributes('data-to') ?? '{}')).toEqual({ name: 'site-privacy' });
+    expect(link.text()).toBe('Privacy');
+  });
+
+  // rnc-4 F5a (W31): the credentials line is the firm's own field, edited in its settings (a firm
+  // without one: `ThePublicLayout.noCredentials.spec.ts`, since the firm is read once per page load).
+  it("writes the firm's own credentials line in the footer", async () => {
+    const footer = (await mountLayout()).find('footer');
+
+    expect(footer.find('[data-testid="footer-credentials"]').text()).toContain(
+      'ISO 9001:2015 · PQEC Sescon-SP · Rede Nacional de Contabilidade'
+    );
   });
 
   it('writes the business hours from the API, a run of days as a range', async () => {

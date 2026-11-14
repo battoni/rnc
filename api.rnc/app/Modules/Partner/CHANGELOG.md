@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.7.0 — 2026-11-14
+
+### Changed
+
+- The referral e-mail wears the firm (rnc-4 F2a, R12, D11): `ReferralMailDTO` carries a `MailBrand`; `ReferralSent` is from the platform's address under the firm's name, replying to its mailbox. The batch and contract messages read the current firm's name (no `config('rnc.brand.name')` fallback). Tested by `tests/Feature/Mail/FirmMailBrandTest`.
+
 ## 1.6.0 — 2026-11-07
 
 ### Added

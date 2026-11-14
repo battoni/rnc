@@ -1,5 +1,5 @@
 ---
-version: 1.2.0
+version: 1.3.0
 origin: rnc
 ---
 # RULES — Pipeline Module
@@ -20,6 +20,8 @@ Booking's and writes through `LeadService`.
 | `GET leads/{id}` | `leads.read` | the lead detail: contact, profile, full diagnostic (detail + rule), consent, meeting, timeline, notes |
 | `PATCH leads/{id}/stage` | `leads.update` | `{stage, reason?, via?}` → `{lead: card, event}` |
 | `POST leads/{id}/notes` | `leads.update` | `{text}` → the timeline line (201) |
+| `GET leads/{id}/export` | `leads.update` + `firm.settings` | the lead's own data (rnc-4 F9a, R39): `{lead, consents, timeline, controller, exported_at}` |
+| `POST leads/{id}/anonymise` | `leads.update` + `firm.settings` | wipes who the lead is for good (`LeadService::anonymise`) → the detail; a second call answers the same detail |
 | `GET agenda?week=YYYY-MM-DD` | `agenda.read` | the Monday–Friday week holding the date (this week by default, the coming one on a weekend), meetings by day, the weeks around |
 
 ## Intentional Decisions
@@ -45,6 +47,8 @@ Booking's and writes through `LeadService`.
   the main brand, loaded once per column (`with('brand')`), never per card. A deactivated brand is
   still a filter: its leads exist.
 - **Another firm's lead is a 404** (`BelongsToFirm` on `leads` and `appointments`).
+- **A lead's export and anonymisation are the manager's** (rnc-4 F9a, W101): both keys on the route —
+  the team holds `leads.update` and not `firm.settings`, so it is refused 403; no new key was added.
 
 ## Tables read from other modules
 

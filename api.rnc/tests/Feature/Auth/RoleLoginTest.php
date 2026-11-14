@@ -14,9 +14,10 @@ beforeEach(function () {
     $this->seed(DatabaseSeeder::class);
 });
 
+// The operator `battoni` has no firm since rnc-4 F4a and signs in at the root only — its row moved
+// to `tests/Feature/Platform/OperatorSignInTest` (A26).
 dataset('seeded people', [
-    'operador' => ['battoni', 'operator-secret', 'operador', false],
-    'ceo' => ['reinaldo', 'local-secret', 'ceo', false],
+    'gestao' => ['reinaldo', 'local-secret', 'gestao', false],
     'equipe' => ['patricia', 'local-secret', 'equipe', false],
     'specialist' => ['mariana.toledo', 'local-secret', 'equipe', true],
 ]);

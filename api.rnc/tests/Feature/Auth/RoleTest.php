@@ -80,12 +80,34 @@ describe('GET /api/auth/roles/{id}', function () {
 });
 
 // ---------------------------------------------------------------------------
+// Role writes are the platform operator's (verify PE1): roles are global, so a firm account
+// holding `permissions.update` would edit every firm's roles.
+// ---------------------------------------------------------------------------
+
+describe('role writes from a firm account', function () {
+    it('refuses every role write to a firm account holding permissions.update (403 platform.operatorOnly)', function () {
+        $role = createRole('Somebody Else');
+        $firmEditor = actingAsWithRole(['permissions.update', 'users.read']);
+        $this->actingAs($firmEditor);
+
+        $this->postJson('/api/auth/roles', ['name' => 'Escalated', 'permission_group_ids' => ['users']])
+            ->assertForbidden()->assertJsonPath('error', 'platform.operatorOnly');
+        $this->patchJson("/api/auth/roles/{$role->id}", ['name' => 'Renamed'])->assertForbidden();
+        $this->patchJson("/api/auth/roles/{$role->id}/permissions", ['permissions' => ['users.read' => true]])->assertForbidden();
+        $this->deleteJson("/api/auth/roles/{$role->id}")->assertForbidden();
+
+        expect(Role::where('name', 'Escalated')->exists())->toBeFalse()
+            ->and($role->fresh()->name)->toBe('Somebody Else');
+    });
+});
+
+// ---------------------------------------------------------------------------
 // POST /api/auth/roles
 // ---------------------------------------------------------------------------
 
 describe('POST /api/auth/roles', function () {
     it('creates a role when authenticated', function () {
-        $actor = actingAsWithRole(['permissions.update']);
+        $actor = platformOperatorWithPermissions(['permissions.update']);
 
         $response = $this->actingAs($actor)->postJson('/api/auth/roles', [
             'name' => 'New Role',
@@ -113,7 +135,7 @@ describe('POST /api/auth/roles', function () {
     });
 
     it('validates required fields', function () {
-        $actor = actingAsWithRole(['permissions.update']);
+        $actor = platformOperatorWithPermissions(['permissions.update']);
 
         $response = $this->actingAs($actor)->postJson('/api/auth/roles', []);
 
@@ -128,7 +150,7 @@ describe('POST /api/auth/roles', function () {
 
 describe('PATCH /api/auth/roles/{id}', function () {
     it('updates a role name when authenticated', function () {
-        $actor = actingAsWithRole(['permissions.update']);
+        $actor = platformOperatorWithPermissions(['permissions.update']);
         $role = createRole('Old Name');
 
         $response = $this->actingAs($actor)->patchJson("/api/auth/roles/{$role->id}", [
@@ -152,7 +174,7 @@ describe('PATCH /api/auth/roles/{id}/permissions', function () {
         // `users.read` is on the actor as well as in the payload: since ARC-03 a person hands out
         // only keys they hold themselves, and this spec is about writing the matrix, not about
         // the ceiling on it.
-        $actor = actingAsWithRole(['permissions.update', 'users.read']);
+        $actor = platformOperatorWithPermissions(['permissions.update', 'users.read']);
         $role = createRole('Admin');
 
         $response = $this->actingAs($actor)->patchJson("/api/auth/roles/{$role->id}/permissions", [
@@ -168,7 +190,7 @@ describe('PATCH /api/auth/roles/{id}/permissions', function () {
          * The other half of ARC-03: refusing the key on a person's overrides is pointless if the
          * same account can add it to a role — their own, if they like — and take it that way.
          */
-        $actor = actingAsWithRole(['permissions.update']);
+        $actor = platformOperatorWithPermissions(['permissions.update']);
         $role = createRole('Admin');
 
         $this->actingAs($actor)->patchJson("/api/auth/roles/{$role->id}/permissions", [
@@ -193,8 +215,8 @@ describe('PATCH /api/auth/roles/{id}/permissions', function () {
         $this->seed(RoleSeeder::class);
         $administrator = Role::where('slug', 'operador')->firstOrFail();
 
-        $manager = actingAsWithRole(['permissions.read', 'permissions.update']);
-        $everything = User::factory()->create(['role_id' => $administrator->id]);
+        $manager = platformOperatorWithPermissions(['permissions.read', 'permissions.update']);
+        $everything = platformOperatorWithPermissions([]); // the seeded `operador` role, every key
 
         foreach ([$manager, $everything] as $actor) {
             $this->actingAs($actor)
@@ -217,7 +239,7 @@ describe('PATCH /api/auth/roles/{id}/permissions', function () {
         RolePermission::where('role_id', $administrator->id)->where('permission_key', 'referrals.read')->update(['value' => false]);
         RolePermission::where('role_id', $administrator->id)->where('permission_key', 'leads.update')->delete();
 
-        $owner = User::factory()->create(['role_id' => $administrator->id]);
+        $owner = platformOperatorWithPermissions([]); // the seeded `operador` role
 
         $this->actingAs($owner)
             ->patchJson("/api/auth/roles/{$administrator->id}/permissions", ['permissions' => ['referrals.read' => true]])
@@ -233,7 +255,7 @@ describe('PATCH /api/auth/roles/{id}/permissions', function () {
     });
 
     it('still lets a key be taken off any other role', function () {
-        $actor = actingAsWithRole(['permissions.update']);
+        $actor = platformOperatorWithPermissions(['permissions.update']);
         $role = createRole('Moderators');
         RolePermission::create(['role_id' => $role->id, 'permission_key' => 'referrals.read', 'value' => true]);
 
@@ -259,7 +281,7 @@ describe('PATCH /api/auth/roles/{id}/permissions', function () {
 
 describe('DELETE /api/auth/roles/{id}', function () {
     it('deletes a role when authenticated', function () {
-        $actor = actingAsWithRole(['permissions.update']);
+        $actor = platformOperatorWithPermissions(['permissions.update']);
         $role = createRole('Deletable Role');
 
         $response = $this->actingAs($actor)->deleteJson("/api/auth/roles/{$role->id}");
@@ -287,7 +309,7 @@ describe('DELETE /api/auth/roles/{id}', function () {
     });
 
     it('returns 404 for unknown role', function () {
-        $actor = actingAsWithRole(['permissions.update']);
+        $actor = platformOperatorWithPermissions(['permissions.update']);
 
         $response = $this->actingAs($actor)->deleteJson('/api/auth/roles/999999');
 

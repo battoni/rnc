@@ -45,6 +45,9 @@ return new class extends Migration
             // The portfolio client a `carteira` lead stands for (rnc-2 F10, R27, D13): one lead per
             // client and firm, Portfolio's id with no foreign key across modules (rnc-1 W25).
             $table->unsignedBigInteger('client_id')->nullable();
+            // rnc-4 F9a (R39): when the personal fields were wiped for an LGPD request (or the
+            // firm's exit). Set once; a second anonymisation is a no-op.
+            $table->timestamp('anonymised_at')->nullable();
             $table->timestamps();
 
             $table->index(['firm_id', 'stage']);

@@ -33,9 +33,8 @@
                 <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;background-color:#ffffff;border-radius:12px;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:{{ $ink }};">
                     <tr>
                         {{--
-                            The band takes the LOGO FILE's own dark, not the theme's, so the
-                            square tile blends into it instead of leaving a seam. See
-                            `config/rnc.php`.
+                            The band takes the firm's primary (`MailBrand::$ink`, rnc-4 R12):
+                            the firm's own colours, not the platform's, on every message.
                         --}}
                         <td style="background-color:{{ $ink }};padding:20px 32px;">
                             <table role="presentation" cellpadding="0" cellspacing="0" border="0">
@@ -47,13 +46,12 @@
                                             a public URL that has to still answer in five years.
                                             `$message` exists while the mailer renders; the preview
                                             route renders without it and falls back to the URL.
-                                            A brand with no logo file (Franco, rnc-1 W6) gets its
-                                            initial in a tile instead — text, so it shows even
-                                            with images blocked.
+                                            A firm with no logo file gets its initial in a tile
+                                            instead — text, so it shows even with images blocked.
                                         --}}
                                         @if ($brandLogo)
                                             <img
-                                                src="{{ isset($message) ? $message->embed($brandLogo) : url(config('rnc.brand.logo')) }}"
+                                                src="{{ isset($message) ? $message->embed($brandLogo) : $brandLogoUrl }}"
                                                 width="40" height="40" alt="{{ $brandName }}"
                                                 style="display:block;width:40px;height:40px;border:0;border-radius:6px;">
                                         @else

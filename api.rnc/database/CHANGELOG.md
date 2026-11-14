@@ -3,6 +3,78 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.33.0 — 2026-11-14
+
+### Fixed
+
+- Seeders (rnc-4 verify): `FirmSeeder` and `PlatformFirmSeeder` `firstOrCreate` by slug, so a re-seed keeps the
+  console's and the manager's edits (P1-C1); one guard for invented data, `Concerns\DemoEnvironment` (`local`,
+  `testing`), in `SeedsEachDemoFirm`, `LocalUsersSeeder`, `SpecialistSeeder`, `PipelineSeeder` and the other demo
+  seeders — a staging deploy seeds the reference rows only (P2-C2).
+- `platform_view_as_sessions`: `user_id` / `firm_id` nullable and `nullOnDelete` (folded, pre-deploy; P2-C4).
+
+## 1.32.0 — 2026-11-14
+
+### Fixed
+
+- MySQL 8 (rnc-4 F7b): `client_contracts`' five-column unique is named `client_contracts_period_unique` — the generated
+  name was 66 characters and `migrate` failed with SQLSTATE 1059. `SchemaIdentifierLengthTest` guards every name.
+  Rules: identifier length, JSON key order, ids in tests.
+
+## 1.31.0 — 2026-11-14
+
+### Added
+
+- `create_platform_view_as_sessions` (rnc-4 F4c, R26, D20): the view-as audit — operator, firm, IP, started, ended,
+  `end_reason` — with `ViewAsSessionFactory` (an open session).
+
+## 1.30.0 — 2026-11-14
+
+### Added
+
+- `firms.credentials` (nullable string), folded into `create_firms` (rnc-4 F5a, W31); `FirmSeeder::CREDENTIALS`
+  writes Franco's footer line. `RoleSeeder::GESTAO_FIRM_KEYS` grants the manager its firm's settings and
+  team logins (R30, R31).
+
+## 1.29.0 — 2026-11-14
+- `PlatformFirmSeeder` (rnc-4 F6b, W66): the platform firm's consent is the beta signup's — "contact about the beta" (`BETA_CONSENT`, with `{escritorio}`) — written as its version 2 over the copied version 1, only while the firm is still at version 1, so a re-seed never stacks a version on the operator's own words. Tested by `tests/Feature/Firm/PlatformSeedersTest`.
+
+## 1.28.0 — 2026-11-14
+- `SuperAdminSeeder` (rnc-4 F4a, R24): `battoni` has no firm — it signs in at the root only and works in the platform firm; a database seeded before loses the firm on the next seed. Tested by `tests/Feature/Platform/OperatorSignInTest` and `SeedShapeTest`.
+
+## 1.27.0 — 2026-11-14
+- Demo seeders per firm (rnc-4 F3b2, R22, R23, A23): `Concerns\SeedsEachDemoFirm`; `PipelineSeeder`, `PartnerSeeder`, `PartnerUserSeeder`, `MetricsSeeder`, `ClientSeeder`, `ContractSeeder`, `NfeSeeder` and `AssistantNoteSeeder` seed Franco (unchanged) then Alvorada, each skipping a firm without its module. `DemoFirmSeeder` adds `equipe.alvorada`, `camila.alvorada` and the six sector pages; new local-only `PlatformManagerSeeder` (`gestao.hub`). Tested by `tests/Feature/Seed/DemoFirmSeedTest`.
+
+## 1.26.0 — 2026-11-14
+- `SectorPageSeeder` writes `DefaultSectorPages` through `SectorPageService::startFirm`, and `SpecialistSeeder` makes people bookable through `SpecialistService::makeBookable` — the same paths as `firm:create` (rnc-4 F3b1); seeded rows unchanged.
+
+## 1.25.0 — 2026-11-14
+- `modules` seeded (rnc-4 F3a): Franco every key, Alvorada every opt-in key but `brands`, the platform firm none; `FirmFactory` defaults to every key. Tested by `tests/Feature/Firm/ModuleGateTest` and the suite.
+
+## 1.24.0 — 2026-11-14
+
+### Changed
+
+- `RoleSeeder` (rnc-4 F2c2, R14, R15): the manager role is labelled "Gestão" ("Gestão do escritório: equipe, rede de parceiros, métricas e reajuste") and the team's description names no firm ("Equipe do escritório: …"); `SeededRolesTest` asserts no role names Franco, Reinaldo or CEO. A database seeded before keeps its labels (`firstOrCreate` never rewrites a row).
+
+## 1.23.0 — 2026-11-14
+
+### Changed
+
+- The role slug `ceo` → `gestao` in `RoleSeeder`, `LocalUsersSeeder` and `DemoFirmSeeder` (rnc-4 F2c1, R14, A14); its label and description are F2c2's.
+
+## 1.22.0 — 2026-11-14
+
+### Changed
+
+- rnc-4 F2a (R8, R13, D12): `create_firms_table` gains `short_name`, `tagline`, `proof`, `logo_path`, `modules` (json, no database default — the model gives `[]`); new `create_platform_settings_table` and `create_firm_consent_versions_table` (`300100`-series). `FirmFactory` fills `short_name`. `FirmSeeder` gives Franco its short name, the landing's proof and consent v1 (its rnc-1 sentence, its name as `{escritorio}`); `PlatformFirmSeeder` writes `platform_settings.consent_default` and starts `hub` at v1; `DemoFirmSeeder` gives Alvorada an invented short name, tagline and proof and v1 from the default. `PipelineSeeder` stores each lead's consent through `ConsentTextService::forLead`.
+
+## 1.21.0 — 2026-11-13
+
+### Changed
+
+- rnc-4 F1a (D3, D6, D18; plan AM1, AM7): `create_firms_table` gains `is_platform` (bool, default false); new `PlatformFirmSeeder` (`hub`, every environment, after `FirmSeeder`) and `DemoFirmSeeder` (Alvorada, its manager `helena.alvorada` and specialist `bruno.alvorada` — local only, before `SpecialistSeeder`); `UserFactory` defaults `firm_id` to the default firm, creating it when absent.
+
 ## 1.20.0 — 2026-11-07
 
 ### Changed

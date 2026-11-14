@@ -130,7 +130,7 @@ beforeEach(function () {
     $this->nexoLogin = ledgerLogin($this->nexo);
     $this->giroLogin = ledgerLogin($this->giro);
     $this->foreignLogin = ledgerLogin($this->foreign);
-    $this->ceo = ledgerStaff('ceo');
+    $this->ceo = ledgerStaff('gestao');
     ledgerAccess($this->nexo, 'granted', '2026-10-05 09:00');
     ledgerAccess($this->giro, 'granted', '2026-10-20 09:00');
     ledgerAccess($this->foreign, 'granted', '2026-10-01 09:00');
@@ -318,7 +318,9 @@ describe('who sees what (A9, D10, D14)', function () {
         ledgerClosing($this->foreign, 9_900_000, '2026-11-05 15:00', 'Empresa de fora');
 
         $nexo = $this->actingAs($this->nexoLogin)->getJson("/api/portal/statement?partner_id={$this->giro->id}")->assertOk()->json('data');
-        $foreign = $this->actingAs($this->foreignLogin)->withHeader('X-Firm', 'franco')->getJson('/api/portal/statement')->assertOk()->json('data');
+        $foreign = $this->actingAs($this->foreignLogin)->getJson('/api/portal/statement')->assertOk()->json('data');
+        // rnc-4 D5: Franco's header used to be ignored for the other firm's partner; it is now refused.
+        $this->actingAs($this->foreignLogin)->withHeader('X-Firm', 'franco')->getJson('/api/portal/statement')->assertForbidden();
 
         expect(array_column($nexo['lines'], 'company'))->toBe(['Empresa da Nexo'])
             ->and(array_column($foreign['lines'], 'company'))->toBe(['Empresa de fora'])
@@ -350,9 +352,13 @@ describe('who sees what (A9, D10, D14)', function () {
     });
 
     it('switches only the signed-in person\'s firm, whatever X-Firm says', function () {
-        $otherCeo = ledgerStaff('ceo', $this->other->id);
+        $otherCeo = ledgerStaff('gestao', $this->other->id);
 
-        $this->actingAs($otherCeo)->withHeader('X-Firm', 'franco')->patchJson('/api/ledger/model', ['model' => 'assinatura'])->assertOk();
+        // rnc-4 D5: Franco's header is refused outright, and nothing moves.
+        $this->actingAs($otherCeo)->withHeader('X-Firm', 'franco')->patchJson('/api/ledger/model', ['model' => 'assinatura'])->assertForbidden();
+        expect(Firm::find(ledgerFrancoId())->partner_money_model)->toBe('comissao');
+
+        $this->flushHeaders()->actingAs($otherCeo)->patchJson('/api/ledger/model', ['model' => 'assinatura'])->assertOk();
 
         expect($this->other->fresh()->partner_money_model)->toBe('assinatura')
             ->and(Firm::find(ledgerFrancoId())->partner_money_model)->toBe('comissao');

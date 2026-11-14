@@ -3,6 +3,65 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 2.20.1 — 2026-11-14
+- `QaLoginAsController` redirects to the firm's own site (`MailBrand::siteUrlOf`) when opened on a firm host,
+  not to `rnc.frontend_url` (Chrome QA 1.11). Tested by `LoginFirmTest`.
+
+## 2.20.0 — 2026-11-14
+- `UserService::anonymiseFirmUsers` for `firm:offboard` (rnc-4 verify P1-A2).
+
+## 2.19.0 — 2026-11-14
+- Role writes (`POST/PATCH/DELETE auth/roles*`) also need `platform.operator` (rnc-4 verify PE1): roles are
+  global. `UserService::update` ends the sessions of a person whose password another account changed (PE3).
+  `AuthController::login` ends a live view-as as `logout` before the sign-in (P2-A4). RULES: Known Gap for the
+  cross-firm username/e-mail checks (PE2). Tests: `RoleTest`, `UserTest`, `ViewAsTest`; `tests/Pest.php`
+  gains `platformOperatorWithPermissions`.
+
+## 2.18.1 — 2026-11-14
+- `RoleService::create` recognises MySQL 8's unique-violation message, which names the index (`roles.roles_name_unique`,
+  `roles.roles_slug_unique`) where SQLite names the column: a name race was a 500 and a slug collision never moved to the
+  next slug on MySQL (rnc-4 F7b). Tested by `tests/Feature/Auth/AuthHardeningTest` (`a role refusal`) under `make test-mysql`.
+
+## 2.18.0 — 2026-11-14
+- `UserRepository::findAllFirmUsers` — every login of a firm, active or not, for `firm:offboard`'s export (rnc-4 F9a, R40). Tested by `tests/Feature/Firm/OffboardFirmCommandTest`.
+
+## 2.17.0 — 2026-11-14
+- `auth/me`'s `platform.view_as` also carries the viewed firm's opt-in `modules` (`FirmModules::enabled`), so the back office offers them during a view-as (rnc-4 F7, W93). Tested by `tests/Feature/Platform/ViewAsTest`.
+
+## 2.16.0 — 2026-11-14
+- `auth/logout` closes the session's open view-as with reason `logout`, and `auth/me`'s `platform.view_as` answers the viewed firm (rnc-4 F4c, R26). Tested by `tests/Feature/Platform/ViewAsTest`.
+
+## 2.15.0 — 2026-11-14
+
+### Added
+
+- The firm's manager runs its team (rnc-4 F5a, R31, AM2): `Rules/TeamRole` (no `operador` or
+  `parceiro` from a firm member), `is_specialist` on `StoreUserRequest` / `UpdateUserRequest` /
+  `UserUpdateDTO`, `UserService` starts a newly flagged specialist (Booking's `SpecialistService`),
+  `ResolvesActorPermissions::actorIsPlatformOperator`; the `firm` permission group (`firm.settings`).
+  Tested by `tests/Feature/Auth/FirmUsersTest`, `SeededRolesTest`.
+
+## 2.14.0 — 2026-11-14
+- The platform console's keys (rnc-4 F4a, R24): `platform.firms` and `platform.consent` in a `platform` group; `RoleService::updatePermissions` refuses either to any role but the administrator's (422 `rolesAndPermissions.operatorOnlyKey`, `OPERATOR_ONLY_KEY_PREFIX`). `UserService::resetPassword()` (new password, every session ends) and `findByUsername()` for the console's manager login. Tested by `tests/Feature/Access/Phase4AccessTest`.
+
+## 2.13.0 — 2026-11-14
+- The sign-in answers carry `firm` and `platform` (rnc-4 F3c, R20): `POST auth/login` and `auth/phone/verify` answer `UserResource::withPlatform()` like `auth/me`, so the SPA knows the firm's modules from the first screen. Tested in `tests/Feature/Auth/MeFirmTest`.
+
+## 2.12.0 — 2026-11-14
+- `GET auth/me` answers `firm` (slug, name, look, opt-in `modules`; null for a firm-less account) and `platform: {name, is_operator, view_as}` (rnc-4 F3a, R20). Tested by `tests/Feature/Auth/MeFirmTest`.
+
+## 2.11.0 — 2026-11-14
+
+### Added
+
+- `GET auth/me` carries `platform.name`, the product's name (rnc-4 F2a, R9), through `UserResource::withPlatform()`; a user in a list does not. Tested by `tests/Feature/Firm/PublicFirmBrandTest`.
+
+## 2.10.0 — 2026-11-13
+
+### Changed
+
+- rnc-4 F1a (R4, R7, D5, D21; plan AM2, AM8): the password login, the phone code and the QA login-as refuse an account of another firm like a wrong password / wrong code (`FirmResolver::belongsTo`); `UserRepository` scopes the list, support names, phone lookup and `findFirmUserById` by the current firm and eager-loads `firm`; `UserService::create` stamps the current firm and `delete` deletes nothing outside it; self-registration answers 404 unless `registration.enabled`. Tests: `LoginFirmTest`, `UsersFirmScopeTest`, `RegistrationClosedTest`, `StatefulHostTest`.
+
 ## 2.9.0 — 2026-09-22
 
 ### Added

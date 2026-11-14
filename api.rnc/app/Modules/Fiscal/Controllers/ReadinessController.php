@@ -14,7 +14,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
- * "Prontidão da NF-e" (rnc-2 R18–R20), behind `fiscal.read` (equipe, ceo) — the notice too, on
+ * "Prontidão da NF-e" (rnc-2 R18–R20), behind `fiscal.read` (equipe, gestao) — the notice too, on
  * purpose (plan AM13, Fiscal RULES.md). Another firm's client, an unknown id and a Simples client
  * are a 404.
  */

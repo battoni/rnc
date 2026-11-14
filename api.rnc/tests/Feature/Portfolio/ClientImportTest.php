@@ -46,7 +46,7 @@ describe('a good file (A13)', function () {
             'Clínica Bem Viver Ltda;33.444.555/0001-81;saude;presumido;b3;20%;3.800',
         ]);
 
-        $data = $this->actingAs(importPerson('ceo'))->post('/api/clients/import', ['file' => $file], ['Accept' => 'application/json'])->assertOk()->json('data');
+        $data = $this->actingAs(importPerson('gestao'))->post('/api/clients/import', ['file' => $file], ['Accept' => 'application/json'])->assertOk()->json('data');
 
         $atlas = Client::withoutGlobalScopes()->where('cnpj', '11222333000181')->first();
         $metal = Client::withoutGlobalScopes()->where('cnpj', '22333444000181')->first();
@@ -76,7 +76,7 @@ describe('a good file (A13)', function () {
     });
 
     it('updates a CNPJ the firm already has instead of adding it twice', function () {
-        $person = importPerson('ceo');
+        $person = importPerson('gestao');
 
         $this->actingAs($person)->post('/api/clients/import', ['file' => clientsCsv(['Atlas TI;11.222.333/0001-81;servicos;simples;b2;80;1850'])], ['Accept' => 'application/json'])->assertOk();
 
@@ -99,7 +99,7 @@ describe('a bad file imports nothing (A13)', function () {
             'Clínica Bem Viver Ltda;33.444.555/0001-81;saude;presumido;b3;20;3800',
         ]);
 
-        $response = $this->actingAs(importPerson('ceo'))->post('/api/clients/import', ['file' => $file], ['Accept' => 'application/json'])
+        $response = $this->actingAs(importPerson('gestao'))->post('/api/clients/import', ['file' => $file], ['Accept' => 'application/json'])
             ->assertUnprocessable()
             ->assertJsonPath('code', 'import_invalid');
 
@@ -115,7 +115,7 @@ describe('a bad file imports nothing (A13)', function () {
             'Curta;123',
         ]);
 
-        $errors = $this->actingAs(importPerson('ceo'))->post('/api/clients/import', ['file' => $file], ['Accept' => 'application/json'])
+        $errors = $this->actingAs(importPerson('gestao'))->post('/api/clients/import', ['file' => $file], ['Accept' => 'application/json'])
             ->assertUnprocessable()
             ->json('errors');
 
@@ -136,14 +136,14 @@ describe('a bad file imports nothing (A13)', function () {
     it('refuses a header that is not the template\'s', function () {
         $file = clientsCsv(['Atlas;11.222.333/0001-81;servicos;simples;b2;80;1850'], 'nome;cnpj;setor;regime;faixa;b2b;mensalidade');
 
-        $this->actingAs(importPerson('ceo'))->post('/api/clients/import', ['file' => $file], ['Accept' => 'application/json'])
+        $this->actingAs(importPerson('gestao'))->post('/api/clients/import', ['file' => $file], ['Accept' => 'application/json'])
             ->assertUnprocessable()
             ->assertJsonPath('code', 'import_header')
             ->assertJsonPath('missing', ['faixa_faturamento', 'percentual_b2b']);
     });
 
     it('refuses a file with no rows and a file that is not UTF-8', function () {
-        $person = importPerson('ceo');
+        $person = importPerson('gestao');
 
         $this->actingAs($person)->post('/api/clients/import', ['file' => clientsCsv([])], ['Accept' => 'application/json'])
             ->assertUnprocessable()
@@ -157,13 +157,13 @@ describe('a bad file imports nothing (A13)', function () {
     });
 
     it('asks for a file', function () {
-        $this->actingAs(importPerson('ceo'))->postJson('/api/clients/import', [])->assertUnprocessable()->assertJsonValidationErrors(['file']);
+        $this->actingAs(importPerson('gestao'))->postJson('/api/clients/import', [])->assertUnprocessable()->assertJsonValidationErrors(['file']);
     });
 });
 
 describe('the template (R25)', function () {
     it('downloads the header row, with a BOM so a spreadsheet opens it as UTF-8', function () {
-        $response = $this->actingAs(importPerson('ceo'))->get('/api/clients/import/template')->assertOk();
+        $response = $this->actingAs(importPerson('gestao'))->get('/api/clients/import/template')->assertOk();
 
         expect($response->headers->get('content-type'))->toContain('text/csv')
             ->and($response->headers->get('content-disposition'))->toContain('modelo-clientes.csv')

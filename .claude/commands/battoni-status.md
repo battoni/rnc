@@ -1,0 +1,42 @@
+---
+description: Where every feature stands, one line each (id | state | what | how to open it)
+argument-hint: "[all] [delivered]"
+---
+# Status
+
+> Where every piece of ongoing work stands, one line per feature:
+> `<id> | <state> | <what> | <how to work on it>` — the line to open a session in its worktree, or to give
+> it one. Read-only.
+>
+> **Usage:** `/battoni-status` — the current project (also from a worktree). `/battoni-status all` —
+> every flow project under `~/Work`. Add `delivered` to either to list delivered features too.
+
+Why it exists (owner, 10/11/2026): "I'm already kind of lost. I'm building rnc 4 and we have
+7 already on track. I think that will happen a lot." That same day a session started in the main
+folder found no boanerges-4 at all, because the feature lived on its branch, in a worktree.
+
+## Run
+
+```bash
+python3 scripts/flow-status.py    # all → --all · delivered → --delivered · offline → --no-pr
+```
+
+About 1 second for one project, 4 over ~/Work with the PR lookup (10/11/2026).
+
+Nothing to keep up to date: the script reads what the flow already writes, `state.md` (`Stage:`
+and the first paragraph of `## Next`, kept for the report) on each feature's own branch until it is merged, plus
+`git worktree list`. A branch with a task ID and no folder is the small track. Animals First is
+never read. Source: `scripts/flow-status.py`, tests `scripts/test_flow_status.py`.
+
+## Report
+
+Print the output exactly as it comes, inside one code block (so the columns stay aligned): one
+line per feature, the owner's own format (10/11/2026). Never as a table, never as blocks with more
+fields: the table cut every long cell, and the blocks were too much to read. Then at most two lines
+under it:
+
+- a `⚠` line: its feature's line already holds the command to move it (never run it without the
+  owner's yes);
+- the feature the owner asked about, if any: the command to type once the session is open.
+
+Change nothing: no checkout, no worktree, no state edit.

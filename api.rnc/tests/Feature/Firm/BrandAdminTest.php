@@ -150,7 +150,7 @@ describe('who may manage brands (A5)', function () {
         $url = str_replace('{id}', (string) $this->express->id, $uri);
 
         $this->actingAs(brandAdminPerson($role))->json($method, $url, brandEdit())->assertForbidden();
-    })->with(['ceo', 'equipe', 'parceiro'])->with([
+    })->with(['gestao', 'equipe', 'parceiro'])->with([
         ['GET', '/api/brands'],
         ['PATCH', '/api/brands/{id}'],
         ['POST', '/api/brands/{id}/activate'],

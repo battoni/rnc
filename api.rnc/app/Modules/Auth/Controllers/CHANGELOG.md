@@ -3,6 +3,18 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 2.5.0 — 2026-11-14
+
+### Changed
+
+- `AuthController::login` ends the session's live view-as as `logout` before the sign-in (rnc-4 verify P2-A4).
+
+## 2.4.0 — 2026-11-14
+
+### Changed
+
+- `AuthController::me` answers `UserResource::withPlatform()` — `platform.name` beside the person (rnc-4 F2a, R9).
+
 ## 2.3.0 — 2026-09-17
 
 ### Changed

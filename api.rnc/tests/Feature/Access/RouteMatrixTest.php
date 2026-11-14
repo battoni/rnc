@@ -18,7 +18,7 @@ use Illuminate\Support\Str;
  * `routeClasses.php`, and each class is walked as the people it must refuse.
  *
  * - a `parceiro` user — with its partner — gets 403 on every staff route;
- * - `equipe`, `ceo` and `operador`, none with a `partner_id`, get 403 on every portal route (the
+ * - `equipe`, `gestao` and `operador`, none with a `partner_id`, get 403 on every portal route (the
  *   operator holds `portal.access` and is refused by `portal` for lacking a partner);
  * - a guest gets 401 on staff, portal and shared routes, and a partner reaches the shared ones;
  * - a route registered and not classified — or classified and gone — fails the first test.
@@ -117,7 +117,7 @@ dataset('portal routes', fn () => matrixRoutesOf('portal'));
 dataset('shared routes', fn () => matrixRoutesOf('shared'));
 dataset('public routes', fn () => matrixRoutesOf('public'));
 dataset('signed-in routes', fn () => [...matrixRoutesOf('staff'), ...matrixRoutesOf('portal'), ...matrixRoutesOf('shared')]);
-dataset('staff without a partner', ['equipe', 'ceo', 'operador']);
+dataset('staff without a partner', ['equipe', 'gestao', 'operador']);
 
 describe('the classification (A2)', function () {
     it('lists every registered API route, and only those', function () {

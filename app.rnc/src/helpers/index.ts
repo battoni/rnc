@@ -1,11 +1,13 @@
 export * from './afterLogin.helper';
 export * from './brazil';
+export * from './firmHost.helper';
 export * from './i18n';
 export * from './localDate.helper';
 export * from './money.helper';
 export * from './routeAccess.helper';
 export * from './routeId.helper';
 export * from './slotContent.helper';
+export * from './storageAsset.helper';
 export * from './withExternalLinks.helper';
 export { default as attachAuthGuardHelper } from './attachAuthGuard.helper';
 export { default as prefersReducedMotionHelper } from './prefersReducedMotion.helper';

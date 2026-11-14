@@ -3,11 +3,33 @@
 namespace App\Modules\Auth\Resources;
 
 use App\Modules\Auth\Enums\UserStatus;
+use App\Modules\Auth\Services\RoleService;
+use App\Modules\Firm\Helpers\FirmModules;
+use App\Modules\Firm\Models\Firm;
+use App\Modules\Firm\Resources\FirmSummaryResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class UserResource extends JsonResource
 {
+    private bool $withPlatform = false;
+
+    private ?Firm $viewAs = null;
+
+    /**
+     * Adds what the signed-in shell boots from (rnc-4 R9, R20) — for `GET auth/me` and the sign-in
+     * answers (password, phone code; F3c) only; a user in a list does not carry it: `firm` (`FirmSummaryResource`, null for a firm-less account) and
+     * `platform` — the product's name, whether this is the platform operator, and the firm being
+     * viewed as (`ViewAsFirm`, null until F4c).
+     */
+    public function withPlatform(?Firm $viewAs = null): static
+    {
+        $this->withPlatform = true;
+        $this->viewAs = $viewAs;
+
+        return $this;
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -35,6 +57,20 @@ class UserResource extends JsonResource
             'partner_id' => $user->partner_id === null ? null : (int) $user->partner_id,
             'status' => $user->status->value ?? UserStatus::ACTIVE->value,
             'permissions' => $user->getAttribute('permissions') ?? [],
+            ...($this->withPlatform ? [
+                'firm' => $user->firm ? (new FirmSummaryResource($user->firm))->resolve($request) : null,
+                'platform' => [
+                    'name' => (string) config('platform.name'),
+                    'is_operator' => $user->role?->slug === RoleService::ADMINISTRATOR_SLUG,
+                    // The viewed firm's opt-in modules ride here, since `firm` stays the operator's (null):
+                    // the rail offers what the firm has on while every request runs as it (rnc-4 W93).
+                    'view_as' => $this->viewAs ? [
+                        'slug' => $this->viewAs->slug,
+                        'name' => $this->viewAs->name,
+                        'modules' => FirmModules::enabled($this->viewAs),
+                    ] : null,
+                ],
+            ] : []),
         ];
     }
 }

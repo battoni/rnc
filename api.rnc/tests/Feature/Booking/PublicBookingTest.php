@@ -370,7 +370,8 @@ describe('what a booking sends (R17, A10)', function () {
             'starts_at' => slotAt('2026-11-24 14:30'),
         ])->assertCreated();
 
-        $reportUrl = config('rnc.frontend_url').'/relatorio/'.$lead->refresh()->report_token;
+        // On the firm's own host (rnc-4 R12): the root would open the platform's firm, where the lead is absent.
+        $reportUrl = 'http://franco.localhost:5173/relatorio/'.$lead->refresh()->report_token;
 
         Mail::assertQueued(BookingConfirmed::class, function (BookingConfirmed $mail) use ($reportUrl) {
             $html = $mail->render();

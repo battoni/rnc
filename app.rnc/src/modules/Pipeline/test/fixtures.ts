@@ -63,6 +63,7 @@ function moveFixture(stage: LEAD_STAGE, via: string, reason?: string): LeadMove 
 }
 
 const LEAD_DETAIL_FIXTURE: LeadDetail = {
+  anonymised_at: null,
   brand: null,
   channel: LEAD_CHANNEL.FORMULARIO,
   cnpj: '90001371000159',

@@ -25,6 +25,8 @@ import { ReferContractService } from '../../../services';
  * list is stale (`onStale`, a 409).
  */
 interface Props {
+  /** False while the firm has `partners` off (rnc-4 R19): the row offers no legal referral. */
+  canRefer?: boolean;
   contract: ContractAlertRow;
   isMarking?: boolean;
   partners: LegalPartner[];
@@ -42,7 +44,7 @@ const YEARS = Array.from(
   (_, index) => TRANSITION_FIRST_YEAR + index
 );
 
-const props = withDefaults(defineProps<Props>(), { isMarking: false });
+const props = withDefaults(defineProps<Props>(), { canRefer: true, isMarking: false });
 
 const emit = defineEmits<{
   onClause: [contract: ContractAlertRow];
@@ -79,7 +81,7 @@ const partnerOptions = computed(() =>
   }))
 );
 
-const sentTo = computed(() => props.contract.referred_to.map((partner) => partner.name).join(', '));
+const sentTo = computed(() => (props.contract.referred_to ?? []).map((partner) => partner.name).join(', '));
 
 const barWidth = computed(() => {
   const share = props.topExposureCents > 0 ? (props.contract.exposure_cents / props.topExposureCents) * PERCENT : 0;
@@ -212,64 +214,66 @@ function onClauseConfirmed() {
     </div>
 
     <div class="flex min-w-0 flex-col gap-2">
-      <span
-        v-if="contract.referred_to.length"
-        class="bg-success-50 text-success-800 w-fit rounded-sm px-2 py-0.5 text-xs font-semibold break-words"
-        data-testid="contract-sent"
-      >
-        {{ $t('contracts.row.sent', { partners: sentTo }) }}
-      </span>
-
-      <template v-else-if="chosen">
-        <p
-          v-if="consentReason"
-          :id="`contract-consent-${contract.id}`"
-          class="text-muted text-xs"
-          data-testid="contract-consent-blocked"
+      <template v-if="canRefer">
+        <span
+          v-if="sentTo"
+          class="bg-success-50 text-success-800 w-fit rounded-sm px-2 py-0.5 text-xs font-semibold break-words"
+          data-testid="contract-sent"
         >
-          {{ consentReason }}
-        </p>
+          {{ $t('contracts.row.sent', { partners: sentTo }) }}
+        </span>
 
-        <template v-else>
-          <label
-            class="sr-only"
-            :for="`contract-partner-${contract.id}`"
+        <template v-else-if="chosen">
+          <p
+            v-if="consentReason"
+            :id="`contract-consent-${contract.id}`"
+            class="text-muted text-xs"
+            data-testid="contract-consent-blocked"
           >
-            {{ $t('contracts.row.partnerLabel', { client: contract.client.name }) }}
-          </label>
+            {{ consentReason }}
+          </p>
 
-          <Select
-            class="w-full"
-            optionLabel="label"
-            optionValue="value"
+          <template v-else>
+            <label
+              class="sr-only"
+              :for="`contract-partner-${contract.id}`"
+            >
+              {{ $t('contracts.row.partnerLabel', { client: contract.client.name }) }}
+            </label>
+
+            <Select
+              class="w-full"
+              optionLabel="label"
+              optionValue="value"
+              size="small"
+              :inputId="`contract-partner-${contract.id}`"
+              :modelValue="chosen.id"
+              :options="partnerOptions"
+              @update:modelValue="onPartner"
+            />
+          </template>
+
+          <Button
+            class="w-full whitespace-nowrap sm:w-fit"
+            data-testid="contract-refer"
+            icon="pi pi-send"
             size="small"
-            :inputId="`contract-partner-${contract.id}`"
-            :modelValue="chosen.id"
-            :options="partnerOptions"
-            @update:modelValue="onPartner"
+            :aria-describedby="consentReason ? `contract-consent-${contract.id}` : undefined"
+            :disabled="Boolean(consentReason)"
+            :label="$t('contracts.row.refer')"
+            :loading="isSending"
+            @click="onRefer"
           />
         </template>
 
-        <Button
-          class="w-full whitespace-nowrap sm:w-fit"
-          data-testid="contract-refer"
-          icon="pi pi-send"
-          size="small"
-          :aria-describedby="consentReason ? `contract-consent-${contract.id}` : undefined"
-          :disabled="Boolean(consentReason)"
-          :label="$t('contracts.row.refer')"
-          :loading="isSending"
-          @click="onRefer"
-        />
+        <span
+          v-else
+          class="text-muted text-sm"
+          data-testid="contract-no-partner"
+        >
+          {{ $t('contracts.row.noPartner') }}
+        </span>
       </template>
-
-      <span
-        v-else
-        class="text-muted text-sm"
-        data-testid="contract-no-partner"
-      >
-        {{ $t('contracts.row.noPartner') }}
-      </span>
 
       <p
         v-if="error"

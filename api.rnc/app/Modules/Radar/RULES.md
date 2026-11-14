@@ -1,7 +1,7 @@
 ---
-version: 1.2.0
+version: 1.3.0
 origin: rnc
-based-on: 1.2.0
+based-on: 1.3.0
 ---
 # RULES — Radar Module
 
@@ -20,6 +20,11 @@ reads Portfolio's `clients` and Fiscal's `nfe_documents`, and uses Fiscal's `Spl
 | `GET radar` | `radar.manage` | `{clients, with_opportunity, total_cents: [lo, hi], risk_types, types: [row]}`; a row `{rule, kind, title, citation, clients, without_consent, range_cents: [lo, hi], period, partners: [{id, name, specialty, batch, sent}]}`, `kind` ∈ `oportunidade · risco`, `period` `ano` (or `mes` for `split-payment`) |
 | `GET radar/types/{rule}` | `radar.manage` | `{type: row + detail, clients: [{id, name, cnpj, sector, regime, band, b2b_share, partner_consent, range_cents, evidence, keys}]}`; `{rule}` a `DiagnosticRule` value, else 404 `radar.notFound`; a known rule no client has → `clients: []` |
 | `POST radar/referrals` | `radar.manage` | `{rule, partner_id}` → 200 `{sent, skipped_no_consent, skipped_already}`; an unknown rule or a partner not active in the firm 422 on the field; a partner whose specialty does not cover the rule 422 `partner_not_covering`; a raced pair 409 `already_referred` |
+
+- **Modules (rnc-4 F3a, R17, R19, D16):** every route is `module:radar`; the batch referral is
+  `module:radar,partners`. Without `fiscal` no invoice is read — every client from the cadastro, no
+  evidence, no access key; without `partners` every row's `partners` picker is empty. Tested by
+  `RadarDegradeTest`.
 
 ## Intentional Decisions
 

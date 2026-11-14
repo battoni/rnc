@@ -1,5 +1,69 @@
 # Changelog — Site Module
 
+## 1.10.0 — 2026-11-14
+
+### Added
+
+- rnc-4 verify P2-S2: `cbsKey` / `hasCbsStarted` — the landing's and the product landing's copy that dates the CBS as still ahead switches to its `<key>Started` twin from 01/01/2027, on the countdown's condition.
+
+## 1.9.0 — 2026-11-14
+
+### Added
+
+- `/privacidade` (`SITE_ROUTE_NAMES.privacy`, `PrivacyView`, rnc-4 F9b, R38, A47): the firm's privacy
+  notice worded from `GET public/privacy` (`GetPublicPrivacyService`, `PublicPrivacy`), open at the root
+  too (W106); `site.privacy.*` in both locales. The public footer links to it (`footer-privacy`).
+  Tested by `PrivacyView.view.integration.spec`, `ThePublicLayout.spec`, `routes.spec` and
+  `e2e/site/privacy.spec.ts`.
+
+## 1.8.1 — 2026-11-14
+
+### Changed
+
+- The footer's credentials line is the firm's own (rnc-4 F5a, W31): `ThePublicLayout` reads
+  `public/firm`'s `credentials` and drops the block when it is null; `site.footer.credentialsText`
+  removed. Known Gap retired. Tested by `ThePublicLayout.spec` and `ThePublicLayout.noCredentials.spec`.
+
+## 1.8.0 — 2026-11-14
+
+### Added
+
+- The product's own site on the root (rnc-4 F6b, R28, R29): `ProductLandingView` with `OProductHero`
+  (product name, the CBS countdown, beta CTA, demo link), `OProductUrgency` (three dated facts, LC
+  214/2025), `OProductHowItWorks`, `OProductModules`, `OProductBeta` (D23's price line) and
+  `OProductFaq`; `MBetaSignupForm` on `GetBetaConsentService` / `SignUpForBetaService`; `productSite`
+  (`loadHomeView`, `firmSiteOnly`, `scrollToSection`, `useProductSite`). `ThePublicLayout` has a
+  product mode. Tested by `ProductLandingView.view.integration.spec`, `MBetaSignupForm.spec`,
+  `productSite.spec` and `e2e/product/landing.spec`.
+
+## 1.7.0 — 2026-11-14
+
+### Changed
+
+- Landing (rnc-4 F2c2, R15): the proof strip is the firm's — or the sub-brand's — `proof`, and a firm with none shows no strip; `PROOF_POINTS` (Franco's four, with "RNC") removed. `?marca=principal` or the host firm's slug is the main brand (was `?marca=franco`).
+
+## 1.6.0 — 2026-11-14
+
+### Changed
+
+- The brand composables moved to `src/composables/brand/` (rnc-4 F2b, D10) — `publicBrand`,
+  `brandPalette`, `useBrandTheme` (now also `useSubBrandTheme`) and the `BRAND_*` constants — and are
+  re-exported here. `PublicFirm` moved to `@Interfaces` (with `is_platform`, `logo_url`, `platform`) and
+  is re-exported. `usePublicFirm` takes the main brand's firm and `isFirmMissing` from `useFirmBrand`.
+- `ThePublicLayout` calls `useSubBrandTheme` (the firm's palette is `App.vue`'s) and writes the firm's
+  `logo_text` in the mark.
+
+## 1.5.0 — 2026-11-13
+
+### Added
+
+- `usePublicFirm().isFirmMissing` (rnc-4 F1b, R3): set by a 404 `firms.notFound` on the firm read.
+
+### Changed
+
+- `recordEvent`: on a firm host the event goes by keepalive `fetch` with `X-Firm` instead of the
+  beacon, which cannot carry a header (rnc-4 W10).
+
 ## 1.4.1 — 2026-11-07
 
 ### Fixed

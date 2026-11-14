@@ -2,6 +2,21 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.5.0 — 2026-11-14
+- Degrades with the firm's modules (rnc-4 F3a, R19): `referrals` null without `partners`, no fee range without `portfolio`, no Radar action without `radar`; `briefing:send` skips a firm without `briefing` (R17). Tested by `tests/Feature/Briefing/BriefingDegradeTest` and `tests/Feature/Firm/ModuleCommandsTest`.
+
+## 1.4.0 — 2026-11-14
+
+### Changed
+
+- The role slug `ceo` → `gestao` in the recipients query, and the links the briefing and its e-mail send go to `/gestao/…` instead of `/reinaldo/…` (rnc-4 F2c1, R14).
+
+## 1.3.0 — 2026-11-14
+
+### Changed
+
+- The 07:00 e-mail wears the firm (rnc-4 F2a, R12): `BriefingMailDTO` carries a `MailBrand`, its links on the firm's own host; from the platform's address under the firm's name, replying to its mailbox. Tested by `tests/Feature/Mail/FirmMailBrandTest`.
+
 ## 1.2.1 — 2026-11-07
 
 ### Changed

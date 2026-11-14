@@ -147,7 +147,7 @@ describe('the board (A7)', function () {
 
 describe('who sees the price (AM15)', function () {
     it('gives Reinaldo his share, stage and year total, never the fee or the share rate', function () {
-        $board = $this->actingAs(channelPerson('ceo'))->getJson('/api/channel')->assertOk()->json('data');
+        $board = $this->actingAs(channelPerson('gestao'))->getJson('/api/channel')->assertOk()->json('data');
 
         expect($board)->not->toHaveKey('defaults')
             ->and($board['summary']['monthly_share_cents'])->toBe(157500)
@@ -264,7 +264,7 @@ describe('moves (A8)', function () {
     });
 
     it('gives Reinaldo 200 on the read and 403 on every write', function () {
-        $ceo = channelPerson('ceo');
+        $ceo = channelPerson('gestao');
 
         $this->actingAs($ceo)->getJson('/api/channel')->assertOk();
         $this->actingAs($ceo)->postJson('/api/channel/firms', ['name' => 'Nova (exemplo)', 'city' => 'Campinas-SP'])->assertForbidden();

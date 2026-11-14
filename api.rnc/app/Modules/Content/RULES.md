@@ -1,5 +1,5 @@
 ---
-version: 1.0.0
+version: 1.1.0
 origin: rnc
 ---
 # RULES — Content Module
@@ -27,10 +27,14 @@ dated facts and its own SEO.
 
 ## Intentional Decisions
 
-- **The content is a seeder, not a screen** (`SectorPageSeeder`, every environment): ported from the
-  approved demo with each statement's source from facts.md §2. It runs as Franco through
-  `CurrentFirm::runAs` and writes `firm_id` itself, because `DatabaseSeeder` runs without model
+- **The content is a default set, not a screen** (`Helpers/DefaultSectorPages`, rnc-4 F3b1): ported
+  from the approved demo with each statement's source from facts.md §2; it names no firm.
+  `SectorPageService::startFirm($firm)` writes it for one firm — `SectorPageSeeder` (Franco, every
+  environment) and `firm:create` (every new firm, R21). The caller runs it as that firm through
+  `CurrentFirm::runAs`; `firm_id` is written explicitly, because `DatabaseSeeder` runs without model
   events (so `BelongsToFirm` does not stamp it). Re-running rewrites the text in place.
+  *Retired 14/11/2026 (rnc-4 F3b1):* "the content is a seeder" — a new firm needs the same pages
+  without running a seeder, so the set moved out of it.
 - **Tables read by other modules:** `sector_pages.slug` is read by Tracking's `RecordEventRequest`
   (an event's `sector` must be one of this firm's slugs).
 

@@ -7,6 +7,7 @@ use App\Modules\Channel\Services\ChannelService;
 use App\Modules\Firm\Models\Firm;
 use App\Modules\Firm\Services\CurrentFirm;
 use Carbon\CarbonImmutable;
+use Database\Seeders\Concerns\DemoEnvironment;
 use Illuminate\Database\Seeder;
 
 /**
@@ -32,7 +33,7 @@ class ChannelSeeder extends Seeder
 
     public function run(CurrentFirm $currentFirm): void
     {
-        if (app()->environment('production')) {
+        if (! DemoEnvironment::allows()) {
             return;
         }
 

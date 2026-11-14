@@ -1,5 +1,5 @@
 ---
-version: 1.3.2
+version: 1.15.0
 origin: rnc
 ---
 # RULES — Firm Module
@@ -20,9 +20,28 @@ firms records of the Channel module, with no tenant.
 ## How a query is scoped
 
 - **`CurrentFirm`** (a scoped container binding) holds the firm of this request or command run.
-- **`ResolveCurrentFirm`** (api middleware, appended after `EnsureAccountActive`) sets it: the
-  signed-in person's `firm_id` wins; without a session the `X-Firm` header names the firm by slug,
-  and without the header it is `config('firms.default_slug')` (`franco`). An unknown slug is a 404.
+- **`ResolveCurrentFirm`** (api middleware, appended after `EnsureAccountActive`) sets it (rnc-4 F1a):
+  - signed in with a firm → that firm; an `X-Firm` naming another → 403 `firms.mismatch` (D5);
+  - signed in with NO firm (the operator) → `ViewAsFirm` (the firm of an open view-as, F4c), else the platform
+    firm; any `X-Firm` → 403 `firms.mismatch`; no platform firm → 403 `firms.required` (plan AM1);
+  - signed in with NO firm and NOT the platform operator (`EnsurePlatformOperator::isPlatformOperator`) →
+    403 `firms.required` (rnc-4 verify P1-A1): the platform firm is the operator's, never a fallback;
+  - `POST auth/login` → always as a visitor, whoever the session holds (verify P2-A4): the firm a new
+    person signs into is the host's, never the firm an operator is viewing as;
+  - a visitor → the `X-Firm` slug through `FirmResolver::findTenantBySlug` (a reserved slug of
+    `config/platform.php`, an unknown one or the platform firm's → 404 `firms.notFound`, D2, AM9),
+    without the header `config('firms.default_slug')`: `hub` in the app, `franco` in `phpunit.xml` (D6).
+  *Retired 13/11/2026 (rnc-4 F1a):* "the signed-in person's `firm_id` wins; the default is `franco`".
+  A firm-less session fell through to the header — a way into any firm — and a null firm answered
+  500 further on; Franco is now one tenant among many, and the root is the platform's.
+- **`FirmResolver`** is the one place a door asks "which firm does this address name" (header,
+  host for the QA login-as) and "does this account belong to it" (`belongsTo`: its own firm, or the
+  platform firm for the firm-less `operador`). The logins and the QA login-as use it (Auth RULES).
+- **The platform firm** (`is_platform`, slug `hub`, D3) is seeded in every environment by
+  `PlatformFirmSeeder`; `FirmRepository::findPlatformFirm()` reads it. `PlatformFirmSeeder` and `FirmSeeder`
+  create their row once (`firstOrCreate` by slug) and never rewrite it — `db:seed` runs on every deploy
+  and the console's and the manager's edits win; only `is_platform` is enforced (verify P1-C1). `DemoFirmSeeder` (Alvorada,
+  D18) is local only (AM7).
 - **`BelongsToFirm`** (trait) adds `FirmScope` and stamps `firm_id` on create. Every business model
   of later phases uses it. A row of another firm is absent, so the API answers 404, never 403.
 - **No firm set → no rows.** `FirmScope` closes to an empty `whereIn` (portable, AM11).
@@ -38,6 +57,24 @@ firms records of the Channel module, with no tenant.
   chosen by `ResolveCurrentFirm` — through `PublicFirmResource`, an allow-list: name, slug, brand,
   address, phone, `phone_href` (`tel:+55…`, so the site never parses a phone), mailbox, hours. No id,
   no timestamps. No firm (an empty database) is a 404.
+
+## The firm's own brand (rnc-4 F2a, R8, R9, R12)
+
+- **`firms`** carries the look beside `logo_text`: `short_name` (40), `tagline` (160, null keeps the
+  site's own line), `proof` (four `{value, label}`, null keeps the site's own), `logo_path` (a file on
+  the `public` disk — uploaded in F4c) and `modules` (opt-in keys, D15; json with no database default,
+  the model's `$attributes` gives `[]`).
+- **`GET public/firm`** answers them for the main brand, plus `logo_url` (the `public` disk's URL,
+  null without a file and under a sub-brand), `is_platform` and `platform: {name}` —
+  `config('platform.name')` (`PLATFORM_NAME`), the one place the product is named (R9). `GET auth/me`
+  carries the same `platform.name` (`UserResource::withPlatform`).
+- **`MailBrand`** (Services) is the brand an e-mail wears: name, ink (primary), accent, logo, the
+  firm's mailbox and its own site (`<slug>.<host>` of `rnc.frontend_url`, the root for the platform
+  firm). Built from a firm (and a sub-brand) where the mail is queued, carried in the DTO (AM6);
+  `sender()` is `mail.from.address` under the firm's name, `replyTo()` the firm's mailbox (D11).
+- **`PlatformSettings`** (Services) is the only writer of `platform_settings` (key/value, no firm):
+  `consent_default`, the sentence a new firm's consent version 1 copies (Lead's `ConsentTextService`,
+  R13). `PlatformFirmSeeder` writes it in every environment; an unset key reads the built-in default.
 
 ## Sub-brands (rnc-3 F1, R1–R5)
 
@@ -74,16 +111,150 @@ firms records of the Channel module, with no tenant.
   path yet: they change in the seeder or the database (Known Gaps).
 - `PublicFirmResource` is an allow-list, so none of this reaches the public site.
 
+## The manager's settings (rnc-4 F5a, R30, D25)
+
+- `GET/PATCH firm/settings` (`firm.settings`, granted to `gestao`; `FirmSettingsController`): the
+  CURRENT firm's name and slug to read, and its address, phone, mailbox, business hours and
+  `credentials` (the public footer's line, W31) to edit — `FirmSettingsService::updateContact`, the
+  same only writer. `UpdateFirmSettingsRequest` has no rule for the look, the slug, the modules or the
+  money model, so a manager sending them changes nothing (the operator's console keeps them). An
+  explicit null clears a field; `business_hours: []` is a closed week.
+- `firms.credentials` (nullable, 255) is answered by `public/firm` as `credentials`; Franco's line
+  is `FirmSeeder::CREDENTIALS`, every other firm starts with none.
+
+## Modules per firm (rnc-4 F3a, R16–R20, D15, D16)
+
+- **`Helpers/FirmModules`** is the catalogue, pure: `CORE` (code, always on, never stored), `OPT_IN`
+  (`portfolio`, `fiscal`, `radar`, `partners`, `contracts`, `chat`, `assistant`, `briefing`, `brands`),
+  `OPERATOR_ONLY` (`channel`), `ALL` (the stored order) and `DEPENDENCIES` (`radar`, `contracts`,
+  `fiscal` → `portfolio`). `firms.modules` holds the opt-in keys; a key the catalogue no longer knows
+  reads as off (`enabled()`).
+- **`FirmModulesService::set($firm, $modules, $actor)` is the only writer**: core keys dropped, an
+  unknown key 422 `modules.unknown`, a missing dependency 422 `modules.missingDependency`, `channel`
+  turned on or off by anyone but the operator 403 (leaving it as it was is anyone's). No route calls
+  it yet: the console (F4a) and `firm:create` (F3b1) will.
+- **`CurrentFirm::hasModule()`** is what a service asks before reading another module (Briefing,
+  Radar, Contracts degrade, R19); **`forEachFirmWithModule()`** is what a scheduled command walks
+  (`briefing:send`, `assistant:notify-expiring`, R17).
+- **`EnsureModuleEnabled`** (route alias `module`, `module:<key>[,<key>…]`, every key needed) answers
+  404 `modules.disabled` when the request's firm has a module off — LAST on the route, after `auth`
+  and its key. `ResolveCurrentBrand` knows no sub-brand with `brands` off.
+- **`GET auth/me`** carries `firm` (`Resources/FirmSummaryResource`: slug, name, short name, logo text
+  and URL, colours, `is_platform`, `modules` — the opt-in keys only) or null for a firm-less account,
+  and `platform: {name, is_operator, view_as}` (Auth's `UserResource::withPlatform`).
+- **Seeds:** Franco every key (`channel`, `brands` included), Alvorada every opt-in key but `brands`
+  (D18), the platform firm none (R23). `FirmFactory` defaults to every key so the suite's implicit
+  firm keeps its routes; the model's own default is none.
+
+## A new firm (rnc-4 F3b1, R21, D17)
+
+- **`FirmProvisioner`** is the one way a firm is made — `php artisan firm:create <slug> --name=
+  --manager= [--email=] [--specialist]` today, the platform console (F4a) next. One transaction: the
+  firm (default `#1f4e79` / `#f2a900`, weekdays 09–18, name as logo text and short name, the e-mail as
+  mailbox), core + `briefing` through `FirmModulesService::set` (the actor is the console's operator,
+  else the new manager), then as the firm (`runAs`): the six default sector pages
+  (`SectorPageService::startFirm`), consent v1 (`ConsentTextService::startFirm`), the `gestao` manager
+  (`UserService::create`) and, with `--specialist`, their hours (`SpecialistService::makeBookable`).
+- **The password is 16 letters and digits, returned once** (`ProvisionedFirm`) and printed by the
+  command; nothing keeps it but the hash.
+- **Refusals come all at once** as a `ValidationException` (the console's 422): `firms.slugInvalid`
+  (not a DNS label within 60), `firms.slugReserved` (`config/platform.php`), `firms.slugTaken`,
+  `firms.nameRequired`, `users.form.usernameRequired` / `usernameTaken`, `users.form.emailInvalid` /
+  `emailTaken` — checked before anything is written.
+- **Reads from other modules:** `roles` (Auth's `RoleRepository::findRoleBySlug`), `users` (through
+  `UserService::isUsernameAvailable` / `isEmailAvailable`). Every write goes through the owning
+  module's service.
+
+## The platform console's writers (rnc-4 F4a, R25)
+
+The console (`app/Modules/Platform`) writes nothing itself; it calls the writers here, for the firm
+its route names by id:
+
+- `FirmProvisioner::provision($dto, $operator)` — a new firm, the same path as `firm:create`; the
+  operator is `FirmModulesService::set`'s actor.
+- `FirmProvisioner::provideManager($firm, FirmManagerDTO)` → `ManagerLogin` (account, one-time
+  password, `created`): the firm's own `gestao` with that username gets a new password and loses its
+  sessions (Auth's `UserService::resetPassword`); a free username becomes a new `gestao` in the firm
+  (made under `CurrentFirm::runAs`, so `UserService::create` stamps that firm); any other account —
+  another firm's, or a member here who is not the manager — is 422 `users.form.usernameTaken` and
+  untouched. The console never moves an account between firms or promotes one.
+- `FirmLookService::update($firm, UpdateFirmLookDTO)` — name, logo text, short name, tagline, proof,
+  colours; never the slug, `is_platform` or the modules. `Rules/ReadableUnderWhite` (4,5:1, R11) is
+  checked by the request, as on a sub-brand.
+- `PlatformSettings::updateConsentDefault($text)` — what the NEXT firm's version 1 copies (R13);
+  existing versions are never touched.
+- `FirmLogoService::replace($firm, UploadedFile)` / `remove($firm)` (rnc-4 F4c, R27, D22) — the only
+  writer of `logo_path`: the file (already judged by Platform's `UploadLogoRequest`) is stored on
+  `public` as `firms/<id>/logo-<40 random>.<ext>`, the extension from `finfo` (`EXTENSIONS`), never
+  the client's name; the file it replaces is deleted, and only a file under that firm's own folder
+  is ever deleted. Not re-encoded.
+
+## View-as (rnc-4 F4c, R26, D20)
+
+- **`ViewAsFirm::resolve($request)`** is the firm of the operator's open view-as, else null. The
+  session, its audit row and every check (the firm-less `operador` whose row it is, the row open, not
+  the platform firm) are the Platform module's `ViewAsService::current` — this class only hands
+  `ResolveCurrentFirm` and `auth/me` the firm. Reads `platform_view_as_sessions` through it.
+
 ## Intentional Decisions
 
+- **`PublicFirmResource` answers `modules`** (rnc-4 F3c, R17, W47): the firm's opt-in keys as `auth/me` lists them (core never listed; the platform firm none), the firm's under a sub-brand too. The public site reads it to hide the chat where `chat` is off.
 - **`users` is not firm-scoped.** Sign-in looks the username up before any firm is known; the user's
-  `firm_id` is what scopes everything they read. In Phase 1 the `operador` belongs to firm 1 too;
-  multi-firm access for the operator is Phase 3 (plan AM6).
-- **The header never moves a signed-in person.** Otherwise `X-Firm` would be a way into another
-  firm's leads.
+  `firm_id` is what scopes everything they read. The seeded `operador` (`battoni`) still belongs
+  to Franco until rnc-4 F4a moves it to no firm (platform firm, root only).
+- **The header never moves a signed-in person — and a mismatch is refused, not ignored** (rnc-4
+  D5). Otherwise `X-Firm` would be a way into another firm's leads; a 403 tells the SPA its session
+  is on the wrong host, and it signs out. Only a header that is PRESENT is compared, so the suite's
+  firm-B users with no header keep their 404s.
+- **`users` reads go through the firm** (rnc-4 AM2): `UserRepository` filters the list, the support
+  names, the phone lookup and `auth/users/{id}` by the current firm; username and e-mail stay unique
+  across all firms.
+
+## Privacy notice and a firm's exit (rnc-4 F9a, R38, R40)
+
+- `GET public/privacy` (`PublicPrivacyController`, `PublicPrivacyResource`) answers the data the
+  notice's template fills: the firm as controller, the platform (`platform.name`) as operator, what is
+  collected, the retention rule of each kind, `sharing` (`partner_network` only with `partners` on) and
+  the firm's mailbox and phone for a data request. Every list is a stable key; the SPA words them.
+- `firm:offboard <slug> --confirm` (`App\Console\Commands\OffboardFirm` → `FirmOffboarder`): exports the
+  firm, its logins (no password) and every lead (`LeadService::exportData`) to
+  `offboarding/<slug>-<time>.json` on the private `local` disk, then — one transaction — anonymises
+  every lead (`LeadService::anonymise`, via `saida_do_escritorio`) and every login of the firm (Auth's
+  `UserService::anonymiseFirmUsers`: identifying fields wiped, username `desligado.<id>`, a random
+  password, deactivated, sessions ended — verify P1-A2) and writes `firms.offboarded_at`. When that
+  transaction fails the export file is deleted (verify P2-A5): the firm stays open and nothing is left.
+  Without `--confirm` it writes nothing; the platform firm, an unknown slug and a firm already closed
+  are refused (`firms.offboard.platform`, `firms.notFound`, `firms.offboard.already`).
+- An offboarded firm: `FirmResolver::findTenantBySlug` answers null (host 404), `belongsTo` false for
+  everyone (logins refused with the wrong-password answer at the root), `ResolveCurrentFirm` refuses a
+  session of one of its people 403 `firms.offboarded` and invalidates it, and `CurrentFirm::forEachFirm`
+  skips it (no scheduled mail). The row stays for the records.
+- `FirmOffboarder` reads `users` (Auth's table, `UserRepository::findAllFirmUsers`) and `leads`
+  (`LeadRepository::eachLeadOfCurrentFirm`) — reads, declared here; every lead write is `LeadService`'s.
 
 ## Known Gaps
 
+- **`firm:offboard` anonymises the leads and the logins only** (rnc-4 F9a, W102; verify P1-A2): partners,
+  portfolio clients, contracts, referral messages, NF-e files and assistant notes keep their rows until a
+  purge per module is decided — each is its module's table, wiped only through its own service. The
+  export file covers the firm, its logins and its leads, and stays on the `local` disk until the
+  operator deletes it.
+  _Retired 14/11/2026 (verify P1-A2):_ "the team's logins (deactivated by the firm's closure, not wiped)"
+  — a closed firm's people kept name, e-mail, phone and a working password hash; they are now anonymised.
+- **An offboarded firm still shows in the console** (rnc-4 F9a): the console lists every firm; a
+  "desligada" state on the console is later.
+  _Retired 14/11/2026 (verify P2-A3):_ "…and can be viewed as" — `ViewAsService` refuses an offboarded
+  firm on start (422 `platform.viewAsOffboarded`) and drops a view-as whose firm is offboarded mid-visit.
+
+_Retired 14/11/2026 (F4c):_ "Until F4c the operator reaches another firm only through the console;
+`ViewAsFirm` returns null" — `ViewAsFirm` now answers the firm of the operator's open view-as.
+_Retired 14/11/2026 (verify P2-C3):_ "`FirmProvisioner`'s refusal keys have no SPA text yet" — the
+console's screens (F4b) carry `firms.slug*`, `firms.nameRequired` and the `users.form.*` keys.
+  _Retired 14/11/2026 (F4a):_ "Two runs racing for one slug: the loser's unique index is an uncaught
+  500" — `provision()` now catches the unique violation and answers `slugTaken` (or `usernameTaken`).
+
+_Retired 14/11/2026 (verify P2-C3):_ "Modules are enforced by the API only until F3c" — since F3c the
+SPA hides a module's rail entries and the root site's chat from `firm.modules` (`hasModule`).
 - **Host mapping (rnc-3 D2).** A brand is chosen by `?marca=` + `X-Brand` because locally there is
   one host. `express.franco…` hosts need a `host` column read by `ResolveCurrentBrand`.
 - **No brand is created or renamed through the API.** Express and Prime are `BrandSeeder` rows; a
@@ -95,4 +266,6 @@ firms records of the Channel module, with no tenant.
   scope itself is proven on a test-only table (`tests/Feature/Firm/FirmScopeTest.php`, A1). (This
   line used to say F3's `Lead` would be the first and kept a `trait.unused` PHPStan entry until then;
   F2 deleted the entry.)
-- **No firm admin screen.** Firms are seeded; a second firm is a seeder row until Phase 3.
+_Retired 14/11/2026 (verify P2-C3):_ "No firm admin screen. Firms are seeded" — the platform console
+(F4b) creates and edits firms through `FirmProvisioner`; the seeders make only `hub` and Franco (and
+Alvorada locally).

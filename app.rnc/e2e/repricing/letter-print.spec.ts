@@ -13,7 +13,7 @@ const CEO = {
   last_name: 'Franco',
   username: 'reinaldo',
   role: 'CEO',
-  role_slug: 'ceo',
+  role_slug: 'gestao',
   permissions: ['repricing.manage', 'clients.import'],
 };
 
@@ -49,7 +49,7 @@ test.beforeEach(async ({ page }) => {
 
 test('prints the letter as a light document while the screen is dark', async ({ page }) => {
   await page.emulateMedia({ colorScheme: 'dark' });
-  await page.goto('/reinaldo/reajuste/1/carta');
+  await page.goto('/gestao/reajuste/1/carta');
   await expect(page.getByTestId('repricing-letter')).toBeVisible();
 
   // The screen is in the dark scheme, and stays so.

@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Modules\Diagnostic\DTOs\DiagnosticProfileDTO;
 use App\Modules\Diagnostic\Enums\DiagnosticRule;
 use App\Modules\Firm\Services\CurrentFirm;
+use App\Modules\Firm\Services\MailBrand;
 use App\Modules\Lead\Models\Lead;
 use App\Modules\Lead\Models\LeadEvent;
 use App\Modules\Lead\Repositories\LeadRepository;
@@ -365,7 +366,7 @@ class ReferralService
      */
     private function batchMessage(Client $client, DiagnosticRule $rule): string
     {
-        $firm = (string) ($this->currentFirm->get()->name ?? config('rnc.brand.name'));
+        $firm = (string) $this->currentFirm->get()?->name;
         $since = ($client->partner_consent_at ?? $client->created_at)->setTimezone(self::LOCAL_TIMEZONE)->year;
 
         return sprintf(
@@ -384,7 +385,7 @@ class ReferralService
      */
     private function contractMessage(ClientContract $contract): string
     {
-        $firm = (string) ($this->currentFirm->get()->name ?? config('rnc.brand.name'));
+        $firm = (string) $this->currentFirm->get()?->name;
 
         return sprintf(
             'A %1$s indica a %2$s: o contrato de %3$s de %4$s por ano vai até %5$d sem cláusula de reequilíbrio para a Reforma. Podem revisar e propor o aditivo? A %1$s segue responsável pelo cliente.',
@@ -450,7 +451,7 @@ class ReferralService
     /** The partner's e-mail, as values (AM6): the company, never the lead's contact (R22). */
     private function mail(Lead $lead, Partner $partner, Referral $referral, User $by): ReferralMailDTO
     {
-        $firm = $this->currentFirm->get();
+        $firm = $this->currentFirm->get() ?? $lead->firm()->firstOrFail();
 
         return new ReferralMailDTO(
             partnerName: $partner->name,
@@ -460,10 +461,11 @@ class ReferralService
             covers: array_column($referral->covers, 'title'),
             message: $referral->message,
             referredBy: trim($by->name.' '.$by->last_name),
-            firmName: $firm->name ?? (string) config('rnc.brand.name'),
-            firmPhone: $firm?->phone,
-            firmMailbox: $firm?->mailbox,
-            firmAddress: $firm?->address,
+            firmName: $firm->name,
+            firmPhone: $firm->phone,
+            firmMailbox: $firm->mailbox,
+            firmAddress: $firm->address,
+            brand: MailBrand::fromFirm($firm),
         );
     }
 }

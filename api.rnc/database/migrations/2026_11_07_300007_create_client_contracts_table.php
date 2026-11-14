@@ -29,7 +29,8 @@ return new class extends Migration
             $table->unsignedBigInteger('clause_marked_by')->nullable();
             $table->timestamps();
 
-            $table->unique(['firm_id', 'client_id', 'kind', 'start_year', 'end_year']);
+            // Named: the generated name is 66 characters, over MySQL's 64 (SchemaIdentifierLengthTest).
+            $table->unique(['firm_id', 'client_id', 'kind', 'start_year', 'end_year'], 'client_contracts_period_unique');
             $table->index(['firm_id', 'has_reforma_clause', 'end_year']);
         });
     }

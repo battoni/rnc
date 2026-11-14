@@ -12,9 +12,9 @@ use Illuminate\Mail\Mailables\Envelope;
 /**
  * Reinaldo's briefing by e-mail at 07:00 on business days (rnc-3 R27, D13; the demo's "chega também
  * por e-mail às 7h"): the four figures, the day's actions, the next meetings and the referrals by
- * SLA, with a link to `/reinaldo`. Queued (AM6; sync locally), carrying values, never models; in
- * pt-BR under Franco's brand (the layout's `config('rnc.brand')`), from the app's own `mail.from` —
- * it goes to the firm's own ceo, so it needs no reply-to.
+ * SLA, with a link to `/gestao`. Queued (AM6; sync locally), carrying values, never models; in
+ * pt-BR under the firm's own brand (rnc-4 R12, `MailBrand`): from the platform's address under the
+ * firm's name, replies to the firm's mailbox, every link on the firm's own host.
  */
 class DailyBriefingMail extends Mailable implements ShouldQueue
 {
@@ -24,7 +24,11 @@ class DailyBriefingMail extends Mailable implements ShouldQueue
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: __('mail.briefing.subject', ['day' => $this->briefing->day()]));
+        return new Envelope(
+            from: $this->briefing->brand->sender(),
+            replyTo: $this->briefing->brand->replyTo(),
+            subject: __('mail.briefing.subject', ['day' => $this->briefing->day()]),
+        );
     }
 
     public function content(): Content
@@ -32,7 +36,7 @@ class DailyBriefingMail extends Mailable implements ShouldQueue
         return new Content(
             view: 'mail.daily-briefing',
             text: 'mail.daily-briefing-text',
-            with: ['briefing' => $this->briefing, 'day' => $this->briefing->briefing],
+            with: ['briefing' => $this->briefing, 'day' => $this->briefing->briefing, 'mailBrand' => $this->briefing->brand],
         );
     }
 }

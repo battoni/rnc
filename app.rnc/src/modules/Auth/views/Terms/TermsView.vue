@@ -18,7 +18,7 @@
 
     <div class="flex w-full max-w-[500px] flex-col items-center justify-center gap-4 px-4">
       <div class="m-auto w-full max-w-[100px]">
-        <ALogo variant="min" />
+        <MFirmLogo variant="min" />
       </div>
 
       <h1 class="text-heading text-center text-lg font-medium">

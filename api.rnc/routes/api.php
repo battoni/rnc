@@ -32,17 +32,20 @@ Route::post('auth/phone/verify', [LoginCodeController::class, 'verify'])->middle
 // Throttled because none of the three has an authenticated caller. `register` is the write and
 // `email/code` re-sends — the one an enumeration script would lean on hardest — both by IP.
 // `verify` is the guess, so it is counted by IP and by e-mail, like the login door.
-Route::post('auth/register', [RegisterController::class, 'register'])->middleware('throttle:registration');
-Route::post('auth/email/code', [RegisterController::class, 'requestCode'])->middleware('throttle:registration');
-Route::post('auth/email/verify', [RegisterController::class, 'verify'])->middleware('throttle:registration-verify');
+// Closed unless `registration.enabled` (rnc-4 R7, D21): `registration.open` answers 404 first.
+Route::post('auth/register', [RegisterController::class, 'register'])->middleware(['registration.open', 'throttle:registration']);
+Route::post('auth/email/code', [RegisterController::class, 'requestCode'])->middleware(['registration.open', 'throttle:registration']);
+Route::post('auth/email/verify', [RegisterController::class, 'verify'])->middleware(['registration.open', 'throttle:registration-verify']);
 
 // ROLES
 // A permission per verb, never one for the resource. These routes used to ask only for a session,
 // so any signed-in account could create a role, grant it every permission and delete the
 // administrator's — and the list was public. Reading serves two screens: the Roles screen, and
-// the user form that picks a role, so either audience's key opens it.
+// the user form that picks a role, so either audience's key opens it. Roles are global (one set for
+// every firm), so a write is the platform operator's alone (`platform.operator`, rnc-4 verify PE1):
+// a firm account holding `permissions.update` would otherwise edit every firm's roles.
 $rolesRead = ['auth', 'permission:permissions.read,users.create,users.update'];
-$rolesWrite = ['auth', 'permission:permissions.update'];
+$rolesWrite = ['auth', 'permission:permissions.update', 'platform.operator'];
 
 Route::get('auth/roles', [RoleController::class, 'index'])->middleware($rolesRead);
 Route::get('auth/roles/{id}', [RoleController::class, 'show'])->middleware($rolesRead);

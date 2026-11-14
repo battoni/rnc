@@ -5,6 +5,7 @@ namespace App\Modules\Lead\Services;
 use App\Models\User;
 use App\Modules\Diagnostic\DTOs\DiagnosticProfileDTO;
 use App\Modules\Firm\Services\CurrentFirm;
+use App\Modules\Lead\DTOs\BetaSignupDTO;
 use App\Modules\Lead\DTOs\LeadContactDTO;
 use App\Modules\Lead\Enums\LeadChannel;
 use App\Modules\Lead\Enums\LeadEventType;
@@ -13,6 +14,7 @@ use App\Modules\Lead\Enums\LeadStep;
 use App\Modules\Lead\Exceptions\LeadException;
 use App\Modules\Lead\Helpers\ConsentTerms;
 use App\Modules\Lead\Models\Lead;
+use App\Modules\Lead\Models\LeadConsent;
 use App\Modules\Lead\Models\LeadEvent;
 use App\Modules\Lead\Repositories\LeadRepository;
 use App\Modules\Notification\Notifications\NewLeadNotification;
@@ -37,10 +39,25 @@ class LeadService
 
     private const REPORT_DAYS = 30;
 
+    /**
+     * What an anonymisation wipes (rnc-4 R39, A48): who the lead is (name, e-mail, phone, CNPJ and
+     * the company the CNPJ names), the browser it came from, the team's lost reason and the report
+     * link. Stage, path, channel, profile answers, consents and the timeline's lines stay — the
+     * funnel still counts the lead.
+     */
+    private const ANONYMISED_FIELDS = ['company' => null, 'cnpj' => null, 'contact_name' => null, 'phone' => null, 'email' => null, 'visitor_uuid' => null, 'lost_reason' => null, 'report_token' => null, 'report_expires_at' => null];
+
+    /** How an anonymisation was asked for, on its timeline line: the manager, on the lead's request. */
+    public const ANONYMISED_VIA_REQUEST = 'pedido';
+
+    /** How an anonymisation was asked for, on its timeline line: the firm leaving (`firm:offboard`). */
+    public const ANONYMISED_VIA_OFFBOARDING = 'saida_do_escritorio';
+
     /** The answers a profile holds, all unanswered at the start. */
     private const EMPTY_PROFILE = ['sector' => null, 'regime' => null, 'band' => null, 'b2b' => null, 'incentivos' => false, 'exporta' => false];
 
     public function __construct(
+        private ConsentTextService $consentTextService,
         private CurrentFirm $currentFirm,
         private LeadRepository $leadRepository,
         private TeamNotifier $teamNotifier,
@@ -134,7 +151,8 @@ class LeadService
 
     /**
      * The contact right after step 1 (R11): the lead becomes a `lead_parcial` and the consent
-     * answer is stored with the words read, the time and the lead's channel — given or not (AM12). The
+     * answer is stored with the words read — the firm's current version, its name or the sub-brand's
+     * filled (rnc-4 R13) — the time and the lead's channel, given or not (AM12). The
      * first time a lead becomes a lead parcial the team's bell rings (R17, `NewLead`).
      */
     public function recordContact(Lead $lead, LeadContactDTO $contact): Lead
@@ -155,8 +173,7 @@ class LeadService
             ]);
 
             $this->leadRepository->createLeadConsent($lead, [
-                'text' => ConsentTerms::textFor($lead->brand?->name),
-                'version' => ConsentTerms::VERSION,
+                ...$this->consentTextService->forLead($lead),
                 'given' => $contact->consent,
                 'via' => LeadChannel::from($lead->channel)->consentVia(),
                 'given_at' => $now,
@@ -319,6 +336,46 @@ class LeadService
     }
 
     /**
+     * A firm's beta signup (rnc-4 R29, D29): a `beta` lead of the current firm — the caller has
+     * checked it is the platform firm — at stage `lead`, path `beta`, the contact in its columns and
+     * the rest of the form in `profile` (over the empty diagnostic profile, so the pipeline's detail
+     * still reads it). Its token is born expired, like a portfolio lead's: no public route opens it.
+     * The consent is answered under the firm's current version, as any contact's (AM12).
+     */
+    public function recordBetaSignup(BetaSignupDTO $signup): Lead
+    {
+        $now = Carbon::now();
+
+        return DB::transaction(function () use ($signup, $now) {
+            $lead = $this->leadRepository->createLead([
+                'token' => Str::random(self::TOKEN_LENGTH),
+                'token_expires_at' => $now,
+                'stage' => LeadStage::Lead->value,
+                'path' => LeadChannel::Beta->value,
+                'company' => $signup->company,
+                'contact_name' => $signup->name,
+                'phone' => $signup->phone,
+                'email' => $signup->email,
+                'profile' => [...self::EMPTY_PROFILE, ...$signup->profile()],
+                'channel' => LeadChannel::Beta->value,
+                'source' => $signup->source,
+                'medium' => $signup->medium,
+            ]);
+
+            $this->leadRepository->createLeadConsent($lead, [
+                ...$this->consentTextService->forLead($lead),
+                'given' => $signup->consent,
+                'via' => LeadChannel::Beta->consentVia(),
+                'given_at' => $now,
+            ]);
+
+            $this->leadRepository->createLeadEvent($lead, LeadEventType::ContactCaptured->value, ['consent' => $signup->consent], $now);
+
+            return $lead;
+        });
+    }
+
+    /**
      * The one `carteira` lead of a portfolio client (rnc-2 R27, D13; plan AM10): Franco's own client,
      * so it sits at stage `cliente`, has no contact (the partner's way in is the firm's, R6) and a
      * token born expired — no public route ever opens it. It carries the client's name, CNPJ and the
@@ -367,8 +424,7 @@ class LeadService
     private function copyContractConsent(Lead $lead, Client $client, Carbon $now): Lead
     {
         $this->leadRepository->createLeadConsent($lead, [
-            'text' => ConsentTerms::CONTRACT_TEXT,
-            'version' => ConsentTerms::VERSION,
+            ...$this->consentTextService->contractConsent($lead->firm()->firstOrFail()),
             'given' => true,
             'via' => ConsentTerms::VIA_CONTRACT,
             // `given_at` is a plain `datetime` cast: it stores the wall clock it is handed, so the
@@ -377,6 +433,99 @@ class LeadService
         ]);
 
         return $lead->load('latestConsent');
+    }
+
+    /**
+     * The lead's own data, for an LGPD request (rnc-4 R39, A48) or the firm's exit (R40): its fields,
+     * every consent answer with the words read, and its timeline without who wrote each line (the
+     * team's names are other people's data). No token: a link is a key, not the person's data.
+     *
+     * @return array{lead: array<string, mixed>, consents: list<array<string, mixed>>, timeline: list<array<string, mixed>>}
+     */
+    public function exportData(Lead $lead): array
+    {
+        return [
+            'lead' => [
+                'id' => $lead->id,
+                'company' => $lead->company,
+                'cnpj' => $lead->cnpj,
+                'contact_name' => $lead->contact_name,
+                'phone' => $lead->phone,
+                'email' => $lead->email,
+                'stage' => $lead->stage,
+                'last_step' => $lead->last_step,
+                'lost_reason' => $lead->lost_reason,
+                'path' => $lead->path,
+                'profile' => $lead->profile,
+                'channel' => $lead->channel,
+                'source' => $lead->source,
+                'medium' => $lead->medium,
+                'created_at' => $lead->created_at->toIso8601String(),
+                'updated_at' => $lead->updated_at->toIso8601String(),
+                'anonymised_at' => $lead->anonymised_at?->toIso8601String(),
+            ],
+            'consents' => $this->leadRepository->findLeadConsents($lead)->map(fn (LeadConsent $consent) => [
+                'version' => $consent->version,
+                'text' => $consent->text,
+                'given' => $consent->given,
+                'via' => $consent->via,
+                'given_at' => $consent->given_at->toIso8601String(),
+            ])->values()->all(),
+            'timeline' => $this->leadRepository->findLeadEventsOldestFirst($lead)->map(fn (LeadEvent $event) => [
+                'type' => $event->type,
+                'data' => $event->data,
+                'at' => $event->at->toIso8601String(),
+            ])->values()->all(),
+        ];
+    }
+
+    /**
+     * Wipes who the lead is (rnc-4 R39, A48) and writes a timeline line with who did it and when;
+     * `$by` is null for the firm's exit (`firm:offboard`). Irreversible — nothing keeps the old values,
+     * the diagnostic token is replaced by an expired one and the report link is gone — and idempotent:
+     * an anonymised lead is answered as it is, with no second line.
+     */
+    public function anonymise(Lead $lead, ?User $by, string $via = self::ANONYMISED_VIA_REQUEST): Lead
+    {
+        if ($lead->anonymised_at !== null) {
+            return $lead;
+        }
+
+        $now = Carbon::now();
+
+        DB::transaction(function () use ($lead, $by, $via, $now) {
+            $this->leadRepository->updateLead($lead, [
+                ...self::ANONYMISED_FIELDS,
+                'token' => Str::random(self::TOKEN_LENGTH),
+                'token_expires_at' => $now,
+                'anonymised_at' => $now,
+            ]);
+
+            foreach ($this->leadRepository->findLeadEventsOldestFirst($lead) as $event) {
+                $this->wipeFreeText($event);
+            }
+
+            $this->leadRepository->createLeadEvent($lead, LeadEventType::Anonymised->value, ['via' => $via], $now, $by?->id);
+        });
+
+        return $lead;
+    }
+
+    /** The line's personal data goes as its type decides (`LeadEventType::withoutPersonalData`); the line stays. */
+    private function wipeFreeText(LeadEvent $event): void
+    {
+        $data = $event->data;
+        $type = LeadEventType::tryFrom((string) $event->type);
+
+        if (! is_array($data) || $type === null) {
+            return;
+        }
+
+        $wiped = $type->withoutPersonalData($data);
+
+        if ($wiped !== $data) {
+            $this->leadRepository->updateLeadEventData($event, $wiped);
+        }
     }
 
     private function assertOpen(Lead $lead): void

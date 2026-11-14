@@ -1,5 +1,5 @@
 ---
-version: 1.4.0
+version: 1.5.0
 origin: rnc
 ---
 
@@ -9,12 +9,12 @@ origin: rnc
 
 ## Domain
 
-Franco's network (R21–R23): the partner registry (`/reinaldo/parceiros`, route `partners`), the
-trail of every referral (`/reinaldo/trilha`, `referral-trail`), each with its `/ceo/…` twin, and the
+Franco's network (R21–R23): the partner registry (`/gestao/parceiros`, route `partners`), the
+trail of every referral (`/gestao/trilha`, `referral-trail`), each with its `/management/…` twin, and the
 routing panel `MLeadRouting` the Pipeline's lead detail mounts under the diagnostic. The API is
 `GET/POST partners`, `PATCH partners/{id}`, `GET partners/options`, `GET leads/{id}/partner-matches`,
 `POST leads/{id}/referrals`, `GET referrals` (api `Partner` module). From rnc-2 F4 also the network
-ledger (`/reinaldo/extrato`, `network-ledger`, `ledger.read`): `GET ledger`, `PATCH ledger/model`.
+ledger (`/gestao/extrato`, `network-ledger`, `ledger.read`): `GET ledger`, `PATCH ledger/model`.
 
 ## Intentional Decisions
 

@@ -9,6 +9,7 @@ use App\Modules\Diagnostic\DTOs\DiagnosticProfileDTO;
 use App\Modules\Diagnostic\Services\RulesEngine;
 use App\Modules\Firm\Models\FirmBrand;
 use App\Modules\Firm\Services\BrandService;
+use App\Modules\Firm\Services\CurrentFirm;
 use App\Modules\Lead\Enums\LeadStage;
 use App\Modules\Lead\Models\Lead;
 use App\Modules\Lead\Models\LeadEvent;
@@ -17,6 +18,7 @@ use App\Modules\Lead\Services\LeadService;
 use App\Modules\Pipeline\DTOs\LeadBoardFilterDTO;
 use App\Modules\Pipeline\DTOs\MoveLeadStageDTO;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Carbon;
 
 /**
  * The team's pipeline (rnc-1 R18–R19): the board, the lead detail with the diagnostic the visitor
@@ -34,6 +36,7 @@ class PipelineService
         private AppointmentRepository $appointmentRepository,
         private RulesEngine $rulesEngine,
         private BrandService $brandService,
+        private CurrentFirm $currentFirm,
     ) {}
 
     /**
@@ -114,6 +117,46 @@ class PipelineService
         $lead = $this->leadRepository->findLeadById($id);
 
         return ! $lead ? null : $this->leadService->addNote($lead, $text, $by);
+    }
+
+    /**
+     * The lead's own data for an LGPD request (rnc-4 R39, A48), with the firm answering for it and
+     * when it was taken. Null for another firm's lead.
+     *
+     * @return array{lead: array<string, mixed>, consents: list<array<string, mixed>>, timeline: list<array<string, mixed>>, controller: array{name: string|null}, exported_at: string}|null
+     */
+    public function export(int $id): ?array
+    {
+        $lead = $this->leadRepository->findLeadById($id);
+
+        if (! $lead) {
+            return null;
+        }
+
+        return [
+            ...$this->leadService->exportData($lead),
+            'controller' => ['name' => $this->currentFirm->get()?->name],
+            'exported_at' => Carbon::now()->toIso8601String(),
+        ];
+    }
+
+    /**
+     * Anonymises the lead (rnc-4 R39, A48) and answers its detail as it now is. Null for another
+     * firm's lead.
+     *
+     * @return array{lead: Lead, diagnosis: array<string, mixed>, meeting: Appointment|null, timeline: Collection<int, LeadEvent>}|null
+     */
+    public function anonymise(int $id, User $by): ?array
+    {
+        $lead = $this->leadRepository->findLeadById($id);
+
+        if (! $lead) {
+            return null;
+        }
+
+        $this->leadService->anonymise($lead, $by);
+
+        return $this->detail($id);
     }
 
     /**

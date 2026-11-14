@@ -9,7 +9,7 @@ use Database\Seeders\LocalUsersSeeder;
 use Database\Seeders\RoleSeeder;
 
 /*
- * The partner registry (rnc-1 F6, R21; plan AM8): `partners.manage` (ceo, operador) lists, creates,
+ * The partner registry (rnc-1 F6, R21; plan AM8): `partners.manage` (gestao, operador) lists, creates,
  * edits and deactivates; `referrals.read` reads the options the trail filters by. The team holds
  * neither. Another firm's partner is a 404 (A1).
  *
@@ -51,7 +51,7 @@ describe('the registry (R21)', function () {
         francoPartner(['name' => 'Beta Tributário (exemplo)', 'specialty' => 'advocacia_tributaria']);
         Partner::withoutGlobalScopes()->create(['firm_id' => $this->other->id, 'name' => 'De outra firma', 'specialty' => 'erp_nfe', 'email' => 'x@outra.exemplo', 'active' => true]);
 
-        $partners = $this->actingAs(partnerPerson('ceo'))->getJson('/api/partners')->assertOk()->json('data');
+        $partners = $this->actingAs(partnerPerson('gestao'))->getJson('/api/partners')->assertOk()->json('data');
 
         expect(array_column($partners, 'name'))->toBe(['Beta Tributário (exemplo)', 'Zeta Seguros (exemplo)', 'Alfa Inativo (exemplo)'])
             ->and($partners[0])->toMatchArray(['specialty' => 'advocacia_tributaria', 'active' => true, 'email' => 'contato3@parceiro.exemplo']);
@@ -71,7 +71,7 @@ describe('the registry (R21)', function () {
     });
 
     it('refuses an unknown specialty and a missing e-mail', function () {
-        $this->actingAs(partnerPerson('ceo'))->postJson('/api/partners', ['name' => 'Sem e-mail', 'specialty' => 'esg'])
+        $this->actingAs(partnerPerson('gestao'))->postJson('/api/partners', ['name' => 'Sem e-mail', 'specialty' => 'esg'])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['specialty', 'email']);
     });
@@ -79,7 +79,7 @@ describe('the registry (R21)', function () {
     it('edits and deactivates a partner, and answers it as it is now', function () {
         $partner = francoPartner();
 
-        $this->actingAs(partnerPerson('ceo'))->patchJson("/api/partners/{$partner->id}", ['city' => 'Osasco-SP'])
+        $this->actingAs(partnerPerson('gestao'))->patchJson("/api/partners/{$partner->id}", ['city' => 'Osasco-SP'])
             ->assertOk()
             ->assertJsonPath('data.city', 'Osasco-SP');
 
@@ -93,7 +93,7 @@ describe('the registry (R21)', function () {
     it('answers 404 for another firm\'s partner (A1)', function () {
         $foreign = Partner::withoutGlobalScopes()->create(['firm_id' => $this->other->id, 'name' => 'De outra firma', 'specialty' => 'erp_nfe', 'email' => 'x@outra.exemplo', 'active' => true]);
 
-        $this->actingAs(partnerPerson('ceo'))->patchJson("/api/partners/{$foreign->id}", ['active' => false])->assertNotFound();
+        $this->actingAs(partnerPerson('gestao'))->patchJson("/api/partners/{$foreign->id}", ['active' => false])->assertNotFound();
 
         expect($foreign->fresh()->active)->toBeTrue();
     });
@@ -102,7 +102,7 @@ describe('the registry (R21)', function () {
         francoPartner(['name' => 'Beta (exemplo)', 'active' => false]);
         francoPartner(['name' => 'Alfa (exemplo)']);
 
-        $this->actingAs(partnerPerson('ceo'))->getJson('/api/partners/options')
+        $this->actingAs(partnerPerson('gestao'))->getJson('/api/partners/options')
             ->assertOk()
             ->assertJsonPath('data.0.label', 'Alfa (exemplo)')
             ->assertJsonPath('data.1.active', false);

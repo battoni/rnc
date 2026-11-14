@@ -7,14 +7,16 @@ use App\Modules\Booking\Services\BookingCalendar;
 use App\Modules\Briefing\DTOs\BriefingMailDTO;
 use App\Modules\Briefing\Mail\DailyBriefingMail;
 use App\Modules\Briefing\Repositories\BriefingRepository;
+use App\Modules\Firm\Helpers\FirmModules;
 use App\Modules\Firm\Models\Firm;
 use App\Modules\Firm\Services\CurrentFirm;
+use App\Modules\Firm\Services\MailBrand;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Mail;
 
 /**
  * The 07:00 e-mail (rnc-3 R27, D13): on a business day in São Paulo — not a weekend, not one of
- * Booking's national holidays — every firm in turn builds its briefing once, under itself, and
+ * Booking's national holidays — every firm with the `briefing` module (rnc-4 R17) in turn builds its briefing once, under itself, and
  * queues it to each of its active ceos. Nothing on a day off: the screen still answers, the e-mail
  * waits for the next business day.
  */
@@ -39,7 +41,7 @@ class DailyBriefingSender
 
         $queued = 0;
 
-        $this->currentFirm->forEachFirm(function (Firm $firm) use (&$queued) {
+        $this->currentFirm->forEachFirmWithModule(FirmModules::BRIEFING, function (Firm $firm) use (&$queued) {
             $ceos = $this->briefingRepository->findActiveCeosOfFirm($firm->id);
 
             if ($ceos->isEmpty()) {
@@ -47,13 +49,15 @@ class DailyBriefingSender
             }
 
             $briefing = $this->briefingService->build();
+            $brand = MailBrand::fromFirm($firm);
 
             foreach ($ceos as $ceo) {
                 $mail = new DailyBriefingMail(new BriefingMailDTO(
                     firstName: $ceo->name,
                     firmName: $firm->name,
-                    frontendUrl: (string) config('rnc.frontend_url'),
+                    frontendUrl: $brand->siteUrl,
                     briefing: $briefing,
+                    brand: $brand,
                 ));
 
                 Mail::to($ceo->email)->queue($mail->locale(self::MAIL_LOCALE));

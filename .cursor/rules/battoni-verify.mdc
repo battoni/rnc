@@ -9,7 +9,7 @@ alwaysApply: false
 > test that proves it.
 >
 > **Usage:** `/battoni-verify <id>`
-> Reference: `.claude/feature-flow.md`. Reads `intent.md`, `spec.md`, `state.md` and the branch diff only —
+> Reference: `.claude/feature-flow.md`. Reads `intent.md`, `spec.md`, `plan.md` → `## QA`, `state.md` and the branch diff only —
 > **never `proposal.html`** (the Chrome driver opens it, not you).
 
 ## Step 0 — Preconditions
@@ -40,28 +40,53 @@ spawn `code-reviewer` on Sonnet with the same inputs.
 Check each finding in the file before accepting it. Real → fix (red test first when it is
 behaviour), `/battoni-pre-commit`, commit. Rejected → one line with the reason; it goes into the PR.
 
-## Step 2 — QA, three layers
+## Step 2 — QA, three layers, one script
 
-Each layer starts only when the one before passed.
+Each layer starts only when the one before passed. Layers 2 and 3 run **the same script**, so a
+step fixed in Chrome is fixed for the person too.
 
-1. **Tests** — already green from the build (every A# has its test). Re-run the suite once on the
-   final branch.
-2. **Chrome driver** — load the `battoni-test-in-chrome` skill. The script comes from the A# list
-   (not written by hand); an A# already proved at a width by Playwright gets no Chrome round at
-   that width (cite the test in the Preflight). Every round signs in by opening the API's QA login
-   link, `/api/qa/login-as/<username>?to=/<route>`, on the API host (local only —
-   `QaLoginAsController`). The username comes from the project's QA notes (e.g. `qa.local.md`).
-   A round never reuses the session of the round before. When the spec header says `(approved …)`, add the round
-   **Compare with the approved demo** described in the skill, with the `## Screens` list of the spec. You judge only the failures and
-   the differences.
-3. **A person (a tester, the client)** — only when the owner asks. Load
-   `battoni-new-qa-session`: one section per R#, each step citing its A#, then a free-use section.
+1. **Tests** — green from the build (every A# has its test), under the phase gate. Run the full
+   `/battoni-pre-commit` once on the final branch: the feature's only run of the full app
+   Playwright suite (`.claude/feature-flow.md`, Phase gate).
+2. **The script** — spawn one `general-purpose` agent with `model: sonnet`. Give it the paths of
+   `spec.md`, `plan.md` (its `## QA` block), the `battoni-test-in-chrome` skill (Passo 1, its
+   format) and the app's locale files; it writes `specs/<id>-*/qa-script.md`. One round per R#;
+   the round opens with its seed command (`php artisan db:seed --class=<Feature>QaSeeder`, from
+   `## QA` → Data) and its QA login link; each step is action → exact pt-BR label on screen → the
+   A# it checks. An A# already proved at a width by Playwright is marked `Chrome: skip (<test>)`
+   at that width; the person still gets the step. **Only invented records**: the ones the QA and
+   demo seeders create, never a value from a database pulled from production. Commit it.
+3. **Chrome driver** — load the `battoni-test-in-chrome` skill and run `qa-script.md` as its
+   script (it skips Passo 1). Every round signs in by opening the API's QA login link,
+   `/api/qa/login-as/<username>?to=/<route>`, on the API host (local only — `QaLoginAsController`),
+   and never reuses the session of the round before. When the spec header says `(approved …)`, add
+   the round **Compare with the approved demo** described in the skill, with the `## Screens` list
+   of the spec. You judge only the failures and the differences; a step that was wrong is fixed
+   **in `qa-script.md`**, so the person never meets it. **The rounds run on the data the person
+   will have:** when `## QA` → Human round says yes, a separate local database built only by
+   `migrate:fresh --seed` and the QA seeder (`DB_DATABASE=<project>_qa<n>`), never a production
+   pull. `qa-script.md` → `## Resultados` opens with the database the rounds ran on.
+4. **A person (a tester, the client)** — when `## QA` → Human round says yes. Spawn one
+   `general-purpose` agent with `model: sonnet` that loads `battoni-new-qa-session` and turns
+   `qa-script.md` into the Claude Docs doc, one section per R#, each step citing its A#, then the
+   free-use section: the steps and labels are already checked, so it reads no code and no i18n.
+   That holds only when `## Resultados` names a seeders-only database; when the rounds ran on
+   other data, the skill's data inventory and Chrome pre-check run before the doc is shared.
+   It returns only the link; the doc is private until the owner shares it. When `## QA` says
+   "merge waits", the PR stays a draft and `state.md` → Next is "<tester> runs the doc, then
+   `/battoni-qa-result <link>`". The doc's link goes into `state.md` → `## QA` the moment it
+   exists (`Layer 3 (human, <tester>, <env>): pending. <title> <link>`): it is how
+   `/battoni-qa-result` finds this feature days later, merged or not.
+   *Retired 10/11/2026: "layer 3 only when the owner asks".* In boanerges-3 nobody asked until
+   after the merge, so the script was written last, on Opus at 140–209k of context (US$ 4.70 with
+   its unplanned seeder), and it could no longer gate the merge.
 
 Each layer's result is one line in `state.md` → `## QA`.
 
-**Away mode** (`/battoni-run`): layer 3 never runs, it is listed as owed in the PR. With
-`Chrome QA: off` in `## Away run`, layer 2 does not run either: `## QA` and the PR list every
-round as owed. Nobody answers questions: see the last bullet below.
+**Away mode** (`/battoni-run`): the script and the human doc are written as above; the person's
+round itself is owed, in the PR. With `Chrome QA: off` in `## Away run`, the Chrome rounds do not
+run: `## QA` and the PR list each one as owed, and the human doc is not written, since its steps
+were never checked. Nobody answers questions: see the last bullet below.
 
 Problems found:
 - **violates an A#** → a bug: a failing test, then the fix (in this branch while it is open; after
@@ -72,9 +97,21 @@ Problems found:
 
 ## Step 3 — PR
 
+**Cost.** When `plans/tokens/scripts/branch.py` exists (it lives in the private `plans/`), run
+`python3 plans/tokens/scripts/branch.py | grep 'feature/<id>'` and write
+`Cost: US$ <x> (main <y>, subagents <z>) · <date>` under `## QA`; without it, `Cost: not measured`.
+It counts every session on the branch, intent to verify.
+
+**Clean tree.** `git status --porcelain` in the feature worktree must be empty, untracked files
+included. Anything there is either committed now or deleted with a reason; nothing reaches `main`
+after the merge outside a PR (`.claude/feature-flow.md`, "After delivery").
+
 Load `/battoni-create-pr`. Title `<id>: <imperative subject>`. The body opens with the intent's
 problem and outcome in two lines and a table **R# → test file::test name**, then the review
-findings not applied with the reason, the QA lines, and the suite counts. As the branch's last
-commit, set `state.md` to `Stage: delivered — PR #<n>` and Next to "merge": once merged, it is true.
+findings not applied with the reason, the QA lines (the human doc's link, and whether the merge
+waits for it), the cost line, and the suite counts. As the branch's last commit, set `state.md` to
+`Stage: delivered — PR #<n>` and Next to "merge" (or to the human round, when the merge waits):
+once merged, it is true. Every `state.md` line verify wrote and did not commit rides in this one.
 
-End with: the PR link, layers passed, anything that could not be tested and why.
+End with: the PR link, layers passed, anything that could not be tested and why, and when there is
+a human doc, its link and "share it with <tester> with edit permission".

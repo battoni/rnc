@@ -1,5 +1,5 @@
 ---
-version: 1.0.0
+version: 1.1.0
 origin: rnc
 based-on: 1.0.0
 ---
@@ -11,7 +11,7 @@ based-on: 1.0.0
 The "Canal RNC" screen (rnc-3 R8, R9): the Rede Nacional de Contabilidade firms Franco introduces
 to the platform, read from `GET channel` (API Channel `RULES.md`). One view, two routes, both
 `channel.read`: the operator's `/operador/canal-rnc` (+ `/operator/rnc`) and Reinaldo's
-`/reinaldo/canal-rnc` (+ `/ceo/rnc`). An RNC firm is a pipeline record, not a tenant (D5).
+`/gestao/canal-rnc` (+ `/management/rnc`). An RNC firm is a pipeline record, not a tenant (D5).
 
 ## Who sees what (AM15)
 

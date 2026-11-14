@@ -7,7 +7,7 @@ import { FIRM_FIXTURE, PRIME_FIRM_FIXTURE } from '../test/fixtures';
 
 /*
  * R2 (rnc-3 F2, AM21): the tab keeps the sub-brand of `?marca=` in `sessionStorage` and sends it as
- * `X-Brand` on every public call; `?marca=franco` drops it, and so does any 404 `brands.notFound` —
+ * `X-Brand` on every public call; `?marca=principal` drops it, and so does any 404 `brands.notFound` —
  * the call is then asked again as the main brand, so a stale tab lands on Franco instead of an error.
  */
 const seen: (string | null)[] = [];
@@ -75,10 +75,10 @@ describe('usePublicFirm under a sub-brand', () => {
     expect(firm.value?.name).toBe('Franco Contabilidade');
   });
 
-  it('drops the brand on ?marca=franco', async () => {
+  it('drops the brand on ?marca=principal', async () => {
     sessionStorage.setItem(BRAND_STORAGE_KEY, 'prime');
     sessionStorage.setItem(BRAND_PREVIEW_STORAGE_KEY, '1');
-    window.history.replaceState({}, '', '/?marca=franco');
+    window.history.replaceState({}, '', '/?marca=principal');
 
     const { firm, load } = await freshFirm();
 
@@ -138,5 +138,49 @@ describe('usePublicFirm under a sub-brand', () => {
 
     expect(seen).toEqual([null, 'prime']);
     expect(firm.value?.name).toBe('Franco Prime Contabilidade');
+  });
+});
+
+/*
+ * rnc-4 R3, A6: an unknown or reserved subdomain is a 404 `firms.notFound` on the boot read, and the
+ * shell swaps every path for "Escritório não encontrado". Any other failure is not that answer.
+ */
+describe('usePublicFirm on a host that names no firm', () => {
+  function answerFirmWith(status: number, error: string) {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    server.use(
+      http.get('http://localhost/public/firm', () =>
+        HttpResponse.json({ data: null, error, status_code: status }, { status })
+      )
+    );
+  }
+
+  it('says the firm is missing on 404 firms.notFound', async () => {
+    answerFirmWith(404, 'firms.notFound');
+
+    const { firm, isFirmMissing, load } = await freshFirm();
+
+    await load();
+
+    expect(isFirmMissing.value).toBe(true);
+    expect(firm.value).toBeNull();
+  });
+
+  it('does not say so on any other failure', async () => {
+    answerFirmWith(500, 'errors.unexpected');
+
+    const { isFirmMissing, load } = await freshFirm();
+
+    await load();
+
+    expect(isFirmMissing.value).toBe(false);
+  });
+
+  it('does not say so when the firm answers', async () => {
+    const { isFirmMissing, load } = await freshFirm();
+
+    await load();
+
+    expect(isFirmMissing.value).toBe(false);
   });
 });

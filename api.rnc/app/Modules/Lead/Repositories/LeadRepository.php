@@ -6,6 +6,7 @@ use App\Modules\Lead\Enums\LeadStage;
 use App\Modules\Lead\Models\Lead;
 use App\Modules\Lead\Models\LeadConsent;
 use App\Modules\Lead\Models\LeadEvent;
+use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
@@ -148,6 +149,36 @@ class LeadRepository
     public function createLeadEvent(Lead $lead, string $type, ?array $data, Carbon $at, ?int $userId = null): LeadEvent
     {
         return $lead->events()->create(['type' => $type, 'data' => $data, 'at' => $at, 'user_id' => $userId]);
+    }
+
+    /** @return Collection<int, LeadConsent> every consent answer, oldest first, with the words read */
+    public function findLeadConsents(Lead $lead): Collection
+    {
+        return $lead->consents()->orderBy('given_at')->orderBy('id')->get();
+    }
+
+    /** @return Collection<int, LeadEvent> the timeline, oldest first, without who wrote each line */
+    public function findLeadEventsOldestFirst(Lead $lead): Collection
+    {
+        return $lead->events()->orderBy('at')->orderBy('id')->get();
+    }
+
+    /** @param  array<string, mixed>|null  $data */
+    public function updateLeadEventData(LeadEvent $event, ?array $data): LeadEvent
+    {
+        $event->update(['data' => $data]);
+
+        return $event;
+    }
+
+    /**
+     * Every lead of the current firm, a chunk at a time (rnc-4 F9a, `firm:offboard`).
+     *
+     * @param  Closure(Lead): void  $callback
+     */
+    public function eachLeadOfCurrentFirm(Closure $callback): void
+    {
+        Lead::query()->orderBy('id')->each($callback);
     }
 
     public function hasLeadEvent(Lead $lead, string $type): bool

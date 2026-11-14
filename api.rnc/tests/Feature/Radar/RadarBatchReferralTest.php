@@ -4,7 +4,6 @@ use App\Models\User;
 use App\Modules\Auth\Models\Role;
 use App\Modules\Diagnostic\Enums\DiagnosticRule;
 use App\Modules\Firm\Models\Firm;
-use App\Modules\Lead\Helpers\ConsentTerms;
 use App\Modules\Lead\Models\Lead;
 use App\Modules\Lead\Models\LeadEvent;
 use App\Modules\Lead\Repositories\LeadRepository;
@@ -35,6 +34,9 @@ use Tests\Support\FiscalRows;
  * with the company and Franco's own contact. `GET radar` says, per row and covering partner, how
  * big the next batch is and how many were already sent.
  */
+/** The generic contract sentence (rnc-4 D12), Franco's name filled. */
+const RADAR_CONTRACT_CONSENT = 'O contrato de serviços autoriza Franco Contabilidade a apresentar o cliente a especialistas parceiros quando o Radar da Reforma indicar.';
+
 function batchPartner(string $name, string $specialty, array $attributes = [], ?int $firmId = null): Partner
 {
     return Partner::withoutGlobalScopes()->create([
@@ -89,7 +91,7 @@ beforeEach(function () {
     Mail::fake();
     CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-11-16 10:00', 'America/Sao_Paulo'));
     $this->seed([FirmSeeder::class, RoleSeeder::class]);
-    $this->ceo = FiscalRows::person('ceo');
+    $this->ceo = FiscalRows::person('gestao');
 
     // Two covering partners for `contratos` (precificação), one that covers nothing, one inactive.
     $this->margem = batchPartner('Margem Certa (exemplo)', 'precificacao_controladoria');
@@ -195,9 +197,9 @@ describe('the portfolio lead and the referral (D13, AM10, A21)', function () {
 
         expect($consent->given)->toBeTrue()
             ->and($consent->via)->toBe('contrato')
-            ->and($consent->text)->toBe(ConsentTerms::CONTRACT_TEXT)
+            ->and($consent->text)->toBe(RADAR_CONTRACT_CONSENT)
             ->and($consent->given_at->utc()->toIso8601String())->toBe('2019-01-15T12:00:00+00:00')
-            ->and($referral->consent_text)->toBe(ConsentTerms::CONTRACT_TEXT)
+            ->and($referral->consent_text)->toBe(RADAR_CONTRACT_CONSENT)
             ->and($referral->consent_given_at->utc()->toIso8601String())->toBe('2019-01-15T12:00:00+00:00');
     });
 
@@ -209,7 +211,7 @@ describe('the portfolio lead and the referral (D13, AM10, A21)', function () {
 
         expect($lead->fresh()->company)->toBe('Grande Consentida Ltda')
             ->and($lead->consents()->sole()->via)->toBe('contrato')
-            ->and(Referral::withoutGlobalScopes()->where('lead_id', $lead->id)->sole()->consent_text)->toBe(ConsentTerms::CONTRACT_TEXT);
+            ->and(Referral::withoutGlobalScopes()->where('lead_id', $lead->id)->sole()->consent_text)->toBe(RADAR_CONTRACT_CONSENT);
     });
 
     it('scores the referral on the client\'s profile, covers the rule and writes the demo\'s Radar message', function () {

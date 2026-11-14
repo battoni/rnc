@@ -3,6 +3,34 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.18.0 — 2026-11-14
+
+### Added
+
+- rnc-4 verify: `attachAuthGuard` refuses a route whose `meta.role` is not the person's `role_slug` (home), checked with `meta.permission`.
+
+## 1.17.0 — 2026-11-14
+
+### Added
+
+- `storageAsset.helper.ts` (rnc-4 F4d): `toStorageAssetPath` — the API's `APP_URL/storage/...` as a path on the page's own origin.
+
+## 1.16.0 — 2026-11-14
+
+- `firmSiteUrl(slug, location, rootDomain)` (rnc-4 F6b, D24): a firm's site on the page's scheme and port — the product landing's demo link; an empty slug is none.
+
+## 1.15.0 — 2026-11-14
+
+- `attachAuthGuard` closes a route of a module the firm has off (rnc-4 F3c, R17): `meta.module` → the not-found view at the same address; a landing that redirected there names `meta.moduleFallback` (`/gestao` → metrics without `briefing`). Order: the key, then the module (the API's, W36).
+
+## 1.14.0 — 2026-11-13
+
+### Added
+
+- `firmHost.helper.ts` (rnc-4 F1b, R2): `firmSlugFromHost(host, rootDomain)`, `currentFirmSlug()`
+  (the page's own host against `ROOT_DOMAIN`) and `rootSiteUrl(location, rootDomain)`. The API
+  provider and the events beacon name the firm with it; `FirmNotFoundView` links to the root.
+
 ## 1.13.0 — 2026-11-07
 
 ### Added

@@ -2,11 +2,14 @@
 
 namespace Database\Seeders;
 
+use App\Modules\Firm\Helpers\FirmModules;
 use App\Modules\Firm\Models\Firm;
 use App\Modules\Firm\Services\CurrentFirm;
 use App\Modules\Portfolio\Enums\ContractKind;
 use App\Modules\Portfolio\Models\Client;
 use App\Modules\Portfolio\Models\ClientContract;
+use Database\Seeders\Concerns\DemoEnvironment;
+use Database\Seeders\Concerns\SeedsEachDemoFirm;
 use Illuminate\Database\Seeder;
 use Random\Engine\Mt19937;
 use Random\Randomizer;
@@ -29,6 +32,8 @@ use Random\Randomizer;
  */
 class ContractSeeder extends Seeder
 {
+    use SeedsEachDemoFirm;
+
     public const COUNT = 40;
 
     private const RANDOM_SEED = 2033;
@@ -50,17 +55,11 @@ class ContractSeeder extends Seeder
 
     public function run(CurrentFirm $currentFirm): void
     {
-        if (app()->environment('production')) {
+        if (! DemoEnvironment::allows()) {
             return;
         }
 
-        $firm = Firm::where('slug', FirmSeeder::FRANCO_SLUG)->first();
-
-        if (! $firm) {
-            return;
-        }
-
-        $currentFirm->runAs($firm, function () use ($firm) {
+        $this->forEachDemoFirm($currentFirm, function (Firm $firm) {
             $clientIds = Client::query()->where('cnpj', 'like', self::SEEDED_CLIENT_CNPJ)->orderBy('id')->pluck('id')->all();
 
             if ($clientIds === []) {
@@ -76,7 +75,7 @@ class ContractSeeder extends Seeder
                 ]);
                 $row->forceFill([...$contract, 'firm_id' => $firm->id, 'clause_marked_at' => null, 'clause_marked_by' => null])->save();
             }
-        });
+        }, FirmModules::CONTRACTS);
     }
 
     /**

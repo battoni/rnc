@@ -12,10 +12,33 @@ import { getLoginPath } from '@Helpers';
 import i18n from '@Libraries/i18n';
 import ThemePreset from '@Libraries/primevue/theme';
 
-const { captureException, getMeService } = vi.hoisted(() => ({
+const { captureException, firmHost, getMeService, loadFirm } = vi.hoisted(() => ({
   captureException: vi.fn(),
+  firmHost: { isMissing: false, slug: null as string | null },
   getMeService: vi.fn(),
+  loadFirm: vi.fn(),
 }));
+
+vi.mock('@Helpers', async (importOriginal) => ({
+  ...((await importOriginal()) as Record<string, unknown>),
+  currentFirmSlug: () => firmHost.slug,
+}));
+
+vi.mock('@Composables', async (importOriginal) => {
+  const { ref } = await import('vue');
+  const IS_FIRM_MISSING = ref(false);
+
+  loadFirm.mockImplementation(() => {
+    IS_FIRM_MISSING.value = firmHost.isMissing;
+
+    return Promise.resolve();
+  });
+
+  return {
+    ...((await importOriginal()) as Record<string, unknown>),
+    useFirmBrand: () => ({ isFirmMissing: IS_FIRM_MISSING, load: loadFirm }),
+  };
+});
 
 vi.mock('@sentry/vue', () => ({ captureException }));
 
@@ -69,6 +92,56 @@ beforeEach(() => {
   getMeService.mockReset();
   captureException.mockReset();
   getMeService.mockResolvedValue({ data: null });
+  firmHost.isMissing = false;
+  firmHost.slug = null;
+  loadFirm.mockClear();
+});
+
+/*
+ * rnc-4 R3, A6: on a subdomain the API does not know, every path — the site, the login screen, the
+ * back office — is "Escritório não encontrado". The firm is asked once, at the hard navigation, and
+ * only on a firm host: the root always has the platform firm.
+ */
+describe('TheRouteGuard — a host that names no firm', () => {
+  async function guardOn(path: string) {
+    const router = buildRouter();
+    router.push(path);
+    await router.isReady();
+
+    const pinia = createPinia();
+    setActivePinia(pinia);
+
+    const wrapper = mountGuard(router, pinia);
+    await flushPromises();
+
+    return wrapper;
+  }
+
+  it('shows the firm-not-found page instead of any route', async () => {
+    firmHost.slug = 'xyz';
+    firmHost.isMissing = true;
+
+    const wrapper = await guardOn('/entrar');
+
+    expect(wrapper.find('[data-testid="firm-not-found"]').exists()).toBe(true);
+    expect(wrapper.find('.protected-content').exists()).toBe(false);
+  });
+
+  it('renders the route when the firm exists', async () => {
+    firmHost.slug = 'alvorada';
+
+    const wrapper = await guardOn('/entrar');
+
+    expect(loadFirm).toHaveBeenCalledTimes(1);
+    expect(wrapper.find('[data-testid="firm-not-found"]').exists()).toBe(false);
+    expect(wrapper.find('.protected-content').exists()).toBe(true);
+  });
+
+  it('never asks on the root', async () => {
+    await guardOn('/entrar');
+
+    expect(loadFirm).not.toHaveBeenCalled();
+  });
 });
 
 describe('TheRouteGuard — boot session probe', () => {

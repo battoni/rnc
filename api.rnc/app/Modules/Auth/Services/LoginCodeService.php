@@ -11,6 +11,8 @@ use App\Modules\Auth\Exceptions\LoginCodeException;
 use App\Modules\Auth\Models\LoginCode;
 use App\Modules\Auth\Repositories\LoginCodeRepository;
 use App\Modules\Auth\Repositories\UserRepository;
+use App\Modules\Firm\Services\CurrentFirm;
+use App\Modules\Firm\Services\FirmResolver;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -40,6 +42,8 @@ class LoginCodeService
     private const VISIBLE_PHONE_DIGITS = 4;
 
     public function __construct(
+        private CurrentFirm $currentFirm,
+        private FirmResolver $firmResolver,
         private LoginCodeRepository $loginCodeRepository,
         private LoginCodeSender $loginCodeSender,
         private PermissionService $permissionService,
@@ -59,7 +63,7 @@ class LoginCodeService
     public function request(LoginCodeRequestDTO $dto): array
     {
         $code = $this->generateCode();
-        $hasAccount = $this->userRepository->findSoleUserByPhone($dto->phone) !== null;
+        $hasAccount = $this->findAccount($dto->phone) !== null;
 
         $this->issue($dto->phone, $code, deliver: $hasAccount);
 
@@ -84,7 +88,7 @@ class LoginCodeService
             throw $failure;
         }
 
-        $user = $this->userRepository->findSoleUserByPhone($dto->phone);
+        $user = $this->findAccount($dto->phone);
 
         if (! $user) {
             throw LoginCodeException::invalid();
@@ -100,6 +104,18 @@ class LoginCodeService
         $user->setAttribute('permissions', $this->permissionService->forUser($user));
 
         return $user;
+    }
+
+    /**
+     * The account behind the phone on THIS firm's host (rnc-4 R4, AM2). Another firm's account is
+     * no account here: no code is sent for it and spending one answers like a wrong code.
+     */
+    private function findAccount(string $phone): ?User
+    {
+        $firm = $this->currentFirm->get();
+        $user = $this->userRepository->findSoleUserByPhone($phone, $firm);
+
+        return $user !== null && $this->firmResolver->belongsTo($user, $firm) ? $user : null;
     }
 
     private function issue(string $phone, string $code, bool $deliver): void

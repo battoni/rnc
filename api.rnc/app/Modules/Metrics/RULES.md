@@ -1,5 +1,5 @@
 ---
-version: 1.1.1
+version: 1.1.2
 origin: rnc
 ---
 # RULES — Metrics Module
@@ -17,7 +17,7 @@ table: it reads Tracking's and Lead's.
 
 | Route | Permission | What |
 | --- | --- | --- |
-| `GET metrics/funnel?days=7\|30` | `metrics.read` (ceo, operador) | `{days, from, to, steps: [{key, count, drop_off}], by_source: [{source, visitas, cta, contato, agendou, cliente}], by_sector: [{slug, label, visitas, cta, contato, agendou}]}`; no `days` = 30, anything else 422 |
+| `GET metrics/funnel?days=7\|30` | `metrics.read` (gestao, operador) | `{days, from, to, steps: [{key, count, drop_off}], by_source: [{source, visitas, cta, contato, agendou, cliente}], by_sector: [{slug, label, visitas, cta, contato, agendou}]}`; no `days` = 30, anything else 422 |
 
 The team (`equipe`) gets 403 — tested in `tests/Feature/Metrics/FunnelTest.php` (A2's metrics part).
 

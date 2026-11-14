@@ -4,6 +4,13 @@ import { server } from '@/test/msw/server';
 import { TRACKING_EVENT_TYPE, TRAFFIC_SOURCE } from '../enums';
 import { deriveTrafficOrigin, resetTrafficOrigin, useTracking } from './useTracking';
 
+const { firmHost } = vi.hoisted(() => ({ firmHost: { slug: null as string | null } }));
+
+vi.mock('@Helpers', async (importOriginal) => ({
+  ...((await importOriginal()) as Record<string, unknown>),
+  currentFirmSlug: () => firmHost.slug,
+}));
+
 /*
  * R7 (rnc-1 F2): every event carries an anonymous, first-party visitor id and the source the visit
  * came from — never the referrer itself (AM2).
@@ -152,5 +159,30 @@ describe('useTracking', () => {
     server.use(http.post('http://localhost/public/events', () => HttpResponse.json({}, { status: 500 })));
 
     await expect(useTracking().track(TRACKING_EVENT_TYPE.CTA)).resolves.toBe(false);
+  });
+
+  /*
+   * rnc-4 R2: a beacon cannot carry a header, and without `X-Firm` the API counts the event on the
+   * platform firm — alvorada's funnel would be empty and the hub's full of other firms' visits. On a
+   * firm host the event goes as a keepalive fetch, which outlives the page too and, same-origin
+   * since D4, asks no preflight.
+   */
+  it('names the firm of a firm host, which a beacon cannot', async () => {
+    firmHost.slug = 'alvorada';
+    const firms: (string | null)[] = [];
+    server.use(
+      http.post('http://localhost/public/events', ({ request }) => {
+        firms.push(request.headers.get('X-Firm'));
+
+        return HttpResponse.json({}, { status: 201 });
+      })
+    );
+
+    await expect(useTracking().track(TRACKING_EVENT_TYPE.VISIT)).resolves.toBe(true);
+
+    expect(sendBeacon).not.toHaveBeenCalled();
+    expect(firms).toEqual(['alvorada']);
+
+    firmHost.slug = null;
   });
 });

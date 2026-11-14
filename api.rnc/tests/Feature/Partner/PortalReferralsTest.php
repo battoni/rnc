@@ -208,12 +208,17 @@ describe('isolation (R4, A3, AM1)', function () {
     it('answers 404 to another firm\'s referral, even sending that firm\'s X-Firm (A3, AM1)', function () {
         $foreign = inboxReferral($this->foreign);
 
-        $this->actingAs($this->nexoLogin)->withHeader('X-Firm', $this->other->slug)
+        $this->actingAs($this->nexoLogin)
             ->getJson("/api/portal/referrals/{$foreign->id}")->assertNotFound();
-        $this->actingAs($this->nexoLogin)->withHeader('X-Firm', $this->other->slug)
+        $this->actingAs($this->nexoLogin)
             ->postJson("/api/portal/referrals/{$foreign->id}/transition", ['to' => 'aceito'])->assertNotFound();
+
+        // rnc-4 D5: the other firm's header used to be ignored; it is now refused outright.
         $this->actingAs($this->nexoLogin)->withHeader('X-Firm', $this->other->slug)
-            ->getJson('/api/portal/referrals')->assertOk()->assertJsonCount(0, 'data');
+            ->getJson("/api/portal/referrals/{$foreign->id}")->assertForbidden()->assertJsonPath('error', 'firms.mismatch');
+        $this->actingAs($this->nexoLogin)->withHeader('X-Firm', $this->other->slug)
+            ->postJson("/api/portal/referrals/{$foreign->id}/transition", ['to' => 'aceito'])->assertForbidden();
+        $this->flushHeaders();
 
         expect(Referral::withoutGlobalScopes()->find($foreign->id)->status)->toBe('enviado');
     });
@@ -221,10 +226,14 @@ describe('isolation (R4, A3, AM1)', function () {
     it('keeps another firm\'s partner out of Franco\'s referrals, whatever its X-Firm says (A3, AM1)', function () {
         $franco = inboxReferral($this->nexo);
 
-        $this->actingAs($this->foreignLogin)->withHeader('X-Firm', 'franco')
+        $this->actingAs($this->foreignLogin)
             ->getJson('/api/portal/referrals')->assertOk()->assertJsonCount(0, 'data');
-        $this->actingAs($this->foreignLogin)->withHeader('X-Firm', 'franco')
+        $this->actingAs($this->foreignLogin)
             ->getJson("/api/portal/referrals/{$franco->id}")->assertNotFound();
+
+        // rnc-4 D5: Franco's header used to be ignored; it is now refused outright.
+        $this->actingAs($this->foreignLogin)->withHeader('X-Firm', 'franco')
+            ->getJson('/api/portal/referrals')->assertForbidden()->assertJsonPath('error', 'firms.mismatch');
     });
 
     it('reaches no lead by its own id: the id is the referral\'s, and only the partner\'s own (A3)', function () {
@@ -243,7 +252,7 @@ describe('isolation (R4, A3, AM1)', function () {
 
         $this->actingAs(inboxStaff('operador'))->json($method, $uri, ['to' => 'aceito'])->assertForbidden()->assertJsonPath('error', 'portal.noPartner');
         $this->actingAs(inboxStaff('equipe'))->json($method, $uri, ['to' => 'aceito'])->assertForbidden();
-        $this->actingAs(inboxStaff('ceo'))->json($method, $uri, ['to' => 'aceito'])->assertForbidden();
+        $this->actingAs(inboxStaff('gestao'))->json($method, $uri, ['to' => 'aceito'])->assertForbidden();
 
         expect($referral->fresh()->status)->toBe('enviado');
     })->with([
@@ -505,7 +514,7 @@ describe('Franco hears the partner (R9, A8 Pest half)', function () {
     it('shows Franco\'s routing panel and trail the partner\'s status, SLA and, once closed, the contract value (A8, R10)', function () {
         $referral = inboxReferral($this->nexo);
         $equipe = inboxStaff('equipe');
-        $ceo = inboxStaff('ceo');
+        $ceo = inboxStaff('gestao');
         $panel = fn () => collect($this->actingAs($equipe)->getJson("/api/leads/{$referral->lead_id}/partner-matches")->assertOk()->json('data.matches'))
             ->firstWhere('partner.id', $this->nexo->id)['referral'];
         $trail = fn () => collect($this->actingAs($ceo)->getJson('/api/referrals')->assertOk()->json('data.data'))->firstWhere('id', $referral->id);

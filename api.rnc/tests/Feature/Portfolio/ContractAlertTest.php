@@ -42,7 +42,7 @@ function alertContract(Client $client, array $attributes = []): ClientContract
 beforeEach(function () {
     CarbonImmutable::setTestNow('2026-11-09 13:00:00');
     $this->seed([FirmSeeder::class, RoleSeeder::class]);
-    $this->reinaldo = FiscalRows::person('ceo');
+    $this->reinaldo = FiscalRows::person('gestao');
 });
 
 describe('the list (A17)', function () {

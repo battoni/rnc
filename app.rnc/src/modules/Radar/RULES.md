@@ -1,5 +1,5 @@
 ---
-version: 1.0.1
+version: 1.2.0
 origin: rnc
 based-on: 1.0.0
 ---
@@ -11,13 +11,14 @@ based-on: 1.0.0
 ## Domain
 
 Reinaldo's "Radar da carteira" (rnc-2 R24–R27): the Reforma's rules engine over every client of the
-firm, read by the API (api Radar module, F9) — `RadarView` at `/reinaldo/radar` (`/ceo/radar`, route
-`portfolio-radar`), behind `radar.manage` (ceo; the operator holds every key), the rail child
+firm, read by the API (api Radar module, F9) — `RadarView` at `/gestao/radar` (`/management/radar`, route
+`portfolio-radar`), behind `radar.manage` (gestao; the operator holds every key), the rail child
 "Radar da carteira" last in Reinaldo's group. The screen sends a row's batch of portfolio clients
 to a partner; the API writes everything (api Partner RULES → "The Radar's batch referral").
 
 ## Intentional Decisions
 
+- **No batch without `partners`** (rnc-4 R19): `RadarView` computes `canRefer` from `useUserStore().hasModule(FIRM_MODULE.PARTNERS)` and `MRadarTypeRow` draws no batch column without it — an empty picker would read "no partner covers this", an invitation to register one. Without `fiscal` the API answers the proof from the record (no XML), so nothing here changes.
 - **Every figure is the API's.** The KPIs, each row's range (a year, or a month for the split
   payment, `period`), the partners a row may pick (only those whose specialty covers the rule), the
   next batch's size and the already sent come from `GET radar`; after a batch the view reads it

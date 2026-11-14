@@ -1,5 +1,5 @@
 ---
-version: 1.1.0
+version: 1.2.0
 origin: rnc
 ---
 
@@ -9,11 +9,11 @@ origin: rnc
 
 ## Domain
 
-Reinaldo's funnel (R24): `/reinaldo/metricas` (route `metrics`, `/ceo/metrics` its `en` twin) —
+Reinaldo's funnel (R24): `/gestao/metricas` (route `metrics`, `/management/metrics` its `en` twin) —
 the seven steps (visitas → clique CTA → início do diagnóstico → contato capturado → resultado →
 agendou → cliente) with the drop-off, a table by source and one by sector page, over the last 7 or
 30 days. API `GET metrics/funnel?days=7|30` (api `Metrics` module). Reinaldo's rail landing
-(`ceo-home`) redirects here.
+(`management-home`) redirects here.
 
 ## Intentional Decisions
 

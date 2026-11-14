@@ -1,5 +1,5 @@
 ---
-version: 1.4.1
+version: 1.10.0
 origin: rnc
 ---
 
@@ -29,7 +29,9 @@ No login. The CTA's destination `/diagnostico` is the Diagnostic module's (F3); 
 - **Tracking goes by beacon, not through `API`** (`recordEvent.service.ts`): the router aborts every
   request in flight on navigation, and a CTA click is a navigation. `navigator.sendBeacon` with a
   `text/plain` JSON body outlives the page and asks no CORS preflight; `fetch` with `keepalive` is
-  the fallback. It never throws, and it stays off the app-busy counter.
+  the fallback. It never throws, and it stays off the app-busy counter. **On a firm host it goes by
+  the keepalive `fetch` straight away** (rnc-4 W10): a beacon cannot carry `X-Firm`, and without it
+  the API counts the event on the platform firm. Same-origin since D4, so no preflight.
 - **The source is decided once per page load** (`useTracking`): `utm_medium` paid/partner, an ad
   click id → paid, any other tag or an external referrer → organic, otherwise the session's stored
   source or `direto`. It is kept in `sessionStorage` so later pages of the visit carry it.
@@ -49,7 +51,7 @@ No login. The CTA's destination `/diagnostico` is the Diagnostic module's (F3); 
 - **A site `RouterLink` that can match the current page sets `exact-active-class`** (empty, or
   `text-heading` in the nav): the theme paints `.router-link-exact-active` with the rail's glowing
   bar, which on the site drew a bar beside the logo and every link to `/`.
-- **Prose is sans on this theme** (`franco.css`, W13), not battoni-dev's mono.
+- **Prose is sans on this theme** (`hub.css`, as `franco.css` before it — W13), not battoni-dev's mono.
 - **The motion is the demo's feel, in the repo's grammar** (`src/directives/RULES.md`): what is on
   screen at load enters on mount in CSS (`motion-enter`, `AWordRise`), what is below the fold waits
   for `v-reveal`, and nothing is hidden unless the browser has confirmed it can show it again. The
@@ -66,21 +68,79 @@ No login. The CTA's destination `/diagnostico` is the Diagnostic module's (F3); 
 
 - **A sub-brand rides in the address once, then in the tab** (rnc-3 R2, D2): `?marca=<slug>` →
   `sessionStorage` `app.rnc:brand`, read on every ask so whatever page carries `?marca=` wins;
-  `?marca=franco` and any 404 `brands.notFound` drop it (the refusal also leaves the address bar, or
+  `?marca=principal`, the host firm's own slug and any 404 `brands.notFound` drop it (the refusal also leaves the address bar, or
   the next read would store the stale slug again). A slug outside `[a-z0-9-]{1,40}` is never sent.
 - **Every public call goes through `publicApi`** — never `API` straight — so `X-Brand` is on all of
   them (C1) and a refused brand is retried once as the main brand: a stale tab lands on Franco, not on
   an error. The events beacon cannot carry a header; the API counts it on the main brand (AM21).
+- **`usePublicFirm().isFirmMissing`** (rnc-4 R3) is `useFirmBrand`'s (`@Composables`): true only after
+  the host firm's boot read answered 404 `firms.notFound`. `TheRouteGuard` reads it from there; any
+  other failure leaves it false.
+- **The brand composables live in `@Composables` now** (rnc-4 D10): `publicBrand`, `brandPalette`,
+  `useBrandTheme`/`useSubBrandTheme` and the `BRAND_*` constants moved to `src/composables/brand/`,
+  because the back office paints the firm's brand too. This module re-exports them (`composables/
+index.ts`, `constants.ts`), so `@SiteModule` still answers for every name it exported. On the main
+  brand `usePublicFirm` takes `useFirmBrand`'s boot answer — one `public/firm` per page load — and
+  asks only a sub-brand itself.
+- **The firm's colours are `App.vue`'s; a sub-brand's are this shell's** (`useSubBrandTheme`, rnc-4
+  R10): while a public page is up its sub-brand's ramp is laid over the firm's, and the firm's comes
+  back after the route fade. The mark writes the firm's `logo_text` (the tab's last answer until this
+  page's arrives) and stays unseen while none is known.
 - **The brand's colours go on `<html>`, inline** (`useBrandTheme`), not on the layout's element:
   PrimeVue's `--p-primary-*`, the dark scheme's `--color-primary-text` and every teleported overlay
   are declared on the root and resolve there. The ramp is `brandPalette`'s — Franco's shape (500 the
   primary, 300 the accent) with each pair the site paints measured, so any accent the operator picks
   still reads; `e2e/site/brands.spec.ts` measures the painted pairs in both schemes.
+- **The proof strip is the firm's own `proof`** (rnc-4 F2a/F2c2) — or the sub-brand's — and a firm with
+  none shows no strip. _Retired 14/11/2026 (rnc-4 F2c2):_ "the main brand keeps Franco's own copy
+  (`PROOF_POINTS`, i18n)" — four figures of one tenant, "RNC" among them, on every firm's landing.
+- **The site's words name the host firm through `{firmShort}` / `{firmName}`** (`locales/RULES.md`),
+  never "Franco" (R15, `noTenantNames.spec.ts`, `e2e/brand/no-franco.spec.ts`).
 - **Under a sub-brand the copy that is Franco's own gives way**: the header and footer mark and the
   copyright carry the brand's name, the footer and the hero kicker its tagline, the proof strip its
   points. The rest of the site's words keep "a Franco" — the sub-brands keep the Franco name (D1).
 
+- **The root is the product's own site** (rnc-4 R28, F6b). `/` asks the host firm's boot read
+  (`useFirmBrand`, `is_platform`) through `loadHomeView`: the platform firm gets `ProductLandingView`,
+  any firm its `LandingView`, and a firm that could not be read is a firm — an outage never turns a
+  firm's site into the product's. The pages only a firm serves (`/diagnostico`, `/reforma/:slug`) take
+  `firmSiteOnly` as `beforeEnter` and land on `/` at the root. The product's name is `platform.name`
+  (the one config value), never a firm's; the landing names no tenant and shows no price (D23).
+- **The product landing's Reforma statements are dated and sourced**: the dates are data
+  (`PRODUCT_FACTS`), the words i18n under `site.product`, with the law (LC 214/2025), the day they were
+  checked and the CBS's requested delay said as news. A new statement brings its date and source.
+- **The shell follows `useProductSite`**: on the platform firm `ThePublicLayout`'s nav walks the
+  landing's sections (`PRODUCT_ANCHORS`, smooth through `scrollToSection`, at once under reduced
+  motion), its CTA goes to the beta form, and the footer drops a firm's hours and credentials and shows
+  the platform firm's contact only where it has one.
+- **The beta form (`MBetaSignupForm`) owns its two calls** — `GET public/beta-signups/consent` for the
+  words, `POST public/beta-signups` for the signup — and its success state. It sends no `X-Firm` (the
+  root has no slug; the routes 404 on any firm, F6a AM9). A 422 puts this form's own sentence on each
+  field the API names, never the API's prose; a 429 says to wait a minute. PrimeVue's `Select` picks on
+  `mousedown`, which a spec must fire instead of `click`.
+- **The demo link is `VITE_DEMO_FIRM_SLUG`** (D24, `firmSiteUrl`): empty hides it.
+
+- **`/privacidade` is the firm's privacy notice** (rnc-4 R38, A47, F9b): `GET public/privacy` says who
+  (the firm as controller, the platform as operator, the firm's mailbox and phone) and which, as stable
+  keys (`collected`, `retention`, `sharing`); every word is `site.privacy.*` here (F9a W104), so a new
+  key from the API needs its sentence in both locales. It answers at the root too, where the platform
+  is the controller of what the beta form keeps and no operator line shows (W106). The footer links to
+  it beside the copyright on every public page, and the diagnostic's consent links to it (Diagnostic).
+
+- **Copy that dates the CBS as ahead has a post-date twin** (rnc-4 verify P2-S2): `cbsKey(key)` (`composables/cbsStart.ts`)
+  picks `<key>Started` from 01/01/2027 on — the countdown's own condition (`CBS_START`), so the title never says
+  "começa a ser cobrada" beside a countdown saying "é cobrada desde". Today: `site.landing.title`,
+  `site.seo.landingDescription`, `site.product.seo.description`, `site.product.urgency.title`,
+  `site.product.closing.text`. A new sentence that speaks of the date as future gets its twin in both locales.
+
 ## Known Gaps
+
+- ~~The footer's credentials line is one firm's~~ — retired 14/11/2026 (rnc-4 F5a, W31): the line is
+  the firm's own field (`firms.credentials`, answered by `public/firm` as `credentials`, edited by the
+  manager in `PATCH firm/settings`). `ThePublicLayout` prints it under "Credenciais" and shows no
+  block for a firm without one (and none on the product site); Franco keeps its line through
+  `FirmSeeder::CREDENTIALS`. The static `site.footer.credentialsText` is gone, so the line is in the
+  firm's own language only (an English visitor reads Franco's line in Portuguese, like its tagline).
 
 - **No server-side rendering** (D4): crawlers that run no JavaScript see an empty shell.
 - **`index.html` and the API still say `noindex`** (the bootstrap's back-office default). The public

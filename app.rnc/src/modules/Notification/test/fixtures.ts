@@ -23,6 +23,18 @@ const LEAD_NOTIFICATION_FIXTURE: BellNotification = {
   sector: 'comercio',
 };
 
+/** A firm's beta signup on the root site (rnc-4 R29, `BetaSignupNotification`). */
+const BETA_SIGNUP_NOTIFICATION_FIXTURE: BellNotification = {
+  city: 'Belo Horizonte',
+  company: 'Contábil Horizonte',
+  created_at: '2026-11-19T10:30:00-03:00',
+  id: '3c2b1a0f-0000-4000-8000-000000000042',
+  kind: NOTIFICATION_KIND.BETA_SIGNUP,
+  lead_id: 12,
+  read_at: null,
+  uf: 'MG',
+};
+
 /** A partner's move the bell names (rnc-2 R9, `ReferralStatusNotification`): aceito, recusado, fechado. */
 function referralStatusNotification(status: string, overrides: Partial<BellNotification> = {}): BellNotification {
   return {
@@ -81,6 +93,7 @@ const ASSISTANT_INBOX_FIXTURE: NotificationInbox = {
 
 export {
   ASSISTANT_INBOX_FIXTURE,
+  BETA_SIGNUP_NOTIFICATION_FIXTURE,
   INBOX_FIXTURE,
   LEAD_NOTIFICATION_FIXTURE,
   MEETING_NOTIFICATION_FIXTURE,

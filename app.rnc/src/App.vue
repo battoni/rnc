@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { RouterView } from 'vue-router';
-import { useLocaleFromQuery } from '@Composables';
+import { useBrandTheme, useLocaleFromQuery } from '@Composables';
 import { useColorSchemeStore } from '@Stores';
 
 const colorSchemeStore = useColorSchemeStore();
 
+// The host firm's palette and the product's title on both layouts (rnc-4 R10): one painter, here.
+useBrandTheme();
 // `?locale=` is read here, once: the app has exactly one router and one global locale.
 useLocaleFromQuery();
 

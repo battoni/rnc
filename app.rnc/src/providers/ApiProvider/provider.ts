@@ -1,6 +1,7 @@
 import type { ApiParams, ApiQuery, ApiQueryValue } from './interfaces';
 import { useAppBusy, useGlobalAbortController } from '@Composables';
 import { API_URL } from '@Constants';
+import { currentFirmSlug } from '@Helpers';
 import { axios } from '@Libraries';
 // From its own module, not the `@Libraries` barrel: the barrel loops back through `@UserModule` to
 // this file, and in a view's integration spec `i18n` arrived undefined and every request threw.
@@ -52,6 +53,11 @@ export default async function (params: ApiParams) {
 
   const endpoint = `${API_URL}/${params.endpoint}${buildQuery(params.query)}`;
 
+  // rnc-4 R2: the host names the firm, on every call. Set AFTER a service's own headers, so no
+  // service can move a call to another firm; on the root there is none and the API answers the
+  // platform firm.
+  const FIRM_SLUG = currentFirmSlug();
+
   const { getSignal } = useGlobalAbortController();
 
   // Every request feeds the shared app-busy counter; `.finally` guarantees the pair even when
@@ -69,6 +75,7 @@ export default async function (params: ApiParams) {
       'Accept-Language': i18n.global.locale.value,
       'Content-Type': isUpload ? 'multipart/form-data' : 'application/json',
       ...headers,
+      ...(FIRM_SLUG ? { 'X-Firm': FIRM_SLUG } : {}),
     },
     signal: getSignal(),
   };

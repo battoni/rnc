@@ -1,5 +1,29 @@
 # Changelog — Booking Module
 
+## 1.6.0 — 2026-11-14
+
+### Added
+
+- The manager's specialist hours (rnc-4 F5a, R32): `SpecialistHoursController` (`GET specialists`,
+  `GET/PUT specialists/{id}/hours`, `firm.settings`), `UpdateSpecialistHoursRequest`,
+  `UpdateSpecialistHoursDTO`, `SpecialistResource`, `SpecialistHourResource`;
+  `SpecialistService::startOnFirmHours`, `list`, `find`, `updateHours`;
+  `SpecialistRepository::findSpecialistByUserId`. Tested by `tests/Feature/Booking/SpecialistHoursTest`.
+
+### Changed
+
+- Only a person still flagged `is_specialist` is bookable (`SpecialistRepository::bookable`): the
+  manager's switch off takes the person out of the agenda (R31).
+
+## 1.5.0 — 2026-11-14
+- `Services/SpecialistService::makeBookable()` (specialist row + the firm's business hours) with `SpecialistRepository::upsertSpecialist()` / `replaceSpecialistHours()` — `SpecialistSeeder` and `firm:create --specialist` (rnc-4 F3b1) both go through it. Tested by `tests/Feature/Firm/CreateFirmCommandTest`.
+
+## 1.4.0 — 2026-11-14
+
+### Changed
+
+- The meeting e-mails wear the lead's firm (rnc-4 F2a, R12, D11): `MeetingMailDTO` carries a `MailBrand` (replaces `firmMailbox` and `sender()`); from the platform's address under the brand's name, replies to the firm's mailbox; the report link on the firm's own host. Tested by `tests/Feature/Mail/FirmMailBrandTest`.
+
 ## 1.3.0 — 2026-11-07
 
 ### Changed

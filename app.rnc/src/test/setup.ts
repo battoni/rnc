@@ -45,3 +45,18 @@ Object.defineProperty(window, 'matchMedia', {
 beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
+
+/*
+ * The host firm the suite renders for (rnc-4 R14): the translations' `{firmShort}` / `{firmName}` are
+ * filled by `useBrandTheme` in the app, which a component spec does not mount — so every spec speaks
+ * for Franco, as the e2e fixtures' default firm does. A spec about another firm sets its own names.
+ */
+beforeAll(async () => {
+  const i18nLibrary = await import('@Libraries/i18n');
+  // A spec that mocks the library (the API provider's) has no names to fill.
+  const isRealLibrary = 'setFirmNames' in i18nLibrary;
+
+  if (!isRealLibrary) return;
+
+  i18nLibrary.setFirmNames({ name: 'Franco Contabilidade', short: 'Franco' });
+});

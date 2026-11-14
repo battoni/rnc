@@ -1,5 +1,5 @@
 ---
-version: 1.20.0
+version: 1.33.0
 origin: pendulum
 based-on: 1.6.0
 ---
@@ -16,7 +16,9 @@ based-on: 1.6.0
   username) so re-seeding doesn't duplicate. It also never overwrites a row that already exists:
   a password changed in the environment reaches an existing account only through `make fresh`,
   not a re-seed. See `SuperAdminSeeder`. (This line used to say `updateOrCreate`, which no seeder
-  here uses.)
+  here uses.) The firm seeders too: `FirmSeeder` and `PlatformFirmSeeder` were `updateOrCreate` and
+  undid the console's and the manager's edits on every deploy's `db:seed` (rnc-4 verify P1-C1); they
+  `firstOrCreate` by slug, and the platform seeder only re-asserts `is_platform`.
 - **Two password variables, both plaintext**: `SUPERADMIN_PASSWORD` for the superadmin,
   `SEEDER_PWD` for every other seeded account and the `UserFactory` default. The `hashed` cast
   on `User::password` hashes on save — seed the plaintext, not a hash. Set both on any server
@@ -54,17 +56,56 @@ based-on: 1.6.0
   NF-e XML; `GeneratedNfeSource`): one shape for a seeded document and a tested one. Hostile fixtures
   (entity attacks, forged ZIPs) stay in `tests/Support/`.
 
+- **A demo seeder runs once per seeded firm (rnc-4 F3b2, D18): `use Concerns\SeedsEachDemoFirm` and
+  `forEachDemoFirm($currentFirm, fn (Firm $firm, int $ordinal) => …, FirmModules::X)`.** Franco
+  (ordinal 0, rows unchanged), then Alvorada when it exists — only `DemoFirmSeeder` makes it, on a
+  `local` machine — so the Pest seed carries Franco's demo alone. The module argument skips a firm
+  with that module off; another firm varies names and random seeds by its ordinal; people come from
+  the firm's roles (`teamOf`, `managerOf`), never a hard-coded Franco username; global keys
+  (usernames, e-mails) get the firm's slug (`parceiro.<slug>.<n>`). `ChannelSeeder` and `BrandSeeder`
+  stay Franco's. A new local-only seeder refuses every environment but `local` and is tested with
+  `detectEnvironment(fn () => 'local')` and the NF-e disk faked (`tests/Feature/Seed/DemoFirmSeedTest`).
+- **Invented data has ONE guard: `Concerns\DemoEnvironment::allows()`** — `local` and `testing` only
+  (rnc-4 verify P2-C2). `forEachDemoFirm` returns without it, and `LocalUsersSeeder`,
+  `SpecialistSeeder`, `PipelineSeeder` and every other demo seeder (`BrandSeeder` and `ChannelSeeder`
+  included) ask it first. They used to refuse
+  only `production`, so a `staging` deploy got a team, partners and leads, and `SpecialistSeeder` (no
+  guard) rewrote every real specialist's hours to the firm's on each `db:seed`. `DemoFirmSeeder`,
+  `PlatformManagerSeeder` (`local` only) and `NfeSeeder` (not `testing`) keep their stricter guard.
+  Tested on `staging` and `production` in `tests/Feature/Firm/PlatformSeedersTest`.
+
+- **Modules (rnc-4 F3a, R16, D18, R23):** `FirmSeeder` gives Franco every key (`channel`, `brands`
+  included), `DemoFirmSeeder` Alvorada every opt-in key but `brands`, `PlatformFirmSeeder` none.
+
 ## Factories
 
 - `UserFactory` makes an **ACTIVE** user with no role (`role_id => null`); a test grants what
   it needs with `userWithPermissions()`. Never draw the status at random: INACTIVE is a
   deactivated account, signed out on its next request, and a random draw made half of every
   test's users unable to act.
+- `UserFactory` puts the user in the **default firm** (`firms.default_slug`, `franco` under
+  `phpunit.xml`), creating it when the test has none (rnc-4 F1a). A signed-in user with no firm
+  now works in the platform firm or is refused `firms.required` (AM1), and user reads are scoped
+  by firm (AM2), so a firm-less default broke ~100 tests; a test that means "no firm" passes
+  `'firm_id' => null`.
 - The factory password is the plaintext `SEEDER_PWD` (`password` in `phpunit.xml`), so a test
   knows the password it can log in with.
 - Use `fake()->unique()` for `username`/`email` to satisfy the unique constraints.
 
+- **`FirmFactory` defaults `modules` to every key** (rnc-4 F3a): the suite's implicit firm keeps every
+  route it had before modules existed; a test about a module that is off sets `modules` itself.
+
 ## Migrations
+
+- **An index or foreign key name stays within MySQL's 64 characters.** SQLite takes any length, so a
+  long generated name (`{table}_{columns}_unique`) passes the suite and stops the first `migrate` on
+  MySQL (SQLSTATE 1059). Name it: `client_contracts_period_unique`. `SchemaIdentifierLengthTest`
+  walks every table, column, index and foreign key name (rnc-4 F7b).
+- **A JSON column gives its keys back in MySQL's order, not the writer's.** MySQL sorts an object's
+  keys (by length, then name); SQLite keeps them as written. Nothing may depend on that order — a
+  test reading a JSON value compares with `toBeIgnoringKeyOrder` / `assertJsonPathIgnoringKeyOrder`
+  (`tests/Pest.php`), and an auto-increment id is never asserted as `1` (MySQL does not roll it back
+  between tests). Run the suite on MySQL with `make test-mysql`.
 
 - **A foreign key lives in the `create_*` of the table that holds it** (`arcus-api-architecture`
   §3). When the target table sorts later, rename the target's migration to an earlier timestamp

@@ -3,6 +3,56 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.15.0 — 2026-11-14
+
+### Changed
+
+- Chrome QA 5.2: the footer no longer carries the core "Usuários" and "Permissões" — the operator saw them twice (footer and the Operador group) and a firm manager, who holds `users.read`, saw "Usuários"; the footer is `localNavSettings` plus personalization. The Operador group asks the operator's role (`WORKSPACES`).
+
+## 1.14.0 — 2026-11-14
+
+### Fixed
+
+- Chrome QA 5.21: logout calls `useFirmBrand().forget()` — at the root the kept firm brand is the session's (a view-as's firm), and the login that follows is the platform's.
+
+## 1.13.0 — 2026-11-14
+
+### Changed
+
+- rnc-4 verify: the operator group's roles link carries `role: 'operador'` besides `permissions.read`.
+
+## 1.12.0 — 2026-11-14
+
+### Added
+
+- rnc-4 F4d (R26): "Acessos de suporte" — the view-as log — as the last child of "Plataforma", on `platform.firms` (LOCAL `navItems.local.ts`).
+
+## 1.11.0 — 2026-11-14
+
+- The firm's own settings (rnc-4 F5b, R30–R33): `navItems.local.ts` ends "Gestão" with contact, team logins, specialists and consent, all four behind `firm.settings` (the manager's key; the operator holds every key). `TheNavbar.vue` is untouched.
+
+## 1.10.0 — 2026-11-14
+
+- "Plataforma" (rnc-4 F4b, R24, R25): `navItems.local.ts` closes the rail with the platform console — firms and default consent — behind `platform.firms` / `platform.consent`, keys only the firm-less operator holds. `key: 'platform'` because the group and its first child resolve the same route. `TheNavbar.vue` is untouched.
+
+## 1.9.0 — 2026-11-14
+
+- Rail entries per firm module (rnc-4 F3c, R17, A24): `navItems.local.ts` entries carry `module` (`LocalNavItem`) and `useLocalNavItems` drops those the firm has off, children included — partners, trail, ledger and the portal without `partners`, and so on. `TheNavbar.vue` is untouched.
+
+## 1.8.0 — 2026-11-14
+
+### Changed
+
+- The manager's rail group key `ceo` → `management`, its label key `navigation.management`, and the mobile route `management-home` (rnc-4 F2c1, R14).
+
+## 1.7.0 — 2026-11-14
+
+### Added
+
+- `MNavbarBrand` (rnc-4 F2b, R10): the firm's tile, logo text and `platform.name` at the top of the rail
+  and the drawer, replacing the bare `ALogo` tile. `MNavbarBrand.spec.ts` (new); the organisms' specs
+  stub it in place of `ALogo`.
+
 ## 1.6.3 — 2026-09-17
 
 ### Fixed

@@ -30,6 +30,7 @@ class LoginCodeController extends Controller
     {
         $user = $this->loginCodeService->verify(LoginCodeVerifyDTO::from($request->validated()), $request);
 
-        return ApiResponse::success(data: new UserResource($user));
+        // rnc-4 F3c: signed in, so the same `firm` and `platform` as `auth/me` (AuthController::login).
+        return ApiResponse::success(data: (new UserResource($user))->withPlatform());
     }
 }

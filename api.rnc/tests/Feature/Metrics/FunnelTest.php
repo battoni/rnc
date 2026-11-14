@@ -17,7 +17,7 @@ use Illuminate\Support\Str;
 /*
  * The funnel (rnc-1 F7, R24, A4; plan AM2, AM8, AM11):
  *
- *   GET /api/metrics/funnel?days=7|30   behind `metrics.read` (ceo, operador) — equipe gets 403
+ *   GET /api/metrics/funnel?days=7|30   behind `metrics.read` (gestao, operador) — equipe gets 403
  *
  * Seven steps — visitas → clique CTA → início → contato → resultado → agendou → cliente — counted
  * over a cohort: a step counts the visitors of the step before who also did it, so a step is never
@@ -80,7 +80,7 @@ beforeEach(function () {
     CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-11-19 10:00', 'America/Sao_Paulo'));
     $this->seed([FirmSeeder::class, RoleSeeder::class, LocalUsersSeeder::class, SectorPageSeeder::class]);
     $this->franco = Firm::where('slug', 'franco')->firstOrFail();
-    $this->ceo = metricsPerson('ceo');
+    $this->ceo = metricsPerson('gestao');
 });
 
 afterEach(fn () => CarbonImmutable::setTestNow());
@@ -88,7 +88,7 @@ afterEach(fn () => CarbonImmutable::setTestNow());
 describe('who reads the funnel (AM8, A2)', function () {
     it('opens for the ceo and the operador', function (string $role) {
         $this->actingAs(metricsPerson($role))->getJson('/api/metrics/funnel?days=7')->assertOk();
-    })->with(['ceo', 'operador']);
+    })->with(['gestao', 'operador']);
 
     it('refuses the team with a 403', function () {
         $this->actingAs(metricsPerson('equipe'))->getJson('/api/metrics/funnel?days=7')->assertForbidden();

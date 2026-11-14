@@ -1,0 +1,103 @@
+/**
+ * ============================================================
+ * HUB — the platform's neutral ground (rnc-4 D10)
+ *
+ * The default theme (`VITE_ACTIVE_THEME=hub`). Every firm's colours are its own row's, painted on
+ * `<html>` at runtime by `useBrandTheme` (`composables/brand/`) on both layouts; this file is only
+ * what shows before a firm answers on the tab's first page, and the shape everything else keeps.
+ * It is `franco.css` with a neutral slate ramp instead of Franco's navy and cyan — the same role
+ * mapping, relief, sans prose, sentence-case consent labels and light paper — and the ramp is
+ * `brandPalette('#3d4a5c', '#9fb3c8')`, the shape a firm's own palette takes.
+ *
+ * Measured (WCAG relative luminance):
+ *   - white on primary-500 #3d4a5c: 9.0:1 — the filled-button label (floor 4.5:1);
+ *   - primary-500 as text on the panel #f3f4f3: 8.2:1;
+ *   - primary-300 #9fb3c8 as text on the dark panel #141413: 8.6:1, the brand word on dark grounds;
+ *   - primary-400 #7d8b9d, the dark scheme's link (`celer-button-link-primary`): 5.3:1 on #141413,
+ *     5.7:1 on the dark canvas #0a0a09.
+ * The ink and surface ramps are battoni-dev's neutrals, so `muted` / `subtle` keep the floors
+ * measured there (e2e/theme/contrast.spec.ts).
+ *
+ * `franco.css` stays: `VITE_ACTIVE_THEME=franco` puts Franco's navy back as the ground (D10, reverse).
+ * ============================================================
+ */
+@import './battoni-dev.css';
+
+@theme {
+  --color-primary-50: #f3f6f8;
+  --color-primary-100: #e2e8ee;
+  --color-primary-200: #cad5e1;
+  --color-primary-300: #9fb3c8; /* the highlight, and the brand word on a dark ground */
+  --color-primary-400: #7d8b9d; /* the dark scheme's link (`celer-button-link-primary`) */
+  --color-primary-500: #3d4a5c; /* MAIN — the fill under white text */
+  --color-primary-600: #343f4e;
+  --color-primary-700: #2b3440;
+  --color-primary-800: #222933;
+  --color-primary-900: #181e25;
+  --color-primary-950: #0f1317;
+
+  /* White on slate: 9.0:1. */
+  --color-primary-contrast: #ffffff;
+}
+
+[data-theme='dark'] {
+  --color-primary-contrast: #ffffff;
+  /* The brand as a word on a dark ground: the 300, 8.6:1 on the dark panel. */
+  --color-primary-text: var(--color-primary-300);
+}
+
+/* The base's canvas tile is drawn in lime; the hub's canvas is flat. */
+:root {
+  --canvas-overlay: none;
+  --canvas-overlay-opacity: 0;
+}
+
+/*
+ * Prose in the sans face (rnc-1 F2 W13). battoni-dev sets paragraphs in its mono "technical voice"
+ * — Battoni Dev's tell, not an accounting firm's: the firms' own sites set their text in a plain
+ * sans. Tags, badges and table headers keep the base's mono labels.
+ */
+p,
+.p-text,
+.p-paragraph {
+  font-family: var(--font-sans);
+}
+
+/*
+ * A label that wraps a checkbox is a sentence, not a field caption (rnc-1 F3): the diagnostic's
+ * consent and its two yes/no questions. battoni-dev draws every `label` in its mono, upper-case
+ * caption, and a consent read in capitals is a wall. This sits outside a layer like the rule it
+ * answers, so a utility class could not have outvoted it.
+ */
+label:has(.p-checkbox) {
+  font-family: var(--font-sans);
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+/*
+ * Paper is light, whatever the screen's scheme (rnc-1 R17/R26: the repricing letter and the impact
+ * report are printed or saved as PDF). The browser drops backgrounds when printing but keeps the
+ * text colours, so the dark scheme's chalk #d9d9d6 printed at 1.4:1 on white and its fog #888b8d at
+ * 3.4:1. In print the role tokens go back to the light set above (`@theme`, battoni-dev's section 4)
+ * and the root says `color-scheme: light`, for every page that prints. Same specificity as the dark
+ * block and later in the cascade, so it wins only on paper; the screen is untouched. The brand word
+ * goes back to the navy, 12.4:1 on white.
+ */
+@media print {
+  :root,
+  [data-theme='dark'] {
+    color-scheme: light;
+
+    --color-canvas: #ffffff;
+    --color-panel: var(--color-surface-50);
+    --color-panel-muted: var(--color-surface-100);
+    --color-heading: var(--color-ink-900);
+    --color-body: var(--color-ink-900);
+    --color-muted: var(--color-surface-800);
+    --color-subtle: var(--color-surface-600);
+    --color-line: var(--color-surface-200);
+    --color-line-strong: var(--color-surface-300);
+    --color-primary-text: var(--color-primary-500);
+  }
+}

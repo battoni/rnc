@@ -110,8 +110,8 @@ function onLogoutClick(closeCallback: () => void) {
     <template #container="{ closeCallback }">
       <div class="bg-canvas flex h-full max-h-screen flex-col">
         <div class="border-line flex shrink-0 items-center justify-between px-4 py-3">
-          <div class="w-full max-w-[50px]">
-            <ALogo variant="min" />
+          <div class="min-w-0 flex-1 pr-3">
+            <MNavbarBrand />
           </div>
 
           <Button

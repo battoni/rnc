@@ -27,7 +27,7 @@ it('seeds eight placeholder partners, one per specialty', function () {
         ->and($partners->pluck('specialty')->unique())->toHaveCount(8)
         ->and($partners->every(fn (Partner $partner) => str_ends_with($partner->name, '(exemplo)')))->toBeTrue()
         ->and($partners->every(fn (Partner $partner) => str_ends_with($partner->email, '@parceiro.exemplo')))->toBeTrue()
-        ->and($partners->pluck('firm_id')->unique()->all())->toBe([1]);
+        ->and($partners->pluck('firm_id')->unique()->all())->toBe([Firm::where('slug', 'franco')->value('id')]);
 });
 
 it('fills the trail only with leads that gave consent, each with its timeline line', function () {

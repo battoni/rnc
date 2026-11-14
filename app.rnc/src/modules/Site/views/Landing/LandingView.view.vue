@@ -4,8 +4,8 @@ import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 import type { SectorPageSummary } from '../../interfaces';
 import { vCountUp, vReveal, vSpotlight } from '@Directives';
-import { usePublicFirm, useSeo, useTracking } from '../../composables';
-import { PROOF_POINTS, SECTOR_GRID_ANCHOR, SITE_ROUTE_NAMES, WHAT_CHANGES } from '../../constants';
+import { cbsKey, usePublicFirm, useSeo, useTracking } from '../../composables';
+import { SECTOR_GRID_ANCHOR, SITE_ROUTE_NAMES, WHAT_CHANGES } from '../../constants';
 import { TRACKING_EVENT_TYPE } from '../../enums';
 import { GetSectorPagesService } from '../../services';
 
@@ -15,6 +15,9 @@ const { push } = useRouter();
 const { t } = useI18n();
 const { track } = useTracking();
 
+// The CBS's date as still ahead, or as passed — on the countdown's own condition (rnc-4 verify P2-S2).
+const TITLE_KEY = cbsKey('site.landing.title');
+
 const hasFailed = ref(false);
 const isLoading = ref(true);
 const sectors = ref<SectorPageSummary[]>([]);
@@ -22,26 +25,25 @@ const sectors = ref<SectorPageSummary[]>([]);
 // The hero assembles on mount, one `--motion-stagger` apart: the kicker, then the headline word by
 // word (`AWordRise`), then the lede, the buttons, the countdown and the picture of the product.
 /*
- * Under a sub-brand (rnc-3 R3) the kicker is the brand's tagline and the proof strip its four points;
- * the main brand keeps Franco's own copy (`PROOF_POINTS`, i18n). Both wait unseen (`invisible`, not
- * `opacity-0`: the entrance animation drives the opacity) while a brand is pending (W38, review S1).
+ * The kicker is the brand's tagline when it has one (rnc-3 R3), else the site's own; the proof strip is
+ * the firm's — or the sub-brand's — four points (`proof`, rnc-4 F2a), and a firm with none shows no strip
+ * (rnc-4 R15: the build's own four were one firm's). Both wait unseen (`invisible`, not `opacity-0`: the
+ * entrance animation drives the opacity) while a brand is pending (W38, review S1).
  */
 const kicker = computed(() => firm.value?.tagline ?? t('site.landing.kicker'));
-const titleWordCount = computed(() => t('site.landing.title').split(' ').length);
+const titleWordCount = computed(() => t(TITLE_KEY).split(' ').length);
 const wordCount = computed(() => titleWordCount.value + t('site.landing.ask').split(' ').length);
 
 const proofPoints = computed(() =>
-  firm.value?.proof
-    ? firm.value.proof.map((point) => ({
-        figure: point.value,
-        key: `${point.value}-${point.label}`,
-        label: point.label,
-      }))
-    : PROOF_POINTS.map((point) => ({ ...point, label: t(`site.landing.proof.${point.key}`) }))
+  (firm.value?.proof ?? []).map((point) => ({
+    figure: point.value,
+    key: `${point.value}-${point.label}`,
+    label: point.label,
+  }))
 );
 
 const seo = computed(() => ({
-  description: t('site.seo.landingDescription'),
+  description: t(cbsKey('site.seo.landingDescription')),
   siteName: firm.value?.name ?? null,
   title: t('site.seo.landingTitle'),
 }));
@@ -150,7 +152,7 @@ function onSectorsSettled() {
               <AWordRise
                 class="block"
                 :start-index="1"
-                :text="$t('site.landing.title')"
+                :text="$t(TITLE_KEY)"
               />
 
               <AWordRise
@@ -204,7 +206,10 @@ function onSectorsSettled() {
         </div>
       </section>
 
-      <section class="relative z-10 mx-auto -mt-10 w-full max-w-6xl px-5">
+      <section
+        v-if="proofPoints.length"
+        class="relative z-10 mx-auto -mt-10 w-full max-w-6xl px-5"
+      >
         <ul
           v-reveal.stagger
           data-testid="proof"

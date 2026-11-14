@@ -2,6 +2,16 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.2.0 — 2026-11-14
+
+- Radar without `partners` (rnc-4 F3c, R19): `MRadarTypeRow` takes `canRefer` (the view's `hasModule('partners')`) and draws no batch column — no picker, no "no partner", no consent line. The XML evidence without `fiscal` is the API's (the proof reads "cadastro").
+
+## 1.1.0 — 2026-11-14
+
+### Changed
+
+- Back-office paths `/reinaldo/*` → `/gestao/*` and `/ceo/*` → `/management/*`, route names `ceo-*` → `management-*` (rnc-4 F2c1, R14). No redirect is left at the old paths (A13).
+
 ## 1.0.1 — 2026-11-07
 
 ### Fixed

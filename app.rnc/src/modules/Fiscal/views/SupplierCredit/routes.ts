@@ -1,7 +1,7 @@
 import type { RouteRecordRaw } from 'vue-router';
 import { FISCAL_PERMISSIONS, FISCAL_ROUTE_NAMES } from '../../constants';
 
-/* "Crédito de fornecedores" (rnc-2 R21–R22), under the team's group — `fiscal.read` (equipe, ceo; D14). */
+/* "Crédito de fornecedores" (rnc-2 R21–R22), under the team's group — `fiscal.read` (equipe, gestao; D14). */
 const SupplierCreditRoutes: RouteRecordRaw[] = [
   {
     path: '/team/suppliers',

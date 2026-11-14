@@ -6,6 +6,9 @@ use App\Modules\Auth\Repositories\UserPermissionRepository;
 use App\Modules\Auth\Repositories\UserRepository;
 use App\Modules\Auth\Services\PermissionService;
 use App\Modules\Auth\Services\UserService;
+use App\Modules\Booking\Services\SpecialistService;
+use App\Modules\Firm\Models\Firm;
+use App\Modules\Firm\Services\CurrentFirm;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Tests\TestCase;
 
@@ -26,7 +29,20 @@ function makeUserService(
         $roleRepo->shouldReceive('getRolePermissions')->andReturn([]);
     }
 
-    return new UserService($permService, $roleRepo, $permRepo, $userRepo);
+    return new UserService(userServiceFirm(), $permService, $roleRepo, Mockery::mock(SpecialistService::class), $permRepo, $userRepo);
+}
+
+const USER_SERVICE_FIRM_ID = 7;
+
+/** The request's firm: every user read is scoped to it (rnc-4 AM2). */
+function userServiceFirm(): CurrentFirm
+{
+    $firm = new Firm;
+    $firm->id = USER_SERVICE_FIRM_ID;
+    $currentFirm = new CurrentFirm;
+    $currentFirm->set($firm);
+
+    return $currentFirm;
 }
 
 it('find returns null when user does not exist', function () {
@@ -34,7 +50,7 @@ it('find returns null when user does not exist', function () {
     $permRepo = Mockery::mock(UserPermissionRepository::class);
     $permService = Mockery::mock(PermissionService::class);
 
-    $userRepo->shouldReceive('findUserById')->with(999)->andReturn(null);
+    $userRepo->shouldReceive('findFirmUserById')->with(999, USER_SERVICE_FIRM_ID)->andReturn(null);
 
     $service = makeUserService($permService, $permRepo, $userRepo);
 
@@ -49,7 +65,7 @@ it('find returns user with permissions attribute when found', function () {
     $permRepo = Mockery::mock(UserPermissionRepository::class);
     $permService = Mockery::mock(PermissionService::class);
 
-    $userRepo->shouldReceive('findUserById')->with(1)->andReturn($user);
+    $userRepo->shouldReceive('findFirmUserById')->with(1, USER_SERVICE_FIRM_ID)->andReturn($user);
     $permService->shouldReceive('forUser')->with($user)->andReturn(['users.read', 'users.update']);
 
     $service = makeUserService($permService, $permRepo, $userRepo);
@@ -107,7 +123,7 @@ it('list returns users with permissions attribute attached', function () {
 
     $paginator = new LengthAwarePaginator([$user], total: 1, perPage: 15);
 
-    $userRepo->shouldReceive('findAllUsers')->with(null, null, null, 15)->andReturn($paginator);
+    $userRepo->shouldReceive('findAllUsers')->with(USER_SERVICE_FIRM_ID, null, null, null, 15)->andReturn($paginator);
     $permService->shouldReceive('forUsers')->with([$user])->andReturn([1 => ['users.read']]);
 
     $service = makeUserService($permService, $permRepo, $userRepo);

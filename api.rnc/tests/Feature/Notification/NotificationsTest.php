@@ -52,7 +52,7 @@ it('lists my notifications, newest first, with the unread count', function () {
 });
 
 it('marks one as read, then all', function () {
-    $member = staffMember('ceo');
+    $member = staffMember('gestao');
     $member->notify(new NewLeadNotification(7, 'Padaria Sol', 'comercio'));
     $member->notify(new NewLeadNotification(8, 'Mercado Bom', 'comercio'));
     $first = $member->notifications()->firstOrFail();

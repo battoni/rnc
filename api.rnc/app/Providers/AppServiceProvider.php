@@ -10,9 +10,13 @@ use App\Modules\Auth\Contracts\LoginCodeSender;
 use App\Modules\Auth\Senders\LogLoginCodeSender;
 use App\Modules\Firm\Services\CurrentBrand;
 use App\Modules\Firm\Services\CurrentFirm;
+use App\Modules\Firm\Services\MailBrand;
 use App\Modules\Partner\Services\CurrentPartner;
+use App\Modules\Platform\Listeners\CloseViewAsOnSignIn;
+use Illuminate\Auth\Events\Login;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
@@ -114,14 +118,21 @@ class AppServiceProvider extends ServiceProvider
          * An e-mail carries no stylesheet, so the chrome needs these as literals — and no
          * Mailable should have to remember to pass them. A composer means a new message
          * extends the layout and is done.
+         *
+         * The brand is the firm's the message concerns (rnc-4 R12): the `mailBrand` its Mailable
+         * hands the view (`MailBrand`, carried in the queued DTO), else the request's firm, else
+         * the platform's own.
          */
         View::composer('mail.*', function ($view) {
+            $brand = $view->getData()['mailBrand'] ?? self::currentMailBrand();
+
             $view->with([
-                'accent' => config('rnc.brand.accent'),
-                'brandLogo' => config('rnc.brand.logo') ? public_path(config('rnc.brand.logo')) : null,
-                'brandName' => config('rnc.brand.name'),
-                'frontendUrl' => config('rnc.frontend_url'),
-                'ink' => config('rnc.brand.ink'),
+                'accent' => $brand->accent,
+                'brandLogo' => $brand->logoPath,
+                'brandLogoUrl' => $brand->logoUrl,
+                'brandName' => $brand->name,
+                'frontendUrl' => $brand->siteUrl,
+                'ink' => $brand->ink,
             ]);
         });
 
@@ -134,6 +145,17 @@ class AppServiceProvider extends ServiceProvider
 
         // `$table->addressColumns()` / `localityColumns()` — Brazil's address block (Helpers/Brazil).
         AddressColumns::register();
+
+        // Every sign-in closes the view-as sessions its person left open (rnc-4 D20, `expirou`).
+        Event::listen(Login::class, CloseViewAsOnSignIn::class);
+    }
+
+    /** A message whose Mailable names no brand wears the request's firm's, else the platform's. */
+    private static function currentMailBrand(): MailBrand
+    {
+        $firm = app(CurrentFirm::class)->get();
+
+        return $firm ? MailBrand::fromFirm($firm) : MailBrand::platform();
     }
 
     /** @return class-string<ReformaAnswerer> the class `config('assistant.driver')` names */

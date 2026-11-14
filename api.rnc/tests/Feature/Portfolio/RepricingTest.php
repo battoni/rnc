@@ -10,7 +10,7 @@ use Database\Seeders\LocalUsersSeeder;
 use Database\Seeders\RoleSeeder;
 
 /*
- * Fee repricing (rnc-1 F8, R26, A14; plan AM8): behind `repricing.manage` (ceo, operador) — the
+ * Fee repricing (rnc-1 F8, R26, A14; plan AM8): behind `repricing.manage` (gestao, operador) — the
  * team gets 403 (A2). Another firm's client is absent (404, A1).
  *
  *   GET  /api/repricing?sector=&regime=   the filtered list, its totals and the spread by band
@@ -54,7 +54,7 @@ describe('the list (A14)', function () {
         portfolioClient(['sector' => 'industria', 'regime' => 'real', 'band' => 'b4', 'monthly_fee' => 7200]);
         portfolioClient(['sector' => 'saude', 'regime' => 'simples', 'band' => 'b1', 'b2b_share' => 10, 'monthly_fee' => 900]);
 
-        $data = $this->actingAs(portfolioPerson('ceo'))->getJson('/api/repricing')->assertOk()->json('data');
+        $data = $this->actingAs(portfolioPerson('gestao'))->getJson('/api/repricing')->assertOk()->json('data');
 
         $sum = array_sum(array_map(fn (array $row) => ($row['suggested_cents'] - $row['current_cents']) * 12, $data['clients']));
 
@@ -72,7 +72,7 @@ describe('the list (A14)', function () {
         portfolioClient(['name' => 'Pequena', 'monthly_fee' => 900]);
         portfolioClient(['name' => 'Grande', 'monthly_fee' => 9000]);
 
-        $names = array_column($this->actingAs(portfolioPerson('ceo'))->getJson('/api/repricing')->json('data.clients'), 'name');
+        $names = array_column($this->actingAs(portfolioPerson('gestao'))->getJson('/api/repricing')->json('data.clients'), 'name');
 
         expect($names)->toBe(['Grande', 'Pequena']);
     });
@@ -82,7 +82,7 @@ describe('the list (A14)', function () {
         portfolioClient(['sector' => 'comercio', 'regime' => 'real', 'monthly_fee' => 4000]);
         portfolioClient(['sector' => 'agro', 'regime' => 'real', 'monthly_fee' => 6000]);
 
-        $person = portfolioPerson('ceo');
+        $person = portfolioPerson('gestao');
         $all = $this->actingAs($person)->getJson('/api/repricing')->json('data');
         $comercio = $this->actingAs($person)->getJson('/api/repricing?sector=comercio')->json('data');
         $comercioReal = $this->actingAs($person)->getJson('/api/repricing?sector=comercio&regime=real')->json('data');
@@ -94,7 +94,7 @@ describe('the list (A14)', function () {
     });
 
     it('refuses an unknown sector or regime', function () {
-        $this->actingAs(portfolioPerson('ceo'))->getJson('/api/repricing?sector=mineracao&regime=mei')
+        $this->actingAs(portfolioPerson('gestao'))->getJson('/api/repricing?sector=mineracao&regime=mei')
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['sector', 'regime']);
     });
@@ -103,7 +103,7 @@ describe('the list (A14)', function () {
         portfolioClient(['name' => 'Da Franco']);
         portfolioClient(['name' => 'De outra firma', 'firm_id' => $this->other->id]);
 
-        $names = array_column($this->actingAs(portfolioPerson('ceo'))->getJson('/api/repricing')->json('data.clients'), 'name');
+        $names = array_column($this->actingAs(portfolioPerson('gestao'))->getJson('/api/repricing')->json('data.clients'), 'name');
 
         expect($names)->toBe(['Da Franco']);
     });
@@ -113,7 +113,7 @@ describe('the detail and the letter (A14)', function () {
     it('shows a client with the items behind its uplift', function () {
         $client = portfolioClient(['name' => 'Atlas Soluções em TI Ltda']);
 
-        $data = $this->actingAs(portfolioPerson('ceo'))->getJson("/api/repricing/{$client->id}")->assertOk()->json('data');
+        $data = $this->actingAs(portfolioPerson('gestao'))->getJson("/api/repricing/{$client->id}")->assertOk()->json('data');
 
         expect($data['name'])->toBe('Atlas Soluções em TI Ltda')
             ->and($data['items'])->not->toBeEmpty()
@@ -124,7 +124,7 @@ describe('the detail and the letter (A14)', function () {
     it('prints a letter that names the client, its fees and the firm that signs it', function () {
         $client = portfolioClient(['name' => 'Clínica Bem Viver Ltda', 'sector' => 'saude', 'regime' => 'presumido', 'band' => 'b3', 'monthly_fee' => 3800]);
 
-        $letter = $this->actingAs(portfolioPerson('ceo'))->getJson("/api/repricing/{$client->id}/letter")->assertOk()->json('data');
+        $letter = $this->actingAs(portfolioPerson('gestao'))->getJson("/api/repricing/{$client->id}/letter")->assertOk()->json('data');
 
         expect($letter['client']['name'])->toBe('Clínica Bem Viver Ltda')
             ->and($letter['current_cents'])->toBe(380_000)
@@ -137,7 +137,7 @@ describe('the detail and the letter (A14)', function () {
 
     it('answers 404 for another firm\'s client (A1)', function () {
         $foreign = portfolioClient(['firm_id' => $this->other->id]);
-        $person = portfolioPerson('ceo');
+        $person = portfolioPerson('gestao');
 
         $this->actingAs($person)->getJson("/api/repricing/{$foreign->id}")->assertNotFound();
         $this->actingAs($person)->getJson("/api/repricing/{$foreign->id}/letter")->assertNotFound();
@@ -153,7 +153,7 @@ describe('marking in batch (R26)', function () {
         $first = portfolioClient(['monthly_fee' => 2000]);
         $second = portfolioClient(['monthly_fee' => 4500, 'regime' => 'real']);
         $untouched = portfolioClient();
-        $person = portfolioPerson('ceo');
+        $person = portfolioPerson('gestao');
 
         $quoted = collect($this->actingAs($person)->getJson('/api/repricing')->json('data.clients'))->keyBy('id');
         $response = $this->actingAs($person)->postJson('/api/repricing/mark', ['client_ids' => [$first->id, $second->id]])->assertOk()->json('data');
@@ -171,7 +171,7 @@ describe('marking in batch (R26)', function () {
 
     it('shows who marked it on the list', function () {
         $client = portfolioClient();
-        $person = portfolioPerson('ceo');
+        $person = portfolioPerson('gestao');
 
         $this->actingAs($person)->postJson('/api/repricing/mark', ['client_ids' => [$client->id]])->assertOk();
 
@@ -182,7 +182,7 @@ describe('marking in batch (R26)', function () {
 
     it('refuses an empty selection and another firm\'s client', function () {
         $foreign = portfolioClient(['firm_id' => $this->other->id]);
-        $person = portfolioPerson('ceo');
+        $person = portfolioPerson('gestao');
 
         $this->actingAs($person)->postJson('/api/repricing/mark', ['client_ids' => []])->assertUnprocessable()->assertJsonValidationErrors(['client_ids']);
         $this->actingAs($person)->postJson('/api/repricing/mark', ['client_ids' => [$foreign->id]])->assertUnprocessable()->assertJsonValidationErrors(['client_ids.0']);

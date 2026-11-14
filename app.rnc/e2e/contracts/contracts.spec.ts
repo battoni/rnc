@@ -17,7 +17,7 @@ const REINALDO = {
   last_name: 'Franco',
   username: 'reinaldo',
   role: 'CEO',
-  role_slug: 'ceo',
+  role_slug: 'gestao',
   permissions: ['leads.read', 'metrics.read', 'contracts.manage'],
 };
 
@@ -142,7 +142,7 @@ test.describe('Alerta de contratos', () => {
     page,
   }) => {
     await mockApi(page);
-    await page.goto('/reinaldo/contratos');
+    await page.goto('/gestao/contratos');
 
     await expect(page.getByTestId('contracts-at-risk')).toContainText('3 de 40');
     await expect(page.getByTestId('contract')).toHaveCount(3);
@@ -165,7 +165,7 @@ test.describe('Alerta de contratos', () => {
   test('"Cláusula incluída", once confirmed, takes the row off the list (A20)', async ({ page }) => {
     await mockApi(page);
     await page.setViewportSize({ width: 390, height: 700 });
-    await page.goto('/reinaldo/contratos');
+    await page.goto('/gestao/contratos');
 
     // The last row sits below the fold at 390: the question is the row's own, so a scroll never loses it.
     await rowOf(page, 15).getByTestId('contract-clause').click();
@@ -177,7 +177,7 @@ test.describe('Alerta de contratos', () => {
 
   test('the import names the lines it left out and keeps the dialog open (R18)', async ({ page }) => {
     await mockApi(page);
-    await page.goto('/reinaldo/contratos');
+    await page.goto('/gestao/contratos');
 
     await page.getByTestId('contracts-import').click();
     await expect(page.getByTestId('contracts-import-template')).toBeVisible();
@@ -257,7 +257,7 @@ test.describe('Alerta de contratos', () => {
 
       await mockApi(page);
       await page.setViewportSize({ width, height: 900 });
-      await page.goto('/reinaldo/contratos');
+      await page.goto('/gestao/contratos');
       await expect(page.getByTestId('contract').first()).toBeVisible();
 
       const overflow = await page.evaluate(() => {
@@ -276,7 +276,7 @@ test.describe('Alerta de contratos', () => {
     test(`the state words read at 4.5:1 or more, ${scheme}`, async ({ page }) => {
       await mockApi(page);
       await page.emulateMedia({ colorScheme: scheme, reducedMotion: 'reduce' });
-      await page.goto('/reinaldo/contratos');
+      await page.goto('/gestao/contratos');
       await rowOf(page, 9).getByTestId('contract-refer').click();
       await expect(rowOf(page, 9).getByTestId('contract-sent')).toBeVisible();
 

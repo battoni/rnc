@@ -15,6 +15,7 @@
 return [
     // PUBLIC — the site and the doors into the app
     'GET public/firm' => 'public',
+    'GET public/privacy' => 'public',
     'GET public/sectors' => 'public',
     'GET public/sectors/{slug}' => 'public',
     'POST public/events' => 'public',
@@ -26,6 +27,10 @@ return [
     'GET public/diagnostics/{token}/availability' => 'public',
     'POST public/diagnostics/{token}/booking' => 'public',
     'GET public/reports/{reportToken}' => 'public',
+    'GET public/beta-signups/consent' => 'public',
+    'POST public/beta-signups' => 'public',
+    // rnc-4 F7 the load balancer's probe: no session, no firm (`HealthTest`)
+    'GET health' => 'public',
     'POST auth/login' => 'public',
     'GET auth/support-names' => 'public',
     'POST auth/phone/code' => 'public',
@@ -136,4 +141,33 @@ return [
     'GET radar/types/{rule}' => 'staff',
     'POST radar/referrals' => 'staff',
     'GET clients/{id}/events' => 'staff',
+
+    // STAFF — rnc-4 F4a the platform console, `platform.firms` / `platform.consent` + the firm-less
+    // operator (`Phase4AccessTest`)
+    'GET platform/firms' => 'staff',
+    'POST platform/firms' => 'staff',
+    'PATCH platform/firms/{id}' => 'staff',
+    'PUT platform/firms/{id}/modules' => 'staff',
+    'POST platform/firms/{id}/manager' => 'staff',
+    'GET platform/consent-default' => 'staff',
+    'PUT platform/consent-default' => 'staff',
+    // rnc-4 F4c the logo and view-as, the same two locks
+    'POST platform/firms/{id}/logo' => 'staff',
+    'DELETE platform/firms/{id}/logo' => 'staff',
+    'POST platform/firms/{id}/view-as' => 'staff',
+    'DELETE platform/view-as' => 'staff',
+    'GET platform/view-as-log' => 'staff',
+
+    // STAFF — rnc-4 F5a the firm's settings, `firm.settings` (the manager, `gestao`)
+    'GET firm/settings' => 'staff',
+    'PATCH firm/settings' => 'staff',
+    'GET firm/consent-versions' => 'staff',
+    'POST firm/consent-versions' => 'staff',
+    'GET specialists' => 'staff',
+    'GET specialists/{id}/hours' => 'staff',
+    'PUT specialists/{id}/hours' => 'staff',
+
+    // STAFF — rnc-4 F9a a lead's own data, `leads.update` + `firm.settings` (the manager)
+    'GET leads/{id}/export' => 'staff',
+    'POST leads/{id}/anonymise' => 'staff',
 ];

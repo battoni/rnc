@@ -14,6 +14,13 @@ return [
     |
     */
 
+    /*
+    | Closed in this product (rnc-4 R7, D21): accounts are made by `firm:create`, the platform
+    | console or the firm's manager. While false the three self-registration routes answer 404
+    | (`EnsureRegistrationOpen`); the code stays so a product of the family can turn it back on.
+    */
+    'enabled' => (bool) env('REGISTRATION_ENABLED', false),
+
     // OFF and `POST /auth/register` creates the user straight away; ON and it parks a
     // pending registration and mails a code that `POST /auth/email/verify` exchanges.
     'verify_email' => env('REGISTRATION_VERIFY_EMAIL', true),

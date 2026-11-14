@@ -6,6 +6,9 @@ use App\Modules\Auth\Enums\UserStatus;
 use App\Modules\Auth\Repositories\UserRepository;
 use App\Modules\Auth\Services\AuthService;
 use App\Modules\Auth\Services\PermissionService;
+use App\Modules\Firm\Models\Firm;
+use App\Modules\Firm\Services\CurrentFirm;
+use App\Modules\Firm\Services\FirmResolver;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -17,7 +20,13 @@ function makeAuthService(
     PermissionService $permService,
     UserRepository $userRepo,
 ): AuthService {
-    return new AuthService($permService, $userRepo);
+    // The firm rule has its own tests (LoginFirmTest); here every account belongs to the request's firm.
+    $currentFirm = new CurrentFirm;
+    $currentFirm->set(new Firm);
+    $firmResolver = Mockery::mock(FirmResolver::class);
+    $firmResolver->shouldReceive('belongsTo')->andReturn(true);
+
+    return new AuthService($currentFirm, $firmResolver, $permService, $userRepo);
 }
 
 it('authenticate throws ValidationException when username is not found', function () {

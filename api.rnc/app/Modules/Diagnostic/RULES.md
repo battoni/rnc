@@ -1,5 +1,5 @@
 ---
-version: 1.2.0
+version: 1.3.0
 origin: rnc
 ---
 # RULES — Diagnostic Module
@@ -25,6 +25,10 @@ routes a visitor walks, all by lead token. Owns no table: every write to the lea
 - **An unknown, expired or other firm's token is the same 404** on every route.
 - **Each throttle has its own prefix** (`throttle:10,1,cnpj-lookup`): Laravel's plain
   `throttle:N,M` keys by address alone, so without a prefix every such route shares one counter.
+
+- **The chat channel needs the firm's `chat` module** (rnc-4 F3a, R17): a start with `channel: chat`
+  on a firm without it is 422 `modules.disabled` on `channel`; the form still starts. Tested by
+  `tests/Feature/Firm/ModuleGateTest`.
 
 ## Intentional Decisions
 

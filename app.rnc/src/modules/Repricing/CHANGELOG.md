@@ -2,6 +2,18 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.2.1 — 2026-11-14
+
+### Changed
+
+- `RepricingLetterView` draws `MFirmLogo` (the host firm's mark), not the build's default name (rnc-4 F2c2, R15).
+
+## 1.2.0 — 2026-11-14
+
+### Changed
+
+- Back-office paths `/reinaldo/*` → `/gestao/*` and `/ceo/*` → `/management/*`, route names `ceo-*` → `management-*` (rnc-4 F2c1, R14). No redirect is left at the old paths (A13).
+
 ## 1.1.0 — 2026-11-07
 
 ### Changed

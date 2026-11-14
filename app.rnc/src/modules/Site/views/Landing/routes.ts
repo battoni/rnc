@@ -1,4 +1,5 @@
 import type { RouteRecordRaw } from 'vue-router';
+import { loadHomeView } from '../../composables/productSite';
 import { SITE_ROUTE_NAMES } from '../../constants';
 
 /*
@@ -11,7 +12,8 @@ const LandingRoutes: RouteRecordRaw[] = [
     path: '/',
     name: SITE_ROUTE_NAMES.home,
     meta: { isOpen: true },
-    component: () => import('./LandingView.view.vue'),
+    // rnc-4 R28: the product's landing on the platform firm (the root), the firm's own everywhere else.
+    component: loadHomeView,
   },
 ];
 

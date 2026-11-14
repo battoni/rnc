@@ -9,6 +9,14 @@ import { expect, seedLanguage, test } from '../fixtures/auth';
 
 const FIRM = {
   name: 'Franco Contabilidade',
+  short_name: 'Franco',
+  // rnc-4 F2c2 (C10): the proof strip is the firm's own row, as FirmSeeder writes it.
+  proof: [
+    { value: '35 anos', label: 'em São Paulo' },
+    { value: '500+', label: 'clientes atendidos' },
+    { value: 'ISO 9001', label: 'qualidade certificada' },
+    { value: 'RNC', label: 'Rede Nacional de Contabilidade' },
+  ],
   slug: 'franco',
   logo_text: 'Franco Contabilidade',
   brand_primary: '#00375a',
@@ -46,7 +54,10 @@ function sectorPage(slug: string) {
       { date: '01/01/2027', text: 'A CBS passa a ser cobrada integralmente e PIS/Cofins deixam de existir.', source },
       { date: '2033', text: 'ICMS e ISS extintos, IBS e CBS integrais.', source: { label: 'LC 214/2025', url: null } },
     ],
-    seo: { title: `Reforma Tributária em ${sector.label}: o que muda`, description: `As datas da Reforma para ${sector.article}.` },
+    seo: {
+      title: `Reforma Tributária em ${sector.label}: o que muda`,
+      description: `As datas da Reforma para ${sector.article}.`,
+    },
   };
 }
 
@@ -57,7 +68,11 @@ function sectorSummary(slug: string) {
 }
 
 async function mockSiteApi(page: Page) {
-  const json = (data: unknown, status = 200) => ({ status, contentType: 'application/json', body: JSON.stringify(data) });
+  const json = (data: unknown, status = 200) => ({
+    status,
+    contentType: 'application/json',
+    body: JSON.stringify(data),
+  });
 
   await page.route('**/public/firm', (route) => route.fulfill(json({ data: FIRM })));
   await page.route('**/public/sectors', (route) =>
@@ -67,9 +82,13 @@ async function mockSiteApi(page: Page) {
     const slug = new URL(route.request().url()).pathname.split('/').pop()!;
     const isKnown = SECTORS.some((sector) => sector.slug === slug);
 
-    return route.fulfill(isKnown ? json({ data: sectorPage(slug) }) : json({ error: 'content.sectorPage.notFound' }, 404));
+    return route.fulfill(
+      isKnown ? json({ data: sectorPage(slug) }) : json({ error: 'content.sectorPage.notFound' }, 404)
+    );
   });
-  await page.route('**/public/events', (route) => route.fulfill({ status: 201, contentType: 'application/json', body: '[]' }));
+  await page.route('**/public/events', (route) =>
+    route.fulfill({ status: 201, contentType: 'application/json', body: '[]' })
+  );
 }
 
 async function horizontalOverflow(page: Page) {
@@ -133,7 +152,10 @@ test.describe('the sector pages', () => {
       await expect(page.getByTestId('sector-fact').first()).toContainText('2026');
       await expect(page.getByTestId('sector-cta')).toBeVisible();
       await expect(page).toHaveTitle(`Reforma Tributária em ${sector.label}: o que muda · Franco Contabilidade`);
-      await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', `Reforma Tributária em ${sector.label}: o que muda`);
+      await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
+        'content',
+        `Reforma Tributária em ${sector.label}: o que muda`
+      );
     });
   }
 

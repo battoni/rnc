@@ -60,6 +60,22 @@ class PipelineLeadController extends Controller
         return ! $note ? ApiResponse::notFound(message: self::NOT_FOUND) : ApiResponse::created(data: new LeadEventResource($note));
     }
 
+    /** The lead's own data, as JSON (rnc-4 R39, A48): `leads.update` + the manager's `firm.settings`. */
+    public function export(int $id): JsonResponse
+    {
+        $export = $this->pipelineService->export($id);
+
+        return ! $export ? ApiResponse::notFound(message: self::NOT_FOUND) : ApiResponse::success(data: $export);
+    }
+
+    /** Wipes who the lead is, for good (rnc-4 R39, A48); a second call answers the same detail. */
+    public function anonymise(Request $request, int $id): JsonResponse
+    {
+        $detail = $this->pipelineService->anonymise($id, $this->person($request));
+
+        return ! $detail ? ApiResponse::notFound(message: self::NOT_FOUND) : ApiResponse::success(data: new LeadDetailResource($detail));
+    }
+
     private function person(Request $request): User
     {
         /** @var User */

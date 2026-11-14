@@ -8,14 +8,16 @@ import { fileURLToPath, URL } from 'node:url';
 import Components from 'unplugin-vue-components/vite';
 import { defineConfig, loadEnv } from 'vite';
 import vueDevTools from 'vite-plugin-vue-devtools';
+import { assertBuildEnv } from './buildEnv';
 
 function getPath(path: string) {
   return fileURLToPath(new URL(path, import.meta.url));
 }
 
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ command, mode }) => {
   const isLocal = mode === 'development';
   process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
+  assertBuildEnv(command, mode, process.env);
 
   const appUrl = process.env.VITE_APP_URL || 'localhost';
   const hostname = appUrl.replace(/^https?:\/\//, '').split(':')[0];
@@ -23,7 +25,7 @@ export default defineConfig(({ mode }) => {
   // Single source of truth for the active brand theme. `@ActiveTheme` (imported
   // by src/styles/theme/colors.css) and the ACTIVE_THEME constant both resolve
   // from VITE_ACTIVE_THEME, so switching themes is a one-line .env change.
-  const activeTheme = process.env.VITE_ACTIVE_THEME || 'franco';
+  const activeTheme = process.env.VITE_ACTIVE_THEME || 'hub';
 
   // Plain http when no certificate is named (rnc-1 AM1: `http://localhost:5173`, no Valet). A
   // project serving through Valet names its key and cert and gets https + wss as before.
@@ -31,9 +33,26 @@ export default defineConfig(({ mode }) => {
   const sslCert = process.env.VITE_LOCAL_SSL_CERT;
   const hasLocalSsl = !!sslKey && !!sslCert;
 
+  /*
+   * rnc-4 D4: the SPA calls the API same-origin at `/api`, so each firm host
+   * (`franco.localhost:5173`, `alvorada.localhost:5173`) keeps its own host-only session cookie.
+   * `changeOrigin: false` keeps the browser's Host header, which the API's QA login-as reads (C2).
+   * `allowedHosts` lets Vite answer every `*.localhost` host. Local, test mode and preview alike:
+   * the e2e server runs in test mode, and an `/api` that only the dev server proxied would not exist
+   * there (plan AM4). `/storage` is the API's public disk (a firm's logo, rnc-4 F4c): the SPA asks for
+   * it on its own host (`toStorageAssetPath`), so it goes to the same target — the deploy's vhost does
+   * the same per host (plan AM10). Needs `php artisan storage:link` in api.rnc.
+   */
+  const apiTarget = { target: process.env.VITE_API_PROXY_TARGET || 'http://localhost:8000', changeOrigin: false };
+  const apiProxy = { '/api': apiTarget, '/storage': apiTarget };
+  const allowedHosts = ['.localhost'];
+
   return defineConfig({
+    preview: { allowedHosts, proxy: apiProxy },
     server: isLocal
       ? {
+          allowedHosts,
+          proxy: apiProxy,
           host: hostname,
           https: hasLocalSsl
             ? {
@@ -53,7 +72,7 @@ export default defineConfig(({ mode }) => {
             usePolling: false,
           },
         }
-      : {},
+      : { allowedHosts, proxy: apiProxy },
     plugins: [
       vue(),
       vueDevTools(),
@@ -107,6 +126,7 @@ export default defineConfig(({ mode }) => {
         'primevue/panel',
         'primevue/password',
         'primevue/popover',
+        'primevue/radiobutton',
         'primevue/select',
         'primevue/selectbutton',
         'primevue/skeleton',
@@ -177,6 +197,10 @@ export default defineConfig(({ mode }) => {
         '@AssistantModule/*': getPath('./src/modules/Assistant/*'),
         '@BrandsModule': getPath('./src/modules/Brands'),
         '@BrandsModule/*': getPath('./src/modules/Brands/*'),
+        '@FirmSettingsModule': getPath('./src/modules/FirmSettings'),
+        '@FirmSettingsModule/*': getPath('./src/modules/FirmSettings/*'),
+        '@PlatformModule': getPath('./src/modules/Platform'),
+        '@PlatformModule/*': getPath('./src/modules/Platform/*'),
         '@ChannelModule': getPath('./src/modules/Channel'),
         '@ChannelModule/*': getPath('./src/modules/Channel/*'),
         '@PartnerModule': getPath('./src/modules/Partner'),

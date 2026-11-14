@@ -13,7 +13,7 @@ use App\Modules\Radar\Services\RadarService;
 use Illuminate\Http\JsonResponse;
 
 /**
- * "Radar da carteira" (rnc-2 R24–R27), behind `radar.manage` (ceo, operador): the summary, one
+ * "Radar da carteira" (rnc-2 R24–R27), behind `radar.manage` (gestao, operador): the summary, one
  * type's clients and the batch referral of a row to one partner (F10). An unknown rule is a 404 on
  * the reads and a 422 on the batch.
  */

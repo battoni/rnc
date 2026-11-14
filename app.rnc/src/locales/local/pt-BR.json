@@ -1,10 +1,10 @@
 {
   "auth": {
     "brand": {
-      "domain": "franco-rnc.com.br",
-      "headline": "A Reforma chega.\nA Franco já está pronta.",
+      "domain": "Reforma Tributária · 2026–2033",
+      "headline": "A Reforma chega.\nA {firmShort} já está pronta.",
       "tag": "Reforma Tributária",
-      "tagline": "O hub da Franco Contabilidade para levar cada cliente pela transição de 2026 a 2033."
+      "tagline": "O hub da {firmName} para levar cada cliente pela transição de 2026 a 2033."
     }
   },
   "home": {
@@ -19,8 +19,8 @@
         "description": "Pipeline de leads, agenda das reuniões e notificações.",
         "upcoming": "O pipeline, a ficha de cada lead e a agenda da equipe chegam aqui."
       },
-      "ceo": {
-        "title": "Reinaldo",
+      "management": {
+        "title": "Gestão",
         "description": "Métricas do funil, rede de parceiros, trilha de encaminhamentos e reajuste de honorários.",
         "upcoming": "As métricas, os parceiros, a trilha e o reajuste de honorários chegam aqui."
       },
@@ -33,7 +33,7 @@
   },
   "navigation": {
     "team": "Equipe",
-    "ceo": "Reinaldo",
+    "management": "Gestão",
     "operator": "Operador",
     "pipeline": "Pipeline",
     "agenda": "Agenda",
@@ -53,10 +53,19 @@
     "invoices": "Notas fiscais",
     "radar": "Radar da carteira",
     "contracts": "Alerta de contratos",
-    "briefing": "Briefing do dia"
+    "briefing": "Briefing do dia",
+    "platform": "Plataforma",
+    "platformConsent": "Consentimento padrão",
+    "platformFirms": "Escritórios",
+    "firmConsent": "Consentimento",
+    "firmContact": "Contato do escritório",
+    "firmSpecialists": "Especialistas",
+    "firmTeam": "Acessos da equipe",
+    "platformViewAsLog": "Acessos de suporte"
   },
   "rolesAndPermissions": {
     "groups": {
+      "firm": "Escritório",
       "leads": "Leads",
       "agenda": "Agenda",
       "notifications": "Notificações",
@@ -73,13 +82,16 @@
       "channel": "Canal RNC",
       "assistant": "Assistente da Reforma",
       "contracts": "Alerta de contratos",
-      "briefing": "Briefing do dia"
+      "briefing": "Briefing do dia",
+      "platform": "Plataforma"
     },
     "permissions": {
       "import": "Importar",
       "access": "Acessar",
-      "ask": "Perguntar"
-    }
+      "ask": "Perguntar",
+      "consent": "Consentimento padrão"
+    },
+    "operatorOnlyKey": "As permissões da Plataforma são só do perfil Operador e não podem ser dadas a outro perfil."
   },
   "site": {
     "nav": {
@@ -95,6 +107,7 @@
     "seo": {
       "landingTitle": "Reforma Tributária 2026–2033: o que muda na sua empresa",
       "landingDescription": "A CBS começa a ser cobrada em 01/01/2027. Veja o que muda de 2026 a 2033 e faça o diagnóstico gratuito da Reforma Tributária para a sua empresa.",
+      "landingDescriptionStarted": "A CBS é cobrada desde 01/01/2027. Veja o que muda de 2026 a 2033 e faça o diagnóstico gratuito da Reforma Tributária para a sua empresa.",
       "diagnosticTitle": "Diagnóstico gratuito da Reforma Tributária",
       "diagnosticDescription": "Em 5 minutos, as oportunidades e os riscos da Reforma Tributária para a sua empresa, com valores estimados."
     },
@@ -119,10 +132,11 @@
     "landing": {
       "kicker": "Reforma Tributária · LC 214/2025",
       "title": "A CBS começa a ser cobrada em 01/01/2027.",
+      "titleStarted": "A CBS é cobrada desde 01/01/2027.",
       "ask": "Sua empresa já sabe quanto isso muda?",
       "lede": "Em 5 minutos o diagnóstico gratuito mostra as oportunidades e os riscos da Reforma para o seu negócio, com valores estimados. Um especialista explica o detalhe em uma reunião.",
       "sectorsLink": "Ver o que muda no meu setor",
-      "proofLabel": "Por que a Franco",
+      "proofLabel": "Por que a {firmShort}",
       "changesKicker": "O que muda",
       "changesTitle": "Cinco mudanças que chegam ao caixa da sua empresa",
       "timelineKicker": "Linha do tempo 2026–2033",
@@ -138,13 +152,7 @@
       "sectorsFailed": "Não conseguimos carregar os setores agora.",
       "retry": "Tentar de novo",
       "closingTitle": "Comece pelo diagnóstico. A gente explica o resto.",
-      "closingText": "Ser Franco é estar ao seu lado: 35 anos ao lado de empresas de São Paulo.",
-      "proof": {
-        "years": "em São Paulo",
-        "clients": "clientes atendidos",
-        "iso": "qualidade certificada",
-        "network": "Rede Nacional de Contabilidade"
-      },
+      "closingText": "A {firmShort} está ao seu lado em cada etapa da transição.",
       "changes": {
         "cbs": {
           "title": "CBS",
@@ -215,7 +223,7 @@
       "ctaText": "O diagnóstico gratuito cruza o perfil da sua empresa com estas regras em 5 minutos.",
       "others": "Outros setores",
       "notFoundTitle": "Esta página de setor não existe",
-      "notFoundText": "Veja os setores que a Franco já explica.",
+      "notFoundText": "Veja os setores que a {firmShort} já explica.",
       "failedTitle": "A página não carregou",
       "failedText": "Verifique a conexão e tente de novo.",
       "retry": "Tentar de novo"
@@ -225,11 +233,11 @@
       "contact": "Contato",
       "hours": "Atendimento",
       "credentials": "Credenciais",
-      "credentialsText": "ISO 9001:2015 · PQEC Sescon-SP · Rede Nacional de Contabilidade",
       "disclaimer": "Os valores do site e do diagnóstico são estimativas, não cálculo fiscal.",
       "hoursRange": "{days}, {from} às {to}",
       "dayRange": "{first} a {last}",
-      "copyright": "© {year} {name}"
+      "copyright": "© {year} {name}",
+      "privacy": "Privacidade"
     },
     "weekdaysInSentence": {
       "d1": "segunda",
@@ -242,6 +250,295 @@
     },
     "preview": {
       "banner": "Prévia: o site como a {name} aparece ao visitante."
+    },
+    "product": {
+      "nav": {
+        "label": "Site do produto",
+        "howItWorks": "Como funciona",
+        "modules": "Módulos",
+        "beta": "Beta",
+        "faq": "Perguntas"
+      },
+      "cta": {
+        "join": "Quero participar do beta",
+        "demo": "Veja um escritório de exemplo"
+      },
+      "seo": {
+        "title": "Hub da Reforma Tributária para escritórios de contabilidade",
+        "description": "Site com diagnóstico gratuito, agendamento, pipeline e métricas com a marca do seu escritório. A CBS começa a ser cobrada em 01/01/2027: entre no beta.",
+        "descriptionStarted": "Site com diagnóstico gratuito, agendamento, pipeline e métricas com a marca do seu escritório. A CBS é cobrada desde 01/01/2027: entre no beta."
+      },
+      "hero": {
+        "kicker": "Para escritórios de contabilidade",
+        "title": "Seus clientes vão perguntar da Reforma.",
+        "ask": "Seu escritório de contabilidade responde com diagnóstico, reunião e proposta.",
+        "lede": "O {product} põe no ar, com a marca do seu escritório, um site da Reforma Tributária com diagnóstico gratuito para empresários. Quem faz o diagnóstico vira lead no seu pipeline e marca reunião com os seus especialistas.",
+        "preview": {
+          "example": "Exemplo: o pipeline de um escritório",
+          "firm": "Contábil Exemplo",
+          "live": "Site no ar",
+          "bell": "Novo lead: Padaria Bom Grão",
+          "stages": {
+            "lead": "Lead",
+            "meeting": "Reunião",
+            "proposal": "Proposta"
+          },
+          "cards": {
+            "bakery": {
+              "initials": "BG",
+              "company": "Padaria Bom Grão",
+              "detail": "Comércio · 4 oportunidades, 1 risco"
+            },
+            "clinic": {
+              "initials": "VP",
+              "company": "Clínica Vida Plena",
+              "detail": "Saúde · reunião qui, 14:00"
+            },
+            "software": {
+              "initials": "AT",
+              "company": "Atlas Soluções em TI",
+              "detail": "Serviços · proposta enviada"
+            }
+          },
+          "metrics": {
+            "diagnostics": {
+              "value": "38",
+              "label": "diagnósticos"
+            },
+            "meetings": {
+              "value": "14",
+              "label": "reuniões"
+            },
+            "proposals": {
+              "value": "6",
+              "label": "propostas"
+            }
+          }
+        }
+      },
+      "urgency": {
+        "kicker": "Por que agora",
+        "title": "A CBS começa a ser cobrada em 01/01/2027. As perguntas dos seus clientes chegam antes.",
+        "titleStarted": "A CBS é cobrada desde 01/01/2027. As perguntas dos seus clientes já chegaram.",
+        "facts": {
+          "testYear": "Ano-teste: CBS de 0,9% e IBS de 0,1% destacados na nota fiscal, compensáveis com PIS/Cofins.",
+          "cbs": "A CBS passa a ser cobrada integralmente e PIS/Cofins deixam de existir. Começa o Imposto Seletivo.",
+          "transition": "ICMS e ISS caem ano a ano até a extinção em 2033, quando IBS e CBS ficam integrais."
+        },
+        "source": "Fonte: Lei Complementar 214/2025 (LC 214/2025). Datas conferidas em 14/11/2026.",
+        "news": "Entidades pediram o adiamento da CBS para 2028 (notícia de 04/11/2026). Até a lei mudar, vale 01/01/2027."
+      },
+      "steps": {
+        "kicker": "Como funciona",
+        "title": "Do primeiro clique do empresário à reunião com o seu escritório",
+        "lede": "Quatro passos, todos com a marca do seu escritório. A sua equipe só entra quando há uma conversa a ter.",
+        "items": {
+          "diagnostic": {
+            "title": "Diagnóstico gratuito",
+            "text": "O empresário responde em 5 minutos e vê as oportunidades e os riscos da Reforma para a empresa dele, com valores estimados por faixa."
+          },
+          "booking": {
+            "title": "Agendamento",
+            "text": "Ele escolhe um horário na agenda dos seus especialistas, e o horário fica bloqueado na hora. Confirmação e lembrete por e-mail."
+          },
+          "pipeline": {
+            "title": "Pipeline",
+            "text": "Cada diagnóstico vira um cartão com o perfil da empresa, o que foi encontrado e a reunião marcada. A equipe move de etapa em etapa."
+          },
+          "metrics": {
+            "title": "Métricas",
+            "text": "De onde vem cada visita, onde o empresário desiste e qual página de setor traz mais diagnósticos."
+          }
+        }
+      },
+      "modules": {
+        "kicker": "Módulos",
+        "title": "O essencial já vem ligado. O resto, quando fizer sentido.",
+        "lede": "Cada escritório liga só o que usa. Um módulo desligado sai das telas da equipe.",
+        "core": "Sempre ligados",
+        "optIn": "Opcionais",
+        "items": {
+          "site": "Nome, cores e logo do seu escritório, num endereço com o nome dele, e páginas da Reforma por setor.",
+          "diagnostic": "Perguntas sobre a empresa, oportunidades e riscos com valores estimados e o Relatório de Impacto por e-mail.",
+          "booking": "A agenda dos seus especialistas no site, sem conflito de horário.",
+          "pipeline": "Todo empresário que entrou pelo site, do visitante ao cliente, com a ficha e a linha do tempo.",
+          "metrics": "O funil do site por origem e por página de setor, semana a semana.",
+          "briefing": "O resumo da manhã por e-mail: o que entrou, o que está marcado e o que precisa da equipe.",
+          "chat": "O empresário faz o diagnóstico conversando, no lugar do formulário.",
+          "assistant": "Responde a equipe só com as notas que os seus especialistas revisaram; o resto vai para um especialista.",
+          "radar": "Os clientes da carteira com a conversa que a Reforma abre para cada um, estimada por faixa de faturamento.",
+          "portfolio": "Os clientes que o escritório já atende, importados por planilha, com o reajuste de honorários sugerido.",
+          "contracts": "Os contratos dos clientes, do mais exposto à Reforma ao menos, ano a ano até 2033.",
+          "fiscal": "Os XMLs das notas dos clientes viram a prontidão da NF-e e o crédito perdido com fornecedores do Simples.",
+          "partners": "Encaminhe clientes a especialistas parceiros, com a autorização registrada e o extrato do mês.",
+          "brands": "Submarcas do escritório com nome, cores e posicionamento próprios, no mesmo back office."
+        }
+      },
+      "beta": {
+        "kicker": "Programa beta",
+        "title": "Poucos escritórios, cerca de três meses, perto de quem constrói o produto",
+        "points": {
+          "few": {
+            "title": "Poucos escritórios",
+            "text": "Um grupo pequeno, para acompanhar cada escritório de perto desde o primeiro dia."
+          },
+          "duration": {
+            "title": "Cerca de três meses",
+            "text": "Tempo para o site ir ao ar, os primeiros diagnósticos chegarem e as reuniões acontecerem."
+          },
+          "price": {
+            "title": "Preço",
+            "text": "Preço promocional para os escritórios do beta — fale com a gente"
+          },
+          "voice": {
+            "title": "Vocês no produto",
+            "text": "A sua equipe fala direto com quem constrói, e o que vocês pedirem pesa no que vem a seguir."
+          }
+        }
+      },
+      "form": {
+        "title": "Quero participar do beta",
+        "lede": "Leva 2 minutos. A gente responde pelo e-mail ou pelo telefone que você deixar.",
+        "company": "Escritório",
+        "name": "Seu nome",
+        "role": "Cargo",
+        "email": "E-mail",
+        "phone": "Telefone ou WhatsApp",
+        "phonePlaceholder": "(11) 98888-7777",
+        "city": "Cidade",
+        "uf": "UF",
+        "ufPlaceholder": "Selecione",
+        "band": "Quantos clientes o escritório atende?",
+        "bands": {
+          "ate_100": "Até 100",
+          "de_101_a_300": "101 a 300",
+          "de_301_a_1000": "301 a 1.000",
+          "acima_1000": "Mais de 1.000"
+        },
+        "message": "Algo que a gente deva saber? (opcional)",
+        "privacy": "Usamos estes dados só para falar com você sobre o beta.",
+        "submit": "Quero participar do beta",
+        "consentFailed": "Não conseguimos carregar o formulário agora.",
+        "retry": "Tentar de novo",
+        "errors": {
+          "required": "Preencha este campo.",
+          "invalid": "Confira este campo.",
+          "email": "Informe um e-mail válido.",
+          "phone": "Informe o telefone com DDD.",
+          "uf": "Escolha a UF.",
+          "band": "Escolha uma faixa.",
+          "consent": "Para falarmos com você, precisamos da sua autorização.",
+          "messageTooLong": "Até {max} caracteres.",
+          "tooMany": "Muitas tentativas seguidas. Espere um minuto e tente de novo.",
+          "failed": "Não conseguimos enviar agora. Tente de novo em instantes."
+        },
+        "success": {
+          "title": "Inscrição recebida",
+          "text": "Obrigado! A inscrição da {company} chegou à equipe do {product}, que vai falar com você pelo e-mail ou pelo telefone informado."
+        }
+      },
+      "faq": {
+        "kicker": "Perguntas",
+        "title": "O que os escritórios perguntam antes de entrar",
+        "items": {
+          "setup": {
+            "question": "Preciso de equipe de TI ou de um site novo?",
+            "answer": "Não. O {product} vai ao ar com a marca do seu escritório num endereço com o nome dele. A gente configura com vocês o nome, as cores, o logo e os horários dos especialistas."
+          },
+          "data": {
+            "question": "Os dados dos meus clientes ficam separados dos outros escritórios?",
+            "answer": "Sim. Cada escritório vê só os próprios leads, clientes e métricas, e a separação é feita em cada consulta ao banco, não só na tela."
+          },
+          "cbsDate": {
+            "question": "E se a data da CBS mudar?",
+            "answer": "O site mostra a data da lei: 01/01/2027 (LC 214/2025). Há um pedido de adiamento para 2028 em discussão; se a lei mudar, a data e a contagem mudam com ela."
+          },
+          "diagnostic": {
+            "question": "O diagnóstico substitui o trabalho do contador?",
+            "answer": "Não. Ele mostra estimativas por faixa, não cálculo fiscal, e leva o empresário à reunião com o seu especialista, que é quem fecha a conta."
+          },
+          "price": {
+            "question": "Quanto custa?",
+            "answer": "Preço promocional para os escritórios do beta — fale com a gente."
+          },
+          "who": {
+            "question": "Quem pode participar?",
+            "answer": "Escritórios de contabilidade que atendem empresas e querem levar a conversa da Reforma até elas. Na inscrição, conte quantos clientes vocês atendem."
+          }
+        }
+      },
+      "closing": {
+        "title": "A Reforma vai abrir conversas. Que elas comecem no seu escritório.",
+        "text": "Inscreva o escritório no beta e tenha o site da Reforma com a sua marca antes de 2027.",
+        "textStarted": "Inscreva o escritório no beta e tenha o site da Reforma com a sua marca durante a transição."
+      },
+      "footer": {
+        "tagline": "O hub da Reforma Tributária para escritórios de contabilidade.",
+        "disclaimer": "Datas da Reforma pela LC 214/2025, conferidas em 14/11/2026. Os valores do diagnóstico são estimativas, não cálculo fiscal."
+      }
+    },
+    "privacy": {
+      "kicker": "LGPD",
+      "title": "Privacidade e proteção de dados",
+      "seoDescription": "Quem trata os seus dados neste site, o que é guardado, por quanto tempo e como pedir para ver, corrigir ou apagar.",
+      "lede": "Como {name} trata os dados de quem usa este site, o diagnóstico e o agendamento — conforme a Lei Geral de Proteção de Dados (Lei 13.709/2018).",
+      "loadFailed": "Não foi possível carregar a política de privacidade.",
+      "retry": "Tentar de novo",
+      "controller": {
+        "title": "Quem é o responsável",
+        "text": "{name} é a controladora dos seus dados: decide para que eles são usados e responde por eles.",
+        "platformText": "{name} é a controladora dos dados deixados neste site: decide para que eles são usados e responde por eles.",
+        "address": "Endereço: {address}"
+      },
+      "operator": {
+        "title": "Quem opera a plataforma",
+        "text": "{name} é a operadora: hospeda este site e o sistema do escritório e trata os seus dados apenas em nome de {controller}, seguindo as instruções dele."
+      },
+      "collected": {
+        "title": "O que guardamos",
+        "purpose": "Usamos esses dados para calcular o diagnóstico, preparar a reunião com o especialista e falar com você sobre ela.",
+        "items": {
+          "company": "O nome da empresa",
+          "cnpj": "O CNPJ",
+          "contact_name": "O seu nome",
+          "email": "O seu e-mail",
+          "phone": "O seu telefone ou WhatsApp",
+          "diagnostic_answers": "As respostas do diagnóstico (setor, regime, faturamento e as demais perguntas)",
+          "meeting": "A reunião marcada com o especialista",
+          "site_visits": "As páginas visitadas neste site",
+          "consent_records": "As suas respostas aos pedidos de autorização, com o texto que você leu e a data"
+        }
+      },
+      "retention": {
+        "title": "Por quanto tempo",
+        "data": {
+          "lead_data": "Os seus dados e as respostas do diagnóstico",
+          "consent_records": "As autorizações",
+          "site_visits": "As visitas ao site"
+        },
+        "rules": {
+          "until_request_or_firm_exit": "guardados até você pedir que sejam apagados, ou até o escritório deixar a plataforma — então são anonimizados",
+          "kept_as_proof": "guardadas como prova do que você autorizou, mesmo depois de uma anonimização",
+          "pseudonymous": "registradas com um identificador aleatório deste navegador, sem o seu IP e sem o seu nome"
+        }
+      },
+      "sharing": {
+        "title": "Com quem compartilhamos",
+        "operatorOnly": "Fora isso, os seus dados não saem do escritório e da operadora da plataforma.",
+        "items": {
+          "partner_network": "Com um especialista da rede de parceiros do escritório, só se você marcar a autorização no diagnóstico e só para a indicação que ela cobre."
+        }
+      },
+      "rights": {
+        "title": "Os seus direitos",
+        "text": "Você pode pedir para ver, corrigir, receber uma cópia ou apagar os seus dados, e retirar uma autorização quando quiser."
+      },
+      "requests": {
+        "title": "Como fazer um pedido",
+        "text": "Fale com {name}:",
+        "phone": "Telefone: {phone}",
+        "none": "Use o contato no rodapé desta página."
+      }
     }
   },
   "diagnostic": {
@@ -343,8 +640,9 @@
       "name": "Seu nome",
       "phone": "WhatsApp ou telefone",
       "email": "E-mail",
-      "hint": "Basta um dos dois. Seus dados ficam com a Franco e não são compartilhados sem a sua autorização.",
-      "consentOptional": "Opcional: o resultado vem do mesmo jeito."
+      "hint": "Basta um dos dois. Seus dados ficam com a {firmShort} e não são compartilhados sem a sua autorização.",
+      "consentOptional": "Opcional: o resultado vem do mesmo jeito.",
+      "privacy": "Como tratamos os seus dados"
     },
     "actions": {
       "continue": "Continuar",
@@ -385,11 +683,11 @@
     },
     "schedule": {
       "title": "Os detalhes de cada item estão com o especialista",
-      "text": "Em 30 minutos, online ou na Franco, ele explica a conta por trás de cada valor e o plano de ação. A reunião é gratuita.",
+      "text": "Em 30 minutos, online ou na {firmShort}, ele explica a conta por trás de cada valor e o plano de ação. A reunião é gratuita.",
       "action": "Agendar com um especialista"
     },
     "booking": {
-      "intro": "Escolha quem vai atender você e o horário. São {minutes} minutos, online ou no escritório da Franco, para abrir o detalhe de cada item e o plano de ação. Horários dos próximos 10 dias úteis.",
+      "intro": "Escolha quem vai atender você e o horário. São {minutes} minutos, online ou no escritório da {firmShort}, para abrir o detalhe de cada item e o plano de ação. Horários dos próximos 10 dias úteis.",
       "specialists": "Especialista",
       "suggested": "Indicado para o seu perfil",
       "days": "Dia",
@@ -408,12 +706,12 @@
         "email": "Informe um e-mail válido: é para ele que vão a confirmação e o Relatório de Impacto.",
         "slotTaken": "Esse horário acabou de ser reservado. Escolha outro.",
         "slotUnavailable": "Esse horário não está mais na agenda. Escolha outro.",
-        "alreadyBooked": "Este diagnóstico já tem uma reunião marcada. A equipe da Franco entra em contato para qualquer mudança.",
+        "alreadyBooked": "Este diagnóstico já tem uma reunião marcada. A equipe da {firmShort} entra em contato para qualquer mudança.",
         "unavailable": "Não conseguimos falar com a agenda agora. Tente de novo em instantes."
       },
       "confirmed": {
         "with": "com {specialist}",
-        "length": "{minutes} minutos, online ou no escritório da Franco.",
+        "length": "{minutes} minutos, online ou no escritório da {firmShort}.",
         "sent": "Enviamos a confirmação para o seu e-mail com o link do Relatório de Impacto, e um lembrete na véspera.",
         "found": "{company} · {opportunities} e {risks} para conversar.",
         "openReport": "Abrir o Relatório de Impacto",
@@ -430,7 +728,7 @@
       "legal": "Valores estimados a partir da faixa de faturamento e de alíquotas de referência (LC 214/2025 e alterações). Não é cálculo fiscal nem parecer: o especialista confirma cada item com os dados da empresa.",
       "loading": "Carregando o relatório…",
       "missingTitle": "Este link expirou ou não existe",
-      "missingText": "O Relatório de Impacto fica disponível por 30 dias depois do agendamento. Faça o diagnóstico de novo ou fale com a equipe da Franco.",
+      "missingText": "O Relatório de Impacto fica disponível por 30 dias depois do agendamento. Faça o diagnóstico de novo ou fale com a equipe da {firmShort}.",
       "missingAction": "Fazer o diagnóstico",
       "seoTitle": "Relatório de Impacto da Reforma Tributária",
       "seoDescription": "O resultado do diagnóstico da Reforma Tributária, com o simulador 2026–2033."
@@ -441,13 +739,13 @@
         "form": "Formulário",
         "chat": "Conversar no chat"
       },
-      "who": "Recepção Franco",
+      "who": "Recepção {firmShort}",
       "note": "Cada resposta preenche o mesmo diagnóstico do formulário. Dá para trocar para o formulário no meio da conversa e voltar: nada se perde.",
-      "logLabel": "Conversa com a recepção da Franco",
+      "logLabel": "Conversa com a recepção da {firmShort}",
       "repliesLabel": "Respostas rápidas",
       "send": "Enviar",
       "typing": "A recepção está escrevendo…",
-      "greeting": "Olá! Sou a recepção virtual da Franco. Em 5 minutos eu mostro o que a Reforma Tributária muda na sua empresa e quanto isso pode valer.",
+      "greeting": "Olá! Sou a recepção virtual da {firmShort}. Em 5 minutos eu mostro o que a Reforma Tributária muda na sua empresa e quanto isso pode valer.",
       "resumed": "Vi que você já começou pelo formulário. Vamos continuar de onde parou.",
       "advanced": "Vi que você avançou pelo formulário. Vamos continuar de onde parou.",
       "notUnderstood": "Não entendi. Escolha uma das opções abaixo.",
@@ -463,8 +761,8 @@
         "regime": "E o regime tributário hoje?",
         "company": "Para quem eu envio o resultado? Qual o nome da empresa?",
         "name": "E o seu nome?",
-        "contact": "Qual o seu WhatsApp, telefone ou e-mail? Basta um. Seus dados ficam com a Franco e não são compartilhados sem a sua autorização.",
-        "consent": "Mais uma, opcional: quando o diagnóstico indicar, posso te apresentar a um especialista da rede da Franco? \"{text}\" O resultado vem do mesmo jeito.",
+        "contact": "Qual o seu WhatsApp, telefone ou e-mail? Basta um. Seus dados ficam com a {firmShort} e não são compartilhados sem a sua autorização.",
+        "consent": "Mais uma, opcional: quando o diagnóstico indicar, posso te apresentar a um especialista da rede da {firmShort}? \"{text}\" O resultado vem do mesmo jeito.",
         "b2b": "Quanto das suas vendas vai para outras empresas (B2B)? O resto é consumidor final.",
         "band": "Qual a faixa de faturamento anual?",
         "incentivos": "A empresa tem incentivos fiscais de ICMS?",
@@ -494,7 +792,7 @@
         "answerPlaceholder": "Ou escreva a sua resposta"
       },
       "result": {
-        "specialist": "Um especialista da Franco explica cada item, sem custo. Escolha um horário:",
+        "specialist": "Um especialista da {firmShort} explica cada item, sem custo. Escolha um horário:",
         "simulator": "Ver o simulador 2026–2033 do meu caso"
       }
     }
@@ -507,6 +805,7 @@
     "markRead": "Marcar como lida",
     "markAllRead": "Marcar todas como lidas",
     "kinds": {
+      "beta_signup": "{company} ({city}/{uf}) se inscreveu no beta",
       "new_lead": "{company} deixou o contato no diagnóstico",
       "meeting_booked": "{company} marcou reunião com {specialist} para {when}",
       "assistant_question": "{askedBy} encaminhou a você: “{question}”",
@@ -517,6 +816,7 @@
       "referral_status_fechado": "{partner} fechou contrato de {value} com {company}"
     },
     "kindTitles": {
+      "beta_signup": "Inscrição no beta",
       "new_lead": "Novo lead",
       "meeting_booked": "Reunião marcada",
       "assistant_question": "Pergunta para especialista",
@@ -616,12 +916,17 @@
         "exporta": "Exporta",
         "path": "Caminho",
         "source": "Origem",
+        "role": "Cargo",
+        "location": "Cidade/UF",
+        "clientsBand": "Clientes atendidos",
+        "message": "Mensagem",
         "yes": "sim",
         "no": "não",
         "empty": "—",
         "paths": {
           "cnpj": "pelo CNPJ",
-          "quiz": "pelo questionário"
+          "quiz": "pelo questionário",
+          "beta": "pela inscrição no beta"
         }
       },
       "diagnosis": {
@@ -638,6 +943,10 @@
         "title": "Consentimento",
         "given": "Autorizou ser apresentado a parceiros",
         "refused": "Não autorizou ser apresentado a parceiros",
+        "beta": {
+          "given": "Autorizou ser contatado sobre o beta",
+          "refused": "Não autorizou ser contatado sobre o beta"
+        },
         "none": "Ainda sem resposta: o visitante não chegou ao contato.",
         "when": "Em {date} · versão {version} · {via}",
         "vias": {
@@ -672,13 +981,26 @@
           "stageLost": "{from} → {to}: {reason}",
           "noteAdded": "Nota: {text}",
           "unknown": "Evento {type}",
-          "referralSent": "Encaminhado a {partner} ({score}%)"
+          "referralSent": "Encaminhado a {partner} ({score}%)",
+          "anonymised": "Dados anonimizados a pedido",
+          "anonymisedOnExit": "Dados anonimizados na saída do escritório da plataforma"
         },
         "vias": {
           "botao": "botão",
           "arrastar": "arrastado",
           "ficha": "pela ficha"
         }
+      },
+      "data": {
+        "title": "Dados do lead (LGPD)",
+        "lede": "Exporte os dados deste lead quando ele pedir uma cópia, ou anonimize-o quando ele pedir para ser apagado.",
+        "export": "Exportar dados",
+        "anonymise": "Anonimizar",
+        "cancel": "Cancelar",
+        "anonymiseConfirm": "Anonimizar apaga para sempre o nome, o e-mail, o telefone, o CNPJ e a empresa deste lead. Isto não pode ser desfeito.",
+        "anonymisedAt": "Dados anonimizados em {date}",
+        "anonymisedText": "Este lead foi anonimizado: quem ele era não está mais guardado. A exportação traz o que restou.",
+        "anonymisedToast": "Lead anonimizado."
       }
     },
     "agenda": {
@@ -701,6 +1023,7 @@
     },
     "brandChip": "Lead da {name}",
     "channels": {
+      "beta": "Beta",
       "formulario": "Formulário",
       "chat": "Chat",
       "carteira": "Carteira"
@@ -709,7 +1032,7 @@
   },
   "partners": {
     "title": "Parceiros",
-    "lede": "A rede de especialistas da Franco: {active} de {total} ativos recebem encaminhamentos. Um parceiro desativado sai do roteamento e fica na trilha.",
+    "lede": "A rede de especialistas da {firmShort}: {active} de {total} ativos recebem encaminhamentos. Um parceiro desativado sai do roteamento e fica na trilha.",
     "add": "Novo parceiro",
     "edit": "Editar",
     "deactivate": "Desativar",
@@ -762,17 +1085,17 @@
     },
     "routing": {
       "title": "Encaminhar à rede",
-      "lede": "Cada parceiro com a aderência ao diagnóstico deste lead. A Franco continua dona do lead: o parceiro fala com a empresa pela Franco.",
+      "lede": "Cada parceiro com a aderência ao diagnóstico deste lead. A {firmShort} continua dona do lead: o parceiro fala com a empresa pela {firmShort}.",
       "score": "{score}% · {specialty}",
       "refer": "Encaminhar",
       "referredOn": "Encaminhado em {date}",
       "coversLabel": "Itens do diagnóstico que o parceiro resolve",
       "coversNothing": "Nenhum item deste diagnóstico na especialidade dele.",
-      "empty": "Nenhum parceiro ativo na rede. Reinaldo cadastra os parceiros em Parceiros.",
+      "empty": "Nenhum parceiro ativo na rede. A gestão cadastra os parceiros em Parceiros.",
       "loadFailed": "Não foi possível carregar os parceiros para este lead.",
       "messageLabel": "Mensagem para {partner}",
-      "defaultMessage": "A Franco indica a {company}. Podem fazer o primeiro contato em até 24 horas úteis?",
-      "privacyNote": "O parceiro recebe o nome da empresa, o diagnóstico e o contato da Franco — nunca o telefone ou o e-mail do lead.",
+      "defaultMessage": "A {firmShort} indica a {company}. Podem fazer o primeiro contato em até 24 horas úteis?",
+      "privacyNote": "O parceiro recebe o nome da empresa, o diagnóstico e o contato da {firmShort} — nunca o telefone ou o e-mail do lead.",
       "messageRequired": "Escreva a mensagem para o parceiro.",
       "cancel": "Cancelar",
       "send": "Enviar encaminhamento",
@@ -829,7 +1152,7 @@
     },
     "ledger": {
       "title": "Extrato da rede",
-      "lede": "O que cada parceiro deve à Franco no mês, no modelo da rede, e o que o outro modelo daria.",
+      "lede": "O que cada parceiro deve à {firmShort} no mês, no modelo da rede, e o que o outro modelo daria.",
       "previousMonth": "Mês anterior",
       "nextMonth": "Próximo mês",
       "modelLabel": "Modelo de cobrança",
@@ -931,7 +1254,7 @@
   },
   "repricing": {
     "title": "Reajuste de honorários",
-    "heading": "A Reforma aumenta o trabalho da Franco em cada cliente",
+    "heading": "A Reforma aumenta o trabalho da {firmShort} em cada cliente",
     "lede": "O mesmo motor do diagnóstico mede o trabalho novo de cada cliente: cada oportunidade pesa 1,5 ponto e cada risco 2,5 no reajuste sugerido, de 4 a 25%, com o honorário arredondado a R$ 50.",
     "hero": {
       "label": "Receita a mais por ano",
@@ -1156,14 +1479,14 @@
     },
     "meeting": {
       "title": "Agendar a reunião",
-      "lede": "Quando vocês se reúnem com a {company}? A reunião aparece nas suas próximas reuniões e na ficha do lead na Franco.",
+      "lede": "Quando vocês se reúnem com a {company}? A reunião aparece nas suas próximas reuniões e na ficha do lead na {firmShort}.",
       "label": "Data e horário da reunião",
       "cancel": "Cancelar",
       "confirm": "Agendar reunião"
     },
     "close": {
       "title": "Fechar o contrato",
-      "lede": "O valor do contrato com a {company} no primeiro ano. É o que o extrato da Franco lê.",
+      "lede": "O valor do contrato com a {company} no primeiro ano. É o que o extrato da {firmShort} lê.",
       "label": "Valor do contrato no 1º ano (R$)",
       "cancel": "Cancelar",
       "confirm": "Fechar contrato"
@@ -1201,7 +1524,7 @@
   },
   "brands": {
     "title": "Marcas",
-    "lede": "A Franco e as suas submarcas: mesmos dados, mesma rede de parceiros e mesmo endereço, com nome, cores e posicionamento próprios. O site muda de marca por ?marca=; o back office continua da Franco.",
+    "lede": "A {firmShort} e as suas submarcas: mesmos dados, mesma rede de parceiros e mesmo endereço, com nome, cores e posicionamento próprios. O site muda de marca por ?marca=; o back office continua da {firmShort}.",
     "main": "Marca principal",
     "mainNote": "A marca do escritório, editada no tema do site.",
     "active": "Ativa",
@@ -1212,7 +1535,7 @@
     "deactivate": "Desativar",
     "reactivate": "Reativar",
     "saved": "{name} salva.",
-    "deactivated": "{name} desativada: o site volta para a Franco em ?marca={slug}.",
+    "deactivated": "{name} desativada: o site volta para a {firmShort} em ?marca={slug}.",
     "reactivated": "{name} reativada.",
     "loadFailed": "Não foi possível carregar as marcas.",
     "retry": "Tentar de novo",
@@ -1250,10 +1573,10 @@
   },
   "channel": {
     "title": "Canal RNC",
-    "manageLede": "A Franco é da Rede Nacional de Contabilidade e apresenta a plataforma aos escritórios da rede. Cada escritório ativo paga {fee}/mês pela plataforma, e a Franco fica com {share} como canal. Os escritórios são exemplos.",
-    "readLede": "Os escritórios da Rede Nacional de Contabilidade que a Franco apresenta, a etapa de cada um e o que cabe à Franco quando ativam. Os escritórios são exemplos.",
+    "manageLede": "A {firmShort} é da Rede Nacional de Contabilidade e apresenta a plataforma aos escritórios da rede. Cada escritório ativo paga {fee}/mês pela plataforma, e a {firmShort} fica com {share} como canal. Os escritórios são exemplos.",
+    "readLede": "Os escritórios da Rede Nacional de Contabilidade que a {firmShort} apresenta, a etapa de cada um e o que cabe à {firmShort} quando ativam. Os escritórios são exemplos.",
     "hero": {
-      "label": "Receita da Franco pelo canal",
+      "label": "Receita da {firmShort} pelo canal",
       "base": "Nenhum escritório ativo ainda · {yearly} por ano. | {count} escritório ativo · {yearly} por ano. | {count} escritórios ativos · {yearly} por ano.",
       "pending": "Mais {amount}/mês quando os outros ativarem.",
       "allActive": "Todos os escritórios do canal estão ativos."
@@ -1270,7 +1593,7 @@
     "stageAria": "Etapa: {stage}",
     "listTitle": "Escritórios no canal",
     "since": "{city} · nesta etapa desde {date}",
-    "shareLabel": "Parte da Franco",
+    "shareLabel": "Parte da {firmShort}",
     "feeLabel": "Mensalidade",
     "onActivation": "na ativação",
     "advance": "Avançar para {stage}",
@@ -1283,8 +1606,8 @@
     "loadFailed": "Não foi possível carregar o canal.",
     "retry": "Tentar de novo",
     "emptyTitle": "Nenhum escritório no canal",
-    "emptyManage": "Adicione o primeiro escritório da rede que a Franco está apresentando.",
-    "emptyRead": "Quando a Franco apresentar um escritório da rede, ele aparece aqui.",
+    "emptyManage": "Adicione o primeiro escritório da rede que a {firmShort} está apresentando.",
+    "emptyRead": "Quando a {firmShort} apresentar um escritório da rede, ele aparece aqui.",
     "invalidTransition": "Esse escritório já mudou de etapa.",
     "notFound": "Esse escritório não está mais no canal.",
     "form": {
@@ -1293,10 +1616,10 @@
       "name": "Escritório",
       "city": "Cidade",
       "fee": "Mensalidade da plataforma",
-      "share": "Parte da Franco (%)",
+      "share": "Parte da {firmShort} (%)",
       "notes": "Anotações",
       "notesHint": "Só quem administra o canal vê.",
-      "preview": "Parte da Franco: {amount}/mês quando ativo",
+      "preview": "Parte da {firmShort}: {amount}/mês quando ativo",
       "startsAt": "Entra em Contato; a etapa muda pelo botão Avançar.",
       "required": "Obrigatório.",
       "feeBounds": "Entre {min} e {max}.",
@@ -1307,9 +1630,9 @@
   },
   "assistant": {
     "title": "Assistente da Reforma",
-    "lede": "Respostas só do que a equipe da Franco já revisou, com a regra, a fonte e quem revisou. O que não estiver nas notas vai para um especialista.",
+    "lede": "Respostas só do que a equipe da {firmShort} já revisou, com a regra, a fonte e quem revisou. O que não estiver nas notas vai para um especialista.",
     "greeting": "Olá! Respondo só com as notas revisadas pelos especialistas, citando a regra. Escreva a pergunta ou escolha uma das notas.",
-    "who": "Assistente Franco",
+    "who": "Assistente {firmShort}",
     "you": "Você",
     "inputLabel": "Pergunta ao assistente",
     "inputPlaceholder": "Pergunte sobre a Reforma, como um cliente perguntaria",
@@ -1363,7 +1686,7 @@
     },
     "knowledge": {
       "title": "Base da Reforma",
-      "lede": "As notas da própria Franco: a única coisa com que o assistente responde. Uma nota entra no ar depois da revisão de outro especialista e vale por 90 dias.",
+      "lede": "As notas da própria {firmShort}: a única coisa com que o assistente responde. Uma nota entra no ar depois da revisão de outro especialista e vale por 90 dias.",
       "add": "Nova nota",
       "live": "Nenhuma nota no ar | {count} nota no ar | {count} notas no ar",
       "expiring": "Nenhuma nota vence em 7 dias | {count} nota vence em 7 dias | {count} notas vencem em 7 dias",
@@ -1427,7 +1750,7 @@
     },
     "notWriter": "Só os especialistas e a diretoria escrevem a base.",
     "notReviewer": "Só um especialista que não fez a última edição revisa a nota.",
-    "notSpecialist": "Essa pessoa não é um especialista ativo da Franco.",
+    "notSpecialist": "Essa pessoa não é um especialista ativo da {firmShort}.",
     "retired": "Esta nota foi aposentada.",
     "notFound": "Esta nota não existe mais.",
     "questionNotFound": "Esta pergunta não está na sua caixa.",
@@ -1459,8 +1782,8 @@
     "readiness": {
       "title": "Prontidão da NF-e",
       "heading": "As notas dos clientes já saem com o IBS/CBS?",
-      "lede": "Os clientes do Presumido e do Real, pelas notas que emitiram nos últimos 30 dias: quem a Franco precisa avisar antes da rejeição.",
-      "note": "Lido dos XMLs importados em Reinaldo › Notas fiscais. Uma nota está completa quando todos os itens trazem o grupo do IBS/CBS, o CST e o cClassTrib e as alíquotas de teste de 2026. OK com 95% ou mais e nada em risco; Atenção de 80% a 94%; Crítico abaixo de 80% ou com qualquer nota em risco da rejeição 1115. Clientes do Simples ficam fora até 2027.",
+      "lede": "Os clientes do Presumido e do Real, pelas notas que emitiram nos últimos 30 dias: quem a {firmShort} precisa avisar antes da rejeição.",
+      "note": "Lido dos XMLs importados em Gestão › Notas fiscais. Uma nota está completa quando todos os itens trazem o grupo do IBS/CBS, o CST e o cClassTrib e as alíquotas de teste de 2026. OK com 95% ou mais e nada em risco; Atenção de 80% a 94%; Crítico abaixo de 80% ou com qualquer nota em risco da rejeição 1115. Clientes do Simples ficam fora até 2027.",
       "loadFailed": "Não foi possível carregar a prontidão agora.",
       "hero": {
         "label": "Notas em risco de rejeição 1115",
@@ -1523,11 +1846,11 @@
       "greeting": "Olá, equipe da {name},",
       "counts": "Nas {invoices} notas fiscais que vocês emitiram nos últimos {days} dias, {pct} já saem com o grupo do IBS/CBS completo.",
       "risk": "{count} nota seria rejeitada (rejeição 1115) quando a validação da Receita valer. | {count} notas seriam rejeitadas (rejeição 1115) quando a validação da Receita valer.",
-      "fix": "O ajuste é no cadastro de produtos e na emissão do {system}. A Franco já separou os itens e pode ajudar o seu time ou o fornecedor do sistema a corrigir.",
-      "fixNoSystem": "O ajuste é no cadastro de produtos e no sistema emissor. A Franco já separou os itens e pode ajudar o seu time ou o fornecedor do sistema a corrigir.",
+      "fix": "O ajuste é no cadastro de produtos e na emissão do {system}. A {firmShort} já separou os itens e pode ajudar o seu time ou o fornecedor do sistema a corrigir.",
+      "fixNoSystem": "O ajuste é no cadastro de produtos e no sistema emissor. A {firmShort} já separou os itens e pode ajudar o seu time ou o fornecedor do sistema a corrigir.",
       "noNotes": "Ainda não recebemos as notas fiscais que vocês emitiram nos últimos {days} dias. Podem nos enviar os XMLs, para conferirmos o grupo do IBS/CBS antes da validação da Receita?",
       "ask": "Podemos marcar 30 minutos esta semana?",
-      "signature": "Equipe fiscal Franco",
+      "signature": "Equipe fiscal {firmShort}",
       "copy": "Copiar texto",
       "copied": "Texto copiado",
       "copyFailed": "Não foi possível copiar: selecione o texto e copie à mão.",
@@ -1591,7 +1914,7 @@
     "imports": {
       "title": "Notas fiscais",
       "heading": "Os XMLs das notas dos clientes",
-      "lede": "Envie os XMLs que a Franco recebe dos clientes, um arquivo ou um .zip com vários. Cada nota é ligada ao cliente pelo CNPJ: as que ele emitiu alimentam a Prontidão da NF-e; as que ele recebeu, o Crédito de fornecedores.",
+      "lede": "Envie os XMLs que a {firmShort} recebe dos clientes, um arquivo ou um .zip com vários. Cada nota é ligada ao cliente pelo CNPJ: as que ele emitiu alimentam a Prontidão da NF-e; as que ele recebeu, o Crédito de fornecedores.",
       "result": "Último envio",
       "success": "{stored} notas guardadas de {files} arquivos.",
       "form": {
@@ -1636,9 +1959,9 @@
   },
   "radar": {
     "title": "Radar da carteira",
-    "heading": "O motor da Reforma sobre os clientes que a Franco já tem",
-    "lede": "Cada linha é uma conversa que a Franco pode puxar amanhã, ou um lote para a Rede de Especialistas Franco. Valores são estimativas por faixa de faturamento.",
-    "note": "Onde há notas fiscais importadas, a prova vem delas; o resto vem do cadastro. Só entra num lote o cliente que autorizou no contrato, e a Franco segue dona de todos.",
+    "heading": "O motor da Reforma sobre os clientes que a {firmShort} já tem",
+    "lede": "Cada linha é uma conversa que a {firmShort} pode puxar amanhã, ou um lote para a Rede de Especialistas {firmShort}. Valores são estimativas por faixa de faturamento.",
+    "note": "Onde há notas fiscais importadas, a prova vem delas; o resto vem do cadastro. Só entra num lote o cliente que autorizou no contrato, e a {firmShort} segue dona de todos.",
     "loadFailed": "Não deu para carregar o Radar.",
     "retry": "Tentar de novo",
     "notFound": "Este item do Radar não existe.",
@@ -1694,13 +2017,13 @@
         "split": "Vendas B2B das notas: {monthly} por mês, retidos {held} por mês"
       }
     },
-    "sentToast": "{count} cliente da carteira encaminhado para {partner}. A Franco segue dona de todos. | {count} clientes da carteira encaminhados para {partner}. A Franco segue dona de todos.",
+    "sentToast": "{count} cliente da carteira encaminhado para {partner}. A {firmShort} segue dona de todos. | {count} clientes da carteira encaminhados para {partner}. A {firmShort} segue dona de todos.",
     "nothingToast": "Todos os clientes de “{title}” já foram encaminhados para {partner}."
   },
   "contracts": {
     "title": "Alerta de contratos",
     "heading": "Contratos que atravessam 2027–2033 sem cláusula de preço para a Reforma",
-    "lede": "Os contratos dos clientes que a Franco guarda, do mais exposto ao menos. Os que vencem em 2026 ou já têm a cláusula ficam de fora.",
+    "lede": "Os contratos dos clientes que a {firmShort} guarda, do mais exposto ao menos. Os que vencem em 2026 ou já têm a cláusula ficam de fora.",
     "note": "Reforma Tributária (EC 132/2023 e LC 214/2025): a troca de PIS, Cofins, ICMS e ISS por CBS e IBS acontece de 2027 a 2033, e contrato longo que atravessa a transição precisa de cláusula de reequilíbrio de preço. Fonte: gov.br/fazenda, lida em 05/11/2026.",
     "loadFailed": "Não deu para carregar os contratos.",
     "retry": "Tentar de novo",
@@ -1773,7 +2096,7 @@
         "unexpected": "Não foi possível importar agora. Tente de novo."
       },
       "lineCodes": {
-        "client_unknown": "nenhum cliente da Franco tem este CNPJ",
+        "client_unknown": "nenhum cliente da {firmShort} tem este CNPJ",
         "kind_invalid": "tipo de contrato desconhecido",
         "value_invalid": "valor anual inválido (de R$ 0,01 a R$ 1 bilhão)",
         "year_invalid": "ano fora de 2000–2100",
@@ -1859,5 +2182,274 @@
     },
     "loadFailed": "Não foi possível carregar o briefing.",
     "retry": "Tentar de novo"
+  },
+  "platform": {
+    "consent": {
+      "counter": "{count} / {max}",
+      "hint": "Escreva {placeholder} onde vai o nome do escritório.",
+      "label": "Frase de consentimento padrão",
+      "lede": "A frase que a primeira versão do consentimento de um escritório novo copia, com o nome do escritório onde está {placeholder}. Mudar aqui só alcança o próximo escritório criado: os existentes mantêm as suas versões.",
+      "loadFailed": "Não foi possível carregar o consentimento padrão.",
+      "saved": "Consentimento padrão salvo. O próximo escritório criado vai copiá-lo.",
+      "title": "Consentimento padrão"
+    },
+    "errors": {
+      "emailInvalid": "Este não é um e-mail válido.",
+      "emailTaken": "Este e-mail já pertence a outra conta.",
+      "firmNotFound": "Este escritório não existe mais. Recarregue a página.",
+      "invalidColour": "Use uma cor no formato #rrggbb.",
+      "lowContrast": "Texto branco não se lê nesta cor (abaixo de {min}:1). Escolha uma mais escura.",
+      "missingDependency": "Um módulo precisa de outro que está desligado. Ligue-o antes.",
+      "moduleUnknown": "Esse módulo não está no catálogo. Recarregue a página.",
+      "placeholderMissing": "A frase precisa nomear o escritório: escreva {'{escritorio}'} onde vai o nome.",
+      "required": "Obrigatório",
+      "slugInvalid": "Use letras minúsculas, números e hífens, começando e terminando com letra ou número.",
+      "slugReserved": "Este endereço é reservado pela plataforma. Escolha outro.",
+      "slugTaken": "Já existe um escritório com este endereço.",
+      "usernameTaken": "Este usuário pertence a outra conta. Escolha outro.",
+      "logoRequired": "Escolha uma imagem primeiro.",
+      "logoTooLarge": "A imagem passa de 512 KB. Escolha uma menor.",
+      "logoTooWide": "A imagem passa de 1024 px de lado. Escolha uma menor.",
+      "logoType": "Use uma imagem PNG, JPEG ou WebP — SVG e outros arquivos não são aceitos.",
+      "viewAsActive": "Você já está acessando um escritório. Saia dele primeiro.",
+      "viewAsOffboarded": "Este escritório foi encerrado e não é mais acessado como suporte.",
+      "viewAsPlatformFirm": "O escritório da plataforma não é acessado como suporte."
+    },
+    "firms": {
+      "coreOnly": "Só o núcleo",
+      "created": "Criado em {date}",
+      "edit": "Visual",
+      "leads": "{count} leads | {count} lead | {count} leads",
+      "lede": "Todos os escritórios da plataforma: endereço, módulos e leads. Um escritório novo nasce com o login do gestor; visual, módulos e login se editam na linha dele.",
+      "loadFailed": "Não foi possível carregar os escritórios.",
+      "managerAction": "Login do gestor",
+      "modules": "Módulos",
+      "modulesAction": "Módulos",
+      "new": "Novo escritório",
+      "platform": "Plataforma",
+      "retry": "Tentar de novo",
+      "title": "Escritórios"
+    },
+    "form": {
+      "accent": "Cor de destaque",
+      "cancel": "Cancelar",
+      "colours": "Cores",
+      "contrastLow": "Texto branco nesta cor fica em {ratio}:1 — abaixo dos {min}:1 que a plataforma pede. Escolha uma mais escura.",
+      "contrastOk": "Texto branco nesta cor fica em {ratio}:1 (pelo menos {min}:1).",
+      "contrastUnknown": "Digite uma cor no formato #rrggbb para ver como o texto branco fica nela.",
+      "create": "Criar escritório",
+      "created": "{name} foi criado em {site}. O gestor entra lá como {manager}.",
+      "done": "Concluir",
+      "editHeading": "Visual do escritório",
+      "email": "E-mail do gestor (opcional)",
+      "invalidColour": "Use uma cor no formato #rrggbb.",
+      "logoText": "Texto do logo",
+      "manager": "Usuário do gestor",
+      "managerPlaceholder": "gestao.escritorio",
+      "name": "Nome do escritório",
+      "newHeading": "Novo escritório",
+      "newNote": "O escritório começa com as cores da plataforma, os módulos do núcleo e o briefing do dia; visual e módulos se editam na linha dele.",
+      "pick": "Escolher a {field}",
+      "previewCta": "Fazer o diagnóstico",
+      "previewLede": "O site do escritório, nas cores dele",
+      "primary": "Cor principal",
+      "proof": "Provas",
+      "proofHint": "Quatro fatos curtos na página inicial — ou deixe os quatro vazios para não mostrar nenhum.",
+      "proofLabel": "Prova {n}, legenda",
+      "proofLabelPlaceholder": "clientes atendidos",
+      "proofRequired": "Preencha as quatro provas, valor e legenda — ou deixe as quatro vazias.",
+      "proofValue": "Prova {n}, valor",
+      "proofValuePlaceholder": "300+",
+      "save": "Salvar",
+      "shortName": "Nome curto",
+      "slug": "Endereço (subdomínio)",
+      "slugHint": "Letras minúsculas, números e hífens. A plataforma diz se está livre.",
+      "slugPreview": "O escritório vai responder em {site}",
+      "tagline": "Slogan (opcional)"
+    },
+    "manager": {
+      "created": "{username} foi criado como login do gestor de {name}.",
+      "email": "E-mail (opcional, para um login novo)",
+      "heading": "Login do gestor",
+      "lede": "O gestor de {name}: o usuário do gestor recebe uma senha nova e as sessões abertas terminam; um usuário livre vira o novo login do gestor do escritório.",
+      "reset": "A senha de {username} foi redefinida; as sessões abertas foram encerradas.",
+      "submit": "Gerar senha",
+      "username": "Usuário",
+      "usernameHint": "O usuário de outra conta é recusado e fica como está."
+    },
+    "modules": {
+      "core": "Sempre ligados",
+      "coreHint": "Todo escritório tem; não se desligam.",
+      "heading": "Módulos",
+      "lede": "O que {name} tem ligado. Um módulo desligado esconde as telas e a API responde não encontrado.",
+      "names": {
+        "assistant": "Assistente da Reforma",
+        "booking": "Agendamento",
+        "brands": "Submarcas",
+        "briefing": "Briefing do dia",
+        "channel": "Canal da rede de contabilidade",
+        "chat": "Chat do diagnóstico",
+        "contracts": "Alerta de contratos",
+        "diagnostic": "Diagnóstico",
+        "fiscal": "Telas fiscais",
+        "metrics": "Métricas",
+        "partners": "Rede de parceiros",
+        "pipeline": "Pipeline",
+        "portfolio": "Carteira",
+        "radar": "Radar",
+        "site": "Site público"
+      },
+      "needs": "{module} precisa de {needs} ligado.",
+      "operatorOnly": "Só a plataforma",
+      "operatorOnlyHint": "Ligado e desligado apenas pelo operador da plataforma.",
+      "optIn": "Opcionais"
+    },
+    "password": {
+      "copied": "Copiada",
+      "copy": "Copiar",
+      "copyFailed": "Não foi possível copiar: selecione a senha e copie à mão.",
+      "once": "Copie agora: ela não será mostrada de novo. Uma nova pode ser gerada no login do gestor.",
+      "title": "Senha"
+    },
+    "logo": {
+      "choose": "Escolher imagem",
+      "current": "Logo atual",
+      "empty": "Ainda sem logo: o site e o painel escrevem o texto do logo.",
+      "hint": "PNG, JPEG ou WebP, até 512 KB e 1024 px de lado.",
+      "label": "Logo",
+      "preview": "Prévia da imagem escolhida",
+      "remove": "Remover logo",
+      "upload": "Enviar logo"
+    },
+    "viewAs": {
+      "action": "Acessar como suporte",
+      "banner": "Você está acessando {firm} como operador da plataforma",
+      "leave": "Sair",
+      "log": {
+        "address": "De {ip}",
+        "empty": "Ninguém acessou um escritório como suporte ainda.",
+        "ended": "Terminou {date}",
+        "lede": "Cada vez que o operador da plataforma entrou num escritório como suporte: quem, qual escritório, de onde, quando e como terminou.",
+        "loadFailed": "Não foi possível carregar o registro de acessos.",
+        "reasons": {
+          "expirou": "Expirou",
+          "logout": "Saiu da conta",
+          "open": "Em aberto",
+          "sair": "Saiu"
+        },
+        "retry": "Tentar de novo",
+        "started": "Começou {date}",
+        "title": "Acessos de suporte"
+      },
+      "leaveFailed": "Não foi possível sair do escritório. Tente de novo."
+    }
+  },
+  "users": {
+    "form": {
+      "roleNotAssignable": "Aqui só se dão os papéis da equipe (Equipe ou Gestão)."
+    }
+  },
+  "leads": {
+    "consentPlaceholderMissing": "O texto precisa nomear o escritório: escreva {'{escritorio}'} onde vai o nome dele."
+  },
+  "firmSettings": {
+    "cancel": "Cancelar",
+    "done": "Concluir",
+    "retry": "Tentar de novo",
+    "errors": {
+      "required": "Obrigatório"
+    },
+    "contact": {
+      "title": "Contato do escritório",
+      "lede": "Como o visitante chega ao escritório: o endereço, o telefone, o e-mail e o horário que o site público mostra, e a linha de credenciais no rodapé. A identidade visual do escritório é definida pela plataforma.",
+      "address": "Endereço",
+      "phone": "Telefone",
+      "mailbox": "E-mail de contato",
+      "credentials": "Linha de credenciais (opcional)",
+      "credentialsHint": "Certificações e associações, mostradas no rodapé do site como escritas. Deixe vazio para não mostrar nenhuma.",
+      "save": "Salvar",
+      "saved": "Contato salvo. O site mostra na próxima visita.",
+      "loadFailed": "Não foi possível carregar o contato do escritório."
+    },
+    "hours": {
+      "title": "Horário de atendimento",
+      "hint": "Agrupe os dias da semana que têm o mesmo horário.",
+      "window": "Faixa {n}",
+      "weekdays": "Dias da semana",
+      "weekday": "Dia da semana",
+      "from": "Abre",
+      "to": "Fecha",
+      "add": "Adicionar horário",
+      "remove": "Remover faixa {n}",
+      "none": "Sem horário: o site não mostra nenhum.",
+      "weekdayRequired": "Escolha pelo menos um dia da semana.",
+      "timeRequired": "Preencha os dois horários como HH:MM.",
+      "closesAfterOpens": "O horário de fechar precisa vir depois do de abrir."
+    },
+    "team": {
+      "title": "Acessos da equipe",
+      "lede": "Os acessos do escritório: a equipe e a gestão. A senha de um acesso novo aparece uma vez só — repasse para a pessoa.",
+      "new": "Novo acesso",
+      "newHeading": "Novo acesso",
+      "editHeading": "Editar acesso",
+      "name": "Nome",
+      "lastName": "Sobrenome",
+      "username": "Usuário",
+      "role": "Papel",
+      "specialist": "Especialista — o visitante pode agendar uma reunião com esta pessoa",
+      "specialistHint": "Um especialista novo começa no horário de atendimento do escritório; ajuste em Especialistas.",
+      "specialistBadge": "Especialista",
+      "passwordNote": "Uma senha é gerada quando o acesso é criado e aparece uma vez só.",
+      "create": "Criar acesso",
+      "save": "Salvar",
+      "created": "{username} foi criado. A senha:",
+      "edit": "Editar",
+      "reset": "Redefinir senha",
+      "deactivate": "Desativar",
+      "reactivate": "Reativar",
+      "deactivateConfirm": "Desativar {name}? O acesso para de funcionar até ser reativado.",
+      "reactivateConfirm": "Reativar {name}? O acesso volta a funcionar com a senha atual.",
+      "active": "Ativo",
+      "inactive": "Inativo",
+      "loadFailed": "Não foi possível carregar a equipe."
+    },
+    "reset": {
+      "heading": "Redefinir senha",
+      "lede": "{name} ({username}) recebe uma senha nova, mostrada uma vez só aqui. A antiga para de funcionar.",
+      "submit": "Gerar senha nova"
+    },
+    "specialists": {
+      "title": "Especialistas",
+      "lede": "O horário semanal de cada especialista — os horários que a agenda do diagnóstico oferece ao visitante. Quem é especialista se marca em Acessos da equipe.",
+      "hours": "Horário semanal",
+      "noHours": "Sem horário: não aparece na agenda.",
+      "edit": "Horário",
+      "formHeading": "Horário do especialista",
+      "formLede": "A semana de {name}. Cada linha é uma faixa em um dia da semana.",
+      "noHoursNote": "Sem linhas, a agenda não oferece horário com este especialista.",
+      "save": "Salvar horário",
+      "empty": "Nenhum especialista ainda. Marque alguém da equipe como especialista em Acessos da equipe.",
+      "goToTeam": "Ir para Acessos da equipe",
+      "loadFailed": "Não foi possível carregar os especialistas."
+    },
+    "consent": {
+      "title": "Consentimento",
+      "lede": "A frase que o visitante aceita antes do diagnóstico. Salvar cria uma versão nova; as respostas já dadas ficam com a versão que aceitaram.",
+      "current": "A versão {version} é a que o visitante vê hoje.",
+      "label": "Texto do consentimento",
+      "hint": "Escreva {placeholder} onde vai o nome do escritório.",
+      "counter": "{count} / {max}",
+      "previewTitle": "Como o visitante lê",
+      "save": "Salvar nova versão",
+      "saved": "Versão {version} salva. Os novos diagnósticos usam ela.",
+      "unchanged": "Este é o mesmo texto da versão atual. Mude antes de salvar.",
+      "history": "Histórico",
+      "version": "v{version}",
+      "platformAuthor": "Padrão da plataforma",
+      "loadFailed": "Não foi possível carregar o consentimento."
+    }
+  },
+  "firms": {
+    "offboarded": "Este escritório deixou a plataforma e o acesso foi encerrado."
   }
 }

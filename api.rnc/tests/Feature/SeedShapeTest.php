@@ -16,14 +16,16 @@ uses(RefreshDatabase::class);
  * operator's account exists, because those passwords are the shared local default.
  */
 describe('database seed', function () {
-    it('creates Franco as the first and only firm', function () {
+    // rnc-4 D3: the platform firm `hub` follows Franco in every environment (PlatformSeedersTest);
+    // the demo firm Alvorada is local only and never seeded here.
+    it('creates Franco as the first firm, then only the platform firm', function () {
         $this->seed();
 
-        expect(Firm::pluck('slug')->all())->toBe(['franco'])
-            ->and(Firm::first()->id)->toBe(1);
+        // Ordered by id, not `id === 1`: MySQL does not roll an auto-increment back between tests (rnc-4 F7b).
+        expect(Firm::orderBy('id')->pluck('slug')->all())->toBe(['franco', 'hub']);
     });
 
-    it('creates the operator, Reinaldo, the team and four specialists, all in Franco', function () {
+    it('creates Reinaldo, the team and four specialists in Franco, and the operator in no firm', function () {
         $this->seed();
 
         expect(User::pluck('username')->sort()->values()->all())->toBe([
@@ -44,7 +46,8 @@ describe('database seed', function () {
             'rafael.antunes',
             'reinaldo',
         ])
-            ->and(User::whereNull('firm_id')->count())->toBe(0)
+            // The operator alone has no firm (rnc-4 F4a, R24); everyone else is Franco's.
+            ->and(User::whereNull('firm_id')->pluck('username')->all())->toBe(['battoni'])
             ->and(User::where('is_specialist', true)->pluck('username')->sort()->values()->all())
             ->toBe(['carlos.prado', 'juliana.reis', 'mariana.toledo', 'rafael.antunes']);
     });
@@ -55,7 +58,7 @@ describe('database seed', function () {
         $roles = User::with('role')->get()->mapWithKeys(fn (User $user) => [$user->username => $user->role?->slug]);
 
         expect($roles['battoni'])->toBe('operador')
-            ->and($roles['reinaldo'])->toBe('ceo')
+            ->and($roles['reinaldo'])->toBe('gestao')
             ->and($roles['patricia'])->toBe('equipe')
             ->and($roles['mariana.toledo'])->toBe('equipe');
     });

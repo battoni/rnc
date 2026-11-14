@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 2.3.0 — 2026-11-14
+
+### Changed
+
+- rnc-4 verify: both named routes also declare `meta.role: 'operador'` — the screen is the operator's alone, as the API's role writes are (403 `platform.operatorOnly`). Known Gap recorded for the synced settings link.
+
 ## 2.2.0 — 2026-09-21
 
 ### Fixed

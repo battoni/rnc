@@ -25,7 +25,7 @@ function consentImporter(): User
 {
     return User::factory()->create([
         'firm_id' => Firm::where('slug', 'franco')->value('id'),
-        'role_id' => Role::where('slug', 'ceo')->value('id'),
+        'role_id' => Role::where('slug', 'gestao')->value('id'),
     ]);
 }
 

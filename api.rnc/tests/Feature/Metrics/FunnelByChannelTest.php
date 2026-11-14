@@ -60,7 +60,7 @@ beforeEach(function () {
     Http::preventStrayRequests();
     CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-11-19 10:00', 'America/Sao_Paulo'));
     $this->seed([FirmSeeder::class, RoleSeeder::class, SectorPageSeeder::class]);
-    $this->ceo = funnelPerson('ceo');
+    $this->ceo = funnelPerson('gestao');
 });
 
 afterEach(fn () => CarbonImmutable::setTestNow());

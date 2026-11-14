@@ -6,7 +6,7 @@ import WorkspaceRoutes from './routes';
 
 /*
  * Reinaldo's landing (rnc-3 F9, R26, A23): the rail's "Reinaldo" link and the home card open
- * `/reinaldo` (`/ceo`), which lands on "Briefing do dia" — no longer on the metrics (rnc-1 F7). The
+ * `/gestao` (`/management`), which lands on "Briefing do dia" — no longer on the metrics (rnc-1 F7). The
  * team's landing is still its pipeline.
  */
 function routerWith() {
@@ -17,21 +17,21 @@ function routerWith() {
 }
 
 describe('WorkspaceRoutes', () => {
-  it('lands /reinaldo on the daily briefing', async () => {
+  it('lands /gestao on the daily briefing', async () => {
     const router = routerWith();
 
-    await router.push('/reinaldo');
+    await router.push('/gestao');
 
-    expect(router.currentRoute.value.path).toBe('/reinaldo/briefing');
+    expect(router.currentRoute.value.path).toBe('/gestao/briefing');
     expect(router.currentRoute.value.name).toBe('briefing-pt-BR');
   });
 
-  it('lands /ceo on the daily briefing', async () => {
+  it('lands /management on the daily briefing', async () => {
     const router = routerWith();
 
-    await router.push('/ceo');
+    await router.push('/management');
 
-    expect(router.currentRoute.value.path).toBe('/ceo/briefing');
+    expect(router.currentRoute.value.path).toBe('/management/briefing');
     expect(router.currentRoute.value.name).toBe('briefing-en');
   });
 
@@ -40,5 +40,10 @@ describe('WorkspaceRoutes', () => {
 
     expect(redirects['/equipe']).toBe('/equipe/pipeline');
     expect(redirects['/team']).toBe('/team/pipeline');
+  });
+
+  // rnc-4 F2c1 (R14, A13): the old person-named paths are gone, with no redirect left behind.
+  it.each(['/reinaldo', '/reinaldo/briefing', '/ceo', '/ceo/briefing'])('matches no route at %s', (path) => {
+    expect(routerWith().resolve(path).matched).toEqual([]);
   });
 });

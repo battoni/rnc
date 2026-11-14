@@ -1,4 +1,4 @@
-.PHONY: help install app build preview docs-install docs docs-gen docs-build docs-preview portal-install portal portal-extract portal-build portal-preview unit unit-watch integration e2e pest test test-all pre-commit check-app check-api check-portal check-cortex sync-mirror sync-mirror-check handoff fresh clear sanitize pint-api.rnc phpstan-api.rnc sanitize-api.rnc sync-audit sync-brand-audit sync-test sync-test-backport sync-test-engine sync-test-init
+.PHONY: help install app build preview docs-install docs docs-gen docs-build docs-preview portal-install portal portal-extract portal-build portal-preview unit unit-watch integration e2e pest test test-all pre-commit check-app check-api check-portal check-cortex sync-mirror sync-mirror-check handoff fresh clear sanitize pint-api.rnc phpstan-api.rnc sanitize-api.rnc sync-audit sync-brand-audit sync-test sync-test-backport sync-test-engine sync-test-init wt-test wt-new wt-up wt-app wt-down wt-discard wt-gc
 
 .DEFAULT_GOAL := help
 
@@ -59,8 +59,10 @@ unit-watch: ## app.rnc — Vitest in watch mode
 
 integration: unit ## app.rnc — alias for unit (includes integration specs)
 
-e2e: ## app.rnc — e2e (Playwright; starts its own vite --mode test, API mocked — no backend)
-	cd app.rnc && npm run test:e2e
+e2e: ## app.rnc — e2e (Playwright; its own vite --mode test on this checkout's E2E_PORT, API mocked — no backend) [E2E_ARGS=<spec file> …]
+	@port="$${E2E_PORT:-$$(python3 scripts/worktree.py port)}" || exit 1; \
+	echo "e2e on port $$port"; \
+	cd app.rnc && E2E_PORT="$$port" npm run test:e2e -- $(E2E_ARGS)
 
 pest: ## api.rnc — Pest feature + unit tests
 	cd api.rnc && vendor/bin/pest
@@ -91,7 +93,7 @@ sync-mirror-check: ## fail if any .cursor mirror has drifted from .claude (no wr
 # `composer audit` (informational there too). Unlike CI, `sanitize` FIXES lint and format
 # instead of only checking them, so a green run here can still leave files to commit.
 pre-commit: check-app check-api check-portal check-cortex
-pre-commit: sync-mirror-check sanitize test-all ## mechanical pre-commit gate (static checks + mirror parity + sanitize + tests)
+pre-commit: sync-mirror-check sanitize wt-test test-all ## mechanical pre-commit gate (static checks + mirror parity + sanitize + tests)
 
 check-app: ## app.rnc — CI's static checks: module aliases, type-check
 	cd app.rnc && npm run check:aliases && npm run type-check
@@ -109,7 +111,7 @@ check-portal: ## docs portal — CI's checks: extracted data current, gate tests
 # Upstream-only, like the matching CI steps: a derived project tracks .cortex-sync.conf and
 # rnc never does. A recipe rather than prerequisites, so a handoff copy (no cortex/, and
 # the sync-* targets stripped) skips it instead of failing on a target that is gone.
-check-cortex: ## cortex — CI's sync checks: manifest audit, classification, back-port, handoff, mirror + hook tests, engine + init proofs
+check-cortex: ## cortex — CI's sync checks: manifest audit, classification, back-port, handoff, mirror + hook + flow-status tests, engine + init proofs
 	@if [ -f cortex/sync/sync.py ] && [ ! -f .cortex-sync.conf ]; then \
 		python3 cortex/sync/sync.py --audit && \
 		python3 cortex/sync/test_sync.py && \
@@ -117,11 +119,36 @@ check-cortex: ## cortex — CI's sync checks: manifest audit, classification, ba
 		python3 cortex/sync/test_handoff.py && \
 		python3 cortex/sync/test_cursor_mirror.py && \
 		python3 cortex/hooks/test_claude_hooks.py && \
+		python3 scripts/test_flow_status.py && \
 		bash cortex/sync/test_engine.sh && \
 		bash cortex/sync/test_init.sh; \
 	else \
 		echo "check-cortex: not the rnc upstream — skipped."; \
 	fi
+
+wt-test: ## scripts — worktree script tests (labels, ports, env files, new/up/app/down/discard/gc/port; temp repos, stubbed lsof/mysql/valet/sudo/gh/composer/npm)
+	python3 scripts/test_worktree.py
+
+wt-new: ## scripts — new worktree .claude/worktrees/<ID> from origin/main with its deps (ID=<id> [SLUG=<slug>] [BRANCH=<branch>])
+	@test -n "$(ID)" || { echo "usage: make wt-new ID=<id> [SLUG=<slug>] [BRANCH=<branch>]"; exit 2; }
+	python3 scripts/worktree.py new "$(ID)" $(if $(SLUG),--slug "$(SLUG)") $(if $(BRANCH),--branch "$(BRANCH)")
+
+wt-up: ## scripts — serve this worktree (run inside it): Valet api/app.<label> sites, its own DB copy, env files, migrate (refuses on SQLite: rnc)
+	python3 scripts/worktree.py up
+
+wt-app: ## scripts — this worktree's Vite dev server on its own HTTPS port, E2E_PORT exported (after wt-up)
+	python3 scripts/worktree.py app
+
+wt-down: ## scripts — tear a worktree down once its PR merged and it is clean and quiet: Valet sites, DB copy, folder, branch (ID=<id>)
+	@test -n "$(ID)" || { echo "usage: make wt-down ID=<id>"; exit 2; }
+	python3 scripts/worktree.py down "$(ID)"
+
+wt-discard: ## scripts — throw an UNMERGED worktree away (same checks as wt-down but merged; open PR refused); a dry run until CONFIRM=<id> repeats ID
+	@test -n "$(ID)" || { echo "usage: make wt-discard ID=<id> [CONFIRM=<id>]"; exit 2; }
+	python3 scripts/worktree.py discard "$(ID)" $(if $(CONFIRM),--confirm "$(CONFIRM)")
+
+wt-gc: ## scripts — wt-down on every worktree that passes; lists the left-behind ones (closed PR, 7 days idle) with why
+	python3 scripts/worktree.py gc
 
 sync-audit: ## cortex — manifest coverage audit + classification unit tests
 	python3 cortex/sync/sync.py --audit

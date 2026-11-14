@@ -6,6 +6,8 @@ use App\Models\User;
 use App\Modules\Auth\DTOs\LoginCredentialsDTO;
 use App\Modules\Auth\Enums\UserStatus;
 use App\Modules\Auth\Repositories\UserRepository;
+use App\Modules\Firm\Services\CurrentFirm;
+use App\Modules\Firm\Services\FirmResolver;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -21,6 +23,8 @@ class AuthService
     private const TIMING_EQUALISER_HASH = '$2y$12$GCmU2q/rJo53C0yv7Zmb9Of/a5rWzqp0/cEdeIuYrzPzIWgwyeBJe';
 
     public function __construct(
+        private CurrentFirm $currentFirm,
+        private FirmResolver $firmResolver,
         private PermissionService $permissionService,
         private UserRepository $userRepository,
     ) {}
@@ -44,7 +48,9 @@ class AuthService
         // without a password proved the address was real. With a correct password the caller
         // already knows the account; telling them it is deactivated and to speak to an
         // administrator is the useful answer, not an enumeration leak.
-        if (! $user || ! $isPasswordValid) {
+        // An account of another firm is the same refusal, checked after the hash so the timing does
+        // not move (rnc-4 R4, D5): "this person exists, on another host" is an enumeration too.
+        if (! $user || ! $isPasswordValid || ! $this->firmResolver->belongsTo($user, $this->currentFirm->get())) {
             throw ValidationException::withMessages([
                 'username' => ['auth.login.invalidCredentials'],
             ]);
@@ -69,7 +75,7 @@ class AuthService
      */
     public function getSupportNames(): array
     {
-        $activeUsers = $this->userRepository->findAllActiveUsers();
+        $activeUsers = $this->userRepository->findAllActiveUsers($this->currentFirm->id());
         if (empty($activeUsers)) {
             return [];
         }

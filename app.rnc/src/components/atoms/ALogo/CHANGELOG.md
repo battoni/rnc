@@ -3,6 +3,18 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 3.1.0 — 2026-11-14
+
+### Added
+
+- `src` (rnc-4 F4d, R27): a firm's uploaded logo replaces the words in both variants, `alt` = `name`; the text mark comes back when the picture fails to load. `data-testid="logo-image"`.
+
+## 3.0.0 — 2026-11-14
+
+### Changed
+
+- **No name of its own** (rnc-4 F2c2, R15): `name` is the firm's logo text and has no default; with none given the mark draws nothing. The screens that relied on the default draw `MFirmLogo` (the host firm's). _Retired:_ the default "Franco Contabilidade" — the build named one tenant on every firm's sign-in screen.
+
 ## 2.2.0 — 2026-11-07
 
 ### Added

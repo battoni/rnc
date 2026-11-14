@@ -2,6 +2,9 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.3.0 — 2026-11-14
+- A chat start on a firm without the `chat` module is 422 `modules.disabled` (rnc-4 F3a, R17). Tested by `tests/Feature/Firm/ModuleGateTest`.
+
 ## 1.2.0 — 2026-11-07
 
 ### Changed

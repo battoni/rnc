@@ -3,6 +3,71 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.19.0 — 2026-11-14
+
+### Added
+
+- rnc-4 verify P2-S2: post-date twins `site.landing.titleStarted`, `site.seo.landingDescriptionStarted`, `site.product.seo.descriptionStarted`, `site.product.urgency.titleStarted`, `site.product.closing.textStarted` (read through `cbsKey`).
+- rnc-4 verify P2-S6: `platform.password.copyFailed`.
+- rnc-4 verify (API batch): `platform.errors.viewAsOffboarded`.
+
+## 1.18.2 — 2026-11-14
+
+### Fixed
+
+- rnc-4 verify P1-S1: the host firm's names are stored as literals (`setFirmNames`), so a `|`, `@`, `{` or `}`
+  in a name prints as typed. Known gap recorded: an empty name prints its linked key until the firm answers.
+
+## 1.18.1 — 2026-11-14
+
+### Added
+
+- rnc-4 F9b: `site.privacy.*` (the privacy notice), `site.footer.privacy`, `diagnostic.contact.privacy`,
+  `pipeline.lead.data.*`, `pipeline.lead.timeline.events.anonymised` / `anonymisedOnExit`, and the API's
+  `firms.offboarded` refusal (F9a) as a top-level `firms` key in `local/*.json`.
+
+## 1.18.0 — 2026-11-14
+
+### Added
+
+- rnc-4 F4d: `platform.logo.*`, `platform.viewAs.*` (banner, "Sair"/"Leave", the log and its reasons), `platform.errors.logo*` / `viewAs*`, `navigation.platformViewAsLog`.
+
+## 1.17.0 — 2026-11-14
+
+### Added
+
+- `local/*.json` (rnc-4 F5b): `firmSettings.*` (the four settings screens), `navigation.firmContact|firmTeam|firmSpecialists|firmConsent`, and the two API refusals the screens show by key — `users.form.roleNotAssignable` (W76) and `leads.consentPlaceholderMissing` (W79), merged into the core `users` and a new `leads` section.
+
+## 1.16.0 — 2026-11-14
+
+### Changed
+
+- `local/*.json` (rnc-4 F5a): `rolesAndPermissions.groups.firm` for the new `firm.settings` key on the roles screen; `site.footer.credentialsText` removed — the credentials line is the firm's own field (W31).
+
+## 1.15.0 — 2026-11-14
+
+### Added
+
+- `local/*.json` (rnc-4 F4b): the `platform` group — the console's firms list, firm form, modules, manager login, one-time password and default consent, and the refusals by the API's code (`platform.errors.*`); `navigation.platform`, `platformFirms`, `platformConsent`. `scripts/sort-locales.mjs` registers `platform`.
+
+## 1.14.0 — 2026-11-14
+
+### Added
+
+- `local/*.json` (rnc-4 F4a): `rolesAndPermissions.groups.platform`, `rolesAndPermissions.permissions.consent` (the console's two keys on the roles screen) and `rolesAndPermissions.operatorOnlyKey` (the API's refusal to give a platform key to another role). The console's own strings arrive with its screens (F4b).
+
+## 1.13.0 — 2026-11-14
+
+### Changed
+
+- `local/*.json` (rnc-4 F2c2, R14, R15): every string that named Franco takes `{firmShort}` (short name) or `{firmName}` (full name), filled at runtime by the host firm; "Reinaldo" is "Gestão" / "Management" (`navigation.management`, `home.workspaces.management.title`, the partner registry's empty state, the NF-e note); `site.landing.proof.*` removed (the proof strip is the firm's own `proof`); `site.landing.closingText` and `auth.brand.domain` generic.
+
+## 1.12.0 — 2026-11-14
+
+### Changed
+
+- Keys `navigation.ceo` and `home.workspaces.ceo` → `navigation.management` and `home.workspaces.management` (rnc-4 F2c1, R14); their wording is F2c2's.
+
 ## 1.11.0 — 2026-09-21
 
 ### Added

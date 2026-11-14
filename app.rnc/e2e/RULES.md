@@ -1,12 +1,12 @@
 ---
-version: 1.14.0
+version: 1.23.0
 origin: pendulum
 based-on: 1.8.2
 ---
 
 # RULES — app.rnc/e2e/
 
-> For AI agents. Last updated: 2026-09-22.
+> For AI agents. Last updated: 2026-11-13.
 
 ## Purpose
 
@@ -23,27 +23,34 @@ A request can.
 ## Stack
 
 - Playwright (Chromium) — `playwright.config.ts` at app.rnc root
-- Run: `cd app.rnc && npm run test:e2e` or `make e2e`
-- Dev server: auto-started via `webServer` (`npx vite --mode test --port $E2E_PORT --strictPort`,
-  `E2E_PORT` defaulting to 5173; `baseURL` and the readiness `url` follow it) — no SSL
-- **A second checkout (a git worktree) must run with its own `E2E_PORT`**, e.g.
-  `E2E_PORT=5175 make pre-commit` from its root. Locally `reuseExistingServer` is on, so with the
-  default port the suite silently runs against whatever already answers on 5173 — the OTHER
-  checkout's code. And if that server is a plain `npm run dev` (not `--mode test`), the five
-  English-route specs fail: the default language `en` comes from `.env.test`, and a dev server
-  started from `.env` serves `pt-BR`. The
-  Makefile does not set the port on purpose: the main checkout keeps 5173.
-- Retries: 1 locally, 2 on CI
+- Run: `rtk make e2e` (one file: `rtk make e2e E2E_ARGS=<spec file>`). A bare `npx playwright test`
+  with no `E2E_PORT` and no `CI` fails at config load, naming `make e2e`.
+- Dev server: always its own, started via `webServer` (`npx vite --mode test --port <E2E_PORT>
+  --strictPort`) — no SSL. CI keeps the fixed 5173.
+- Retries: 1 locally, 2 on CI. **Locally a test that passed only on its retry fails the run**
+  (`failOnFlakyTests`): fix the flake, never rerun until green.
+- Reporter: `line` plus `html` with `open: 'never'`, so every run exits on its own; browse the
+  report with `npx playwright show-report`.
 - **The browsers are not installed by `npm install`.** A first run on a new machine needs
   `npx playwright install chromium`, or every test fails at browser launch.
-- **If port 5173 is already taken** (by the local HTTPS dev server, say), do not fight it: start
-  `npx vite --mode test --port 5174` yourself and run with
-  `E2E_NO_WEBSERVER=1 E2E_BASE_URL=http://localhost:5174`. The managed `webServer` would otherwise
-  try to reuse a server it cannot talk to.
+- **`make e2e` picks the port; a taken port fails.** Each checkout has its own e2e port
+  (`python3 scripts/worktree.py port`; an exported `E2E_PORT` wins), and the suite never reuses a
+  server already on it (`reuseExistingServer: false`): whatever answers there is not this checkout's
+  app, and a plain `npm run dev` would serve `pt-BR` where the specs expect the `.env.test`
+  language. Stop what holds the port instead of pointing the suite somewhere else.
+
+  _Retired:_ "A second checkout must run with its own `E2E_PORT`, and if 5173 is taken start Vite on
+  5174 and switch the managed server off (`E2E_NO_WEBSERVER`, `E2E_BASE_URL`)". It was the
+  workaround for a shared port, and reusing a running server let a suite pass against another
+  checkout's code; the overrides are gone from the config and `make e2e` now picks the port.
 - **Never write a host into a spec.** A page from `browser.newPage()` does NOT inherit the
   project's `baseURL`, so pass it — `browser.newPage({ baseURL: testInfo.project.use.baseURL })` —
   and `goto` a path. A fixed `http://localhost:5173` warms (or tests) whatever else answers there
-  when the suite runs against `E2E_BASE_URL`, and a `.catch` hides it.
+  when the suite runs on another port, and a `.catch` hides it.
+- **The suite runs on Franco's host** (`http://franco.localhost:<port>`, rnc-4 D31), so every call
+  names `X-Firm: franco`. A spec about another host (the platform root, an unknown subdomain) swaps
+  only the hostname of the project's `baseURL` (`new URL(path, baseURL)` then `url.hostname = …`),
+  never writes a port — `tenancy/firm-host.spec.ts` is the pattern.
 
 ## Directory layout
 
@@ -53,6 +60,7 @@ e2e/
   auth/              ← login (all modes), sign-up, forgot-password
   users/             ← users CRUD
   roles/             ← roles & permissions
+  tenancy/           ← the firm comes from the host: X-Firm, firms.mismatch, unknown subdomain (rnc-4)
   navigation/        ← the rail, the drawer, the bottom bar, the centred layout, the not-found screen
   theme/             ← what the theme promises, as the browser computed it: contrast, relief,
                        touch targets, scrollbars, the viewport height, the dialog mask
@@ -100,13 +108,32 @@ page that never rendered and fails on a locator rather than on a permission. `/u
 `users.read`, the roles screen `permissions.read`, the workspaces `leads.read` / `metrics.read` / `users.read`. When a route gains a `meta.permission`, grant it
 in the fixtures in the same change.
 
+**And the firm must have the module the screen belongs to** (rnc-4 F3c, R17): a route carrying
+`meta.module` is "not found" while the session's `firm.modules` lacks it, and its rail entry is gone.
+`mockUser.firm` has every opt-in module on (as Franco is seeded); a spec about a module being off
+overrides `firm` (`tenancy/modules.spec.ts`). A public page's firm (`public/firm`) lists `modules`
+too — the chat toggle needs `chat` (`diagnostic/chat.spec.ts`).
+
 ## Signed-in specs start at `/painel`
 
 `/` is Franco's public site (rnc-1 AM15) and renders no rail; a spec that measures the back office
 goes to `/painel`, the `home` route.
 
+## A confirm popup is clicked without a scroll
+
+PrimeVue's `ConfirmPopup` closes on any scroll of its anchor's scroll container, and Playwright
+scrolls a control into view before it clicks — the scroll lands after the popup opened, so the accept
+button detaches mid-click and the test times out (rnc-4 F9b, `pipeline/lead-privacy.spec.ts`). Give
+the test a viewport where the anchor is already on screen (`setViewportSize`); a person clicks a button
+they can see.
+
 ## Known Gaps
 
+- **A cold first run can flake `touch-target.spec.ts` "an icon-only small button is hit 4px outside"**
+  (seen once, 13/11/2026, on the first `make e2e` of a fresh worktree with no Vite cache: it failed at
+  line 73, passed on retry, and `failOnFlakyTests` failed the run with exit 2; the rerun was 7 of 7
+  green). Not diagnosed: cold compile of the personalization route is the suspect. Rerun once before
+  hunting; if it recurs warm, find the wait it lacks.
 - **No component gallery to measure** (rnc-1 F1). Four cases measured the Showcase's `/components`
   page — list row actions under a finger, default-size controls at 44px, the rendered badges and
   active tab, and the toggle/secondary/tag contrast (`contrast-controls.spec.ts`). They left with the
@@ -126,6 +153,15 @@ Measure a colour with transitions switched off (`addStyleTag` with `transition: 
 `data-theme` and hovering both start a transition, and a colour read mid-way is neither the old one
 nor the new one — a dark tab measured 4.14:1 on its way to 17. And measure what RENDERS where a
 stylesheet can outvote a token: a global rule once repainted every badge whatever its token said.
+
+## Measuring text
+
+A size that depends on text waits for its font: force layout on the element (so its face is
+requested), then `await document.fonts.ready`, then measure. The theme's fonts load with
+`font-display: swap`, so a label measured too early is in the fallback face — "Sign in" read 76px
+against 74.8 in Figtree, and `touch-target.spec.ts` failed 2 runs in 100 comparing two contexts that
+each raced it (boanerges-14 F4). A page's own `waitFor` on a button does not cover it: the font a
+probe injected afterwards needs may not have been requested yet.
 
 ## Do Not
 

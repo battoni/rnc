@@ -3,6 +3,83 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.24.0 — 2026-11-14
+
+### Added
+
+- `site/brands.spec.ts` (Chrome QA 4.11/4.12): a diagnostic started after `?marca=prime` then `?marca=principal`
+  leaves without `X-Brand` and the title is the main brand's (the first start, under Prime, proves the header is seen).
+
+## 1.23.0 — 2026-11-14
+
+### Added
+
+- `site/privacy.spec.ts` (rnc-4 F9b, A47): `/privacidade` names the controller, the operator and the
+  request contact, the footer links to it, no sideways scroll at 390/1440.
+- `pipeline/lead-privacy.spec.ts` (rnc-4 F9b, R39): the manager's JSON download and anonymisation behind
+  the confirm popup; the team sees neither button. RULES: "A confirm popup is clicked without a scroll".
+
+## 1.22.1 — 2026-11-14
+
+### Changed
+
+- `platform/view-as.spec.ts`: the mocked `auth/me` `platform.view_as` carries `modules`, as the API now answers (rnc-4 F7, W93).
+
+## 1.22.0 — 2026-11-14
+
+### Added
+
+- `platform/view-as.spec.ts` (rnc-4 F4d, A43): the console refuses an SVG before sending and previews and sends a PNG; the firm's logo shows on its own site at `/storage/...` on its own host; "Acessar como suporte" enters Alvorada — the banner on the console, the log and after a reload, in view at 390 and 1440 with no horizontal scroll (document and `.main-scroll`), the rail painted as Alvorada — and "Sair" returns to the console with the root's brand (API mocked).
+
+## 1.21.0 — 2026-11-14
+
+### Added
+
+- `firm-settings/settings.spec.ts` (rnc-4 F5b, A40): the demo firm's manager on `alvorada.localhost` saves a consent v2 (preview with the firm's name, history growing) and creates a team login whose password is shown once; the four settings screens read at 390 and 1440, light and dark, with no horizontal scroll — measured on the document AND on `TheLayout`'s `.main-scroll`, where a too-wide row scrolls while the document stays the window's width (a 480px list measured 125px there and 0 on the document) (API mocked).
+
+## 1.20.0 — 2026-11-14
+
+### Added
+
+- `platform/console.spec.ts` (rnc-4 F4b, A30): the firm-less operator at the root host lands on the console, creates "Ipê Contábil" and opens its subdomain link; the new firm's site and the console read at 390 and 1440, light and dark, with no horizontal scroll (API mocked).
+
+## 1.19.0 — 2026-11-14
+
+### Added
+
+- `tenancy/modules.spec.ts` (rnc-4 F3c, A24): a firm without `partners` has no partner entry in the rail and `/gestao/parceiros` is not found at the same address; `/management` lands on the metrics without `briefing`.
+
+### Changed
+
+- `fixtures/auth.ts`: `mockUser.firm` — Franco with every opt-in module — so the specs that spread it keep their screens once the router closes a module that is off; `diagnostic/chat.spec.ts`'s firm lists `chat`.
+
+## 1.18.0 — 2026-11-14
+
+### Added
+
+- `brand/no-franco.spec.ts` (rnc-4 F2c2, A16): on Alvorada's mocked host the landing, the diagnostic's contact step and result, the impact report and the back-office home name Alvorada and never Franco or Reinaldo; the rail reads "Gestão".
+
+## 1.17.0 — 2026-11-13
+
+### Changed
+- `baseURL` is `http://franco.localhost:<port>` (rnc-4 D31): every call carries `X-Firm: franco`. `.env.test` pins `VITE_API_URL=/api` (same-origin, D4), and the test server proxies `/api` too, so the `**/api/**` intercepts match on every host.
+### Added
+- `tenancy/firm-host.spec.ts` (rnc-4 A6, A7): calls go same-origin to `/api` naming the host's firm; a 403 `firms.mismatch` clears the session onto the login screen; an unknown subdomain shows "Firm not found".
+
+## 1.16.0 — 2026-11-13
+
+### Fixed
+- `theme/touch-target.spec.ts` (port of boanerges-14 F4): "the drawn size is the same under a finger and under a mouse" waits for the webfont before measuring (`document.fonts.ready` after a forced layout), so its default button's "Sign in" label is never measured in the fallback face in one context and in Figtree in the other.
+### Added
+- RULES "Measuring text": a size that depends on text waits for its font.
+
+## 1.15.0 — 2026-11-13
+
+### Changed
+- `playwright.config.ts` (port of boanerges-14 F3): locally the port is `E2E_PORT` (from `make e2e`), and a run without it fails at load naming `make e2e`; CI keeps 5173. `webServer` never reuses a running server, so a taken port fails before the first test. Reporter `line` + `html` with `open: 'never'`, so a run always exits. `failOnFlakyTests` locally: a test that passed only on retry fails the run.
+### Removed
+- The `E2E_NO_WEBSERVER` and `E2E_BASE_URL` overrides, and the RULES bullets that ran the suite on another port with them.
+
 ## 1.14.0 — 2026-11-07
 
 ### Added

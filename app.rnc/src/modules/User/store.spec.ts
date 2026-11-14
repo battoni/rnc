@@ -118,4 +118,65 @@ describe('useUserStore', () => {
     expect(getMeService).toHaveBeenCalledOnce();
     expect(store.user).toEqual(mockUser);
   });
+  /*
+   * rnc-4 R20, A24: `auth/me` (and the sign-in answers) carry the person's firm and the platform.
+   * The store keeps them beside the user, and `hasModule` answers for the firm's opt-in modules —
+   * what the rail and the router hide and close. A payload without the keys (a profile save) keeps
+   * what the session already knew; a firm-less account (the platform operator) has no opt-in module.
+   */
+  it('keeps the firm and the platform from the session, and answers hasModule from the firm (rnc-4 R20)', () => {
+    const store = useUserStore();
+    store.setUserAndPermissions({
+      ...mockUser,
+      firm: { modules: ['briefing', 'portfolio'], name: 'Alvorada Contabilidade', slug: 'alvorada' },
+      platform: { is_operator: false, name: 'Hub da Reforma', view_as: null },
+    } as never);
+
+    expect(store.firm?.slug).toBe('alvorada');
+    expect(store.platform?.name).toBe('Hub da Reforma');
+    expect(store.hasModule('briefing')).toBe(true);
+    expect(store.hasModule('partners')).toBe(false);
+  });
+
+  it('keeps the firm it knew when a later payload carries none, and drops it on clearUser', () => {
+    const store = useUserStore();
+    store.setUserAndPermissions({ ...mockUser, firm: { modules: ['partners'], name: 'F', slug: 'f' } } as never);
+    store.setUserAndPermissions(mockUser as never);
+
+    expect(store.hasModule('partners')).toBe(true);
+
+    store.clearUser();
+
+    expect(store.firm).toBeNull();
+    expect(store.hasModule('partners')).toBe(false);
+  });
+
+  it('has no opt-in module for a firm-less account (the platform operator, rnc-4 A26)', () => {
+    const store = useUserStore();
+    store.setUserAndPermissions({
+      ...mockUser,
+      firm: null,
+      platform: { is_operator: true, name: 'Hub', view_as: null },
+    } as never);
+
+    expect(store.firm).toBeNull();
+    expect(store.hasModule('briefing')).toBe(false);
+  });
+
+  it("answers hasModule from the viewed firm's modules while the operator views as it (rnc-4 W93)", () => {
+    const store = useUserStore();
+    store.setUserAndPermissions({
+      ...mockUser,
+      firm: null,
+      platform: {
+        is_operator: true,
+        name: 'Hub',
+        view_as: { modules: ['partners', 'briefing'], name: 'Alvorada Contabilidade', slug: 'alvorada' },
+      },
+    } as never);
+
+    expect(store.hasModule('partners')).toBe(true);
+    expect(store.hasModule('briefing')).toBe(true);
+    expect(store.hasModule('portfolio')).toBe(false);
+  });
 });

@@ -11,20 +11,21 @@ interface ContractReferredPartner {
  * One row of the alert (`ContractAlertResource`, rnc-3 R19–R20): the client with its partner consent
  * (true · false · null — null was never answered and counts as no), the contract, its exposure in
  * the 2027–2033 transition and the partners it was already sent to. Money in integer cents.
+ * Without `partners` (rnc-4 R19) the API drops the consent and `referred_to`: no legal referral.
  */
 interface ContractAlertRow {
   annual_value_cents: number;
   client: {
     id: number;
     name: string;
-    partner_consent: boolean | null;
-    partner_consent_via: string | null;
+    partner_consent?: boolean | null;
+    partner_consent_via?: string | null;
   };
   end_year: number;
   exposure_cents: number;
   id: number;
   kind: CONTRACT_KIND;
-  referred_to: ContractReferredPartner[];
+  referred_to?: ContractReferredPartner[];
   start_year: number;
   years_exposed: number;
 }
@@ -36,7 +37,8 @@ interface ContractAlert {
     annual_value_cents: number;
     at_risk: number;
     exposure_cents: number;
-    referred: number;
+    /** Absent without `partners` (rnc-4 R19). */
+    referred?: number;
     total: number;
   };
 }

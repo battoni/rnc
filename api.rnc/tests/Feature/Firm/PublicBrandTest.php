@@ -42,7 +42,7 @@ describe('GET /api/public/firm under a brand (A1)', function () {
             'address' => $this->franco->address,
             'business_hours' => $this->franco->business_hours,
         ])->and($response->json('data.proof'))->toHaveCount(4)
-            ->and($response->json('data.proof.0'))->toBe(['value' => '35 anos', 'label' => 'da Franco em São Paulo']);
+            ->and($response->json('data.proof.0'))->toBeIgnoringKeyOrder(['value' => '35 anos', 'label' => 'da Franco em São Paulo']);
     });
 
     it('answers the main brand without the header', function () {
@@ -51,7 +51,8 @@ describe('GET /api/public/firm under a brand (A1)', function () {
             ->assertJsonPath('data.name', 'Franco Contabilidade')
             ->assertJsonPath('data.brand', null)
             ->assertJsonPath('data.brand_primary', '#00375a')
-            ->assertJsonPath('data.proof', null);
+            ->assertJsonPath('data.short_name', 'Franco')
+            ->assertJsonPathIgnoringKeyOrder('data.proof.0', ['value' => '35 anos', 'label' => 'em São Paulo']);
     });
 
     it('answers 404 brands.notFound for an unknown slug', function () {

@@ -1,7 +1,7 @@
 /** The screen this module owns, linked by name (celer-05): the rail and Reinaldo's landing link here. */
 const BRIEFING_ROUTE_NAMES = { briefing: 'briefing' } as const;
 
-/** The key (rnc-3 R23, R28): the briefing is Reinaldo's (ceo; the operator holds every key). */
+/** The key (rnc-3 R23, R28): the briefing is Reinaldo's (gestao; the operator holds every key). */
 const BRIEFING_PERMISSIONS = { read: 'briefing.read' } as const;
 
 /**

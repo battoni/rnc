@@ -17,6 +17,8 @@ import { GetRadarTypeService, ReferRadarBatchService } from '../../../services';
  * its two calls and tells the view what went (`onSent`), which reads the Radar again.
  */
 interface Props {
+  /** False while the firm has `partners` off (rnc-4 R19): no batch, no picker, no "no partner". */
+  canRefer?: boolean;
   type: RadarTypeRow;
 }
 
@@ -24,7 +26,7 @@ interface BatchError {
   response?: { data?: { code?: string } };
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), { canRefer: true });
 
 const emit = defineEmits<{
   onSent: [type: RadarTypeRow, partner: RadarPartnerOption, result: RadarBatchResult];
@@ -181,7 +183,10 @@ function onToggle() {
         </span>
       </div>
 
-      <div class="flex min-w-0 flex-col gap-2">
+      <div
+        v-if="canRefer"
+        class="flex min-w-0 flex-col gap-2"
+      >
         <template v-if="chosen">
           <label
             class="sr-only"

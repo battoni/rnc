@@ -16,4 +16,12 @@ enum TRAFFIC_SOURCE {
   PARTNER = 'parceiro',
 }
 
-export { TRACKING_EVENT_TYPE, TRAFFIC_SOURCE };
+/** How many clients a firm signing up for the beta serves — the API's `BetaClientsBand` (rnc-4 R29). */
+enum BETA_CLIENTS_BAND {
+  ABOVE_1000 = 'acima_1000',
+  UP_TO_100 = 'ate_100',
+  FROM_101_TO_300 = 'de_101_a_300',
+  FROM_301_TO_1000 = 'de_301_a_1000',
+}
+
+export { BETA_CLIENTS_BAND, TRACKING_EVENT_TYPE, TRAFFIC_SOURCE };

@@ -1,6 +1,6 @@
 import type { SectorPageSummary } from '../interfaces';
 import type { ApiResponse } from '@Providers';
-import { publicApi } from '../composables/publicBrand';
+import { publicApi } from '@Composables';
 
 export default async function getSectorPages(): Promise<ApiResponse<SectorPageSummary[]>> {
   return publicApi({

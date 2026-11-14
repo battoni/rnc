@@ -31,6 +31,9 @@ use Tests\Support\FiscalRows;
  * `already_referred`), and a Radar or plain referral of the same lead to the same partner is not
  * blocked by it, nor it by them.
  */
+/** The generic contract sentence (rnc-4 D12), Franco's name filled. */
+const CONTRACT_CONSENT = 'O contrato de serviços autoriza Franco Contabilidade a apresentar o cliente a especialistas parceiros quando o Radar da Reforma indicar.';
+
 function contractRefPartner(string $name, string $specialty, array $attributes = [], ?int $firmId = null): Partner
 {
     return Partner::withoutGlobalScopes()->create([
@@ -81,7 +84,7 @@ beforeEach(function () {
     Mail::fake();
     CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-11-16 10:00', 'America/Sao_Paulo'));
     $this->seed([FirmSeeder::class, RoleSeeder::class]);
-    $this->reinaldo = FiscalRows::person('ceo');
+    $this->reinaldo = FiscalRows::person('gestao');
 
     $this->andrade = contractRefPartner('Andrade Tributário (exemplo)', 'advocacia_tributaria');
     $this->bastos = contractRefPartner('Bastos Advocacia (exemplo)', 'advocacia_tributaria');
@@ -128,7 +131,7 @@ describe('the referral (A18)', function () {
             ->and($referral->subject_key)->toBe('contrato:'.$this->contract->id)
             ->and($referral->partner_id)->toBe($this->andrade->id)
             ->and($referral->status)->toBe('enviado')
-            ->and($referral->consent_text)->toBe(ConsentTerms::CONTRACT_TEXT)
+            ->and($referral->consent_text)->toBe(CONTRACT_CONSENT)
             ->and($lead->latestConsent->via)->toBe(ConsentTerms::VIA_CONTRACT)
             ->and($referral->message)->toBe('A Franco Contabilidade indica a Acme Indústria Ltda: o contrato de fornecimento de R$ 500 mil a R$ 1 mi por ano vai até 2031 sem cláusula de reequilíbrio para a Reforma. Podem revisar e propor o aditivo? A Franco Contabilidade segue responsável pelo cliente.')
             ->and($referral->message)->not->toContain('640')

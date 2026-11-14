@@ -2,6 +2,9 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.3.0 — 2026-11-14
+- Degrades with the firm's modules (rnc-4 F3a, R19, D16): no XML evidence nor key without `fiscal`, no partner picker without `partners`; routes `module:radar`, the batch referral `module:radar,partners`. Tested by `tests/Feature/Radar/RadarDegradeTest`.
+
 ## 1.2.0 — 2026-11-07
 
 ### Added

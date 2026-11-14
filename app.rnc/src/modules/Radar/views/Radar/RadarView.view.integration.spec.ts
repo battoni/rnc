@@ -40,11 +40,22 @@ const STUBS = {
   },
 };
 
-function renderRadar() {
+/** The firm's opt-in modules this screen reads (rnc-4 R16): partners on, unless a test turns it off. */
+const WITH_PARTNERS = ['portfolio', 'fiscal', 'radar', 'partners'];
+
+function renderRadar(modules: string[] = WITH_PARTNERS) {
   const pinia = createPinia();
   setActivePinia(pinia);
   useUserStore().setUserAndPermissions(
-    { id: 2, last_name: 'Franco', name: 'Reinaldo', role: 'CEO', role_slug: 'ceo', username: 'reinaldo' },
+    {
+      firm: { modules, name: 'Franco Contabilidade', slug: 'franco' },
+      id: 2,
+      last_name: 'Franco',
+      name: 'Reinaldo',
+      role: 'CEO',
+      role_slug: 'gestao',
+      username: 'reinaldo',
+    } as never,
     ['leads.read', 'radar.manage']
   );
 
@@ -217,5 +228,22 @@ describe('RadarView', () => {
         .getAllByTestId('radar-proof')
         .map((proof) => proof.textContent?.trim())
     ).toContain('from the client record');
+  });
+  /*
+   * rnc-4 R19: without `partners` the API answers every row's picker empty — and the screen must not
+   * read that as "no partner covers this" (an invitation to register one): the batch column is not
+   * drawn at all. The rows, their ranges and the clients' proof stay.
+   */
+  it('rnc-4 R19: without `partners` no row offers a batch, nor says a partner is missing', async () => {
+    answers.summary = { ...RADAR_FIXTURE, types: RADAR_FIXTURE.types.map((type) => ({ ...type, partners: [] })) };
+    renderRadar(['portfolio', 'fiscal', 'radar']);
+
+    await screen.findAllByTestId('radar-type');
+
+    expect(screen.queryAllByTestId('radar-refer')).toHaveLength(0);
+    expect(screen.queryAllByTestId('radar-no-partner')).toHaveLength(0);
+    expect(screen.queryAllByTestId('radar-no-consent')).toHaveLength(0);
+    expect(screen.getAllByTestId('radar-range').length).toBe(RADAR_FIXTURE.types.length);
+    expect(screen.getAllByTestId('radar-open').length).toBe(RADAR_FIXTURE.types.length);
   });
 });

@@ -18,7 +18,7 @@ use InvalidArgumentException;
  */
 class ImportNfeFolder extends Command
 {
-    protected $signature = 'nfe:import {folder : A pasta com os XMLs} {--firm= : O slug da firma (ex.: franco)}';
+    protected $signature = 'nfe:import {folder : A pasta com os XMLs} {--firm= : O slug da firma (ex.: alvorada)}';
 
     protected $description = 'Import the NF-e XMLs of a folder into one firm (one batch, refusals by file)';
 

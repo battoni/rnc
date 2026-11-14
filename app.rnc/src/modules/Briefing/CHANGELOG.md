@@ -2,6 +2,16 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.2.0 — 2026-11-14
+
+- Briefing without the partner network (rnc-4 F3c, R19, A25): `referrals` may be null — no referral tile (the KPI row is three wide) and no SLA panel (the panel row is two wide); a null fee range already read "sem base na carteira".
+
+## 1.1.0 — 2026-11-14
+
+### Changed
+
+- Back-office paths `/reinaldo/*` → `/gestao/*` and `/ceo/*` → `/management/*`, route names `ceo-*` → `management-*` (rnc-4 F2c1, R14). No redirect is left at the old paths (A13).
+
 ## 1.0.1 — 2026-11-07
 
 ### Fixed

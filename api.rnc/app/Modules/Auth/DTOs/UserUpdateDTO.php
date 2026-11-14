@@ -16,5 +16,7 @@ class UserUpdateDTO extends Data
         public Optional|null|string $password,
         /** @var array<string, bool> */
         public array|Optional $permissions,
+        /** rnc-4 F5a (R31, R32): newly true makes the person bookable on the firm's hours. */
+        public bool|Optional $is_specialist,
     ) {}
 }

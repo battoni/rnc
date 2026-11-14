@@ -14,7 +14,8 @@
 - **Ask, don't invent.** The scope is in the owner's head. Questions come before any long research.
 - **The owner picks, never types:** every question goes through `AskUserQuestion`, recommended
   option first — `.claude/feature-flow.md`, rule 3.
-- **Read-only on the product.** This command writes only `intent.md`, `facts.md` and the first `state.md`.
+- **Read-only on the product.** This command writes only `intent.md`, `facts.md` and the first
+  `state.md`, all in the feature's worktree (`.claude/worktrees/<id>`); the session ends inside it.
 - **No personal data** in either file: field names, never values; examples are invented.
 - English in the files (owner, 02/11/2026); the owner's own words quoted as said. Chat in the
   owner's language.
@@ -24,12 +25,19 @@
 1. Decide the track from the idea (trivial · small · feature). If it is not clearly a feature, say
    which track you would use and why, in one line, and ask. Trivial → stop and just do it, no ID.
 2. Small or feature → take the next ID (reference, "Task IDs"). Slug in English, 2–4 words,
-   kebab-case. **Claim it at once:** create the branch (`fix/<id>-<slug>` or
-   `feature/<id>-<slug>`) from `main` and switch to it.
+   kebab-case. **Claim it at once, in its own worktree** — never a branch switch in the main
+   checkout, which stays on `main` (the Bash guard blocks it there):
+   - feature: `rtk make wt-new ID=<id> SLUG=<slug>` (branch `feature/<id>-<slug>` from the fetched
+     `origin/main`, no upstream), then `EnterWorktree` with `path: .claude/worktrees/<id>`;
+   - small: `rtk make wt-new ID=<id> BRANCH=fix/<id>-<slug>`, then `EnterWorktree` the same way.
+   rnc has no `wt-up`: it serves through Valet and copies a MySQL database, and this project runs
+   on `php artisan serve` and SQLite, so `wt-up` refuses. A browser round in the worktree uses
+   `make fresh-seed`, `make serve-api` and `make serve-app` from it, with the main stack stopped
+   (`.claude/feature-flow.md`, "Worktrees").
 3. Small → stop here: the five-line intent goes into the PR body and the work goes on with
    `/battoni-grill-me` in plan mode. No folder.
-4. Feature → create `specs/<id>-<slug>/`. It is versioned: invented examples only, never a real
-   record.
+4. Feature → create `specs/<id>-<slug>/` in the worktree. It is versioned: invented examples
+   only, never a real record.
 
 ## Step 1 — Ask (one round, `AskUserQuestion`)
 
@@ -64,8 +72,8 @@ Fill the reference template from the owner's answers. Problem, outcome, affected
 out of scope, open questions. **No solution**: no screen layout, no endpoint, no component.
 Open questions that are product choices are listed here and resolved in the spec.
 
-Write the first `state.md` (`Stage: intent`, Next = `/battoni-spec <id>`) and commit the three
-files on the branch: `<id>: Add the intent`.
+Write the first `state.md` (`Stage: intent`, `Worktree: .claude/worktrees/<id>`, Next =
+`/battoni-spec <id>`) and commit the three files on the branch, in the worktree: `<id>: Add the intent`.
 
 ## Step 4 — Approve and hand off
 

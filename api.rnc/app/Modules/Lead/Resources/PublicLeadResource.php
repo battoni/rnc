@@ -2,8 +2,8 @@
 
 namespace App\Modules\Lead\Resources;
 
-use App\Modules\Lead\Helpers\ConsentTerms;
 use App\Modules\Lead\Models\Lead;
+use App\Modules\Lead\Services\ConsentTextService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -48,8 +48,9 @@ class PublicLeadResource extends JsonResource
             'has_contact' => $this->hasContact(),
             // Whether the booking has to ask for an e-mail (AM5) — never the address itself.
             'has_email' => $this->hasEmail(),
-            // The words this lead's visitor reads: its brand's (rnc-3 R3), fixed with the lead.
-            'consent' => ['text' => ConsentTerms::textFor($this->brand?->name), 'version' => ConsentTerms::VERSION],
+            // The words this lead's visitor reads: its firm's current version (rnc-4 R13), naming its
+            // brand (rnc-3 R3) — the same `ConsentTextService::forLead` the answer stores.
+            'consent' => app(ConsentTextService::class)->forLead($this->resource),
         ];
     }
 }

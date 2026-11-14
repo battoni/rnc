@@ -13,7 +13,7 @@ import type {
 } from './interfaces';
 import type { RouteParamsRawGeneric } from 'vue-router';
 import type { RouteLocationRaw } from 'vue-router';
-import { useViewport } from '@Composables';
+import { useFirmBrand, useViewport } from '@Composables';
 import { DOCS_URL } from '@Constants';
 import { HTTP_STATUS } from '@Enums';
 import { getI18nRouteName, getLoginPath } from '@Helpers';
@@ -28,6 +28,7 @@ const uiStore = useUiStore();
 const userStore = useUserStore();
 
 const localItems = useLocalNavItems();
+const { forget: forgetFirmBrand } = useFirmBrand();
 const { isMobile: isMobileView } = useViewport();
 const { t } = useI18n();
 
@@ -37,21 +38,18 @@ const { push, resolve } = useRouter();
 const toast = useToast();
 
 /** Routes allowed into the bottom bar. Children never appear there — the bar stays flat. */
-const MOBILE_ROUTE_NAMES = ['home', 'users', 'team-home', 'ceo-home', 'operator-home'];
+const MOBILE_ROUTE_NAMES = ['home', 'users', 'team-home', 'management-home', 'operator-home'];
 
 /** The core entries; the local layer's own are appended and may be store-backed. */
 const CORE_NAV_ITEMS: NavItem[] = [{ icon: 'pi pi-home', label: 'navigation.home', routeName: 'home' }];
 
-const settings = ref<NavItem[]>([
-  // Both carried no gate at all, so every account saw the admin surface — the filter below
-  // only ever hid what declared a cost, and these two declared none. The API has enforced
-  // `users.read` on those routes the whole time, so the navigation was offering a link it knew
-  // would be refused. Two children found this independently: lifeshifter fixed it here, chapaja
-  // in a QA pass after a non-staff profile shipped.
-  { icon: 'pi pi-users', label: 'navigation.users', permission: 'users.read', routeName: 'users' },
-  { icon: 'pi pi-key', label: 'navigation.roles', permission: 'permissions.read', routeName: 'roles-and-permissions' },
-  ...localNavSettings,
-]);
+/*
+ * The footer is the local layer's (`localNavSettings`) — personalization is its own link below.
+ * Retired (rnc-4, Chrome QA 5.2): the core "Usuários" and "Permissões" entries. The hub's rail declares
+ * them in the operator's group (`navItems.local`, on the operator's role), so the operator saw both twice,
+ * and a firm manager — who holds `users.read` for its team's logins — saw "Usuários" here.
+ */
+const settings = ref<NavItem[]>([...localNavSettings]);
 
 const drawerClass = computed(() => (isMobileView.value ? 'nav-drawer-mobile' : 'w-54'));
 const drawerPosition = computed(() => (isMobileView.value ? 'full' : 'left'));
@@ -164,12 +162,16 @@ function toVisibleItems(navItems: NavItem[]): NavRouteItem[] {
  *
  * A 401 on logout is the same destination: the server already has no session, so treating
  * it as failure kept the person on a screen that looked signed in with a toast that lied.
+ *
+ * The host firm's kept brand goes too (Chrome QA 5.21): at the root it is the session's answer — a
+ * view-as's firm — and the login that follows is the platform's.
  */
 function completeLogout() {
   push(getLoginPath());
 
   userStore.clearUser();
   resetAllStores();
+  forgetFirmBrand();
 
   toast.add({
     severity: 'success',

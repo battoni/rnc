@@ -1,5 +1,5 @@
 ---
-version: 2.1.0
+version: 2.5.0
 origin: pendulum
 based-on: 2.1.0
 ---
@@ -55,12 +55,13 @@ interface User {
 
 The single source of truth for the authenticated session.
 
-| Action                                     | Purpose                                                                            |
-| ------------------------------------------ | ---------------------------------------------------------------------------------- |
-| `setUserAndPermissions(user, permissions)` | Set user after login                                                               |
-| `clearUser()`                              | Clear on logout                                                                    |
-| `fetchMe()`                                | Re-fetch session user from API (called by auth guard and after permission changes) |
-| `hasPermission(key)`                       | Check if session user has a specific permission string                             |
+| Action                                     | Purpose                                                                                                           |
+| ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| `setUserAndPermissions(user, permissions)` | Set user after login                                                                                              |
+| `clearUser()`                              | Clear on logout                                                                                                   |
+| `fetchMe()`                                | Re-fetch session user from API (called by auth guard and after permission changes)                                |
+| `hasPermission(key)`                       | Check if session user has a specific permission string                                                            |
+| `endViewAs()`                              | Forget the operator's view-as the API just closed (rnc-4 verify P2-S5) — the banner goes before `fetchMe` answers |
 
 `permissions` is stored separately from `user.permissions` because permission updates (after role save) must be reflected immediately without re-fetching the full user object.
 
@@ -81,6 +82,10 @@ The single source of truth for the authenticated session.
 
 - **`Auth` module** imports `useUserStore` to clear session on logout and check session state in the auth guard.
 - This module imports `GetPermissionGroupsService` and `GetRolesService` from `@AuthModule` inside `MAddEditUserForm` — roles and permission groups are Auth domain data.
+
+## Modules per firm (rnc-4)
+
+- **`hasModule(key)` is the firm's opt-in list** (rnc-4 F3c, R17, `FIRM_MODULE` in `@Enums`): `firm` and `platform` arrive with `auth/me` and the sign-in answers only, so `setUserAndPermissions` keeps them when a later payload (a profile save) has no `firm` key, and `clearUser` drops them. A firm-less account (the platform operator) has no opt-in module — its requests run as the platform firm, which has none — except during a view-as, when `platform.view_as.modules` (the viewed firm's) answers (rnc-4 F7, W93).
 
 ## Do Not
 

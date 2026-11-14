@@ -1,7 +1,7 @@
 /** The screen this module owns, linked by name (celer-05): the rail links here. */
 const CONTRACTS_ROUTE_NAMES = { alert: 'contract-alert' } as const;
 
-/** The key (rnc-3 R18–R22): the contract alert and everything on it are Reinaldo's (ceo; the operator holds every key). */
+/** The key (rnc-3 R18–R22): the contract alert and everything on it are Reinaldo's (gestao; the operator holds every key). */
 const CONTRACTS_PERMISSIONS = { manage: 'contracts.manage' } as const;
 
 /** The transition the chips draw, '27 to '33 (R19): the years a contract may be exposed in. */

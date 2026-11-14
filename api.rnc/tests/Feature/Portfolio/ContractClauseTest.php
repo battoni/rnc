@@ -20,7 +20,7 @@ use Tests\Support\FiscalRows;
 beforeEach(function () {
     CarbonImmutable::setTestNow('2026-11-09 13:00:00');
     $this->seed([FirmSeeder::class, RoleSeeder::class]);
-    $this->reinaldo = FiscalRows::person('ceo');
+    $this->reinaldo = FiscalRows::person('gestao');
     $this->client = FiscalRows::client(['name' => 'Acme Indústria Ltda']);
     $this->contract = ClientContract::withoutGlobalScopes()->create([
         'firm_id' => $this->client->firm_id,
@@ -59,7 +59,7 @@ it('writes one contrato.clausula line on the client timeline, with the user (A20
         'user_id' => $this->reinaldo->id,
         'type' => 'contrato.clausula',
     ])
-        ->and($line->data)->toBe(['contract_id' => $this->contract->id, 'kind' => 'locacao', 'end_year' => 2031]);
+        ->and($line->data)->toBeIgnoringKeyOrder(['contract_id' => $this->contract->id, 'kind' => 'locacao', 'end_year' => 2031]);
 });
 
 it('drops the row from the alert (A20)', function () {

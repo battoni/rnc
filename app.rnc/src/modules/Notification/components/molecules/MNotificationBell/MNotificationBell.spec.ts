@@ -7,6 +7,7 @@ import { server } from '@/test/msw/server';
 import { renderWithPlugins } from '@/test/render';
 import {
   ASSISTANT_INBOX_FIXTURE,
+  BETA_SIGNUP_NOTIFICATION_FIXTURE,
   INBOX_FIXTURE,
   LEAD_NOTIFICATION_FIXTURE,
   MEETING_NOTIFICATION_FIXTURE,
@@ -124,6 +125,21 @@ describe('MNotificationBell', () => {
     expect(lines[1]).toContain('Mariana Toledo answered: “Qual o melhor ERP?”');
     expect(lines[2]).toContain('Review runs out in 7 days');
     expect(lines[2]).toContain('Your review of “Quando começa a CBS?” is served until 26/11/2026.');
+  });
+
+  it('names a firm that signed up for the beta, with its city (rnc-4 R29)', async () => {
+    server.use(
+      http.get(API, () => HttpResponse.json({ data: { items: [BETA_SIGNUP_NOTIFICATION_FIXTURE], unread_count: 1 } }))
+    );
+    renderBell();
+    await screen.findByTestId('bell-count');
+
+    await fireEvent.click(screen.getByTestId('bell'));
+
+    const [item] = await screen.findAllByTestId('bell-item');
+
+    expect(item!.textContent).toContain('Beta signup');
+    expect(item!.textContent).toContain('Contábil Horizonte (Belo Horizonte/MG) signed up for the beta');
   });
 
   it("names a partner's accept, decline and closing, the closing with its value (A8)", async () => {

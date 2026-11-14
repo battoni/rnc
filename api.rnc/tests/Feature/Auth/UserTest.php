@@ -6,6 +6,7 @@ use App\Modules\Auth\Enums\UserStatus;
 use App\Modules\Auth\Models\Role;
 use App\Modules\Auth\Models\RolePermission;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 
 uses(RefreshDatabase::class);
 
@@ -158,6 +159,32 @@ describe('granting more than you hold', function () {
             ->assertJsonPath('errors.permissions.0', 'rolesAndPermissions.cannotGrantUnheldPermission');
 
         expect($target->userPermissions()->count())->toBe(0);
+    });
+
+    it('ends every session of a person whose password another account changes, as a reset does (verify PE3)', function () {
+        $actor = userWithPermissions(['users.read', 'users.update', 'users.reset_password']);
+        $target = User::factory()->create();
+        DB::table('sessions')->insert([
+            ['id' => 'target-a', 'user_id' => $target->id, 'payload' => '', 'last_activity' => time()],
+            ['id' => 'actor-a', 'user_id' => $actor->id, 'payload' => '', 'last_activity' => time()],
+        ]);
+
+        $this->actingAs($actor)
+            ->patchJson("/api/auth/users/{$target->id}", ['password' => 'outra-senha-forte'])
+            ->assertOk();
+
+        expect(DB::table('sessions')->where('user_id', $target->id)->count())->toBe(0)
+            ->and(DB::table('sessions')->where('user_id', $actor->id)->count())->toBe(1);
+    });
+
+    it("keeps the person's sessions when the edit leaves the password alone (verify PE3)", function () {
+        $actor = userWithPermissions(['users.read', 'users.update']);
+        $target = User::factory()->create();
+        DB::table('sessions')->insert(['id' => 'target-b', 'user_id' => $target->id, 'payload' => '', 'last_activity' => time()]);
+
+        $this->actingAs($actor)->patchJson("/api/auth/users/{$target->id}", ['name' => 'Outro'])->assertOk();
+
+        expect(DB::table('sessions')->where('user_id', $target->id)->count())->toBe(1);
     });
 
     it('allows an override the editor does hold', function () {

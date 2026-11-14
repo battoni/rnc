@@ -2,6 +2,7 @@
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
+import { FIRM_MODULE } from '@Enums';
 import { SITE_ROUTE_NAMES, TRACKING_EVENT_TYPE, usePublicFirm, useSeo, useTracking } from '@SiteModule';
 import { useChatReceptionist, useDiagnostic, useProfileLine } from '../../composables';
 import { B2B_OPTIONS, BAND_OPTIONS, REGIME_OPTIONS, SECTOR_OPTIONS } from '../../constants';
@@ -61,6 +62,9 @@ const isChat = computed(() => mode.value === DIAGNOSTIC_CHANNEL.CHAT);
 const chat = useChatReceptionist(diagnostic, isChat);
 
 const asksRegimeAfterLookup = computed(() => lookupStatus.value === LOOKUP_STATUS.FOUND && !company.value?.regime);
+// rnc-4 R17: the chat receptionist is the `chat` module's; without it (the platform firm's root site
+// among others) the diagnostic is the form only, and the API would refuse a chat start (422).
+const hasChat = computed(() => firm.value?.modules?.includes(FIRM_MODULE.CHAT) ?? false);
 const isCompanyFound = computed(() => lookupStatus.value === LOOKUP_STATUS.FOUND);
 
 const seo = computed(() => ({
@@ -125,6 +129,7 @@ function onSwitchPath() {
       <MDiagnosticProgress :step />
 
       <div
+        v-if="hasChat"
         class="bg-panel-muted flex w-fit gap-1 rounded-lg p-1"
         data-testid="diagnostic-mode"
         role="group"

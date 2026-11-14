@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Modules\Firm\Helpers\FirmModules;
 use App\Modules\Firm\Models\Firm;
 use App\Modules\Firm\Services\CurrentFirm;
 use App\Modules\Fiscal\Enums\NfeImportSource;
@@ -9,6 +10,7 @@ use App\Modules\Fiscal\Repositories\NfeDocumentRepository;
 use App\Modules\Fiscal\Services\NfeImporter;
 use App\Modules\Portfolio\Models\Client;
 use Carbon\CarbonImmutable;
+use Database\Seeders\Concerns\SeedsEachDemoFirm;
 use Database\Seeders\Support\GeneratedNfeSource;
 use Database\Seeders\Support\NfeXmlBuilder;
 use Illuminate\Database\Seeder;
@@ -17,7 +19,8 @@ use Random\Engine\Mt19937;
 use Random\Randomizer;
 
 /**
- * Franco's clients' NF-e (rnc-2 F6b, R15–R17, R29; plan AM7), outside production and outside the
+ * Each demo firm's clients' NF-e (rnc-2 F6b, R15–R17, R29; plan AM7; per firm since rnc-4 F3b2,
+ * the firm needing `fiscal`), outside production and outside the
  * Pest suite: 90 days of invented XMLs for the first 40 Presumido/Real clients of `ClientSeeder` —
  * 15–60 sales and 10–40 purchases each — built by `NfeXmlBuilder` and imported through
  * `NfeImporter`, the upload's own code path, one batch (`folder`, no user) per client.
@@ -38,6 +41,8 @@ use Random\Randomizer;
  */
 class NfeSeeder extends Seeder
 {
+    use SeedsEachDemoFirm;
+
     public const CLIENT_COUNT = 40;
 
     public const DAYS = 90;
@@ -95,19 +100,18 @@ class NfeSeeder extends Seeder
             return;
         }
 
-        $firm = Firm::where('slug', FirmSeeder::FRANCO_SLUG)->first();
+        $this->forEachDemoFirm($currentFirm, fn (Firm $firm) => $this->seedFirm($firm, $nfeImporter), FirmModules::FISCAL);
+    }
 
-        if (! $firm) {
-            return;
-        }
-
+    private function seedFirm(Firm $firm, NfeImporter $nfeImporter): void
+    {
         $started = microtime(true);
         Storage::disk(NfeDocumentRepository::DISK)->deleteDirectory('nfe/'.$firm->id);
 
-        [$documents, $stored, $refused] = $currentFirm->runAs($firm, fn () => $this->importAll($nfeImporter));
+        [$documents, $stored, $refused] = $this->importAll($nfeImporter);
 
         $seconds = number_format(microtime(true) - $started, 1, ',', '');
-        $this->command->info("NfeSeeder: {$documents} XMLs de ".self::CLIENT_COUNT." clientes → {$stored} documentos guardados, {$refused} recusas, em {$seconds} s.");
+        $this->command->info("NfeSeeder ({$firm->slug}): {$documents} XMLs de ".self::CLIENT_COUNT." clientes → {$stored} documentos guardados, {$refused} recusas, em {$seconds} s.");
     }
 
     /** @return array{0: int, 1: int, 2: int} files read, documents stored, refusals */

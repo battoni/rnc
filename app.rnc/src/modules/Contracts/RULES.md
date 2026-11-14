@@ -1,5 +1,5 @@
 ---
-version: 1.0.1
+version: 1.2.0
 origin: rnc
 based-on: 1.0.1
 ---
@@ -12,8 +12,8 @@ based-on: 1.0.1
 
 Reinaldo's contract alert (rnc-3 R18–R22): the clients' contracts that cross the 2027–2033
 transition without a Reforma price clause, read by the API (api Portfolio module, F6a–F6b) —
-`ContractsView` at `/reinaldo/contratos` (`/ceo/contracts`, route `contract-alert`), behind
-`contracts.manage` (ceo; the operator holds every key), the rail child "Alerta de contratos" last
+`ContractsView` at `/gestao/contratos` (`/management/contracts`, route `contract-alert`), behind
+`contracts.manage` (gestao; the operator holds every key), the rail child "Alerta de contratos" last
 in Reinaldo's group. The screen imports the contracts CSV, sends one contract to a legal partner
 and records "Cláusula incluída"; the API writes everything (api Portfolio RULES → the contract
 routes, api Partner RULES → the legal referral).
@@ -25,6 +25,7 @@ the services, `CONTRACT_KIND` and the types. Nothing imports this module but the
 
 ## Intentional Decisions
 
+- **No legal referral without `partners`** (rnc-4 R19, A20): the API answers 404 on the picker and an alert without `referred_to`, `summary.referred` and the consent fields, so `ContractsView` skips the picker request, passes `canRefer` false to `MContractRow` and leaves out the fourth tile. The clause and the exposure stay.
 - **Every figure is the API's.** The four KPIs (`summary`), each row's years exposed and exposure,
   the consent and the partners it went to come from `GET contracts`; after a referral, a clause or
   an import the view reads it again rather than patching a row (as the Radar and the ledger, W41).

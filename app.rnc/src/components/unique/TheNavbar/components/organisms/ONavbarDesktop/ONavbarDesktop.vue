@@ -91,8 +91,8 @@ function onLogoutClick() {
       pt:content="flex flex-col flex-1 min-h-0"
     >
       <template #content>
-        <div class="m-auto flex w-full max-w-[100px] shrink-0 items-center justify-center px-4 py-4">
-          <ALogo variant="min" />
+        <div class="flex w-full shrink-0 items-center justify-center px-4 py-4">
+          <MNavbarBrand />
         </div>
 
         <Divider

@@ -1,7 +1,7 @@
 ---
-version: 1.2.1
+version: 1.5.0
 origin: rnc
-based-on: 1.2.1
+based-on: 1.5.0
 ---
 # RULES — Briefing Module
 
@@ -19,7 +19,7 @@ Partner and Portfolio, each through the models' own `BelongsToFirm` scope.
 
 | Route | Key | Answers |
 | --- | --- | --- |
-| `GET briefing` | `briefing.read` (ceo, operador) | the briefing |
+| `GET briefing` | `briefing.read` (gestao, operador) | the briefing |
 
 - `{as_of, leads, meetings, referrals, pipeline, actions}` (`BriefingService::build`, typed there):
   - `leads` — `last_7_days`, `last_24_hours`: leads that left a contact (phone or e-mail) since.
@@ -38,6 +38,15 @@ Partner and Portfolio, each through the models' own `BelongsToFirm` scope.
 - **A fixed number of queries** whatever the rows (plan P13, `BriefingTest`): two lead counts, the
   stages' leads, the fees, the meetings with lead and specialist, the referrals with lead and partner.
 
+- **It degrades with the firm's modules, never a 500** (rnc-4 F3a, R19): without `partners`
+  `referrals` is null and no SLA action is picked; without `portfolio` the pipeline has no fee range
+  (`range_cents: null`, as an empty portfolio answers); without `radar` no Radar action. The query of a
+  module that is off is not run. The e-mail drops the referral figure, line and list on a null
+  `referrals`. `contracts` has no briefing action yet, so nothing of it to drop. Tested by
+  `BriefingDegradeTest`.
+- **`briefing:send` skips a firm without `briefing`** (R17, `CurrentFirm::forEachFirmWithModule`;
+  `ModuleCommandsTest`). `GET briefing` is `module:briefing`.
+
 ## Money (R24, D12, plan P5)
 
 - **A lead has no fee, so it borrows the portfolio's** (`Helpers/FeeQuartiles.php`, pure): the
@@ -51,10 +60,10 @@ Partner and Portfolio, each through the models' own `BelongsToFirm` scope.
 ## The actions (R25)
 
 - The first three that apply, in the demo's order: the longest **breached** SLA → the partner's
-  trail (`/reinaldo/trilha?parceiro=<id>`), **today's meetings** → `/equipe/agenda`, the **open
+  trail (`/gestao/trilha?parceiro=<id>`), **today's meetings** → `/equipe/agenda`, the **open
   proposals** with their range → `/equipe/pipeline?etapa=proposta`, the **partial leads** →
   `/equipe/pipeline?etapa=lead_parcial`, then **the Radar's first opportunity type** (rnc-3 F6b,
-  W81) → `/reinaldo/radar`, `params {rule, title, clients, range_cents, period}` — the same row
+  W81) → `/gestao/radar`, `params {rule, title, clients, range_cents, period}` — the same row
   `GET radar` shows first among the opportunities (`RadarService::firstOpportunity`, a fixed cost:
   the clients and one sales aggregate — not `summary()`, whose ranking and partner pickers took
   ~80 ms of every briefing for rows it never shows, W100). What does not apply is left out; a portfolio
@@ -69,7 +78,7 @@ Partner and Portfolio, each through the models' own `BelongsToFirm` scope.
   is scheduled `dailyAt('07:00')->timezone('America/Sao_Paulo')` in `routes/console.php`. On a
   weekend or a national holiday (São Paulo date) it sends nothing.
 - Every firm in turn (`CurrentFirm::forEachFirm`) builds its briefing once and queues
-  `Mail/DailyBriefingMail` (`ShouldQueue`, `pt_BR`) to each **active `ceo` with an e-mail** of that
+  `Mail/DailyBriefingMail` (`ShouldQueue`, `pt_BR`) to each **active `gestao` with an e-mail** of that
   firm. The Mailable carries values (`DTOs/BriefingMailDTO`), never models. Locally the mailer is
   `log` and the queue `sync`.
 - Views `resources/views/mail/daily-briefing{,-text}.blade.php`; preview at

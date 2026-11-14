@@ -19,7 +19,14 @@ uses(TestCase::class);
 const ADDRESS_TABLE = 'brazil_address_rows';
 const LOCALITY_TABLE = 'brazil_locality_rows';
 
+/*
+ * On in-memory SQLite each test starts with an empty database; on MySQL (rnc-4 F7b) a table outlives
+ * its test, so each one drops what the last one built.
+ */
 beforeEach(function () {
+    Schema::dropIfExists(ADDRESS_TABLE);
+    Schema::dropIfExists(LOCALITY_TABLE);
+
     Schema::create(ADDRESS_TABLE, function (Blueprint $table) {
         $table->id();
         $table->addressColumns();
@@ -29,6 +36,11 @@ beforeEach(function () {
         $table->id();
         $table->localityColumns();
     });
+});
+
+afterEach(function () {
+    Schema::dropIfExists(ADDRESS_TABLE);
+    Schema::dropIfExists(LOCALITY_TABLE);
 });
 
 function addressBlockRow(): Model

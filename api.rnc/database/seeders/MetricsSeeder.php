@@ -11,6 +11,8 @@ use App\Modules\Tracking\Enums\EventType;
 use App\Modules\Tracking\Models\TrackingEvent;
 use App\Modules\Tracking\Models\Visitor;
 use Carbon\CarbonImmutable;
+use Database\Seeders\Concerns\DemoEnvironment;
+use Database\Seeders\Concerns\SeedsEachDemoFirm;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
@@ -26,6 +28,8 @@ use Illuminate\Support\Str;
  */
 class MetricsSeeder extends Seeder
 {
+    use SeedsEachDemoFirm;
+
     private const HISTORY_DAYS = 29;
 
     /** Anonymous visitors a day: a base, a climb towards today (a campaign), and a weekly wobble. */
@@ -58,17 +62,11 @@ class MetricsSeeder extends Seeder
 
     public function run(CurrentFirm $currentFirm): void
     {
-        if (app()->environment('production')) {
+        if (! DemoEnvironment::allows()) {
             return;
         }
 
-        $firm = Firm::where('slug', FirmSeeder::FRANCO_SLUG)->first();
-
-        if (! $firm) {
-            return;
-        }
-
-        $currentFirm->runAs($firm, fn () => $this->seedFirm($firm));
+        $this->forEachDemoFirm($currentFirm, fn (Firm $firm) => $this->seedFirm($firm));
     }
 
     private function seedFirm(Firm $firm): void

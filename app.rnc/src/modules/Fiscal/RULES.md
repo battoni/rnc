@@ -1,5 +1,5 @@
 ---
-version: 1.0.1
+version: 1.1.0
 origin: rnc
 based-on: 1.0.1
 ---
@@ -13,7 +13,7 @@ based-on: 1.0.1
 The fiscal screens over the NF-e XMLs (rnc-2 R15–R22): the team's "Prontidão da NF-e"
 (`/equipe/nfe`, route `nfe-readiness`, `/team/invoices` its `en` twin) and "Crédito de fornecedores"
 (`/equipe/fornecedores`, `supplier-credit`, `/team/suppliers`), both behind `fiscal.read` in the
-Equipe rail group; Reinaldo's "Notas fiscais" (`/reinaldo/notas`, `nfe-imports`, `/ceo/invoices`)
+Equipe rail group; Reinaldo's "Notas fiscais" (`/gestao/notas`, `nfe-imports`, `/management/invoices`)
 behind `fiscal.import` in his group. The API is the `Fiscal` module (`GET fiscal/readiness`,
 `GET fiscal/readiness/{id}`, `POST …/notice`, `GET fiscal/supplier-credit`, `POST …/review`,
 `GET/POST fiscal/imports`) and Portfolio's `GET clients/{id}/events`. The split-payment figure (R23)

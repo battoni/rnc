@@ -19,7 +19,7 @@ use Tests\Support\FiscalRows;
  * Presumido and Real clients with purchase invoices (entrada) in the last 90 days: purchases a month,
  * the share bought from Simples/MEI suppliers (CRT 1, 2, 4) by value against regime normal (CRT 3),
  * and the credit lost per year from 2027 as a range (`SupplierCreditCalculator`). Biggest range
- * first. Behind `fiscal.read` (equipe, ceo) — the review too (AM13).
+ * first. Behind `fiscal.read` (equipe, gestao) — the review too (AM13).
  */
 function supplierCreditList(string $query = ''): array
 {
@@ -166,7 +166,7 @@ describe('who reads it (D14, AM13)', function () {
         $this->getJson('/api/fiscal/supplier-credit')->assertUnauthorized();
         $this->actingAs(FiscalRows::person('parceiro'))->getJson('/api/fiscal/supplier-credit')->assertForbidden();
         $this->actingAs(FiscalRows::person('parceiro'))->postJson("/api/fiscal/supplier-credit/{$this->buyer->id}/review")->assertForbidden();
-        $this->actingAs(FiscalRows::person('ceo'))->getJson('/api/fiscal/supplier-credit')->assertOk();
+        $this->actingAs(FiscalRows::person('gestao'))->getJson('/api/fiscal/supplier-credit')->assertOk();
     });
 });
 

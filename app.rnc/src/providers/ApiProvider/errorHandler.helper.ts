@@ -2,6 +2,8 @@ import { HTTP_STATUS } from '@Enums';
 import { getLoginPath, REDIRECT_QUERY_KEY, translateError } from '@Helpers';
 import { useUserStore } from '@UserModule';
 
+const FIRM_MISMATCH_ERROR = 'firms.mismatch';
+
 function getTranslatedErrorMessage(error: any): string {
   const status = error.response?.status;
 
@@ -97,6 +99,15 @@ async function ejectToLogin() {
   });
 }
 
+/**
+ * rnc-4 R5, A7: the one 403 that does end the session. The session belongs to another firm than the
+ * host's, so whatever this tab draws from it is someone else's firm; the person signs in again on
+ * THIS firm's login screen. Every other 403 still leaves the session alone (see below).
+ */
+function isFirmMismatch(error: any): boolean {
+  return error.response?.status === HTTP_STATUS.FORBIDDEN && error.response?.data?.error === FIRM_MISMATCH_ERROR;
+}
+
 async function errorHandler(error: any) {
   /*
    * Nothing below this line applies to a call-off: there is no status to read, no session to end,
@@ -129,7 +140,7 @@ async function errorHandler(error: any) {
   }
 
   /*
-   * 401 only. A 401 means the server does not know who you are, so the session in this tab is
+   * 401, and the firm mismatch above. A 401 means the server does not know who you are, so the session in this tab is
    * already over and clearing it is telling the truth. A 403 means it knows exactly who you are
    * and this is not yours — the session is fine, and ending it turns "you cannot open this page"
    * into "you have been signed out", which is a worse answer to a smaller problem. Anyone who
@@ -139,7 +150,7 @@ async function errorHandler(error: any) {
    * largatudoevai all still carry it. new.impressao and lifeshifter each fixed their half
    * independently, which is the strongest signal this inventory knows how to emit.
    */
-  if (status === HTTP_STATUS.UNAUTHORIZED) {
+  if (status === HTTP_STATUS.UNAUTHORIZED || isFirmMismatch(error)) {
     useUserStore().clearUser();
 
     await ejectToLogin();

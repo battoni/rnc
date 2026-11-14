@@ -1,5 +1,5 @@
 ---
-version: 1.3.0
+version: 1.6.0
 origin: rnc
 ---
 # RULES — Booking Module
@@ -11,6 +11,11 @@ origin: rnc
 The visitor's meeting with a specialist (R15–R17): who is bookable (`specialists`, their weekly
 `specialist_hours`), the meetings (`appointments`), the "Relatório de Impacto" the confirmation links,
 the confirmation and reminder e-mails, and the `appointments:remind` command.
+
+**Making someone bookable** is `SpecialistService::makeBookable($person, $firm, $area, $focus)`: the
+specialist row (one per person) and, as weekly hours, the firm's business hours, rewritten on every
+call. `SpecialistSeeder` and `firm:create --specialist` (rnc-4 F3b1) both come through it, run as
+that firm.
 
 ## The routes (`routes/api.local.php`)
 
@@ -61,23 +66,39 @@ horário acabou de ser reservado"), `slot_unavailable` 422 (not a slot the agend
   `findAppointmentsBetween` (the agenda week) serve the Pipeline module, which owns no table.
 
 - **A brand's lead hears from its brand (rnc-3 R3)**: `MeetingMailBuilder` signs the confirmation
-  and the reminder with the lead's sub-brand name (the firm's when none), and both are sent from
-  that name at the **firm's own mailbox** (`MeetingMailDTO::sender()`; `mail.from` when the firm has
-  none). Address and phone stay the firm's.
+  and the reminder with the lead's sub-brand name (the firm's when none) and its colours
+  (`MailBrand`, rnc-4 R12). Both are sent from the platform's `mail.from.address` under that name,
+  replying to the firm's mailbox (D11); the report link opens on the firm's own host. Address and
+  phone stay the firm's.
+  *Retired 14/11/2026 (rnc-4 F2a):* "sent from that name at the firm's own mailbox" — every firm's
+  mailbox domain would need verifying at the mail provider.
 
 ## Tables read from other modules
 
 `leads` (Lead), through `LeadService`; `users` (the specialist's name, through `Specialist::user`).
 
+## The manager's hours (rnc-4 F5a, R31, R32)
+
+- `GET specialists`, `GET specialists/{id}/hours`, `PUT specialists/{id}/hours` (`firm.settings`,
+  `SpecialistHoursController`): the CURRENT firm's bookable specialists; another firm's id is 404.
+  The PUT replaces the whole week (`UpdateSpecialistHoursRequest`: ISO weekday, `HH:MM`, closing after
+  opening; an empty list empties it). The visitor's availability reads the new hours on its next call.
+- **Bookable = a specialist row whose person is flagged `is_specialist`** (`SpecialistRepository`):
+  switching the flag off takes the person out of the agenda and the hours list, and the row — its
+  hours, its past appointments — stays; switching it back on keeps those hours.
+- **A newly flagged person** is made bookable by Auth's `UserService` through
+  `SpecialistService::startOnFirmHours` (the firm's business hours, or the row it already had).
+  Auth calls this service; Booking never writes `users`.
+
 ## Known Gaps
 
-- **The sender is the firm's mailbox (rnc-3 R3, A3), on a domain nobody verified.** Locally mail is
-  `log`; before `MAIL_MAILER=resend`, the firm's mailbox domain (`franco-rnc.com.br`) must be verified
-  at Resend or listed in `MAIL_VERIFIED_DOMAINS` — `MailSenderTest` checks only `MAIL_FROM_ADDRESS` —
-  or the sender goes back to `mail.from` with the firm's mailbox as reply-to.
+- *Retired 14/11/2026 (rnc-4 F2a, D11):* "the sender is the firm's mailbox, on a domain nobody
+  verified" — the sender is now `mail.from.address`, the one domain `MailSenderTest` checks, and the
+  firm's mailbox is the reply-to.
 
-- **No screen edits a specialist's hours or flags a new specialist** — the seeder is the source; a
-  member flagged `is_specialist` later has no hours until it runs again.
+- *Retired 14/11/2026 (rnc-4 F5a, R31, R32):* "no screen edits a specialist's hours or flags a new
+  specialist" — the manager edits hours through `PUT specialists/{id}/hours`, and flagging a person
+  (`auth/users`) starts it on the firm's hours (`SpecialistService::startOnFirmHours`).
 - **No rescheduling or cancelling by the visitor**: the e-mail says to reply or call; the team's
   pipeline (F5) moves the lead, but the appointment itself has no edit yet.
 - **State and city holidays are not in the list** (São Paulo's 25/01, 09/07): a closed national list

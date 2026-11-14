@@ -3,6 +3,34 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 3.9.0 — 2026-11-14
+
+### Changed
+
+- Chrome QA 5.2: the operator's workspace asks `role: 'operador'` besides `users.read` (`Workspace.role`, `visibleWorkspaces(hasPermission, roleSlug)`), and so does its landing route (`meta.role`) — the firm manager holds `users.read` since rnc-4 F5a and saw the Operador group and card.
+
+## 3.8.0 — 2026-11-14
+
+### Changed
+
+- `HomeView` keeps the firm-less operator in the back office while a view-as is on (rnc-4 F4d, R26): its back office is then the viewed firm's.
+
+## 3.7.0 — 2026-11-14
+
+### Changed
+
+- `HomeView` (rnc-4 F4b, R24): the firm-less platform operator (`platform.is_operator`, no `firm`, holding `platform.firms`) is sent on to the platform console (`@PlatformModule`, `PLATFORM_ROUTE_NAMES.firms`) and sees nothing of the back office's landing — as a partner is sent to its portal. Tests: `HomeView.spec.ts`.
+
+## 3.6.0 — 2026-11-14
+
+- Management landing fallback (rnc-4 F3c, R17): `management-home` carries `meta.moduleFallback` (`/gestao/metricas`, `/management/metrics`), where `attachAuthGuard` sends it while the firm has `briefing` off.
+
+## 3.5.0 — 2026-11-14
+
+### Changed
+
+- Back-office paths `/reinaldo/*` → `/gestao/*` and `/ceo/*` → `/management/*`, route names `ceo-*` → `management-*` (rnc-4 F2c1, R14). No redirect is left at the old paths (A13). The workspace key `ceo` → `management`.
+
 ## 3.4.0 — 2026-11-07
 
 ### Changed

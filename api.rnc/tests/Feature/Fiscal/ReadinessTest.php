@@ -21,7 +21,7 @@ use Tests\Support\FiscalRows;
  * last 30 days. An invoice is complete when every item passes the three checks; it is at risk of
  * rejection 1115 when an item has no IBSCBS group. Status: crítico under 80 % or with any at risk,
  * ok at 95 % or more, else atenção; no sales → `sem_notas`, listed last. All behind `fiscal.read`
- * (equipe, ceo) — the notice too (AM13).
+ * (equipe, gestao) — the notice too (AM13).
  */
 function readinessList(string $query = ''): array
 {
@@ -241,8 +241,8 @@ describe('who reads it (D14, AM13)', function () {
     });
 
     it('lets equipe and ceo read and register, and refuses a partner login 403', function () {
-        $this->actingAs(FiscalRows::person('ceo'))->getJson('/api/fiscal/readiness')->assertOk();
-        $this->actingAs(FiscalRows::person('ceo'))->postJson("/api/fiscal/readiness/{$this->ok->id}/notice")->assertCreated();
+        $this->actingAs(FiscalRows::person('gestao'))->getJson('/api/fiscal/readiness')->assertOk();
+        $this->actingAs(FiscalRows::person('gestao'))->postJson("/api/fiscal/readiness/{$this->ok->id}/notice")->assertCreated();
         $this->actingAs(FiscalRows::person('parceiro'))->getJson('/api/fiscal/readiness')->assertForbidden();
         $this->actingAs(FiscalRows::person('parceiro'))->getJson("/api/fiscal/readiness/{$this->ok->id}")->assertForbidden();
         $this->actingAs(FiscalRows::person('parceiro'))->postJson("/api/fiscal/readiness/{$this->ok->id}/notice")->assertForbidden();

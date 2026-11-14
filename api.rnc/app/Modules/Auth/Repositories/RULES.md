@@ -1,5 +1,5 @@
 ---
-version: 2.3.0
+version: 2.4.0
 origin: pendulum
 based-on: 2.2.0
 ---
@@ -19,7 +19,11 @@ entity-prefixed names** (`findAllUsers`, `findUserById`, `createUser`, `updateUs
   create/update. The Resource downstream expects the relation loaded — returning an
   unhydrated model would drop `role`/`permissions` from the response. Same for
   `RoleRepository` (`->load('permissions')`).
-- **Eager-load on reads**: `with('role')` on `findAllUsers`/`findUserById`,
+- **Firm on every user read a firm makes** (rnc-4 AM2): `findAllUsers`, `findAllActiveUsers`,
+  `findSoleUserByPhone` and `findFirmUserById` take the current firm (null reads nobody); only
+  `findUserById`, `findUserByUsername` and `findUserByEmail` stay global.
+- **Eager-load on reads**: `with(['role', 'firm'])` on `findAllUsers`/`findUserById` (`UserResource`
+  reads `firm_slug`),
   `with('permissions')` on roles — prevents N+1 and feeds the Resource's `whenLoaded`.
 - **Partial update via `array_filter(..., fn ($v) => $v !== null)`**: `updateUser` strips
   null DTO fields so a PATCH only updates provided keys. Note this means a field can never

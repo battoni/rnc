@@ -281,6 +281,11 @@
       }
     }
   },
+  "firmNotFound": {
+    "description": "Confira o endereço ou volte para a página inicial.",
+    "goToRoot": "Ir para a página inicial",
+    "title": "Escritório não encontrado"
+  },
   "notFound": {
     "backHome": "Voltar ao início",
     "description": "O endereço que você abriu não corresponde a nada aqui. Pode ter sido um erro de digitação, ou um link que envelheceu.",

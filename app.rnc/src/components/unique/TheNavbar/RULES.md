@@ -1,5 +1,5 @@
 ---
-version: 1.6.3
+version: 1.15.0
 origin: pendulum
 based-on: 1.6.3
 ---
@@ -14,6 +14,7 @@ Orchestrator for all three navbar variants (desktop sidebar, tablet/mobile drawe
 
 ## Intentional Decisions
 
+- **A rail entry of an opt-in module carries `module`** (rnc-4 F3c, R17): `useLocalNavItems` filters it out, with its children, while the firm has it off (`onlyEnabled`, `useUserStore().hasModule`) — in the LOCAL file, so the synced `TheNavbar` keeps only its permission/role filter. The route itself is closed by `attachAuthGuard` (`meta.module`).
 - **`CORE_NAV_ITEMS` and `settings` are defined here, not in a constants file.** The core list is a plain constant; `itemsWithRoutes` composes it with the local layer on every read, which is what keeps a store-backed group live.
 - **The local layer is a composable, not a constant.** `navItems.local.ts` exports `useLocalNavItems(): ComputedRef<NavItem[]>`, called once in setup, so a group's children can come from a store — a group whose rows are records the person owns — instead of from a hand-written list. It may load what its items need; keep it cheap, because it runs on every navigation.
 - **Three optional `NavItem` fields exist for that case, and only that case**: `params` (a child pointing at a parameterised route), `key` (several entries resolving the same route name need distinct keys), and `isLabelLiteral` (an entry named by a person's own record — running a trail's name through `$t()` would translate a name that happened to match a key). Do not reach for them for a static entry.
@@ -32,6 +33,12 @@ Orchestrator for all three navbar variants (desktop sidebar, tablet/mobile drawe
 - **`personalizationWithRoute` computed**: resolves localized `/personalization` path and is passed to all navbar organisms. Dark mode is **not** toggled in the navbar.
 - **`drawerClass` / `drawerPosition` are computed and passed to `ONavbarDrawer`**: mobile uses `position='full'` and class `'nav-drawer-mobile'`; tablet uses `position='left'` and class `'w-54'`.
 
+- **The brand block is `MNavbarBrand`** (rnc-4 R10, `components/molecules/`): the host firm's tile and
+  logo text and the product's name (`platform.name`), from `useFirmBrand` — the same block at the top
+  of the rail and of the drawer. It renders nothing until a firm is known (the tab's last answer or the
+  API's), so no name the build carries ever shows. A molecule that reads a composable, not a prop: the
+  rail and the drawer are presentational and the firm is the app's, not the navigation's.
+
 ## Prop & Emit Contract
 
 No props or emits — this is a unique layout component.
@@ -42,6 +49,15 @@ No props or emits — this is a unique layout component.
 - **`useUserStore`**: `hasPermission()` filters nav items; `user.role_slug` gates role-restricted items; `clearUser()` is called on logout.
 - **`LogoutService`** from `@AuthModule`: called on logout. Success and HTTP 401 both run `completeLogout` (clear user, `resetAllStores`, login path, success toast) — a 401 means the server already has no session. Other failures show an error toast.
 - **`::deep(.nav-drawer-mobile)`** in this component's `<style scoped>` forces `height: 100vh` on the mobile drawer — this CSS targets `ONavbarDrawer`'s Drawer root through the scoped boundary.
+
+- **The roles link in the operator's group names the role `operador`** (rnc-4 verify): role writes are the
+  operator's alone on the API.
+- **The Operador group is the operator's alone and the one place for the users and roles screens** (Chrome QA
+  5.2): the group asks `role: 'operador'` besides `users.read` (`WORKSPACES`), because the firm manager holds
+  `users.read` for its team (F5a) and runs it at /gestao/equipe. Personalization stays everyone's (this browser's
+  own preferences). Franco's manager reaches "Canal RNC" under Gestão.
+- _Retired 14/11/2026 (Chrome QA 5.2):_ the footer's core "Usuários" and "Permissões" entries — they repeated the
+  Operador group for the operator and showed "Usuários" to a firm manager. The footer is `localNavSettings`.
 
 ## Do Not
 

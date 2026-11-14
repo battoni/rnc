@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.4.2 — 2026-11-14
+
+### Changed
+
+- The top of the rail is `MNavbarBrand` (the firm's tile, logo text and `platform.name`) instead of a bare `ALogo` tile (rnc-4 F2b, R10).
+
 ## 1.4.1 — 2026-09-17
 
 ### Fixed

@@ -22,7 +22,7 @@ use Illuminate\Database\Eloquent\Collection;
  */
 class BriefingRepository
 {
-    private const CEO_ROLE = 'ceo';
+    private const CEO_ROLE = 'gestao';
 
     /**
      * Leads that left a contact since `$since` (the demo's `l.contact`), carteira left out.

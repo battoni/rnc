@@ -2,6 +2,50 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.12.0 — 2026-11-14
+
+### Changed
+
+- Anonymising a lead wipes each timeline line as its type decides (`LeadEventType::withoutPersonalData`,
+  exhaustive, no default — rnc-4 verify P2-A6); the behaviour per type is unchanged (only notes and stage
+  reasons carry the lead's data). `LeadPrivacyTest` writes one line of each type and checks the export holds
+  no token.
+
+## 1.11.0 — 2026-11-14
+
+### Added
+
+- A lead's own data (rnc-4 F9a, R39): `LeadService::exportData`, `LeadService::anonymise` (and its
+  `ANONYMISED_VIA_*`), `LeadEventType::Anonymised` (`dados.anonimizados`), `leads.anonymised_at` (folded
+  into `create_leads`); `LeadRepository::findLeadConsents`, `findLeadEventsOldestFirst`,
+  `updateLeadEventData`, `eachLeadOfCurrentFirm`. Tested by `tests/Feature/Pipeline/LeadPrivacyTest`.
+
+## 1.10.0 — 2026-11-14
+
+### Added
+
+- The manager's consent versions (rnc-4 F5a, R33): `ConsentVersionController` (`GET/POST
+  firm/consent-versions`, `firm.settings`), `StoreConsentVersionRequest`, `StoreConsentVersionDTO`,
+  `ConsentVersionResource`; `ConsentTextService::historyOfCurrentFirm` / `createForCurrentFirm`;
+  `FirmConsentVersionRepository::findAllFirmConsentVersions`; `FirmConsentVersion::author()`. Tested by
+  `tests/Feature/Lead/ConsentVersionEndpointTest`.
+
+## 1.9.0 — 2026-11-14
+
+### Added
+
+- The platform's beta signup (rnc-4 F6a, R29, D29): `LeadChannel::Beta` (`beta`), `BetaClientsBand`, `PublicBetaSignupController` (`POST public/beta-signups`, `GET public/beta-signups/consent`), `BetaSignupRequest`, `BetaSignupDTO`, `BetaSignupService` (platform firm only, else null → 404), `LeadService::recordBetaSignup` (stage `lead`, path `beta`, contact in columns, the rest in `profile`, token born expired, consent under the firm's current version, a `contato.capturado` line), `ConsentTextService::forFirm`, `PublicBetaSignupResource`, `BetaSignupMail` + `BetaSignupMailDTO` (the platform team's e-mail). Tested by `tests/Feature/Lead/BetaSignupTest`.
+
+## 1.8.0 — 2026-11-14
+
+### Added
+
+- Per-firm, versioned consent (rnc-4 F2a, R13, D12): `firm_consent_versions` table, `FirmConsentVersion` (`BelongsToFirm`), `FirmConsentVersionRepository`, `ConsentTextService` (current version, version 1 from the platform default, version n+1, `forLead` with `{escritorio}` filled by the sub-brand's or the firm's name, the generic contract consent). `recordContact`, `copyContractConsent` and `PublicLeadResource` read it. Tested by `tests/Feature/Lead/ConsentVersionTest`.
+
+### Removed
+
+- `ConsentTerms::VERSION`, `TEXT`, `textFor()` — Franco's sentence as code; it is Franco's seeded version 1 now. `CONTRACT_TEXT` is generic with `{escritorio}`; `PLACEHOLDER`, `CONTRACT_VERSION` and `fill()` added.
+
 ## 1.7.1 — 2026-11-07
 
 ### Fixed

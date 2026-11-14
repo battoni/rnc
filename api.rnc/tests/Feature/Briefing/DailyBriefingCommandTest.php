@@ -28,7 +28,7 @@ function dailyCeo(Firm $firm, string $username, UserStatus $status = UserStatus:
 {
     return User::factory()->create([
         'firm_id' => $firm->id,
-        'role_id' => Role::where('slug', 'ceo')->value('id'),
+        'role_id' => Role::where('slug', 'gestao')->value('id'),
         'username' => $username,
         'name' => ucfirst($username),
         'email' => "{$username}@firma.exemplo",
@@ -98,16 +98,16 @@ describe('briefing:send (A24)', function () {
         'Friday 20/11, Consciência Negra' => ['2026-11-20 07:00'],
     ]);
 
-    it('is a queued mail in pt-BR that greets the ceo, carries the briefing and links to /reinaldo', function () {
+    it('is a queued mail in pt-BR that greets the ceo, carries the briefing and links to /gestao', function () {
         sendDailyBriefing('2026-11-13 07:00');
 
         Mail::assertQueued(DailyBriefingMail::class, function (DailyBriefingMail $mail) {
             $mail->assertSeeInHtml('Bom dia, Reinaldo')
                 ->assertSeeInHtml('Briefing do dia')
                 ->assertSeeInHtml('Novos leads · 7 dias')
-                ->assertSeeInHtml(config('rnc.frontend_url').'/reinaldo')
+                ->assertSeeInHtml('http://franco.localhost:5173/gestao')
                 ->assertSeeInText('Bom dia, Reinaldo')
-                ->assertSeeInText(config('rnc.frontend_url').'/reinaldo');
+                ->assertSeeInText('http://franco.localhost:5173/gestao');
 
             return $mail instanceof ShouldQueue && $mail->hasTo($this->reinaldo->email);
         });

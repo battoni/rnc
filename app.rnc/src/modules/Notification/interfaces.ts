@@ -8,6 +8,8 @@ import type { NOTIFICATION_KIND } from './enums';
 interface BellNotification {
   answered_by?: string;
   asked_by?: string;
+  /** `beta_signup`: where the firm that signed up is. */
+  city?: string;
   company?: string;
   created_at: string;
   /** A partner's closing (`referral_status` at `fechado`): the first-year contract value. */
@@ -29,6 +31,8 @@ interface BellNotification {
   starts_at?: string;
   /** `referral_status`: where the partner took it — aceito, recusado or fechado. */
   status?: string;
+  /** `beta_signup`: the firm's state. */
+  uf?: string;
 }
 
 /** `GET /api/notifications`. */

@@ -2,6 +2,29 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.8.0 — 2026-11-14
+
+- A beta lead's detail (Chrome QA 1.10): `LeadView` shows the beta form's fields (role, city/UF, clients band,
+  message) and a channel-aware consent summary; `LeadProfile` gains the optional beta fields; locale keys
+  `pipeline.lead.profile.paths.beta`, `role`, `location`, `clientsBand`, `message`, `pipeline.lead.consent.beta.*`
+  (pt-BR, en). Tested by `LeadView.view.integration.spec`.
+
+## 1.7.0 — 2026-11-14
+
+- The lead's own data (rnc-4 F9b, R39): `ExportLeadService`, `AnonymiseLeadService`, `LeadDetail.anonymised_at`,
+  `PIPELINE_PERMISSIONS.firmSettings`, `LEAD_EXPORT_TYPE`, `ANONYMISED_ON_EXIT`, `LEAD_EVENT_TYPE.ANONYMISED`
+  and its two timeline sentences; `LeadView`'s "Dados do lead (LGPD)" panel (export, anonymise behind a
+  confirmation) and the anonymised notice. Tested by `LeadView.privacy.integration.spec` and
+  `e2e/pipeline/lead-privacy.spec.ts`.
+
+## 1.6.0 — 2026-11-14
+
+- `LEAD_CHANNEL.BETA` (rnc-4 F6b, R29): a firm that signed up for the beta wears the "Beta" chip on the platform firm's board. Tested by `MLeadCard.spec`.
+
+## 1.5.0 — 2026-11-14
+
+- Lead detail without `partners` (rnc-4 F3c, W38): `LeadView` draws no `MLeadRouting` — the matches and the referral are the partner network's (404 without it).
+
 ## 1.4.0 — 2026-11-07
 
 ### Added

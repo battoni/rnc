@@ -1,9 +1,9 @@
 import type { ChannelStage } from './interfaces';
 
 /** The screens this module owns, linked by name (celer-05): the operator's and Reinaldo's rails link here. */
-const CHANNEL_ROUTE_NAMES = { ceo: 'ceo-channel', operator: 'channel' } as const;
+const CHANNEL_ROUTE_NAMES = { management: 'management-channel', operator: 'channel' } as const;
 
-/** Both screens read with `channel.read` (ceo, operador); only the operator holds `channel.manage` (R7, R9). */
+/** Both screens read with `channel.read` (gestao, operador); only the operator holds `channel.manage` (R7, R9). */
 const CHANNEL_PERMISSIONS = { manage: 'channel.manage', read: 'channel.read' } as const;
 
 /** The channel's stages, in order (R6, `ChannelStage`): one step forward at a time, `ativo` terminal. */

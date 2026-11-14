@@ -1,3 +1,3 @@
-type WorkspaceKey = 'ceo' | 'operator' | 'team';
+type WorkspaceKey = 'management' | 'operator' | 'team';
 
 export type { WorkspaceKey };

@@ -16,11 +16,13 @@ use App\Modules\Lead\Enums\LeadChannel;
 use App\Modules\Lead\Enums\LeadEventType;
 use App\Modules\Lead\Enums\LeadStage;
 use App\Modules\Lead\Enums\LeadStep;
-use App\Modules\Lead\Helpers\ConsentTerms;
 use App\Modules\Lead\Models\Lead;
 use App\Modules\Lead\Models\LeadConsent;
 use App\Modules\Lead\Models\LeadEvent;
+use App\Modules\Lead\Services\ConsentTextService;
 use Carbon\CarbonImmutable;
+use Database\Seeders\Concerns\DemoEnvironment;
+use Database\Seeders\Concerns\SeedsEachDemoFirm;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
@@ -37,6 +39,8 @@ use Illuminate\Support\Str;
  */
 class PipelineSeeder extends Seeder
 {
+    use SeedsEachDemoFirm;
+
     /** @var array<string, int> how many leads each stage gets — 40 in all */
     private const STAGE_SIZES = [
         'visitante' => 5,
@@ -88,7 +92,11 @@ class PipelineSeeder extends Seeder
     ];
 
     /** The team members whose names sign the moves and notes. */
-    private const TEAM = ['patricia', 'mariana.toledo', 'carlos.prado'];
+    /** How many of a firm's team work the board (Franco: Patrícia, Mariana, Carlos). */
+    private const TEAM_SIZE = 3;
+
+    /** Another demo firm's leads start this far along the name lists, so its board reads differently (rnc-4 F3b2). */
+    private const NAME_SHIFT = 13;
 
     private const HISTORY_DAYS = 29;
 
@@ -118,23 +126,17 @@ class PipelineSeeder extends Seeder
 
     public function run(CurrentFirm $currentFirm, RulesEngine $rulesEngine): void
     {
-        if (app()->environment('production')) {
+        if (! DemoEnvironment::allows()) {
             return;
         }
 
-        $firm = Firm::where('slug', FirmSeeder::FRANCO_SLUG)->first();
-
-        if (! $firm) {
-            return;
-        }
-
-        $currentFirm->runAs($firm, fn () => $this->seedFirm($firm, $rulesEngine));
+        $this->forEachDemoFirm($currentFirm, fn (Firm $firm, int $ordinal) => $this->seedFirm($firm, $ordinal, $rulesEngine));
     }
 
-    private function seedFirm(Firm $firm, RulesEngine $rulesEngine): void
+    private function seedFirm(Firm $firm, int $ordinal, RulesEngine $rulesEngine): void
     {
         $now = CarbonImmutable::now();
-        $team = User::query()->whereIn('username', self::TEAM)->orderBy('id')->get()->values();
+        $team = $this->teamOf($firm, self::TEAM_SIZE);
         $specialists = Specialist::query()->with('user')->where('firm_id', $firm->id)->orderBy('id')->get()->values();
         $upcoming = $this->upcomingSlots($now, max(1, $specialists->count()));
         $brands = FirmBrand::query()->whereIn('slug', array_values(self::BRAND_EVERY_TENTH))->get()->keyBy('slug');
@@ -144,7 +146,7 @@ class PipelineSeeder extends Seeder
         foreach (self::STAGE_SIZES as $stage => $size) {
             for ($position = 0; $position < $size; $position++, $index++) {
                 $brand = $brands->get(self::BRAND_EVERY_TENTH[$index % 10] ?? '');
-                $lead = $this->createLead($firm, LeadStage::from($stage), $index, $now, $brand);
+                $lead = $this->createLead($firm, LeadStage::from($stage), $index, $index + $ordinal * self::NAME_SHIFT, $now, $brand);
                 $member = $team->isEmpty() ? null : $team[$index % $team->count()];
                 $specialist = $specialists->isEmpty() ? null : $specialists[$index % $specialists->count()];
 
@@ -157,14 +159,14 @@ class PipelineSeeder extends Seeder
         }
     }
 
-    private function createLead(Firm $firm, LeadStage $stage, int $index, CarbonImmutable $now, ?FirmBrand $brand): Lead
+    private function createLead(Firm $firm, LeadStage $stage, int $index, int $nameIndex, CarbonImmutable $now, ?FirmBrand $brand): Lead
     {
         $isVisitor = $stage === LeadStage::Visitante;
         $isPartial = $stage === LeadStage::LeadParcial;
         $createdAt = $now->subDays(self::HISTORY_DAYS - ($index * 7) % (self::HISTORY_DAYS + 1))->subMinutes(($index * 37) % 600);
-        $company = self::COMPANIES[$index % count(self::COMPANIES)];
-        $firstName = self::FIRST_NAMES[$index % count(self::FIRST_NAMES)];
-        $lastName = self::LAST_NAMES[$index % count(self::LAST_NAMES)];
+        $company = self::COMPANIES[$nameIndex % count(self::COMPANIES)];
+        $firstName = self::FIRST_NAMES[$nameIndex % count(self::FIRST_NAMES)];
+        $lastName = self::LAST_NAMES[$nameIndex % count(self::LAST_NAMES)];
         $profile = [
             'sector' => self::SECTORS[$index % count(self::SECTORS)],
             'regime' => $isVisitor ? null : self::REGIMES[$index % count(self::REGIMES)],
@@ -222,7 +224,7 @@ class PipelineSeeder extends Seeder
 
         $consent = $index % 3 !== 2;
         $last = $at->addMinutes(2);
-        LeadConsent::query()->create(['lead_id' => $lead->id, 'text' => ConsentTerms::textFor($lead->brand?->name), 'version' => ConsentTerms::VERSION, 'given' => $consent, 'via' => LeadChannel::from($lead->channel)->consentVia(), 'given_at' => $last]);
+        LeadConsent::query()->create(['lead_id' => $lead->id, ...app(ConsentTextService::class)->forLead($lead), 'given' => $consent, 'via' => LeadChannel::from($lead->channel)->consentVia(), 'given_at' => $last]);
         $this->event($lead, LeadEventType::ContactCaptured, ['consent' => $consent], $last);
         $last = $last->addMinutes(3);
         $this->event($lead, LeadEventType::StepReached, ['step' => LeadStep::Perfil->value], $last);

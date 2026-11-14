@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
+use App\Modules\Firm\Helpers\FirmModules;
 use App\Modules\Firm\Models\Firm;
 use App\Modules\Firm\Services\CurrentFirm;
 use App\Modules\Lead\Enums\LeadEventType;
@@ -15,6 +15,8 @@ use App\Modules\Partner\Models\Partner;
 use App\Modules\Partner\Models\Referral;
 use App\Modules\Partner\Services\PartnerMatcher;
 use Carbon\CarbonImmutable;
+use Database\Seeders\Concerns\DemoEnvironment;
+use Database\Seeders\Concerns\SeedsEachDemoFirm;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
 
@@ -33,6 +35,8 @@ use Illuminate\Support\Collection;
  */
 class PartnerSeeder extends Seeder
 {
+    use SeedsEachDemoFirm;
+
     /** @var list<array{0: string, 1: PartnerSpecialty, 2: string}> name, specialty, city */
     private const PARTNERS = [
         ['Andrade Tributário (exemplo)', PartnerSpecialty::AdvocaciaTributaria, 'São Paulo-SP'],
@@ -65,23 +69,17 @@ class PartnerSeeder extends Seeder
     private const DEAL_DEFAULT_CENTS = 1_200_000;
 
     /** Who sends them — the team that works the board. */
-    private const TEAM = ['patricia', 'mariana.toledo', 'carlos.prado'];
+    private const TEAM_SIZE = 3;
 
-    private const MESSAGE = 'A Franco indica a %s. Podem fazer o primeiro contato em até 24 horas úteis? Nós apresentamos vocês.';
+    private const MESSAGE = 'A %s indica a %s. Podem fazer o primeiro contato em até 24 horas úteis? Nós apresentamos vocês.';
 
     public function run(CurrentFirm $currentFirm, PartnerMatcher $partnerMatcher): void
     {
-        if (app()->environment('production')) {
+        if (! DemoEnvironment::allows()) {
             return;
         }
 
-        $firm = Firm::where('slug', FirmSeeder::FRANCO_SLUG)->first();
-
-        if (! $firm) {
-            return;
-        }
-
-        $currentFirm->runAs($firm, fn () => $this->seedFirm($firm, $partnerMatcher));
+        $this->forEachDemoFirm($currentFirm, fn (Firm $firm) => $this->seedFirm($firm, $partnerMatcher), FirmModules::PARTNERS);
     }
 
     private function seedFirm(Firm $firm, PartnerMatcher $partnerMatcher): void
@@ -106,7 +104,7 @@ class PartnerSeeder extends Seeder
     /** @param  Collection<int, Partner>  $partners */
     private function seedReferrals(Firm $firm, Collection $partners, PartnerMatcher $partnerMatcher): void
     {
-        $team = User::query()->whereIn('username', self::TEAM)->orderBy('id')->get()->values();
+        $team = $this->teamOf($firm, self::TEAM_SIZE);
 
         if ($team->isEmpty()) {
             return;
@@ -142,7 +140,7 @@ class PartnerSeeder extends Seeder
                 'lead_id' => $lead->id,
                 'partner_id' => $match['partner']->id,
                 'referred_by' => $member->id,
-                'message' => sprintf(self::MESSAGE, $lead->company),
+                'message' => sprintf(self::MESSAGE, $firm->short_name ?? $firm->name, $lead->company),
                 'score' => $match['score'],
                 'covers' => $match['covers'],
                 'consent_text' => $consent->text,

@@ -11,6 +11,8 @@ enum LEAD_STAGE {
 
 /** How a lead came in (rnc-2 R14) — the API's `LeadChannel`; fixed once the lead exists. */
 enum LEAD_CHANNEL {
+  /** A firm that signed up for the beta on the root site (rnc-4 R29): the platform firm's board only. */
+  BETA = 'beta',
   CARTEIRA = 'carteira',
   CHAT = 'chat',
   FORMULARIO = 'formulario',
@@ -25,6 +27,8 @@ enum MOVE_VIA {
 
 /** The timeline's line types — the API's `LeadEventType`. */
 enum LEAD_EVENT_TYPE {
+  /** rnc-4 R39: who the lead was is wiped — `data.via` is `pedido` or `saida_do_escritorio`. */
+  ANONYMISED = 'dados.anonimizados',
   CNPJ_LOOKED_UP = 'cnpj.consultado',
   CONTACT_CAPTURED = 'contato.capturado',
   DIAGNOSTIC_STARTED = 'diagnostico.inicio',

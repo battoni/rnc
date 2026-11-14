@@ -7,3 +7,4 @@ export { usePaginatedList } from './usePaginatedList';
 export type { PaginatedFetcher, PaginatedListOptions } from './usePaginatedList';
 export { useViewport } from './useViewport';
 export * from './brazil';
+export * from './brand';

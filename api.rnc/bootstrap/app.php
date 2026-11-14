@@ -1,6 +1,10 @@
 <?php
 
 use App\Http\Middleware\EnsureAccountActive;
+use App\Http\Middleware\EnsureModuleEnabled;
+use App\Http\Middleware\EnsurePlatformFirm;
+use App\Http\Middleware\EnsurePlatformOperator;
+use App\Http\Middleware\EnsureRegistrationOpen;
 use App\Http\Middleware\EnsureUserPermission;
 use App\Http\Middleware\PreventIndexing;
 use App\Http\Middleware\ResolveCurrentBrand;
@@ -57,6 +61,14 @@ return Application::configure(basePath: dirname(__DIR__))
             ResolveCurrentPartner::ALIAS => ResolveCurrentPartner::class,
             // The public site's sub-brand (rnc-3 R2, D2): on `public/*` routes only, never global.
             ResolveCurrentBrand::ALIAS => ResolveCurrentBrand::class,
+            // Self-registration is closed by default (rnc-4 R7, D21): the three routes answer 404.
+            EnsureRegistrationOpen::ALIAS => EnsureRegistrationOpen::class,
+            // A module the firm has off answers 404 (rnc-4 R17): `module:<key>[,<key>…]`.
+            EnsureModuleEnabled::ALIAS => EnsureModuleEnabled::class,
+            // The platform console (rnc-4 R24): the firm-less `operador` only, after the permission.
+            EnsurePlatformOperator::ALIAS => EnsurePlatformOperator::class,
+            // The platform's own site (rnc-4 R29): the platform firm only, else 404 before validation.
+            EnsurePlatformFirm::ALIAS => EnsurePlatformFirm::class,
         ]);
 
         /**

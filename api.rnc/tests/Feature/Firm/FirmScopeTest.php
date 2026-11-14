@@ -76,12 +76,14 @@ describe('a signed-in person', function () {
         expect(FirmScopedNote::withoutGlobalScopes()->find($this->otherNote->id)->title)->toBe('da outra');
     });
 
-    it('is not moved to another firm by the X-Firm header', function () {
+    // rnc-4 D5: the header used to be ignored for a signed-in person; it is now refused, so a session
+    // on the wrong firm's host is told instead of quietly showing its own firm (FirmMismatchTest).
+    it('is not moved to another firm by the X-Firm header: the mismatch is refused', function () {
         $this->actingAs($this->francoUser)
             ->withHeader('X-Firm', 'outra')
             ->getJson('/api/test/notes')
-            ->assertOk()
-            ->assertExactJson(['da Franco']);
+            ->assertForbidden()
+            ->assertJsonPath('error', 'firms.mismatch');
     });
 });
 

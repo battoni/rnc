@@ -6,7 +6,6 @@ use App\Modules\Partner\DTOs\ReferralMailDTO;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 
@@ -25,8 +24,9 @@ class ReferralSent extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
+            from: $this->referral->brand->sender(),
             subject: __('mail.referral.subject', ['firm' => $this->referral->firmName, 'company' => $this->referral->company]),
-            replyTo: $this->referral->firmMailbox ? [new Address($this->referral->firmMailbox, $this->referral->firmName)] : [],
+            replyTo: $this->referral->brand->replyTo(),
         );
     }
 
@@ -35,7 +35,7 @@ class ReferralSent extends Mailable implements ShouldQueue
         return new Content(
             view: 'mail.referral-sent',
             text: 'mail.referral-sent-text',
-            with: ['referral' => $this->referral],
+            with: ['referral' => $this->referral, 'mailBrand' => $this->referral->brand],
         );
     }
 }

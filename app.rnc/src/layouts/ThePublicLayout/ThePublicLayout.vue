@@ -4,14 +4,19 @@ import type { DeepReadonly } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import type { PublicFirmHours } from '@SiteModule';
+import { useFirmBrand } from '@Composables';
+import { toStorageAssetPath } from '@Helpers';
 import {
   brandOfTab,
   isBrandPreview,
+  PRODUCT_ANCHORS,
+  scrollToSection,
   SECTOR_GRID_ANCHOR,
   SITE_ROUTE_NAMES,
   TRACKING_EVENT_TYPE,
-  useBrandTheme,
+  useProductSite,
   usePublicFirm,
+  useSubBrandTheme,
   useTracking,
 } from '@SiteModule';
 
@@ -26,25 +31,48 @@ import {
  * writes the brand — both marks, the footer's tagline and the copyright — waits unseen on
  * `usePublicFirm`'s one `isBrandPending` (review S1), so Franco's name never flashes on an Express page. The operator's "Ver como" tab (`?previa=1`,
  * R5) wears a banner saying so.
+ *
+ * rnc-4 R10: the firm's own palette is `App.vue`'s (`useBrandTheme`, both layouts); this shell only
+ * lays a sub-brand's over it while it is up. The mark writes the firm's logo text — the tab's last
+ * answer (`useFirmBrand`) until this page's own arrives — and stays unseen while neither is known.
+ *
+ * rnc-4 R28: on the platform firm (the root) the shell is the product's own site — its nav walks the
+ * product landing's sections, the CTA takes a firm to the beta form, and the footer carries the
+ * product's line and only the contact the platform firm has: never a firm's hours or credentials.
  */
-const { firm, isBrandPending: isShellPending, load } = usePublicFirm();
+const { logoText: hostLogoText, logoUrl: hostLogoUrl } = useFirmBrand();
+const { isProductSite } = useProductSite();
+const { firm, isBrandPending, load } = usePublicFirm();
 const { push } = useRouter();
 const { t } = useI18n();
 const { track } = useTracking();
 
-useBrandTheme(firm);
+useSubBrandTheme(firm);
 
 const CURRENT_YEAR = new Date().getFullYear();
 const NAV_LINKS = [
   { key: 'home', to: { name: SITE_ROUTE_NAMES.home } },
   { key: 'sectors', to: { hash: `#${SECTOR_GRID_ANCHOR}`, name: SITE_ROUTE_NAMES.home } },
 ] as const;
+const PRODUCT_NAV_LINKS = [
+  { anchor: PRODUCT_ANCHORS.howItWorks, key: 'howItWorks' },
+  { anchor: PRODUCT_ANCHORS.modules, key: 'modules' },
+  { anchor: PRODUCT_ANCHORS.beta, key: 'beta' },
+  { anchor: PRODUCT_ANCHORS.faq, key: 'faq' },
+] as const;
 
 const isPreview = ref(false);
 
-const brandName = computed(() => (firm.value?.brand ? firm.value.name : null));
-const footerTagline = computed(() => firm.value?.tagline ?? t('site.footer.tagline'));
+const footerTagline = computed(() =>
+  isProductSite.value ? t('site.product.footer.tagline') : (firm.value?.tagline ?? t('site.footer.tagline'))
+);
 const hoursLines = computed(() => (firm.value?.business_hours ?? []).map(formatHours));
+const credentials = computed(() => (isProductSite.value ? null : firm.value?.credentials || null));
+const logoName = computed(() => firm.value?.logo_text || hostLogoText.value);
+// A sub-brand answers `logo_url` null: its words, never the firm's picture (rnc-4 R27).
+const logoSource = computed(() => (firm.value ? toStorageAssetPath(firm.value.logo_url) : hostLogoUrl.value));
+const isShellPending = computed(() => isBrandPending.value || !logoName.value);
+const hasContact = computed(() => Boolean(firm.value?.address || firm.value?.phone_href || firm.value?.mailbox));
 
 watch(firm, onFirmChange);
 // A refused brand was dropped on the way (AM21): the shell asks for the main brand's firm.
@@ -99,6 +127,16 @@ function onDiagnosticClick() {
 
   push({ name: SITE_ROUTE_NAMES.diagnostic });
 }
+
+function onProductBetaClick() {
+  track(TRACKING_EVENT_TYPE.CTA);
+
+  scrollToSection(PRODUCT_ANCHORS.beta);
+}
+
+function onProductNavClick(anchor: string) {
+  scrollToSection(anchor);
+}
 </script>
 
 <template>
@@ -135,16 +173,38 @@ function onDiagnosticClick() {
           <span class="sm:hidden">
             <ALogo
               variant="min"
-              :name="brandName"
+              :name="logoName"
+              :src="logoSource"
             />
           </span>
 
           <span class="hidden sm:inline">
-            <ALogo :name="brandName" />
+            <ALogo
+              :name="logoName"
+              :src="logoSource"
+            />
           </span>
         </RouterLink>
 
         <nav
+          v-if="isProductSite"
+          class="hidden items-center gap-6 text-sm font-semibold md:flex"
+          data-testid="product-nav"
+          :aria-label="$t('site.product.nav.label')"
+        >
+          <a
+            v-for="link in PRODUCT_NAV_LINKS"
+            class="touch-target text-muted hover:text-heading"
+            :key="link.key"
+            :href="`#${link.anchor}`"
+            @click.prevent="onProductNavClick(link.anchor)"
+          >
+            {{ $t(`site.product.nav.${link.key}`) }}
+          </a>
+        </nav>
+
+        <nav
+          v-else
           class="hidden items-center gap-6 text-sm font-semibold md:flex"
           :aria-label="$t('site.nav.label')"
         >
@@ -168,7 +228,18 @@ function onDiagnosticClick() {
             {{ firm.phone }}
           </a>
 
+          <a
+            v-if="isProductSite"
+            class="touch-target bg-primary-500 text-primary-contrast hover:bg-primary-600 focus-visible:outline-primary-500 motion-quick rounded-md px-4 py-2.5 text-sm font-semibold whitespace-nowrap transition focus-visible:outline-2 focus-visible:outline-offset-2"
+            data-testid="header-cta"
+            :href="`#${PRODUCT_ANCHORS.beta}`"
+            @click.prevent="onProductBetaClick"
+          >
+            {{ $t('site.product.cta.join') }}
+          </a>
+
           <button
+            v-else
             class="touch-target bg-primary-500 text-primary-contrast hover:bg-primary-600 focus-visible:outline-primary-500 motion-quick rounded-md px-4 py-2.5 text-sm font-semibold whitespace-nowrap transition focus-visible:outline-2 focus-visible:outline-offset-2"
             data-testid="header-cta"
             type="button"
@@ -180,6 +251,23 @@ function onDiagnosticClick() {
       </div>
 
       <nav
+        v-if="isProductSite"
+        class="border-line flex justify-center gap-5 overflow-x-auto border-t px-5 py-2 text-sm font-semibold md:hidden"
+        :aria-label="$t('site.product.nav.label')"
+      >
+        <a
+          v-for="link in PRODUCT_NAV_LINKS"
+          class="touch-target text-muted hover:text-heading shrink-0"
+          :key="link.key"
+          :href="`#${link.anchor}`"
+          @click.prevent="onProductNavClick(link.anchor)"
+        >
+          {{ $t(`site.product.nav.${link.key}`) }}
+        </a>
+      </nav>
+
+      <nav
+        v-else
         class="border-line flex justify-center gap-8 border-t px-5 py-2 text-sm font-semibold md:hidden"
         :aria-label="$t('site.nav.label')"
       >
@@ -210,7 +298,8 @@ function onDiagnosticClick() {
         >
           <ALogo
             class="text-lg"
-            :name="brandName"
+            :name="logoName"
+            :src="logoSource"
           />
 
           <p class="text-muted leading-relaxed">
@@ -218,7 +307,10 @@ function onDiagnosticClick() {
           </p>
         </div>
 
-        <address class="text-muted flex flex-col gap-2 not-italic">
+        <address
+          v-if="!isProductSite || hasContact"
+          class="text-muted flex flex-col gap-2 not-italic"
+        >
           <span class="text-heading font-semibold">
             {{ $t('site.footer.contact') }}
           </span>
@@ -244,7 +336,10 @@ function onDiagnosticClick() {
           </template>
         </address>
 
-        <div class="text-muted flex flex-col gap-2">
+        <div
+          v-if="!isProductSite"
+          class="text-muted flex flex-col gap-2"
+        >
           <span class="text-heading font-semibold">
             {{ $t('site.footer.hours') }}
           </span>
@@ -257,13 +352,17 @@ function onDiagnosticClick() {
           </span>
         </div>
 
-        <div class="text-muted flex flex-col gap-2">
+        <div
+          v-if="credentials"
+          class="text-muted flex flex-col gap-2"
+          data-testid="footer-credentials"
+        >
           <span class="text-heading font-semibold">
             {{ $t('site.footer.credentials') }}
           </span>
 
           <span class="leading-relaxed">
-            {{ $t('site.footer.credentialsText') }}
+            {{ credentials }}
           </span>
         </div>
       </div>
@@ -272,14 +371,25 @@ function onDiagnosticClick() {
         <div
           class="text-muted mx-auto flex w-full max-w-6xl flex-col gap-2 px-5 py-5 text-xs sm:flex-row sm:justify-between"
         >
-          <span>{{ $t('site.footer.disclaimer') }}</span>
+          <span>{{ isProductSite ? $t('site.product.footer.disclaimer') : $t('site.footer.disclaimer') }}</span>
 
-          <span
-            data-testid="footer-copyright"
-            :class="['motion-quick transition-opacity', { 'opacity-0': isShellPending }]"
-          >
-            {{ $t('site.footer.copyright', { year: CURRENT_YEAR, name: firm?.name ?? '' }) }}
-          </span>
+          <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <RouterLink
+              class="touch-target hover:text-heading underline underline-offset-4"
+              data-testid="footer-privacy"
+              exact-active-class=""
+              :to="{ name: SITE_ROUTE_NAMES.privacy }"
+            >
+              {{ $t('site.footer.privacy') }}
+            </RouterLink>
+
+            <span
+              data-testid="footer-copyright"
+              :class="['motion-quick transition-opacity', { 'opacity-0': isShellPending }]"
+            >
+              {{ $t('site.footer.copyright', { year: CURRENT_YEAR, name: firm?.name ?? '' }) }}
+            </span>
+          </div>
         </div>
       </div>
     </footer>

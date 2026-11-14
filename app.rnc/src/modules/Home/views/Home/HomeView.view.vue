@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { getI18nRouteName } from '@Helpers';
+import { PLATFORM_PERMISSIONS, PLATFORM_ROUTE_NAMES } from '@PlatformModule';
 import { PORTAL_ROUTE_NAMES, usePortalLanding } from '@PortalModule';
 import { useUserStore } from '@UserModule';
 import { useWorkspaces } from '../../composables';
@@ -9,7 +10,9 @@ import { useWorkspaces } from '../../composables';
 /*
  * The back office's landing (rnc-1). A partner's login (rnc-2 R3) is sent on to its portal at once
  * and sees nothing of this: the router falls every refused back-office route back to Home, so
- * this one redirect is what bounces a partner from all of them.
+ * this one redirect is what bounces a partner from all of them. The firm-less platform operator
+ * (rnc-4 R24) is sent on to the platform console the same way — its back office is the console —
+ * except inside a view-as (R26), where its back office is the viewed firm's.
  */
 const router = useRouter();
 const userStore = useUserStore();
@@ -18,12 +21,22 @@ const { isPortalOnly } = usePortalLanding();
 const { workspaces } = useWorkspaces();
 
 const firstName = computed(() => userStore.user?.name ?? '');
+const isPlatformOperator = computed(
+  () =>
+    !!userStore.platform?.is_operator &&
+    !userStore.firm &&
+    !userStore.platform.view_as &&
+    userStore.hasPermission(PLATFORM_PERMISSIONS.firms)
+);
+const isElsewhere = computed(() => isPortalOnly.value || isPlatformOperator.value);
 
 if (isPortalOnly.value) router.replace({ name: getI18nRouteName(PORTAL_ROUTE_NAMES.home) });
+
+if (isPlatformOperator.value) router.replace({ name: getI18nRouteName(PLATFORM_ROUTE_NAMES.firms) });
 </script>
 
 <template>
-  <TheLayout v-if="!isPortalOnly">
+  <TheLayout v-if="!isElsewhere">
     <template #pageHeader>
       <ThePageHeader title="home.title" />
     </template>

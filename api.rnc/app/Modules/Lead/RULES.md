@@ -1,7 +1,7 @@
 ---
-version: 1.7.1
+version: 1.12.0
 origin: rnc
-based-on: 1.7.1
+based-on: 1.10.0
 ---
 # RULES — Lead Module
 
@@ -44,16 +44,22 @@ them and writes the team's notes — through this module's service.
   [, deal_value_cents]}` with the partner's login as `user_id` and touches the lead, so its card
   rises. The partner never moves the lead's stage; Franco's team reads the line and decides.
 - **Every contact submission writes a consent row (AM12)**, given true or false — the box starts
-  unticked — with `ConsentTerms::TEXT`, `VERSION` 1, `via = formulario` and `given_at`. No IP, no
-  user agent. A new wording is a new version; the stored text is the text read.
+  unticked — with the firm's current version and its filled words (`ConsentTextService::forLead`),
+  `via` and `given_at`. No IP, no user agent. A new wording is a new version; the stored text is
+  the text read, and an older answer keeps its own words.
+- **The consent is per firm and versioned (rnc-4 R13, D12)**: `firm_consent_versions`, written only
+  by `ConsentTextService` — version n+1 for a new text, an older row never touched; a firm with none
+  starts at 1 from the platform default (`PlatformSettings::consentDefault`, Firm module) the first
+  time it is needed. `{escritorio}` is filled when read, with the sub-brand's name, else the firm's.
+  Franco's version 1 is its rnc-1 sentence with its name as the placeholder (`FirmSeeder`, spec C5).
+  *Retired 14/11/2026 (rnc-4 F2a):* "`ConsentTerms::TEXT`, `VERSION` 1" — one firm's words as code.
 - **A lead's brand is fixed at creation (rnc-3 R4)**: `brand_id` is the `CurrentBrand` of the
   diagnostic's start (null = the main brand), written once by `startLead` — never by a later step,
   and kept when the same visitor starts again under another brand — like `channel`. No foreign key:
   `firm_brands` is the Firm module's. The board's filter passes `Lead::MAIN_BRAND` (0) for "only the
   main brand"; ids start at 1.
-- **The consent names the visitor's brand (rnc-3 R3)**: `ConsentTerms::textFor($lead->brand?->name)`
-  — the main brand's words are `TEXT`, unchanged, so the version stays 1; the network is Franco's
-  under every brand.
+- **The consent names the visitor's brand (rnc-3 R3)**: `{escritorio}` takes the lead's sub-brand's
+  name, at the firm's current version — a sub-brand has no text of its own.
 - **The channel is set once (rnc-2 R14)**: `LeadChannel`, stamped when the lead is created and never
   written again — a later PATCH carries no channel, and a start from the other surface on the same
   visitor reopens the `visitante` with its channel kept. `carteira` is Franco's own portfolio
@@ -66,15 +72,56 @@ them and writes the team's notes — through this module's service.
   partner's way in is the firm's, R6) and a token born expired, so no public route ever opens it.
   It copies the client's name (`company`), CNPJ and the profile the Radar read (sector, regime, band,
   the measured B2B share when D9 applies) — refreshed on every later batch — and, once, the client's
-  consent as a `lead_consents` row `via contrato`, `ConsentTerms::CONTRACT_TEXT`, `given_at` the
+  consent as a `lead_consents` row `via contrato`, `ConsentTerms::CONTRACT_TEXT` with the firm's name
+  filled (`ConsentTextService::contractConsent`, one generic sentence, D12), `given_at` the
   client's `partner_consent_at`. The caller checks the client's consent first; this method trusts it.
   The create is `createOrFirst` (a savepoint): a racing batch that committed the lead after this
   one's read is reused — refreshed, its consent copied if it has none — instead of failing the batch.
+- **A beta signup is a lead of the platform firm only (rnc-4 R29, D29)**: `POST public/beta-signups`
+on the root (the platform firm, header-less — AM9) writes one `beta` lead through
+`LeadService::recordBetaSignup` — stage `lead`, path and channel `beta`, company/contact/e-mail/phone
+in their columns, role, city, UF, clients band and message in `profile` over the empty diagnostic
+profile (the pipeline's detail still diagnoses it), token born expired, the consent required
+(`accepted`) and stored under the platform firm's current version `via formulario`, a
+`contato.capturado` line. Any tenant is 404 before the body is read (`platform.firm` middleware),
+and `BetaSignupService` refuses again. The platform firm's team hears it by bell
+(`BetaSignupNotification`) and e-mail (`BetaSignupMail`, the platform firm's brand). Throttle
+5/min per address (`beta-signup`). `GET public/beta-signups/consent` gives the form its words
+(`ConsentTextService::forFirm`) — no lead exists before the submit.
 - **The visitor is kept by UUID** (`visitor_uuid`), not a foreign key to Tracking's `visitors`: the
   diagnostic may start before the visit's beacon lands, and the two meet on (firm, uuid).
 - **Children carry no firm column** (`lead_consents`, `lead_events`): they belong to their lead.
 
+## The manager's consent versions (rnc-4 F5a, R33)
+
+- `GET firm/consent-versions` (newest first: version, the stored words with `{escritorio}` unfilled,
+  date, author `{id, name}` or null) and `POST firm/consent-versions` (`{text}` → version n+1 with the
+  signed-in person as author), `firm.settings`, through `ConsentTextService::historyOfCurrentFirm` /
+  `createForCurrentFirm` — always the CURRENT firm. The words must hold `{escritorio}`
+  (`StoreConsentVersionRequest`, 422 `leads.consentPlaceholderMissing`, ≤ 1000), as the platform
+  default (C15). A stored answer keeps its version and words; nothing is edited in place.
+- `FirmConsentVersion::author()` reads `users` (Auth's table) for the name — a read, declared here.
+
+## A lead's own data (rnc-4 F9a, R39, A48)
+
+- `LeadService::exportData` — the lead's fields, every consent with the words read, the timeline
+  without who wrote each line (the team's names are other people's data); never a token.
+- `LeadService::anonymise($lead, $by, $via)` wipes company, CNPJ, name, phone, e-mail, `visitor_uuid`,
+  `lost_reason` and the report link, replaces the diagnostic token by an expired random one, wipes the
+  free text of notes (`text` → null) and stage lines (`reason` dropped) — each line as its type decides,
+  `LeadEventType::withoutPersonalData`, which lists every case with no default, so a new line type is a
+  decision about its personal data (verify P2-A6) — writes `anonymised_at` and a
+  `dados.anonimizados` line (`{via: pedido | saida_do_escritorio}`, the actor or null). Stage, path,
+  channel, profile, consents and every line stay — the funnel still counts the lead. Irreversible and
+  idempotent: an anonymised lead is returned as is, with no second line.
+
 ## Known Gaps
+
+- **An anonymised lead's partner referrals keep their message** (rnc-4 F9a): `referrals.message` is
+  Partner's table; wiping it on anonymisation needs Partner's service. Other modules' copies (the
+  appointment's time, tracking visits by a random id) hold no name or contact.
+- **A beta signup has no dedupe**: the same firm sending twice is two `beta` leads; the throttle
+(5/min/address) bounds a script, not a person. Decide with the beta's volume.
 
 - **No retention rule** for leads and consents until LGPD retention is decided.
 - **Bot traffic still creates visitantes**: `POST public/diagnostics` reuses the open `visitante`

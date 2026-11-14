@@ -18,11 +18,18 @@ describe('GET /api/public/firm', function () {
                 'slug' => 'franco',
                 'brand' => null,
                 'logo_text' => 'Franco Contabilidade',
-                'short_name' => null,
+                'short_name' => 'Franco',
                 'tagline' => null,
                 'brand_primary' => '#00375a',
                 'brand_accent' => '#14c3ff',
-                'proof' => null,
+                'proof' => [
+                    ['value' => '35 anos', 'label' => 'em São Paulo'],
+                    ['value' => '500+', 'label' => 'clientes atendidos'],
+                    ['value' => 'ISO 9001', 'label' => 'qualidade certificada'],
+                    ['value' => 'RNC', 'label' => 'Rede Nacional de Contabilidade'],
+                ],
+                'logo_url' => null,
+                'is_platform' => false,
                 'address' => 'Av. Corifeu de Azevedo Marques, 2333, 1º e 2º andares, Butantã, São Paulo-SP',
                 'phone' => '11 3732-5500',
                 'phone_href' => 'tel:+551137325500',
@@ -31,7 +38,29 @@ describe('GET /api/public/firm', function () {
                     ['weekdays' => [1, 2, 3, 4], 'from' => '08:00', 'to' => '18:00'],
                     ['weekdays' => [5], 'from' => '08:00', 'to' => '17:00'],
                 ],
+                'credentials' => 'ISO 9001:2015 · PQEC Sescon-SP · Rede Nacional de Contabilidade',
+                'platform' => ['name' => 'Hub da Reforma'],
+                'modules' => ['portfolio', 'fiscal', 'radar', 'partners', 'contracts', 'chat', 'assistant', 'briefing', 'brands', 'channel'],
             ]]);
+    });
+
+    /*
+     * rnc-4 R17: the public site hides what the firm has off — the chat receptionist above all,
+     * whose start the API refuses (422 `modules.disabled`). The opt-in keys only, as `auth/me`
+     * lists them (W34); the platform firm's root site has none.
+     */
+    it("answers the firm's opt-in modules, none for the platform firm", function () {
+        $this->seed(FirmSeeder::class);
+        Firm::where('slug', 'franco')->firstOrFail()->forceFill(['modules' => ['briefing', 'portfolio']])->save();
+
+        $this->getJson('/api/public/firm')->assertOk()->assertJsonPath('data.modules', ['portfolio', 'briefing']);
+
+        Firm::factory()->create(['slug' => 'hub', 'name' => 'Hub da Reforma', 'is_platform' => true, 'modules' => []]);
+        config(['firms.default_slug' => 'hub']);
+
+        $this->getJson('/api/public/firm')->assertOk()
+            ->assertJsonPath('data.is_platform', true)
+            ->assertJsonPath('data.modules', []);
     });
 
     it('serves the firm the X-Firm header names', function () {

@@ -2,6 +2,16 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.2.0 — 2026-11-14
+
+- Contracts without `partners` (rnc-4 F3c, R19): the view does not ask `contracts/legal-partners` (404 then), passes `canRefer` false to `MContractRow` (no picker, button, "Com <parceiro>" or "sem parceiro jurídico") and drops the "enviados ao jurídico" tile; `referred_to`, `summary.referred` and the consent fields are optional.
+
+## 1.1.0 — 2026-11-14
+
+### Changed
+
+- Back-office paths `/reinaldo/*` → `/gestao/*` and `/ceo/*` → `/management/*`, route names `ceo-*` → `management-*` (rnc-4 F2c1, R14). No redirect is left at the old paths (A13).
+
 ## 1.0.1 — 2026-11-07
 
 ### Fixed

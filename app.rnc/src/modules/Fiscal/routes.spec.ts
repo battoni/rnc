@@ -15,8 +15,8 @@ describe('FiscalModuleRoutes', () => {
       ['/equipe/nfe', 'nfe-readiness-pt-BR', 'fiscal.read'],
       ['/team/suppliers', 'supplier-credit-en', 'fiscal.read'],
       ['/equipe/fornecedores', 'supplier-credit-pt-BR', 'fiscal.read'],
-      ['/ceo/invoices', 'nfe-imports-en', 'fiscal.import'],
-      ['/reinaldo/notas', 'nfe-imports-pt-BR', 'fiscal.import'],
+      ['/management/invoices', 'nfe-imports-en', 'fiscal.import'],
+      ['/gestao/notas', 'nfe-imports-pt-BR', 'fiscal.import'],
     ]);
   });
 });

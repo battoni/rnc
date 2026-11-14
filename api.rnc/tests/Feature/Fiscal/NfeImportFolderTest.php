@@ -156,7 +156,7 @@ describe('a folder of XMLs (A14)', function () {
         $batch = NfeImport::withoutGlobalScopes()->orderByDesc('id')->firstOrFail();
 
         expect($code)->toBe(0)
-            ->and($batch->only(['source', 'user_id', 'files', 'stored', 'refused']))->toBe([
+            ->and($batch->only(['source', 'user_id', 'files', 'stored', 'refused']))->toBeIgnoringKeyOrder([
                 'source' => 'folder',
                 'user_id' => null,
                 'files' => 3,
@@ -221,7 +221,7 @@ describe('a folder of XMLs (A14)', function () {
 
         nfeFolderRun($folder);
 
-        expect(NfeImport::withoutGlobalScopes()->firstOrFail()->refused)->toBe([['file' => 'grande.xml', 'code' => 'too_large']])
+        expect(NfeImport::withoutGlobalScopes()->firstOrFail()->refused)->toBeIgnoringKeyOrder([['file' => 'grande.xml', 'code' => 'too_large']])
             ->and(NfeDocument::withoutGlobalScopes()->count())->toBe(0);
     });
 
@@ -240,7 +240,7 @@ describe('a folder of XMLs (A14)', function () {
         nfeFolderRun($folder);
         $peak = memory_get_peak_usage() - $before;
 
-        expect(NfeImport::withoutGlobalScopes()->firstOrFail()->refused)->toBe([['file' => 'enorme.xml', 'code' => 'too_large']])
+        expect(NfeImport::withoutGlobalScopes()->firstOrFail()->refused)->toBeIgnoringKeyOrder([['file' => 'enorme.xml', 'code' => 'too_large']])
             ->and($peak)->toBeLessThan(16 * 1_048_576);
     });
 });

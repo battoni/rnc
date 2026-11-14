@@ -9,7 +9,7 @@ use App\Modules\Partner\Repositories\PartnerRepository;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
-/** The registry (rnc-1 R21), managed by `ceo` and `operador`. A partner is deactivated, never deleted. */
+/** The registry (rnc-1 R21), managed by `gestao` and `operador`. A partner is deactivated, never deleted. */
 class PartnerService
 {
     public function __construct(
