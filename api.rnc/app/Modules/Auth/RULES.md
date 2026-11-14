@@ -1,5 +1,5 @@
 ---
-version: 2.19.0
+version: 2.20.0
 origin: pendulum
 based-on: 2.9.0
 ---
@@ -61,6 +61,8 @@ there is no "everything minus a list" left to subtract from. The protected all-k
   session's view-as as `logout` first, and `ResolveCurrentFirm` resolves `auth/login` from the host's
   `X-Firm` (or the default firm), never from the session — an operator viewing a firm cannot sign a
   firm account in at the root, and a firm host's header is not a mismatch of the person being replaced.
+- **An offboarded firm's logins are anonymised, never deleted** (verify P1-A2): `UserService::anonymiseFirmUsers`,
+  called by Firm's `FirmOffboarder` inside its transaction — the rows stay for what points at them.
 - **A password another account changes ends that person's sessions** (verify PE3): `UserService::update`
   deletes them as `resetPassword` does; a person editing their own row keeps theirs.
 

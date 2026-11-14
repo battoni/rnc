@@ -3,6 +3,7 @@
 use App\Models\User;
 use App\Modules\Auth\Models\Role;
 use App\Modules\Firm\Models\Firm;
+use App\Modules\Firm\Repositories\FirmRepository;
 use App\Modules\Lead\Models\Lead;
 use App\Modules\Lead\Models\LeadConsent;
 use App\Modules\Lead\Models\LeadEvent;
@@ -10,9 +11,11 @@ use Database\Seeders\FirmSeeder;
 use Database\Seeders\PlatformFirmSeeder;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Testing\TestResponse;
+use Mockery\MockInterface;
 
 /*
  * A49 (rnc-4 R40, F9a): `firm:offboard <slug> --confirm` — a firm leaving the platform. It first
@@ -151,6 +154,41 @@ describe('the exit (A49)', function () {
         $this->flushHeaders()->getJson('/api/auth/me')->assertForbidden();
         expect(offboardLogin('helena.acme', 'acme')->status())->toBe(404)
             ->and(offboardLogin('helena.acme', null)->status())->toBe(422);
+    });
+
+    it("anonymises the firm's logins and ends their sessions, freeing the username (verify P1-A2)", function () {
+        $this->acmeManager->forceFill(['last_name' => 'Acme', 'email' => 'helena@acme.exemplo', 'phone' => '11999990000', 'cpf' => '12345678909'])->save();
+        $francoPerson = User::factory()->create(['firm_id' => $this->franco->id, 'email' => 'equipe@franco.exemplo']);
+        DB::table('sessions')->insert([
+            ['id' => 'acme-s', 'user_id' => $this->acmeManager->id, 'payload' => '', 'last_activity' => time()],
+            ['id' => 'franco-s', 'user_id' => $francoPerson->id, 'payload' => '', 'last_activity' => time()],
+        ]);
+
+        offboard('acme');
+
+        $row = User::query()->find($this->acmeManager->id);
+        expect($row)->not->toBeNull()
+            ->and($row->username)->not->toBe('helena.acme')
+            ->and($row->name)->not->toContain('Helena')
+            ->and($row->only(['email', 'phone', 'cpf']))->toBe(['email' => null, 'phone' => null, 'cpf' => null])
+            ->and($row->last_name)->not->toBe('Acme')
+            ->and(Hash::check(OFFBOARD_PASSWORD, $row->password))->toBeFalse()
+            ->and(User::query()->where('username', 'helena.acme')->exists())->toBeFalse()
+            ->and(DB::table('sessions')->where('user_id', $row->id)->count())->toBe(0)
+            ->and(DB::table('sessions')->where('user_id', $francoPerson->id)->count())->toBe(1)
+            ->and($francoPerson->fresh()->email)->toBe('equipe@franco.exemplo');
+    });
+
+    it('deletes the export file when the anonymising transaction fails, leaving the firm open (verify P2-A5)', function () {
+        $this->partialMock(FirmRepository::class, function (MockInterface $mock) {
+            $mock->shouldReceive('updateFirm')->andThrow(new RuntimeException('database went away'));
+        });
+
+        expect(fn () => offboard('acme'))->toThrow(RuntimeException::class);
+
+        expect(Storage::disk('local')->allFiles('offboarding'))->toBe([])
+            ->and($this->acme->fresh()->offboarded_at)->toBeNull()
+            ->and($this->acmeLead->fresh()->email)->toBe('ana@acme.exemplo');
     });
 
     it('keeps the firm row (the offboarding date written) for the records', function () {

@@ -1,5 +1,5 @@
 ---
-version: 1.13.0
+version: 1.14.0
 origin: rnc
 ---
 # RULES — Firm Module
@@ -217,7 +217,10 @@ its route names by id:
 - `firm:offboard <slug> --confirm` (`App\Console\Commands\OffboardFirm` → `FirmOffboarder`): exports the
   firm, its logins (no password) and every lead (`LeadService::exportData`) to
   `offboarding/<slug>-<time>.json` on the private `local` disk, then — one transaction — anonymises
-  every lead (`LeadService::anonymise`, via `saida_do_escritorio`) and writes `firms.offboarded_at`.
+  every lead (`LeadService::anonymise`, via `saida_do_escritorio`) and every login of the firm (Auth's
+  `UserService::anonymiseFirmUsers`: identifying fields wiped, username `desligado.<id>`, a random
+  password, deactivated, sessions ended — verify P1-A2) and writes `firms.offboarded_at`. When that
+  transaction fails the export file is deleted (verify P2-A5): the firm stays open and nothing is left.
   Without `--confirm` it writes nothing; the platform firm, an unknown slug and a firm already closed
   are refused (`firms.offboard.platform`, `firms.notFound`, `firms.offboard.already`).
 - An offboarded firm: `FirmResolver::findTenantBySlug` answers null (host 404), `belongsTo` false for
@@ -229,10 +232,13 @@ its route names by id:
 
 ## Known Gaps
 
-- **`firm:offboard` anonymises the leads only** (rnc-4 F9a, W102): partners, portfolio clients,
-  referral messages, NF-e files, assistant notes and the team's logins (deactivated by the firm's
-  closure, not wiped) keep their rows until a purge per module is decided; the export file covers the
-  firm, its logins and its leads. The export file stays on the `local` disk until the operator deletes it.
+- **`firm:offboard` anonymises the leads and the logins only** (rnc-4 F9a, W102; verify P1-A2): partners,
+  portfolio clients, contracts, referral messages, NF-e files and assistant notes keep their rows until a
+  purge per module is decided — each is its module's table, wiped only through its own service. The
+  export file covers the firm, its logins and its leads, and stays on the `local` disk until the
+  operator deletes it.
+  _Retired 14/11/2026 (verify P1-A2):_ "the team's logins (deactivated by the firm's closure, not wiped)"
+  — a closed firm's people kept name, e-mail, phone and a working password hash; they are now anonymised.
 - **An offboarded firm still shows in the console** (rnc-4 F9a): the console lists every firm; a
   "desligada" state on the console is later.
   _Retired 14/11/2026 (verify P2-A3):_ "…and can be viewed as" — `ViewAsService` refuses an offboarded

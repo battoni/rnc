@@ -21,7 +21,6 @@ use App\Modules\Notification\Notifications\NewLeadNotification;
 use App\Modules\Notification\Services\TeamNotifier;
 use App\Modules\Portfolio\Models\Client;
 use App\Modules\Tracking\Enums\TrafficSource;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -512,20 +511,17 @@ class LeadService
         return $lead;
     }
 
-    /** The team's free text on a timeline line (a note, a lost reason) goes; the line stays. */
+    /** The line's personal data goes as its type decides (`LeadEventType::withoutPersonalData`); the line stays. */
     private function wipeFreeText(LeadEvent $event): void
     {
         $data = $event->data;
+        $type = LeadEventType::tryFrom((string) $event->type);
 
-        if (! is_array($data)) {
+        if (! is_array($data) || $type === null) {
             return;
         }
 
-        $wiped = match ($event->type) {
-            LeadEventType::NoteAdded->value => [...$data, 'text' => null],
-            LeadEventType::StageChanged->value => Arr::except($data, 'reason'),
-            default => $data,
-        };
+        $wiped = $type->withoutPersonalData($data);
 
         if ($wiped !== $data) {
             $this->leadRepository->updateLeadEventData($event, $wiped);

@@ -14,11 +14,21 @@ use App\Modules\Firm\Services\CurrentFirm;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Spatie\LaravelData\Optional;
 
 class UserService
 {
+    /** What an offboarded firm's login is renamed to (verify P1-A2). */
+    public const ANONYMISED_USERNAME_PREFIX = 'desligado.';
+
+    private const ANONYMISED_NAME = 'Pessoa';
+
+    private const ANONYMISED_LAST_NAME = 'removida';
+
+    private const ANONYMISED_PASSWORD_LENGTH = 64;
+
     public const CANNOT_MANAGE_HIGHER_ACCOUNT = 'users.cannotManageHigherAccount';
 
     public function __construct(
@@ -249,6 +259,36 @@ class UserService
         $this->userRepository->deleteUserSessions($user->id);
 
         return $user;
+    }
+
+    /**
+     * Every login of a firm leaving the platform loses what identifies a person (rnc-4 R40, verify
+     * P1-A2; `FirmOffboarder`): name, e-mail, phone, CPF and birth date go, the username becomes a
+     * tombstone (`desligado.<id>`) so the name is free again, the password is replaced by a random one
+     * nobody holds, the account is deactivated and every session it had ends. The rows stay, so what
+     * points at them (timeline authors, audit rows) still resolves. Returns how many were anonymised.
+     */
+    public function anonymiseFirmUsers(int $firmId): int
+    {
+        $users = $this->userRepository->findAllFirmUsers($firmId);
+
+        foreach ($users as $user) {
+            // Plaintext on purpose: the `hashed` cast hashes the random password on save.
+            $this->userRepository->saveUser($user, [
+                'name' => self::ANONYMISED_NAME,
+                'last_name' => self::ANONYMISED_LAST_NAME,
+                'username' => self::ANONYMISED_USERNAME_PREFIX.$user->id,
+                'email' => null,
+                'phone' => null,
+                'cpf' => null,
+                'birth_date' => null,
+                'status' => UserStatus::INACTIVE->value,
+                'password' => Str::random(self::ANONYMISED_PASSWORD_LENGTH),
+            ]);
+            $this->userRepository->deleteUserSessions($user->id);
+        }
+
+        return count($users);
     }
 
     /** The account with this username, whichever firm it is in; null when there is none. */

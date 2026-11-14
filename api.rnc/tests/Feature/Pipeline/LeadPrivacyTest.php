@@ -3,6 +3,7 @@
 use App\Models\User;
 use App\Modules\Auth\Models\Role;
 use App\Modules\Firm\Models\Firm;
+use App\Modules\Lead\Enums\LeadEventType;
 use App\Modules\Lead\Models\Lead;
 use App\Modules\Lead\Models\LeadConsent;
 use App\Modules\Lead\Models\LeadEvent;
@@ -202,6 +203,39 @@ describe('the anonymisation (A48)', function () {
             ->and($events['nota.adicionada']->data)->toBe(['text' => null])
             ->and($events['etapa.alterada']->data)->toBeIgnoringKeyOrder(['from' => 'lead', 'to' => 'perdido', 'via' => 'ficha'])
             ->and(LeadEvent::query()->where('lead_id', $lead->id)->get()->toJson())->not->toContain('Ana');
+    });
+
+    it('decides every timeline type: one line of each, none keeps the name, e-mail or phone, and the export carries no token (verify P2-A6)', function () {
+        $lead = privacyLead($this->franco, ['report_token' => str_repeat('r', 48)]);
+        $samples = [
+            LeadEventType::DiagnosticStarted->value => ['path' => 'quiz'],
+            LeadEventType::CnpjLookedUp->value => ['found' => true],
+            LeadEventType::ContactCaptured->value => ['consent' => true],
+            LeadEventType::StepReached->value => ['step' => 'resultado'],
+            LeadEventType::ResultSeen->value => ['opportunities' => 2, 'risks' => 1],
+            LeadEventType::MeetingBooked->value => ['specialist' => 'Mariana Toledo', 'starts_at' => '2026-11-20T10:00:00-03:00'],
+            LeadEventType::StageChanged->value => ['from' => 'lead', 'to' => 'perdido', 'via' => 'ficha', 'reason' => 'Ana Exemplo, 5511900000001'],
+            LeadEventType::NoteAdded->value => ['text' => 'Falar com Ana Exemplo em ana@exemplo.com.br'],
+            LeadEventType::ReferralSent->value => ['referral_id' => 1, 'partner_id' => 1, 'partner' => 'Parceiro Um', 'specialty' => 'tributario', 'score' => 80],
+            LeadEventType::ReferralStatusChanged->value => ['referral_id' => 1, 'partner_id' => 1, 'partner' => 'Parceiro Um', 'from' => 'enviado', 'to' => 'reuniao'],
+            LeadEventType::Anonymised->value => ['via' => 'pedido'],
+        ];
+        expect(array_keys($samples))->toEqualCanonicalizing(array_column(LeadEventType::cases(), 'value'));
+
+        foreach ($samples as $type => $data) {
+            LeadEvent::query()->create(['lead_id' => $lead->id, 'user_id' => $this->manager->id, 'type' => $type, 'data' => $data, 'at' => now()->subHour()]);
+        }
+
+        $export = $this->actingAs($this->manager)->getJson("/api/leads/{$lead->id}/export")->assertOk()->getContent();
+        expect($export)->not->toContain($lead->token)->not->toContain($lead->report_token);
+
+        $this->postJson("/api/leads/{$lead->id}/anonymise")->assertOk();
+
+        $timeline = LeadEvent::query()->where('lead_id', $lead->id)->get()->toJson();
+        expect($timeline)->not->toContain('Ana')->not->toContain('ana@exemplo.com.br')->not->toContain('5511900000001');
+        foreach (LeadEventType::cases() as $type) {
+            expect($type->withoutPersonalData($samples[$type->value]))->toBeArray();
+        }
     });
 
     it('is irreversible: the old diagnostic and report links no longer reach the lead', function () {

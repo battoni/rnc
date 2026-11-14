@@ -3,6 +3,9 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 2.20.0 — 2026-11-14
+- `UserService::anonymiseFirmUsers` for `firm:offboard` (rnc-4 verify P1-A2).
+
 ## 2.19.0 — 2026-11-14
 - Role writes (`POST/PATCH/DELETE auth/roles*`) also need `platform.operator` (rnc-4 verify PE1): roles are
   global. `UserService::update` ends the sessions of a person whose password another account changed (PE3).

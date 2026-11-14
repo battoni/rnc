@@ -3,6 +3,9 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 2.10.0 — 2026-11-14
+- `UserService::anonymiseFirmUsers($firmId)` — an offboarded firm's logins lose name, e-mail, phone, CPF and birth date, take the username `desligado.<id>` and a random password, are deactivated and their sessions end (rnc-4 verify P1-A2; called by Firm's `FirmOffboarder`). Tested by `tests/Feature/Firm/OffboardFirmCommandTest`.
+
 ## 2.9.0 — 2026-11-14
 - `UserService::update` ends every session of a person whose password another account changed, as `resetPassword` does (rnc-4 verify PE3). Tested by `tests/Feature/Auth/UserTest`.
 

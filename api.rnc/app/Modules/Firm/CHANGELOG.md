@@ -2,6 +2,14 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.14.0 — 2026-11-14
+
+### Changed
+
+- `FirmOffboarder` (rnc-4 verify): anonymises the firm's logins in the same transaction as its leads
+  (Auth's `UserService::anonymiseFirmUsers`, P1-A2), and deletes the export file when that transaction
+  fails (P2-A5). Known Gap narrowed to the other modules' rows.
+
 ## 1.13.0 — 2026-11-14
 
 ### Changed

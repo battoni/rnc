@@ -2,6 +2,15 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.12.0 — 2026-11-14
+
+### Changed
+
+- Anonymising a lead wipes each timeline line as its type decides (`LeadEventType::withoutPersonalData`,
+  exhaustive, no default — rnc-4 verify P2-A6); the behaviour per type is unchanged (only notes and stage
+  reasons carry the lead's data). `LeadPrivacyTest` writes one line of each type and checks the export holds
+  no token.
+
 ## 1.11.0 — 2026-11-14
 
 ### Added

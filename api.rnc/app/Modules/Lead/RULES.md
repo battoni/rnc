@@ -1,5 +1,5 @@
 ---
-version: 1.11.0
+version: 1.12.0
 origin: rnc
 based-on: 1.10.0
 ---
@@ -108,7 +108,9 @@ and `BetaSignupService` refuses again. The platform firm's team hears it by bell
   without who wrote each line (the team's names are other people's data); never a token.
 - `LeadService::anonymise($lead, $by, $via)` wipes company, CNPJ, name, phone, e-mail, `visitor_uuid`,
   `lost_reason` and the report link, replaces the diagnostic token by an expired random one, wipes the
-  free text of notes (`text` → null) and stage lines (`reason` dropped), writes `anonymised_at` and a
+  free text of notes (`text` → null) and stage lines (`reason` dropped) — each line as its type decides,
+  `LeadEventType::withoutPersonalData`, which lists every case with no default, so a new line type is a
+  decision about its personal data (verify P2-A6) — writes `anonymised_at` and a
   `dados.anonimizados` line (`{via: pedido | saida_do_escritorio}`, the actor or null). Stage, path,
   channel, profile, consents and every line stay — the funnel still counts the lead. Irreversible and
   idempotent: an anonymised lead is returned as is, with no second line.
