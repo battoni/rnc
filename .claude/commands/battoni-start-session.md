@@ -5,20 +5,37 @@ Load the right rules before planning or working on a feature.
 **Usage:** `/battoni-start-session` · `/battoni-start-session <id>` (e.g. `rnc-1`) to build
 the next phase of a feature (see `.claude/feature-flow.md`).
 
+## First, either way — the sweep
+
+`rtk make wt-gc`: tears down every worktree whose PR merged and that is clean and quiet (the
+folder and the branch), and lists the rest as `kept` (the failed check, e.g.
+an open PR) or `left behind` (PR closed unmerged, or no commit and no session for 7 days) with
+its discard dry run, `rtk make wt-discard ID=<id>`. Say the counts in one line; a left-behind one
+is never discarded here, `/battoni-close-session` asks about it.
+
 ## With a feature ID — build one phase
 
+0. **Be in its worktree.** From the main checkout, `EnterWorktree` with
+   `path: .claude/worktrees/<id>` (the `Worktree:` line of its `state.md`). No worktree yet (made
+   before this flow, or removed after a close): `rtk make wt-new ID=<id> BRANCH=<its branch>`,
+   then enter it. Never check the branch out in the main checkout.
 1. Read `specs/<id>-*/spec.md`, `plan.md` and `state.md`. Nothing else about the feature:
    **never `proposal.html`**, never an old conversation.
 2. Load the rules of the sub-projects the next phase touches (Step 2 below) and the folder
    `RULES.md` chain of the files it edits.
-3. Check out `feature/<id>-<slug>`. Confirm in one line: the phase, the A# it proves, the next step
+3. Check that the worktree is on `feature/<id>-<slug>` (`rtk git branch --show-current`). A
+   phase that needs a browser needs its environment: `make fresh-seed`, `make serve-api` and
+   `make serve-app` from the worktree, with the main stack stopped (no `wt-up` in rnc, see
+   `.claude/feature-flow.md`, "Worktrees"). Confirm in one line: the phase, the A# it proves, the next step
    from `state.md`.
 4. Build only that phase: write the tests and **see them fail**, write the code, see them pass,
-   `/battoni-pre-commit`, commit with the subject `<id>: F<n> …` (`/battoni-run` finds a done
-   phase by it).
+   the phase gate (`.claude/feature-flow.md`: `/battoni-pre-commit` without the full Playwright
+   suite, only the e2e files this phase adds or edits). A phase with a `looks like:` list builds
+   the screen to it. Do not commit yet.
 5. Rewrite `state.md` (Done with suite counts and `pre-commit green <date>`, Next with the exact command, Pitfalls found —
-   a decision taken while building also goes into `spec.md` as `C#`). Set `Stage: build F<n>/<total>`
-   and commit `state.md` with the phase.
+   a decision taken while building also goes into `spec.md` as `C#`). Set `Stage: build F<n>/<total>`.
+   Then **one** commit with the code, `state.md` and any `spec.md` change, subject
+   `<id>: F<n> …` (`/battoni-run` finds a done phase by it). Never a separate "Record F<n>" commit.
 6. Stop. Tell the owner: `/clear`, then `/battoni-start-session <id>` for the next phase, or
    `/battoni-verify <id>` after the last one.
 
@@ -71,3 +88,7 @@ Or if a sub-project has no rules yet:
 
 A new request starts by picking its track (`.claude/feature-flow.md`, "Three tracks"): a feature
 goes to `/battoni-intent`.
+
+Reads stay in the main checkout. **Before the first edit** of a session without an ID (a fix, a
+review fix, a QA helper), move into a worktree: `rtk make wt-new ID=<name> BRANCH=<branch>`, then
+`EnterWorktree` with `path: .claude/worktrees/<name>`. The main checkout stays on `main`.

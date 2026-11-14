@@ -14,7 +14,8 @@ alwaysApply: false
 
 ## Step 0 — Load
 
-- Read `specs/<id>-*/intent.md` and `spec.md`. **Never `proposal.html`.**
+- Read `specs/<id>-*/intent.md` and `spec.md`. **Never `proposal.html`** (its visible details come
+  from a Sonnet subagent, Step 1).
 - Intent must be `approved` and spec status `closed`. Open decisions → stop and send the owner back to `/battoni-spec <id>`.
 - Load the rules of the sub-projects the spec touches (`/battoni-start-session` Step 2) and the
   folder `RULES.md` chain of every unit it names. Read code only by slice (`grep -n`, then
@@ -27,7 +28,23 @@ Write the plan with the reference template. For each phase:
 - **files** — each file marked new or changed, and any `RULES.md` + `CHANGELOG.md` to add or bump;
 - **tests first** — the tests that are written and seen failing before the code;
 - **proves** — the `A#` this phase makes green. Every A# is proved by exactly one phase;
-- **done when** — a check that can be run.
+- **done when** — a check that can be run;
+- **looks like** (app phases, when the spec has an approved proposal) — the proposal's visible
+  details for the screen this phase builds: labels, hints, placeholders, field order, button
+  states. Spawn one `general-purpose` agent with `model: sonnet`, give it the path of
+  `proposal.html` and the spec's `## Screens`, and ask for exactly that list per screen, no
+  opinions. You still never open the proposal.
+
+Then the **`## QA` block** (`.claude/feature-flow.md`, "plan.md"):
+
+- **Data** — for each A#, does the "Given" state exist in the demo seeders (read
+  `database/seeders/` by slice)? Each one that does not becomes a `<Feature>QaSeeder` task, with
+  its own Pest test, in the phase that builds the behaviour: local/testing only, never in
+  `seeders.local.php`, invented names only.
+- **Env** — local, with the API and SPA URLs; never production data. **Logins** — the role of each
+  round and its username in the project's QA notes (`qa.local.md`).
+- **Human round** — ask the owner in one `AskUserQuestion` (rule 3): a human round, yes
+  (recommended) or no; the tester; and whether the merge waits for it or it runs after.
 
 Bottom-up order (api before app; inside each, the order in the reference). A phase fits one session:
 if it touches more than ~10 files or two sub-projects with UI, split it. **Context budget:** a
@@ -43,8 +60,9 @@ before launch, `add_*_to_*` on a published table after).
 Plan mode allows writing only its own plan file, so the draft lives there. Spawn one
 `general-purpose` agent with `model: sonnet` (read-only work, allowed in plan mode). Give it only
 the paths of `spec.md` and of the plan-mode plan file, and this task: "List every R#, A# and constraint the
-plan does not cover, every phase that proves no A#, and every phase too big for one session. Cite
-the IDs. Do not suggest features." No conversation, no hypothesis.
+plan does not cover, every phase that proves no A#, every phase too big for one session, and every
+A# whose Given state neither the demo seeders nor a planned QA seeder creates. Cite the IDs. Do
+not suggest features." No conversation, no hypothesis.
 
 Check each finding against the spec yourself; fix the plan for the real ones and note the rejected
 ones in one line each.

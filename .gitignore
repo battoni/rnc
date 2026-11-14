@@ -44,3 +44,5 @@ build/
 # faster than the code and are nobody else's to review.
 plans/
 
+# One worktree per session: its record (scripts/worktree.py), never versioned.
+.worktree.json

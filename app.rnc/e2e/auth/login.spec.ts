@@ -95,8 +95,8 @@ test.describe('Login page — email flow', () => {
   // against an already-compiled module. Without this, first-run Vite compilation can
   // exceed the test timeout.
   // `browser.newPage()` does not inherit the project's `baseURL`, so it is handed over: a fixed
-  // `localhost:5173` warmed whatever else answered there (or nothing) whenever the suite ran against
-  // `E2E_BASE_URL` on another port, and the `.catch` hid it.
+  // `localhost:5173` warmed whatever else answered there (or nothing) whenever the suite ran on
+  // another port, and the `.catch` hid it.
   test.beforeAll(async ({ browser }, testInfo) => {
     const warmupPage = await browser.newPage({ baseURL: testInfo.project.use.baseURL });
     await warmupPage.goto('/login-email').catch(() => {});

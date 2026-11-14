@@ -218,7 +218,7 @@ test('login', async ({ page }) => {
 });
 ```
 
-Env vars: `E2E_BASE_URL` (default `http://localhost:5173`) and `E2E_NO_WEBSERVER=1` (use a server that is already running instead of starting `vite --mode test`). The config reads no credentials: the API is mocked, so a login spec types whatever its mock accepts.
+Port: `rtk make e2e` gives this checkout its own `E2E_PORT` (CI keeps 5173); the config always starts its own `vite --mode test` there and never reuses a server, so there is no base-URL or no-webserver override. The config reads no credentials: the API is mocked, so a login spec types whatever its mock accepts.
 
 ### Lazy-route flakiness
 
@@ -235,7 +235,7 @@ test.beforeAll(async ({ browser }, testInfo) => {
 
 `browser.newPage()` does not inherit the project's `baseURL`, and the page-scoped `baseURL` fixture
 is not available in `beforeAll` — so hand the project's over and use a relative path. Never hard-code
-`http://localhost:5173`: under `E2E_BASE_URL` on another port (with `E2E_NO_WEBSERVER=1`) it warms
+`http://localhost:5173`: on another port (a worktree's `E2E_PORT`) it warms
 whatever else answers there, or nothing, and the `.catch` hides it (`e2e/auth/login.spec.ts`).
 
 Prefer `data-testid` selectors and event-based waits (`page.waitForResponse(...)`) over fixed `page.waitForTimeout(...)`.
