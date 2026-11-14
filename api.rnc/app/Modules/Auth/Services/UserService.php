@@ -170,6 +170,12 @@ class UserService
             );
         });
 
+        // A password another account replaced ends every session the person had, as `resetPassword`
+        // does (rnc-4 verify PE3): whoever held the old one is signed out. Your own edit keeps yours.
+        if (array_key_exists('password', $data) && $id !== $actingUserId) {
+            $this->userRepository->deleteUserSessions($id);
+        }
+
         $this->permissionService->forgetUserMemo($id);
 
         $user = $this->userRepository->findUserById($id);

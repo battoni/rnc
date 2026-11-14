@@ -159,7 +159,7 @@ describe('per-user permission overrides', function () {
     it('names the rule with a key on the role matrix too', function () {
         $role = Role::create(['name' => 'Matrix']);
 
-        $this->actingAs(userWithPermissions(['permissions.update']))
+        $this->actingAs(platformOperatorWithPermissions(['permissions.update']))
             ->patchJson("/api/auth/roles/{$role->id}/permissions", ['permissions' => ['billing.refund' => true]])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['permissions' => 'rolesAndPermissions.unknownPermission']);
@@ -213,7 +213,7 @@ describe('guessing the e-mail verification code', function () {
 
 describe('a role that does not exist', function () {
     it('answers 404 to a matrix write, and writes nothing', function () {
-        $this->actingAs(userWithPermissions(['permissions.update', 'users.read']))
+        $this->actingAs(platformOperatorWithPermissions(['permissions.update', 'users.read']))
             ->patchJson('/api/auth/roles/99999/permissions', ['permissions' => ['users.read' => true]])
             ->assertNotFound();
 
@@ -221,7 +221,7 @@ describe('a role that does not exist', function () {
     });
 
     it('answers 404 to an edit that names groups', function () {
-        $this->actingAs(userWithPermissions(['permissions.update']))
+        $this->actingAs(platformOperatorWithPermissions(['permissions.update']))
             ->patchJson('/api/auth/roles/99999', ['name' => 'Ghost', 'permission_group_ids' => ['users']])
             ->assertNotFound();
     });
@@ -295,7 +295,7 @@ describe('writes that must land together', function () {
 
         $this->withoutExceptionHandling();
 
-        expect(fn () => $this->actingAs(userWithPermissions(['permissions.update']))
+        expect(fn () => $this->actingAs(platformOperatorWithPermissions(['permissions.update']))
             ->postJson('/api/auth/roles', ['name' => 'Half Role', 'permission_group_ids' => ['users']]))
             ->toThrow(RuntimeException::class);
 
@@ -309,7 +309,7 @@ describe('writes that must land together', function () {
 
         $this->withoutExceptionHandling();
 
-        expect(fn () => $this->actingAs(userWithPermissions(['permissions.update']))
+        expect(fn () => $this->actingAs(platformOperatorWithPermissions(['permissions.update']))
             ->patchJson("/api/auth/roles/{$role->id}", ['name' => 'Renamed', 'permission_group_ids' => ['users']]))
             ->toThrow(RuntimeException::class);
 
@@ -334,7 +334,7 @@ describe('a role refusal', function () {
     it('names a taken name with a key', function () {
         Role::create(['name' => 'Taken']);
 
-        $this->actingAs(userWithPermissions(['permissions.update']))
+        $this->actingAs(platformOperatorWithPermissions(['permissions.update']))
             ->postJson('/api/auth/roles', ['name' => 'Taken', 'permission_group_ids' => ['users']])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['name' => 'rolesAndPermissions.form.nameTaken']);
@@ -363,7 +363,7 @@ describe('a role refusal', function () {
         Role::create(['name' => 'Taken']);
         $role = Role::create(['name' => 'Free']);
 
-        $this->actingAs(userWithPermissions(['permissions.update']))
+        $this->actingAs(platformOperatorWithPermissions(['permissions.update']))
             ->patchJson("/api/auth/roles/{$role->id}", ['name' => 'Taken'])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['name' => 'rolesAndPermissions.form.nameTaken']);
@@ -372,7 +372,7 @@ describe('a role refusal', function () {
     it('refuses to delete the administrator role, with a key', function () {
         $role = Role::create(['name' => 'Operador', 'slug' => 'operador']);
 
-        $this->actingAs(userWithPermissions(['permissions.update']))
+        $this->actingAs(platformOperatorWithPermissions(['permissions.update']))
             ->deleteJson("/api/auth/roles/{$role->id}")
             ->assertForbidden()
             ->assertJsonPath('error', 'rolesAndPermissions.cannotDeleteAdministratorRole');
@@ -384,7 +384,7 @@ describe('a role refusal', function () {
         $role = Role::create(['name' => 'Held']);
         User::factory()->create(['role_id' => $role->id, 'name' => 'Carla', 'last_name' => 'Dias']);
 
-        $this->actingAs(userWithPermissions(['permissions.update']))
+        $this->actingAs(platformOperatorWithPermissions(['permissions.update']))
             ->deleteJson("/api/auth/roles/{$role->id}")
             ->assertConflict()
             ->assertJsonPath('error', 'rolesAndPermissions.cannotDeleteRole')

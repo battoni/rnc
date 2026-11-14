@@ -166,6 +166,18 @@ describe('AM1 — a signed-in person with no firm', function () {
         expect(HostScopedNote::withoutGlobalScopes()->where('title', 'nova')->value('firm_id'))->toBe($hub->id);
     });
 
+    it('refuses a firm-less person who is not the platform operator with 403 firms.required, never the platform firm', function () {
+        hostPlatformFirm();
+        $stray = User::factory()->create([
+            'firm_id' => null,
+            'role_id' => Role::where('slug', 'equipe')->value('id'),
+        ]);
+
+        $this->actingAs($stray)->getJson('/api/test/host-notes')
+            ->assertForbidden()
+            ->assertJsonPath('error', 'firms.required');
+    });
+
     it('is refused with 403 firms.required when there is no platform firm, never left in no firm', function () {
         $this->actingAs(hostOperator())->getJson('/api/test/host-notes')
             ->assertForbidden()

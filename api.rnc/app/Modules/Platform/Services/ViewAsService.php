@@ -18,7 +18,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
  *
  * The session holds only the id of an open audit row (`SESSION_KEY`); the row is the truth. A key is
  * honoured only for the firm-less `operador` whose row it is, while the row is open and its firm is a
- * tenant — so a firm account, an operator placed in a firm, another operator or a guest carrying the
+ * tenant not offboarded (an exit mid-visit drops the operator back to the platform firm) — so a firm account, an operator placed in a firm, another operator or a guest carrying the
  * key rides nothing, and closing the row (Sair, logout, the next sign-in) ends it wherever it was.
  * It changes the firm, never the permissions: the viewed firm's modules still gate its routes.
  */
@@ -52,7 +52,7 @@ class ViewAsService
      * Enter the firm `$firmId` names: a row (who, which firm, from where, when) and the session key.
      * Null when there is no such firm.
      *
-     * @throws ViewAsException already viewing (409), or the platform firm (422)
+     * @throws ViewAsException already viewing (409), the platform firm or an offboarded firm (422)
      */
     public function start(Request $request, User $operator, int $firmId): ?ViewAsSession
     {
@@ -68,6 +68,10 @@ class ViewAsService
 
         if ($firm->is_platform) {
             throw ViewAsException::platformFirm();
+        }
+
+        if ($firm->isOffboarded()) {
+            throw ViewAsException::offboarded();
         }
 
         $session = $this->viewAsSessionRepository->createViewAsSession($operator->id, $firm->id, $request->ip());
@@ -129,6 +133,6 @@ class ViewAsService
 
         $session = $this->viewAsSessionRepository->findOpenViewAsSessionOfOperator($id, $user->id);
 
-        return $session?->firm && ! $session->firm->is_platform ? $session : null;
+        return $session?->firm && ! $session->firm->is_platform && ! $session->firm->isOffboarded() ? $session : null;
     }
 }

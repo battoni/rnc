@@ -3,6 +3,13 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 2.19.0 — 2026-11-14
+- Role writes (`POST/PATCH/DELETE auth/roles*`) also need `platform.operator` (rnc-4 verify PE1): roles are
+  global. `UserService::update` ends the sessions of a person whose password another account changed (PE3).
+  `AuthController::login` ends a live view-as as `logout` before the sign-in (P2-A4). RULES: Known Gap for the
+  cross-firm username/e-mail checks (PE2). Tests: `RoleTest`, `UserTest`, `ViewAsTest`; `tests/Pest.php`
+  gains `platformOperatorWithPermissions`.
+
 ## 2.18.1 — 2026-11-14
 - `RoleService::create` recognises MySQL 8's unique-violation message, which names the index (`roles.roles_name_unique`,
   `roles.roles_slug_unique`) where SQLite names the column: a name race was a 500 and a slug collision never moved to the

@@ -110,6 +110,28 @@ describe('starting', function () {
         expect(ViewAsSession::query()->count())->toBe(0);
     });
 
+    it('cannot target an offboarded firm (422 platform.viewAsOffboarded, verify P2-A3)', function () {
+        $this->alvorada->forceFill(['offboarded_at' => now()])->save();
+        $this->actingAs($this->operator);
+
+        viewAsStart($this->alvorada)
+            ->assertUnprocessable()
+            ->assertJsonPath('error', 'platform.viewAsOffboarded')
+            ->assertJsonPath('code', 'view_as_offboarded');
+
+        expect(ViewAsSession::query()->count())->toBe(0);
+    });
+
+    it('falls back to the platform firm when the viewed firm is offboarded mid-visit (verify P2-A3)', function () {
+        $this->actingAs($this->operator);
+        viewAsStart($this->alvorada)->assertCreated();
+
+        $this->alvorada->forceFill(['offboarded_at' => now()])->save();
+
+        expect(viewAsLeadIds())->toContain($this->hubLead->id)->not->toContain($this->alvoradaLead->id);
+        $this->getJson('/api/auth/me')->assertJsonPath('data.platform.view_as', null);
+    });
+
     it('answers 404 for an unknown firm', function () {
         $this->actingAs($this->operator)->postJson('/api/platform/firms/999999/view-as')->assertNotFound()->assertJsonPath('error', 'firms.notFound');
 
@@ -213,6 +235,33 @@ describe('ending', function () {
         $row = ViewAsSession::query()->sole();
         expect($row->ended_at)->not->toBeNull()
             ->and($row->end_reason->value)->toBe('logout');
+    });
+
+    it('never lends the viewed firm to a sign-in at the root, and ends the view-as as logout (verify P2-A4)', function () {
+        $alvoradaManager = viewAsPerson('gestao', $this->alvorada->id);
+        $this->actingAs($this->operator);
+        viewAsStart($this->alvorada)->assertCreated();
+
+        $this->postJson('/api/auth/login', ['username' => $alvoradaManager->username, 'password' => (string) config('seeding.password')])
+            ->assertUnprocessable()
+            ->assertJsonPath('errors.username.0', 'auth.login.invalidCredentials');
+
+        $row = ViewAsSession::query()->sole();
+        expect($row->ended_at)->not->toBeNull()
+            ->and($row->end_reason->value)->toBe('logout');
+    });
+
+    it("signs in on a firm host by the host's header, not the operator's session (verify P2-A4)", function () {
+        $alvoradaManager = viewAsPerson('gestao', $this->alvorada->id);
+        $this->actingAs($this->operator);
+        viewAsStart($this->alvorada)->assertCreated();
+
+        $this->withHeader('X-Firm', 'alvorada')
+            ->postJson('/api/auth/login', ['username' => $alvoradaManager->username, 'password' => (string) config('seeding.password')])
+            ->assertOk()
+            ->assertJsonPath('data.username', $alvoradaManager->username);
+
+        expect(ViewAsSession::query()->sole()->end_reason?->value)->toBe('logout');
     });
 
     it('closes a session left open with reason expirou at the operator\'s next sign-in', function () {

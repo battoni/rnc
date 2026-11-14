@@ -41,9 +41,11 @@ Route::post('auth/email/verify', [RegisterController::class, 'verify'])->middlew
 // A permission per verb, never one for the resource. These routes used to ask only for a session,
 // so any signed-in account could create a role, grant it every permission and delete the
 // administrator's — and the list was public. Reading serves two screens: the Roles screen, and
-// the user form that picks a role, so either audience's key opens it.
+// the user form that picks a role, so either audience's key opens it. Roles are global (one set for
+// every firm), so a write is the platform operator's alone (`platform.operator`, rnc-4 verify PE1):
+// a firm account holding `permissions.update` would otherwise edit every firm's roles.
 $rolesRead = ['auth', 'permission:permissions.read,users.create,users.update'];
-$rolesWrite = ['auth', 'permission:permissions.update'];
+$rolesWrite = ['auth', 'permission:permissions.update', 'platform.operator'];
 
 Route::get('auth/roles', [RoleController::class, 'index'])->middleware($rolesRead);
 Route::get('auth/roles/{id}', [RoleController::class, 'show'])->middleware($rolesRead);

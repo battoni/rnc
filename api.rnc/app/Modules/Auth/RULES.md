@@ -1,5 +1,5 @@
 ---
-version: 2.18.1
+version: 2.19.0
 origin: pendulum
 based-on: 2.9.0
 ---
@@ -57,6 +57,12 @@ there is no "everything minus a list" left to subtract from. The protected all-k
   them; the login answers carry them with `view_as` null — a sign-in closes any view-as left open.
 - **Logout ends a view-as** (rnc-4 F4c, R26, D20): `AuthController::logout` closes the session's
   open view-as as `logout` (Platform's `ViewAsService::end`) before the session is invalidated.
+- **A sign-in over a live session is a visitor's** (rnc-4 verify P2-A4): `AuthController::login` ends the
+  session's view-as as `logout` first, and `ResolveCurrentFirm` resolves `auth/login` from the host's
+  `X-Firm` (or the default firm), never from the session — an operator viewing a firm cannot sign a
+  firm account in at the root, and a firm host's header is not a mismatch of the person being replaced.
+- **A password another account changes ends that person's sessions** (verify PE3): `UserService::update`
+  deletes them as `resetPassword` does; a person editing their own row keeps theirs.
 
 ## The firm's manager runs its team (rnc-4 F5a, R31, AM2, LOCAL)
 
@@ -122,8 +128,10 @@ for approval by `registration.new_user_status`. Three rules follow from it:
 
 Every route names the permission for its own verb, never one for the resource. `auth/roles`
 reads with `permissions.read` **or** the user form's `users.create` / `users.update`
-(`permission:a,b` means any of them), and writes with `permissions.update`. The ordinary member
-role never holds `permissions.*` — whoever can edit roles can grant themselves anything.
+(`permission:a,b` means any of them), and writes with `permissions.update` **and** `platform.operator`
+(rnc-4 verify PE1): roles are global, one set for every firm, so a firm account holding the key would
+edit every firm's roles. The ordinary member role never holds `permissions.*` — whoever can edit roles
+can grant themselves anything. Tests write roles as `platformOperatorWithPermissions([...])` (`tests/Pest.php`).
 
 ## Writing permissions (non-obvious)
 
@@ -217,6 +225,11 @@ role never holds `permissions.*` — whoever can edit roles can grant themselves
   `app/Http/Middleware`, outside this module.
 - **`users.phone` is not unique.** Two accounts on one phone cannot sign in by code at all until
   one of them changes it.
+- **`check-username` and the e-mail check answer across firms** (rnc-4 verify PE2, accepted): usernames
+  and e-mails are global, so "taken" for a name another firm holds says that name exists somewhere.
+  Inherent to global identifiers; `check-username` needs `users.create`/`users.update` (a firm's manager)
+  and `isEmailAvailable` is the operator's `firm:create` only. Scoping them per firm would let two firms
+  pick the same username, which the global unique index then refuses.
 
 ## Modules per firm (rnc-4)
 

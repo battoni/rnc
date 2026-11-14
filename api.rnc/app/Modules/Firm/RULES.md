@@ -1,5 +1,5 @@
 ---
-version: 1.12.0
+version: 1.13.0
 origin: rnc
 ---
 # RULES — Firm Module
@@ -24,6 +24,10 @@ firms records of the Channel module, with no tenant.
   - signed in with a firm → that firm; an `X-Firm` naming another → 403 `firms.mismatch` (D5);
   - signed in with NO firm (the operator) → `ViewAsFirm` (the firm of an open view-as, F4c), else the platform
     firm; any `X-Firm` → 403 `firms.mismatch`; no platform firm → 403 `firms.required` (plan AM1);
+  - signed in with NO firm and NOT the platform operator (`EnsurePlatformOperator::isPlatformOperator`) →
+    403 `firms.required` (rnc-4 verify P1-A1): the platform firm is the operator's, never a fallback;
+  - `POST auth/login` → always as a visitor, whoever the session holds (verify P2-A4): the firm a new
+    person signs into is the host's, never the firm an operator is viewing as;
   - a visitor → the `X-Firm` slug through `FirmResolver::findTenantBySlug` (a reserved slug of
     `config/platform.php`, an unknown one or the platform firm's → 404 `firms.notFound`, D2, AM9),
     without the header `config('firms.default_slug')`: `hub` in the app, `franco` in `phpunit.xml` (D6).
@@ -229,8 +233,10 @@ its route names by id:
   referral messages, NF-e files, assistant notes and the team's logins (deactivated by the firm's
   closure, not wiped) keep their rows until a purge per module is decided; the export file covers the
   firm, its logins and its leads. The export file stays on the `local` disk until the operator deletes it.
-- **An offboarded firm still shows in the console and can be viewed as** (rnc-4 F9a): the console lists
-  every firm; a "desligada" state on the console is F9b's or later.
+- **An offboarded firm still shows in the console** (rnc-4 F9a): the console lists every firm; a
+  "desligada" state on the console is later.
+  _Retired 14/11/2026 (verify P2-A3):_ "…and can be viewed as" — `ViewAsService` refuses an offboarded
+  firm on start (422 `platform.viewAsOffboarded`) and drops a view-as whose firm is offboarded mid-visit.
 
 _Retired 14/11/2026 (F4c):_ "Until F4c the operator reaches another firm only through the console;
 `ViewAsFirm` returns null" — `ViewAsFirm` now answers the firm of the operator's open view-as.

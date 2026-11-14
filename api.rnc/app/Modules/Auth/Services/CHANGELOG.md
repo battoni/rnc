@@ -3,6 +3,9 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 2.9.0 — 2026-11-14
+- `UserService::update` ends every session of a person whose password another account changed, as `resetPassword` does (rnc-4 verify PE3). Tested by `tests/Feature/Auth/UserTest`.
+
 ## 2.8.0 — 2026-11-14
 - `UserService::create` writes the DTO's `email` and `is_specialist`; `UserService::isEmailAvailable()`; `RoleService::MANAGER_SLUG` (`gestao`) — for `firm:create` (rnc-4 F3b1). Tested by `tests/Feature/Firm/CreateFirmCommandTest`.
 

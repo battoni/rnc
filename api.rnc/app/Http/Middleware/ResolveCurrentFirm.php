@@ -26,6 +26,13 @@ use Symfony\Component\HttpFoundation\Response;
  * A signed-in person with no firm (the platform operator) works in the firm they are viewing as
  * (F4c), else the platform firm — never in no firm, never in the header's (plan AM1). Without a
  * platform firm they are refused with 403 `firms.required`: a null firm here was a 500 further on.
+ * A firm-less person who is NOT the platform operator (a stray row, a botched offboarding) is
+ * refused with the same 403 — the platform firm is the operator's, never a fallback for anyone.
+ *
+ * A sign-in (`auth/login`) is resolved as a visitor's request even over a live session (verify
+ * P2-A4): the firm a NEW person signs into is the host's, never the one the current session is in —
+ * an operator viewing a firm must not lend it to a login at the root, and a header on a firm host
+ * must not be refused as a mismatch of the person about to be replaced.
  *
  * A visitor names the firm with `X-Firm: <slug>`; a reserved, unknown or platform slug is a 404
  * `firms.notFound` (D2, AM9). Without the header the request belongs to the default firm — the
@@ -44,6 +51,9 @@ class ResolveCurrentFirm
 
     public const OFFBOARDED = 'firms.offboarded';
 
+    /** The sign-in door: resolved as a visitor's request even when a session is already signed in. */
+    private const SIGN_IN_PATH = 'api/auth/login';
+
     public function __construct(
         private CurrentFirm $currentFirm,
         private FirmRepository $firmRepository,
@@ -56,7 +66,7 @@ class ResolveCurrentFirm
         $user = $request->user();
         $requestedSlug = $request->header(self::HEADER);
 
-        if ($user !== null) {
+        if ($user !== null && ! $request->is(self::SIGN_IN_PATH)) {
             return $this->resolveSignedIn($request, $next, $requestedSlug);
         }
 
@@ -101,6 +111,10 @@ class ResolveCurrentFirm
             $this->currentFirm->set($firm);
 
             return $next($request);
+        }
+
+        if (! EnsurePlatformOperator::isPlatformOperator($request->user())) {
+            return ApiResponse::forbidden(message: self::REQUIRED);
         }
 
         if ($requestedSlug !== null) {

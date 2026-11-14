@@ -2,6 +2,15 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.13.0 — 2026-11-14
+
+### Changed
+
+- `ResolveCurrentFirm` (rnc-4 verify): a firm-less person who is not the platform operator is 403
+  `firms.required` instead of falling into the platform firm (P1-A1); `POST auth/login` is resolved as a
+  visitor's request over any live session, so a view-as never lends its firm to a sign-in (P2-A4). RULES:
+  the Known Gap "an offboarded firm can be viewed as" retired (P2-A3, Platform's `ViewAsService`).
+
 ## 1.12.0 — 2026-11-14
 
 ### Added

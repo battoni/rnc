@@ -1,5 +1,5 @@
 ---
-version: 1.1.2
+version: 1.2.0
 origin: rnc
 ---
 # RULES — Platform Module
@@ -60,11 +60,14 @@ order — a guest 401, anybody else 403:
 - **View-as** (R26, D20; `ViewAsService`): the session holds only the id of an open
   `platform_view_as_sessions` row (`ViewAsService::SESSION_KEY`); the row (operator, firm, IP,
   started, ended, `end_reason`) is the truth. `current()` honours the key only for the firm-less
-  `operador` whose row it is, while the row is open and its firm is not the platform firm — a firm
+  `operador` whose row it is, while the row is open and its firm is neither the platform firm nor
+  offboarded (verify P2-A3: an exit mid-visit drops the operator back to the platform firm) — a firm
   account, an operator placed in a firm, another operator or a guest carrying the key rides nothing.
   Firm's `ViewAsFirm` asks it, so `ResolveCurrentFirm` makes every request of that session the
   viewed firm's and `auth/me` answers `platform.view_as`. It never nests (409), never targets the
-  platform firm (422). It ends on `DELETE platform/view-as` (`sair`), on `auth/logout` (`logout`,
+  platform firm (422 `platform.viewAsPlatformFirm`) nor an offboarded one (422 `platform.viewAsOffboarded`,
+  code `view_as_offboarded`). A sign-in over a live view-as ends it as `logout` first (Auth's
+  `AuthController::login`, verify P2-A4). It ends on `DELETE platform/view-as` (`sair`), on `auth/logout` (`logout`,
   Auth's `AuthController`), and at the person's next sign-in, any door (`expirou`,
   `Listeners/CloseViewAsOnSignIn` on Laravel's `Login`, registered in `AppServiceProvider`) — which
   also stops another browser's open view-as. It changes the firm, never the permissions: the

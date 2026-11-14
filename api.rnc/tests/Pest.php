@@ -122,6 +122,30 @@ function userWithPermissions(array $permissionKeys): User
 }
 
 /**
+ * The platform operator (the `operador` role, no firm) holding only `$permissionKeys` as overrides —
+ * for a route behind `platform.operator` whose test is about a permission or the grant cap, not
+ * about the role's full matrix (rnc-4 verify PE1: role writes). The platform firm is created when
+ * absent, since a firm-less person works in it; the `operador` role is created bare when absent.
+ *
+ * @param  list<string>  $permissionKeys
+ */
+function platformOperatorWithPermissions(array $permissionKeys): User
+{
+    if (! Firm::where('is_platform', true)->exists()) {
+        Firm::factory()->create(['slug' => 'hub', 'name' => 'Hub da Reforma', 'is_platform' => true]);
+    }
+
+    $role = Role::firstOrCreate(['slug' => 'operador'], ['name' => 'Operador']);
+    $user = User::factory()->create(['firm_id' => null, 'role_id' => $role->id]);
+
+    foreach ($permissionKeys as $permissionKey) {
+        UserPermission::create(['user_id' => $user->id, 'permission_key' => $permissionKey, 'value' => true]);
+    }
+
+    return $user;
+}
+
+/**
  * A member of a firm in one of the seeded roles (`RoleSeeder` must have run), for the Reforma
  * assistant's tests (rnc-3 F4): six files ask "who is acting" — a specialist, the team, Reinaldo,
  * the operator, another firm's specialist.

@@ -28,6 +28,9 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request): JsonResponse
     {
+        // A sign-in over a live view-as ends it first, logged as `logout` (verify P2-A4): the session
+        // that held it is being replaced, and the firm of this login is the host's.
+        $this->viewAsService->end($request, ViewAsEndReason::Logout);
         $credentials = LoginCredentialsDTO::from($request);
         $user = $this->authService->authenticate($credentials, $request);
 

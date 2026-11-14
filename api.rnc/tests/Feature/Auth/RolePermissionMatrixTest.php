@@ -3,7 +3,6 @@
 use App\Models\User;
 use App\Modules\Auth\Models\Role;
 use App\Modules\Auth\Models\RolePermission;
-use App\Modules\Auth\Models\UserPermission;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
@@ -16,16 +15,11 @@ uses(RefreshDatabase::class);
  * but the administrator's.
  */
 
+/** The platform operator: role writes are theirs alone (rnc-4 verify PE1). */
 function matrixEditor(): User
 {
-    $user = User::factory()->create();
-
-    UserPermission::create(['user_id' => $user->id, 'permission_key' => 'permissions.read', 'value' => true]);
-    UserPermission::create(['user_id' => $user->id, 'permission_key' => 'permissions.update', 'value' => true]);
     // Plus the keys these specs write into a matrix: a grant is capped by the giver's own (ARC-03).
-    UserPermission::create(['user_id' => $user->id, 'permission_key' => 'leads.read', 'value' => true]);
-
-    return $user;
+    return platformOperatorWithPermissions(['permissions.read', 'permissions.update', 'leads.read']);
 }
 
 describe('the permission matrix a role is shown', function () {

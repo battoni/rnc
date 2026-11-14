@@ -3,6 +3,11 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.2.0 — 2026-11-14
+- View-as refuses an offboarded firm (rnc-4 verify P2-A3): `ViewAsException::offboarded()` (422
+  `platform.viewAsOffboarded`, code `view_as_offboarded`) on start; `current()` ignores a row whose firm was
+  offboarded mid-visit. A sign-in over a live view-as closes it as `logout` (P2-A4). Tested in `ViewAsTest`.
+
 ## 1.1.2 — 2026-11-14
 - RULES: the "logged IP is the direct peer" Known Gap retired (rnc-4 F7) — `TRUSTED_PROXIES` (`config/trustedproxy.php`) makes the audit row's address the client's behind the deploy's proxy; the runbook carries the vhost's `/storage` (AM10).
 
