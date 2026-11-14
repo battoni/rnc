@@ -11,6 +11,8 @@ use Database\Seeders\FirmSeeder;
 use Illuminate\Support\Collection;
 
 /**
+ * Nothing runs outside `local` and `testing` (`DemoEnvironment`, verify P2-C2).
+ *
  * The demo seeders run once per seeded firm (rnc-4 F3b2, D18): Franco, then the demo firm Alvorada
  * when it exists — and it exists only on a developer's machine (`DemoFirmSeeder` refuses testing and
  * production), so the Pest suite's seed never carries Alvorada's data (plan AM7). The platform firm
@@ -32,6 +34,10 @@ trait SeedsEachDemoFirm
      */
     protected function forEachDemoFirm(CurrentFirm $currentFirm, callable $seed, ?string $module = null): void
     {
+        if (! DemoEnvironment::allows()) {
+            return;
+        }
+
         foreach ($this->demoFirms() as $ordinal => $firm) {
             if ($module !== null && ! FirmModules::isEnabled($firm, $module)) {
                 continue;

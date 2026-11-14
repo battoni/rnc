@@ -15,6 +15,7 @@ use App\Modules\Partner\Models\Partner;
 use App\Modules\Partner\Models\Referral;
 use App\Modules\Partner\Services\PartnerMatcher;
 use Carbon\CarbonImmutable;
+use Database\Seeders\Concerns\DemoEnvironment;
 use Database\Seeders\Concerns\SeedsEachDemoFirm;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
@@ -74,7 +75,7 @@ class PartnerSeeder extends Seeder
 
     public function run(CurrentFirm $currentFirm, PartnerMatcher $partnerMatcher): void
     {
-        if (app()->environment('production')) {
+        if (! DemoEnvironment::allows()) {
             return;
         }
 

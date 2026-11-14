@@ -5,10 +5,13 @@ use App\Modules\Booking\Models\Specialist;
 use App\Modules\Firm\Models\Firm;
 use App\Modules\Firm\Services\PlatformSettings;
 use App\Modules\Lead\Models\FirmConsentVersion;
+use App\Modules\Lead\Models\Lead;
 use App\Modules\Lead\Services\ConsentTextService;
 use Database\Seeders\DatabaseSeeder;
 use Database\Seeders\DemoFirmSeeder;
 use Database\Seeders\FirmSeeder;
+use Database\Seeders\LocalUsersSeeder;
+use Database\Seeders\PipelineSeeder;
 use Database\Seeders\PlatformFirmSeeder;
 use Database\Seeders\RoleSeeder;
 use Database\Seeders\SpecialistSeeder;
@@ -59,6 +62,26 @@ describe('PlatformFirmSeeder', function () {
             ->and(app(ConsentTextService::class)->currentVersion($hub->id)->text)->toBe('Autorizo {escritorio} a falar comigo.');
     });
 
+    it("keeps the operator's edits on a re-seed and only enforces is_platform (verify P1-C1)", function () {
+        $this->seed(PlatformFirmSeeder::class);
+        Firm::where('slug', 'hub')->sole()->forceFill([
+            'brand_primary' => '#123456',
+            'modules' => ['chat'],
+            'phone' => '11 4000-0000',
+            'mailbox' => 'contato@hub.exemplo',
+            'is_platform' => false,
+        ])->save();
+
+        $this->seed(PlatformFirmSeeder::class);
+
+        $hub = Firm::where('slug', 'hub')->sole();
+        expect($hub->brand_primary)->toBe('#123456')
+            ->and($hub->modules)->toBe(['chat'])
+            ->and($hub->phone)->toBe('11 4000-0000')
+            ->and($hub->mailbox)->toBe('contato@hub.exemplo')
+            ->and($hub->is_platform)->toBeTrue();
+    });
+
     it('runs in production too', function () {
         app()->detectEnvironment(fn () => 'production');
 
@@ -106,4 +129,22 @@ describe('DemoFirmSeeder', function () {
         expect(Firm::where('slug', 'alvorada')->exists())->toBeFalse()
             ->and(User::where('username', 'helena.alvorada')->exists())->toBeFalse();
     })->with(['testing', 'production', 'staging']);
+});
+
+describe('the demo seeders outside a developer machine (verify P2-C2)', function () {
+    beforeEach(fn () => $this->seed([FirmSeeder::class, RoleSeeder::class]));
+
+    it('write nothing on staging or production: no team, no bookable hours, no invented leads', function (string $environment) {
+        $franco = Firm::where('slug', FirmSeeder::FRANCO_SLUG)->sole();
+        $real = User::factory()->create(['firm_id' => $franco->id, 'is_specialist' => true]);
+        app()->detectEnvironment(fn () => $environment);
+
+        foreach ([LocalUsersSeeder::class, SpecialistSeeder::class, PipelineSeeder::class] as $seeder) {
+            app()->call([app($seeder), 'run']);
+        }
+
+        expect(User::where('username', 'patricia')->exists())->toBeFalse()
+            ->and(Specialist::withoutGlobalScopes()->where('user_id', $real->id)->exists())->toBeFalse()
+            ->and(Lead::withoutGlobalScopes()->count())->toBe(0);
+    })->with(['staging', 'production']);
 });

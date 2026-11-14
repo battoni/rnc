@@ -23,6 +23,7 @@ use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use RuntimeException;
 
 /**
  * Makes a firm ready to sign in to (rnc-4 R21, D17) — `firm:create` and the platform console
@@ -58,6 +59,10 @@ class FirmProvisioner
     public const EMAIL_INVALID = 'users.form.emailInvalid';
 
     public const EMAIL_TAKEN = 'users.form.emailTaken';
+
+    private const EMAIL_COLUMN = 'users.email';
+
+    private const EMAIL_UNIQUE_INDEX = 'users_email_unique';
 
     /** A DNS label within `firms.slug`'s 60: lowercase letters, digits and inner hyphens. */
     private const SLUG_PATTERN = '/^[a-z0-9](?:[a-z0-9-]{0,58}[a-z0-9])?$/';
@@ -98,10 +103,13 @@ class FirmProvisioner
         try {
             return $this->createAll($dto, $actor, $password);
         } catch (UniqueConstraintViolationException $exception) {
-            // Two requests raced past the checks above: the loser names what the winner took.
-            throw ValidationException::withMessages($this->firmRepository->findFirmBySlug($dto->slug) instanceof Firm
-                ? ['slug' => [self::SLUG_TAKEN]]
-                : ['manager' => [self::MANAGER_TAKEN]]);
+            // Two requests raced past the checks above: the loser names what the winner took — the
+            // slug, else the e-mail when the violated index is the e-mail's, else the username.
+            throw ValidationException::withMessages(match (true) {
+                $this->firmRepository->findFirmBySlug($dto->slug) instanceof Firm => ['slug' => [self::SLUG_TAKEN]],
+                self::violatesEmail($exception) => ['email' => [self::EMAIL_TAKEN]],
+                default => ['manager' => [self::MANAGER_TAKEN]],
+            });
         }
     }
 
@@ -132,8 +140,10 @@ class FirmProvisioner
                 $firm,
                 fn (): User => $this->createManager($dto->username, $dto->email, false, $password),
             ));
-        } catch (UniqueConstraintViolationException) {
-            throw ValidationException::withMessages(['username' => [self::MANAGER_TAKEN]]);
+        } catch (UniqueConstraintViolationException $exception) {
+            throw ValidationException::withMessages(self::violatesEmail($exception)
+                ? ['email' => [self::EMAIL_TAKEN]]
+                : ['username' => [self::MANAGER_TAKEN]]);
         }
 
         return new ManagerLogin($manager, $password, true);
@@ -180,15 +190,33 @@ class FirmProvisioner
             && $user->role->slug === RoleService::MANAGER_SLUG;
     }
 
+    /**
+     * Whether the unique index a race hit is the e-mail's, read from the driver's own message (never
+     * the SQL, which lists every column): SQLite names the column (`users.email`), MySQL 8 the index
+     * (`users.users_email_unique`), as `RoleService` reads its own (rnc-4 F7b).
+     */
+    private static function violatesEmail(UniqueConstraintViolationException $exception): bool
+    {
+        $driverMessage = (string) ($exception->errorInfo[2] ?? $exception->getMessage());
+
+        return str_contains($driverMessage, self::EMAIL_COLUMN) || str_contains($driverMessage, self::EMAIL_UNIQUE_INDEX);
+    }
+
     private function createManager(string $username, ?string $email, bool $specialist, string $password): User
     {
         [$name, $lastName] = self::namesOf($username);
+        $managerRole = $this->roleRepository->findRoleBySlug(RoleService::MANAGER_SLUG);
+
+        // A database without its roles is a broken deploy, not a firm with a role-less manager.
+        if ($managerRole === null) {
+            throw new RuntimeException('The `'.RoleService::MANAGER_SLUG.'` role is not seeded: run RoleSeeder before firm:create.');
+        }
 
         return $this->userService->create(new UserStoreDTO(
             name: $name,
             last_name: $lastName,
             username: $username,
-            role_id: (int) $this->roleRepository->findRoleBySlug(RoleService::MANAGER_SLUG)?->id,
+            role_id: $managerRole->id,
             status: UserStatus::ACTIVE->value,
             password: $password,
             email: $email,

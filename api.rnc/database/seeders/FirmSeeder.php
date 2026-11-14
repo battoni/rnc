@@ -35,7 +35,9 @@ class FirmSeeder extends Seeder
 
     public function run(ConsentTextService $consentTextService): void
     {
-        $firm = Firm::updateOrCreate(
+        // Created once, never rewritten (verify P1-C1): a re-seed must not undo what the firm's manager
+        // or the operator changed since (look, modules, contact).
+        $firm = Firm::firstOrCreate(
             ['slug' => self::FRANCO_SLUG],
             [
                 'name' => 'Franco Contabilidade',

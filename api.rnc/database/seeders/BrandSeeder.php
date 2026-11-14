@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Modules\Firm\Models\Firm;
 use App\Modules\Firm\Models\FirmBrand;
 use App\Modules\Firm\Services\CurrentFirm;
+use Database\Seeders\Concerns\DemoEnvironment;
 use Illuminate\Database\Seeder;
 
 /**
@@ -54,7 +55,7 @@ class BrandSeeder extends Seeder
 
     public function run(CurrentFirm $currentFirm): void
     {
-        if (app()->environment('production')) {
+        if (! DemoEnvironment::allows()) {
             return;
         }
 

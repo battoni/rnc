@@ -34,6 +34,18 @@ describe('the firm seeder', function () {
         expect(Firm::count())->toBe(1);
     });
 
+    it("keeps the manager's and the operator's edits on a re-seed (verify P1-C1)", function () {
+        $this->seed(FirmSeeder::class);
+        Firm::where('slug', 'franco')->sole()->forceFill(['brand_primary' => '#123456', 'modules' => ['chat'], 'phone' => '11 4000-0000'])->save();
+
+        $this->seed(FirmSeeder::class);
+
+        $firm = Firm::where('slug', 'franco')->sole();
+        expect($firm->brand_primary)->toBe('#123456')
+            ->and($firm->modules)->toBe(['chat'])
+            ->and($firm->phone)->toBe('11 4000-0000');
+    });
+
     it('never names the partner network or its founder', function () {
         $this->seed(FirmSeeder::class);
 

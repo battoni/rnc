@@ -3,6 +3,10 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.3.0 — 2026-11-14
+- `platform_view_as_sessions.user_id` / `firm_id` are nullable and `nullOnDelete` (folded into the create, rnc-4 verify
+  P2-C4): deleting an operator account or a firm no longer erases the audit. Tested in `ViewAsTest`.
+
 ## 1.2.0 — 2026-11-14
 - View-as refuses an offboarded firm (rnc-4 verify P2-A3): `ViewAsException::offboarded()` (422
   `platform.viewAsOffboarded`, code `view_as_offboarded`) on start; `current()` ignores a row whose firm was

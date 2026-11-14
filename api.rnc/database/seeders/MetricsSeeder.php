@@ -11,6 +11,7 @@ use App\Modules\Tracking\Enums\EventType;
 use App\Modules\Tracking\Models\TrackingEvent;
 use App\Modules\Tracking\Models\Visitor;
 use Carbon\CarbonImmutable;
+use Database\Seeders\Concerns\DemoEnvironment;
 use Database\Seeders\Concerns\SeedsEachDemoFirm;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
@@ -61,7 +62,7 @@ class MetricsSeeder extends Seeder
 
     public function run(CurrentFirm $currentFirm): void
     {
-        if (app()->environment('production')) {
+        if (! DemoEnvironment::allows()) {
             return;
         }
 

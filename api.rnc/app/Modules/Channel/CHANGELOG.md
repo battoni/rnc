@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.0.1 — 2026-11-14
+
+### Changed
+
+- RULES: the route table names `gestao` where it said `ceo` (rnc-4 F2c1 renamed the role; entry added at verify, P2-C6).
+
 ## 1.0.0 — 2026-11-07
 
 ### Added

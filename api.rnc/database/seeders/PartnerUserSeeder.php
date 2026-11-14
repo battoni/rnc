@@ -12,6 +12,7 @@ use App\Modules\Partner\Models\Partner;
 use App\Modules\Partner\Models\PartnerAccessEvent;
 use App\Modules\Partner\Services\PartnerAccessService;
 use Carbon\CarbonImmutable;
+use Database\Seeders\Concerns\DemoEnvironment;
 use Database\Seeders\Concerns\SeedsEachDemoFirm;
 use Illuminate\Database\Seeder;
 
@@ -37,7 +38,7 @@ class PartnerUserSeeder extends Seeder
 
     public function run(CurrentFirm $currentFirm): void
     {
-        if (app()->environment('production')) {
+        if (! DemoEnvironment::allows()) {
             return;
         }
 

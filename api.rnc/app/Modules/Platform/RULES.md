@@ -1,5 +1,5 @@
 ---
-version: 1.2.0
+version: 1.3.0
 origin: rnc
 ---
 # RULES — Platform Module
@@ -59,7 +59,8 @@ order — a guest 401, anybody else 403:
   the file it replaced (only a file under that firm's folder is ever deleted). Not re-encoded (D22).
 - **View-as** (R26, D20; `ViewAsService`): the session holds only the id of an open
   `platform_view_as_sessions` row (`ViewAsService::SESSION_KEY`); the row (operator, firm, IP,
-  started, ended, `end_reason`) is the truth. `current()` honours the key only for the firm-less
+  started, ended, `end_reason`) is the truth. The row outlives its people: `user_id` and `firm_id` are
+  `nullOnDelete` (verify P2-C4), and `ViewAsSessionResource` answers a missing one as null. `current()` honours the key only for the firm-less
   `operador` whose row it is, while the row is open and its firm is neither the platform firm nor
   offboarded (verify P2-A3: an exit mid-visit drops the operator back to the platform firm) — a firm
   account, an operator placed in a firm, another operator or a guest carrying the key rides nothing.

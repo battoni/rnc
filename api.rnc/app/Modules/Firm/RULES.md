@@ -1,5 +1,5 @@
 ---
-version: 1.14.0
+version: 1.15.0
 origin: rnc
 ---
 # RULES — Firm Module
@@ -38,7 +38,9 @@ firms records of the Channel module, with no tenant.
   host for the QA login-as) and "does this account belong to it" (`belongsTo`: its own firm, or the
   platform firm for the firm-less `operador`). The logins and the QA login-as use it (Auth RULES).
 - **The platform firm** (`is_platform`, slug `hub`, D3) is seeded in every environment by
-  `PlatformFirmSeeder`; `FirmRepository::findPlatformFirm()` reads it. `DemoFirmSeeder` (Alvorada,
+  `PlatformFirmSeeder`; `FirmRepository::findPlatformFirm()` reads it. `PlatformFirmSeeder` and `FirmSeeder`
+  create their row once (`firstOrCreate` by slug) and never rewrite it — `db:seed` runs on every deploy
+  and the console's and the manager's edits win; only `is_platform` is enforced (verify P1-C1). `DemoFirmSeeder` (Alvorada,
   D18) is local only (AM7).
 - **`BelongsToFirm`** (trait) adds `FirmScope` and stamps `firm_id` on create. Every business model
   of later phases uses it. A row of another firm is absent, so the API answers 404, never 403.
@@ -246,15 +248,13 @@ its route names by id:
 
 _Retired 14/11/2026 (F4c):_ "Until F4c the operator reaches another firm only through the console;
 `ViewAsFirm` returns null" — `ViewAsFirm` now answers the firm of the operator's open view-as.
-- **`FirmProvisioner`'s refusal keys have no SPA text yet** (rnc-4 F3b1): `firm:create` prints the
-  keys themselves; the console's screens (F4b) add `firms.slug*`, `firms.nameRequired` and the new
-  `users.form.*` keys to the locales.
+_Retired 14/11/2026 (verify P2-C3):_ "`FirmProvisioner`'s refusal keys have no SPA text yet" — the
+console's screens (F4b) carry `firms.slug*`, `firms.nameRequired` and the `users.form.*` keys.
   _Retired 14/11/2026 (F4a):_ "Two runs racing for one slug: the loser's unique index is an uncaught
   500" — `provision()` now catches the unique violation and answers `slugTaken` (or `usernameTaken`).
 
-- **Modules are enforced by the API only until F3c** (rnc-4): the SPA still shows every rail entry
-  and the root site's chat; on a firm with the module off they answer 404 / 422 `modules.disabled`.
-  The platform firm (`hub`) has no `chat`, so the root diagnostic's chat is refused until F3c hides it.
+_Retired 14/11/2026 (verify P2-C3):_ "Modules are enforced by the API only until F3c" — since F3c the
+SPA hides a module's rail entries and the root site's chat from `firm.modules` (`hasModule`).
 - **Host mapping (rnc-3 D2).** A brand is chosen by `?marca=` + `X-Brand` because locally there is
   one host. `express.franco…` hosts need a `host` column read by `ResolveCurrentBrand`.
 - **No brand is created or renamed through the API.** Express and Prime are `BrandSeeder` rows; a
@@ -266,4 +266,6 @@ _Retired 14/11/2026 (F4c):_ "Until F4c the operator reaches another firm only th
   scope itself is proven on a test-only table (`tests/Feature/Firm/FirmScopeTest.php`, A1). (This
   line used to say F3's `Lead` would be the first and kept a `trait.unused` PHPStan entry until then;
   F2 deleted the entry.)
-- **No firm admin screen.** Firms are seeded; a second firm is a seeder row until Phase 3.
+_Retired 14/11/2026 (verify P2-C3):_ "No firm admin screen. Firms are seeded" — the platform console
+(F4b) creates and edits firms through `FirmProvisioner`; the seeders make only `hub` and Franco (and
+Alvorada locally).

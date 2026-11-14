@@ -14,7 +14,7 @@ serve-api: ## api.rnc — the API on http://localhost:8000 (php artisan serve; V
 serve-app: ## app.rnc — the SPA on http://localhost:5173 (Node 24: `nvm use` first)
 	cd app.rnc && npm run dev
 
-fresh-seed: ## api.rnc — rebuild the local SQLite database (database/database.sqlite, gitignored) and seed Franco, the roles and the team
+fresh-seed: ## api.rnc — rebuild the local SQLite database (database/database.sqlite, gitignored) and seed the platform firm hub, Franco, the demo firm Alvorada, the roles and their people
 	cd api.rnc && touch database/database.sqlite && php artisan migrate:fresh --seed
 
 # rnc-4 F7b — the full Pest suite on MySQL 8 instead of phpunit.xml's in-memory SQLite (its <env> is

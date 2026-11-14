@@ -11,6 +11,7 @@ use App\Modules\Firm\Helpers\FirmModules;
 use App\Modules\Firm\Models\Firm;
 use App\Modules\Firm\Services\CurrentFirm;
 use Carbon\CarbonImmutable;
+use Database\Seeders\Concerns\DemoEnvironment;
 use Database\Seeders\Concerns\SeedsEachDemoFirm;
 use Illuminate\Database\Seeder;
 use LogicException;
@@ -97,7 +98,7 @@ class AssistantNoteSeeder extends Seeder
 
     public function run(CurrentFirm $currentFirm): void
     {
-        if (app()->environment('production')) {
+        if (! DemoEnvironment::allows()) {
             return;
         }
 

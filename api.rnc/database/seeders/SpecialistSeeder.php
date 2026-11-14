@@ -7,6 +7,7 @@ use App\Modules\Booking\Enums\SpecialistFocus;
 use App\Modules\Booking\Services\SpecialistService;
 use App\Modules\Firm\Models\Firm;
 use App\Modules\Firm\Services\CurrentFirm;
+use Database\Seeders\Concerns\DemoEnvironment;
 use Illuminate\Database\Seeder;
 
 /**
@@ -34,6 +35,11 @@ class SpecialistSeeder extends Seeder
 
     public function run(CurrentFirm $currentFirm, SpecialistService $specialistService): void
     {
+        // Invented hours for a demo (verify P2-C2): on a real deploy this rewrote every specialist's own.
+        if (! DemoEnvironment::allows()) {
+            return;
+        }
+
         Firm::query()->orderBy('id')->each(fn (Firm $firm) => $currentFirm->runAs($firm, fn () => $this->seedFirm($firm, $specialistService)));
     }
 

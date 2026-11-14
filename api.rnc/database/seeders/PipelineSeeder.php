@@ -21,6 +21,7 @@ use App\Modules\Lead\Models\LeadConsent;
 use App\Modules\Lead\Models\LeadEvent;
 use App\Modules\Lead\Services\ConsentTextService;
 use Carbon\CarbonImmutable;
+use Database\Seeders\Concerns\DemoEnvironment;
 use Database\Seeders\Concerns\SeedsEachDemoFirm;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
@@ -125,7 +126,7 @@ class PipelineSeeder extends Seeder
 
     public function run(CurrentFirm $currentFirm, RulesEngine $rulesEngine): void
     {
-        if (app()->environment('production')) {
+        if (! DemoEnvironment::allows()) {
             return;
         }
 

@@ -7,6 +7,7 @@ use App\Modules\Firm\Models\Firm;
 use App\Modules\Firm\Services\CurrentFirm;
 use App\Modules\Portfolio\Models\Client;
 use Carbon\CarbonImmutable;
+use Database\Seeders\Concerns\DemoEnvironment;
 use Database\Seeders\Concerns\SeedsEachDemoFirm;
 use Illuminate\Database\Seeder;
 use Random\Engine\Mt19937;
@@ -101,7 +102,7 @@ class ClientSeeder extends Seeder
 
     public function run(CurrentFirm $currentFirm): void
     {
-        if (app()->environment('production')) {
+        if (! DemoEnvironment::allows()) {
             return;
         }
 

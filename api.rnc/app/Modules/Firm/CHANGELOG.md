@@ -2,6 +2,16 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.15.0 — 2026-11-14
+
+### Fixed
+
+- `FirmProvisioner` (rnc-4 verify nits): a race lost on the e-mail's unique index answers `email`
+  `users.form.emailTaken`, not the username's key (driver message read, as `RoleService` does); a
+  database without the `gestao` role fails loudly (`RuntimeException`) instead of writing `role_id` 0.
+- RULES: the seeders never rewrite a firm (verify P1-C1); stale Known Gaps retired (P2-C3: SPA module
+  enforcement since F3c, provisioner keys' SPA text since F4b, "no firm admin screen" since F4b).
+
 ## 1.14.0 — 2026-11-14
 
 ### Changed

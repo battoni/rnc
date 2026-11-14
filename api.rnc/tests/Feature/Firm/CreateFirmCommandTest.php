@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use App\Modules\Auth\Models\Role;
 use App\Modules\Booking\Models\Specialist;
 use App\Modules\Firm\Models\Firm;
 use App\Modules\Firm\Services\PlatformSettings;
@@ -173,6 +174,26 @@ describe('refusals (A22)', function () {
         'taken' => ['taken@acme.exemplo.com.br', 'users.form.emailTaken'],
         'malformed' => ['not-an-email', 'users.form.emailInvalid'],
     ]);
+
+    it('names the e-mail when a race loses on the e-mail, not the username (verify nit)', function () {
+        // The other request takes the address after the checks passed, inside this one's transaction.
+        Firm::creating(fn () => User::factory()->create(['username' => 'outra.pessoa', 'email' => 'helena@acme.exemplo.com.br']));
+
+        [$exitCode, $output] = createFirm();
+
+        expect($exitCode)->toBe(1)
+            ->and($output)->toContain('users.form.emailTaken')
+            ->and($output)->not->toContain('users.form.usernameTaken')
+            ->and(Firm::where('slug', 'acme')->exists())->toBeFalse();
+    });
+
+    it('fails loudly when the manager role was never seeded, instead of writing role 0 (verify nit)', function () {
+        Role::where('slug', 'gestao')->delete();
+
+        expect(fn () => createFirm())->toThrow(RuntimeException::class, 'role is not seeded');
+
+        expect(Firm::where('slug', 'acme')->exists())->toBeFalse();
+    });
 
     it('refuses without a name or a manager', function (string $option) {
         [$exitCode] = createFirm(options: [$option => '']);

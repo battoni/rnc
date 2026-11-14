@@ -11,7 +11,7 @@ use Illuminate\Database\Seeder;
  * The platform firm (rnc-4 D3): the row the root host and `www` serve and the operator, who has no
  * firm, works in. Every environment — without it a signed-in operator is refused with
  * `firms.required` (plan AM1). Named after the platform (`PLATFORM_NAME`); its look is the
- * platform's own until the console edits it.
+ * platform's own until the console edits it, and a re-seed never undoes that edit (verify P1-C1).
  *
  * rnc-4 F2a (R13, D12): the platform's default consent (`platform_settings.consent_default`) is
  * written here, every environment, and the platform firm's version 1 copies it.
@@ -45,7 +45,9 @@ class PlatformFirmSeeder extends Seeder
 
         $platformSettings->startConsentDefault();
 
-        $firm = Firm::updateOrCreate(
+        // Created once, never rewritten (verify P1-C1): `db:seed` runs on every deploy, and the console's
+        // edits (look, modules, contact) are the operator's from then on. Only `is_platform` is enforced.
+        $firm = Firm::firstOrCreate(
             ['slug' => self::PLATFORM_SLUG],
             [
                 'name' => $name,
@@ -59,6 +61,10 @@ class PlatformFirmSeeder extends Seeder
                 'modules' => [],
             ]
         );
+
+        if (! $firm->is_platform) {
+            $firm->forceFill(['is_platform' => true])->save();
+        }
 
         $first = $consentTextService->startFirm($firm->id);
 

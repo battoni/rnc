@@ -361,3 +361,26 @@ describe('GET platform/view-as-log', function () {
             ->and($log[1])->toHaveKeys(['id', 'started_at', 'ended_at', 'ip_address']);
     });
 });
+
+describe('the audit outlives its people (verify P2-C4)', function () {
+    it('keeps the row, with no operator, when the operator account is deleted, and the log still lists it', function () {
+        $row = ViewAsSession::query()->create([
+            'user_id' => $this->operator->id,
+            'firm_id' => $this->alvorada->id,
+            'ip_address' => '10.0.0.9',
+            'started_at' => now()->subDay(),
+            'ended_at' => now()->subDay()->addHour(),
+            'end_reason' => 'sair',
+        ]);
+        $reader = viewAsPerson('operador', null);
+
+        User::query()->whereKey($this->operator->id)->delete();
+
+        expect(ViewAsSession::query()->find($row->id))->not->toBeNull()
+            ->and(ViewAsSession::query()->find($row->id)->user_id)->toBeNull();
+        $this->actingAs($reader)->getJson('/api/platform/view-as-log')
+            ->assertOk()
+            ->assertJsonPath('data.data.0.operator', null)
+            ->assertJsonPath('data.data.0.firm.slug', 'alvorada');
+    });
+});

@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use App\Modules\Auth\Models\Role;
 use App\Modules\Firm\Models\Firm;
+use Database\Seeders\Concerns\DemoEnvironment;
 use Illuminate\Database\Seeder;
 
 /**
@@ -29,7 +30,7 @@ class LocalUsersSeeder extends Seeder
 
     public function run(): void
     {
-        if (app()->environment('production')) {
+        if (! DemoEnvironment::allows()) {
             return;
         }
 

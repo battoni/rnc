@@ -180,8 +180,10 @@ First:
    `php artisan key:generate`.
 2. `php artisan migrate --force` then the reference seeders only:
    `php artisan db:seed --force` — in production it creates the firms Franco and `hub`, the roles,
-   the super-admin and the sector pages; every local-only seeder (the demo firm, the team, `gestao.hub`,
-   the invented leads, partners and clients) returns without writing in production. Set `SUPERADMIN_PASSWORD` and `SEEDER_PWD` to strong values first.
+   the super-admin and the sector pages; every demo seeder (the demo firm, the team, `gestao.hub`, the
+   specialists' invented hours, the invented leads, partners, clients, brands and channel rows) returns
+   without writing anywhere but `local` and `testing` — `staging` included (`DemoEnvironment`). A re-seed
+   never rewrites an existing firm row: the console's edits stay. Set `SUPERADMIN_PASSWORD` and `SEEDER_PWD` to strong values first.
 3. `npm ci && npm run build` in `app.rnc` with the SPA's production `.env` (below).
 4. Queue worker and cron as above; `php artisan config:cache route:cache view:cache event:cache`.
 5. `curl -fsS https://<root>/api/health` and `https://franco.<root>/api/health` → `ok`.

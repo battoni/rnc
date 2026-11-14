@@ -19,8 +19,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * never the request's.
  *
  * @property int $id
- * @property int $user_id
- * @property int $firm_id
+ * @property int|null $user_id null once the operator account is deleted (verify P2-C4)
+ * @property int|null $firm_id null once the firm row is deleted (verify P2-C4)
  * @property string|null $ip_address
  * @property CarbonInterface $started_at
  * @property CarbonInterface|null $ended_at

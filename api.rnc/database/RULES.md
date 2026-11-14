@@ -1,5 +1,5 @@
 ---
-version: 1.32.0
+version: 1.33.0
 origin: pendulum
 based-on: 1.6.0
 ---
@@ -16,7 +16,9 @@ based-on: 1.6.0
   username) so re-seeding doesn't duplicate. It also never overwrites a row that already exists:
   a password changed in the environment reaches an existing account only through `make fresh`,
   not a re-seed. See `SuperAdminSeeder`. (This line used to say `updateOrCreate`, which no seeder
-  here uses.)
+  here uses.) The firm seeders too: `FirmSeeder` and `PlatformFirmSeeder` were `updateOrCreate` and
+  undid the console's and the manager's edits on every deploy's `db:seed` (rnc-4 verify P1-C1); they
+  `firstOrCreate` by slug, and the platform seeder only re-asserts `is_platform`.
 - **Two password variables, both plaintext**: `SUPERADMIN_PASSWORD` for the superadmin,
   `SEEDER_PWD` for every other seeded account and the `UserFactory` default. The `hashed` cast
   on `User::password` hashes on save — seed the plaintext, not a hash. Set both on any server
@@ -63,6 +65,14 @@ based-on: 1.6.0
   (usernames, e-mails) get the firm's slug (`parceiro.<slug>.<n>`). `ChannelSeeder` and `BrandSeeder`
   stay Franco's. A new local-only seeder refuses every environment but `local` and is tested with
   `detectEnvironment(fn () => 'local')` and the NF-e disk faked (`tests/Feature/Seed/DemoFirmSeedTest`).
+- **Invented data has ONE guard: `Concerns\DemoEnvironment::allows()`** — `local` and `testing` only
+  (rnc-4 verify P2-C2). `forEachDemoFirm` returns without it, and `LocalUsersSeeder`,
+  `SpecialistSeeder`, `PipelineSeeder` and every other demo seeder (`BrandSeeder` and `ChannelSeeder`
+  included) ask it first. They used to refuse
+  only `production`, so a `staging` deploy got a team, partners and leads, and `SpecialistSeeder` (no
+  guard) rewrote every real specialist's hours to the firm's on each `db:seed`. `DemoFirmSeeder`,
+  `PlatformManagerSeeder` (`local` only) and `NfeSeeder` (not `testing`) keep their stricter guard.
+  Tested on `staging` and `production` in `tests/Feature/Firm/PlatformSeedersTest`.
 
 - **Modules (rnc-4 F3a, R16, D18, R23):** `FirmSeeder` gives Franco every key (`channel`, `brands`
   included), `DemoFirmSeeder` Alvorada every opt-in key but `brands`, `PlatformFirmSeeder` none.

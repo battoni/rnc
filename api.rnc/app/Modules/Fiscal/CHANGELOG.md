@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 
 
+## 1.3.1 — 2026-11-14
+
+### Changed
+
+- Controllers: `NfeImportController`, `ReadinessController` and `SupplierCreditController` docblocks name `gestao` where they said `ceo` (rnc-4 F2c1 renamed the role; entry added at verify, P2-C6).
+
 ## 1.3.0 — 2026-11-07
 
 ### Added

@@ -3,6 +3,16 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.33.0 — 2026-11-14
+
+### Fixed
+
+- Seeders (rnc-4 verify): `FirmSeeder` and `PlatformFirmSeeder` `firstOrCreate` by slug, so a re-seed keeps the
+  console's and the manager's edits (P1-C1); one guard for invented data, `Concerns\DemoEnvironment` (`local`,
+  `testing`), in `SeedsEachDemoFirm`, `LocalUsersSeeder`, `SpecialistSeeder`, `PipelineSeeder` and the other demo
+  seeders — a staging deploy seeds the reference rows only (P2-C2).
+- `platform_view_as_sessions`: `user_id` / `firm_id` nullable and `nullOnDelete` (folded, pre-deploy; P2-C4).
+
 ## 1.32.0 — 2026-11-14
 
 ### Fixed
