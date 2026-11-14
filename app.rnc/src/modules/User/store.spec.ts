@@ -162,4 +162,21 @@ describe('useUserStore', () => {
     expect(store.firm).toBeNull();
     expect(store.hasModule('briefing')).toBe(false);
   });
+
+  it("answers hasModule from the viewed firm's modules while the operator views as it (rnc-4 W93)", () => {
+    const store = useUserStore();
+    store.setUserAndPermissions({
+      ...mockUser,
+      firm: null,
+      platform: {
+        is_operator: true,
+        name: 'Hub',
+        view_as: { modules: ['partners', 'briefing'], name: 'Alvorada Contabilidade', slug: 'alvorada' },
+      },
+    } as never);
+
+    expect(store.hasModule('partners')).toBe(true);
+    expect(store.hasModule('briefing')).toBe(true);
+    expect(store.hasModule('portfolio')).toBe(false);
+  });
 });

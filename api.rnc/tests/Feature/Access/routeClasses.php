@@ -28,6 +28,8 @@ return [
     'GET public/reports/{reportToken}' => 'public',
     'GET public/beta-signups/consent' => 'public',
     'POST public/beta-signups' => 'public',
+    // rnc-4 F7 the load balancer's probe: no session, no firm (`HealthTest`)
+    'GET health' => 'public',
     'POST auth/login' => 'public',
     'GET auth/support-names' => 'public',
     'POST auth/phone/code' => 'public',

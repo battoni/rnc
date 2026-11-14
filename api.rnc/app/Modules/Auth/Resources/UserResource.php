@@ -4,6 +4,7 @@ namespace App\Modules\Auth\Resources;
 
 use App\Modules\Auth\Enums\UserStatus;
 use App\Modules\Auth\Services\RoleService;
+use App\Modules\Firm\Helpers\FirmModules;
 use App\Modules\Firm\Models\Firm;
 use App\Modules\Firm\Resources\FirmSummaryResource;
 use Illuminate\Http\Request;
@@ -61,7 +62,13 @@ class UserResource extends JsonResource
                 'platform' => [
                     'name' => (string) config('platform.name'),
                     'is_operator' => $user->role?->slug === RoleService::ADMINISTRATOR_SLUG,
-                    'view_as' => $this->viewAs ? ['slug' => $this->viewAs->slug, 'name' => $this->viewAs->name] : null,
+                    // The viewed firm's opt-in modules ride here, since `firm` stays the operator's (null):
+                    // the rail offers what the firm has on while every request runs as it (rnc-4 W93).
+                    'view_as' => $this->viewAs ? [
+                        'slug' => $this->viewAs->slug,
+                        'name' => $this->viewAs->name,
+                        'modules' => FirmModules::enabled($this->viewAs),
+                    ] : null,
                 ],
             ] : []),
         ];

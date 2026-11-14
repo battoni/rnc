@@ -1,5 +1,5 @@
 # State: Reforma hub as a white-label platform for accounting firms
-Stage: build F4d/19
+Stage: build F7/19
 Updated: 14/11/2026
 Branch: feature/rnc-4-white-label-platform · Worktree: .claude/worktrees/rnc-4
 ## Done
@@ -505,10 +505,41 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   (1.12.0) "Acessos de suporte" under "Plataforma"; locales (1.18.0); e2e (1.22.0); config (1.7.0) `vite.config.ts` proxies `/storage`
   beside `/api` (local, test mode, preview). api Platform (1.1.1) RULES: Known Gap "`/storage` is outside `/api`" retired with its reason
   (F7's runbook keeps the production vhost, AM10). Spec: no C# (W89–W94 stay inside R26, R27).
+- **F7 Deploy readiness — no deploy** (A44–A46; R34–R37; AM10; F4c Known Gap "audit IP behind a proxy" and F4d's W93 closed) · 14/11 ·
+  full Pest 2354 on SQLite (`vendor/bin/pest --parallel`, +31: `HealthTest` 3, `EnvInventoryTest` 5, `ViewAsTest` +3 (view-as modules
+  in `auth/me`, the audit address behind a trusted / an untrusted proxy), `Phase4AccessTest` +19 (F5a firm settings: team, partner and
+  guest refused, another firm's specialist 404, another firm's header 403; F6a platform site 404 on a firm host; the A46 sweep check),
+  1 more route-matrix row (the new public route),
+  all green; **MySQL 8 not run** (W95: `mysql -uroot` refused, `ERROR 1045`, no password guessed — the runbook's "Database" section has
+  the owner's three commands) · Vitest full 1513 (`--maxWorkers=2`; +1 `User/store.spec` hasModule during view-as), all green ·
+  Playwright `e2e/platform/view-as.spec.ts` 3/3 `--retries=0` (fixture now carries `view_as.modules`) · `make check-api` (Pint,
+  PHPStan), `make check-app` (aliases 35, vue-tsc), `sync-mirror-check`, `sanitize` (lint exit 0, format, sort-locales: no changes),
+  `wt-test` green; `check-portal` and `check-cortex` skip themselves here (no portal; not the rnc upstream). Phase gate 14/11/2026 —
+  `/battoni-pre-commit` without the full Playwright suite (feature-flow phase gate): every other step ran. Reviews inline: arcus (not
+  applied, on purpose: `HealthController` runs its `select 1` itself, with no service/repository — a probe with no domain and no
+  model), vue (no finding), design (no UI change — skipped as not applicable).
+  Red first: W93's Pest case failed (`view_as.modules` null) and its Vitest case failed before the code; `HealthTest` 3/3 and
+  `EnvInventoryTest` 5/5 failed (no route, no runbook); the A46 check failed on `GET health` (unregistered). The trusted-proxy cases
+  passed on first run: Laravel's global `TrustProxies` already consults `trustedproxy.proxies` — what was missing is the config file and
+  its env key, which `EnvInventoryTest`'s scan case guards (red without `TRUSTED_PROXIES` in `config/`). The F5a sweep rows passed on
+  first run (F5a's own code already refused them; they are coverage by name, A46). Mutations seen red: the health route without
+  `withoutMiddleware` (all three `HealthTest` cases: a session cookie, 404 on an unknown firm, 500 instead of 503); `PUT
+  specialists/{id}/hours` dropped from the sweep list (A46 names it).
+  Live (worktree API on 8001, no SPA needed): `GET http://localhost:8001/api/health` → 200 `{"data":{"status":"ok","db":"ok"}}`;
+  on `alvorada.localhost:8001` the same, no `Set-Cookie`. Server stopped.
+  What changed: `GET api/health` → `App\Http\Controllers\HealthController` (route in `api.local.php` without `StartSession`,
+  `EnsureAccountActive`, `ResolveCurrentFirm`; classified `public`). `config/trustedproxy.php` (`TRUSTED_PROXIES`, `.env.example`).
+  `docs/deploy/runbook.md` (new): shape, wildcard DNS + DNS-01 TLS, one Nginx vhost for `<root>` and `*.<root>` serving `dist/`,
+  `/api/` to PHP-FPM and `/storage/` by alias on every host (AM10), session/Sanctum/CORS per host, trusted proxies, health, queue worker
+  (5 queued mails) and cron with its three commands, per-firm mail (D11), backups, first/every deploy, "folded migrations end at the
+  first deploy", Database (W95 + owner steps), env inventory API + SPA. Auth (2.17.0) + Resources (2.3.0): `platform.view_as.modules`.
+  api Platform (1.1.2): Known Gap "logged IP is the direct peer" retired. app User (2.3.0): `hasModule` reads the viewed firm's modules
+  during a view-as; app Platform (1.2.0): Known Gap "opt-in modules hidden from the rail during a view-as" retired (W93 → W96); e2e
+  (1.22.1). Spec: no C# (W95–W100 stay inside R26, R34–R37).
 ## Next
-1. `/battoni-start-session rnc-4` (or the running `/battoni-run rnc-4`) → **F7** Deploy readiness — no deploy (A44–A46; R34–R37). Read
-   plan.md → F7 and AM10 (the runbook's vhost serves `/storage` per host — the SPA already asks `/storage/...` on its own host, F4d), plus
-   the Platform Known Gap on trusted proxies (the audit IP).
+1. F7 was the last required phase. F9a/F9b are optional (plan: only if quota remains — skipped without a W# if the run goes to verify).
+   Then `/battoni-verify rnc-4`: full gate (full Playwright included), `fable-reviewer` with spec + `main..HEAD` (P6 points of F1a,
+   F4a, F4c), Chrome QA rounds 1–6, draft PR. The owner, before any deploy: the MySQL 8 run in `docs/deploy/runbook.md` → "Database".
 ## Pitfalls
 - (F1a) `UserFactory` now puts every user in the default firm (`franco` under phpunit), creating it
   when absent. A test that creates `Firm::factory(['slug' => 'franco'])` AFTER a user would collide
@@ -665,6 +696,14 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   multipart body with `request.text()` — the file arrives named `blob`, so assert the field name and the type.
 - (F4d) `useFirmBrand` and `usePublicFirm` keep their answer per page load (module state): a Vitest case after another firm reads the kept
   one — a layout spec that needs a different firm goes in its own file (`ThePublicLayout.logo.spec.ts`), or the composable is `reload()`ed.
+- (F7) `GET api/health` runs without the session and the firm (`withoutMiddleware` in `api.local.php`): a test that switches
+  `database.default` to a broken connection must switch it back BEFORE asserting (`try/finally`) — the test's transaction rolls back on
+  the default connection, and a failed assertion first leaves every later test in the process broken.
+- (F7) `EnvInventoryTest` scans `config/*.php` for `env('KEY'`, `env("KEY"` and `env(key: 'KEY'`: a new config key fails it until
+  `docs/deploy/runbook.md` names it in backticks.
+- (F7) In this sandbox a command with `source ~/.nvm/nvm.sh` is refused (worktree isolation); use
+  `PATH=/Users/battoni/.nvm/versions/node/v24.19.0/bin:$PATH`. The rtk hook rewrites `npm run lint` / `npx vitest` to `rtk lint` /
+  `rtk vitest`; send the rtk form first.
 ## QA
 (none yet — rounds in plan.md → QA)
 ## Seeded people (password `seeding.password`; `battoni` uses `seeding.superadmin_password`)
@@ -726,6 +765,8 @@ F5b done
 F4c done
 12:51 F4d started, attempt 1
 F4d done
+13:28 F7 started, attempt 1
+F7 done
 ## Decided while you were away
 - W1 plan: proposal.html skipped in away mode (spec D27; to reverse: `/battoni-new-proposal rnc-4 final`).
 - W2 plan: the owner's phases are split into 17 builder phases with his labels kept (spec D28); his
@@ -1004,3 +1045,22 @@ F4d done
   `view_as.modules`, outside an SPA phase). To reverse: add `modules` to `view_as` in Auth's `UserResource` and read it in `hasModule`.
 - W94 F4d: the live check ran in headless Chromium (Playwright, a scratch script) against the worktree API on 8001 behind Vite on 5173,
   signing in by QA login-as with the session hint set; the Chrome rounds (QA round 5) stay verify's (as W56). To reverse: n/a.
+- W95 F7: MySQL 8 not run (R36) — `mysql -uroot` without a password is refused (`ERROR 1045`, as rnc-1's W1) and no password was tried;
+  the full Pest ran on SQLite in memory (2354). `docs/deploy/runbook.md` → "Database" gives the owner the exact commands (create
+  `rnc_test` + `rnc`, `DB_*` in the shell over phpunit.xml's unforced `<env>`, `make fresh-seed` with `.env` on MySQL). To reverse: run them
+  and write the count there.
+- W96 F7: F4d's W93 closed — `auth/me`'s `platform.view_as` carries the viewed firm's opt-in `modules` (`FirmModules::enabled`), and the
+  User store's `hasModule` reads them while a view-as is set (else the person's firm's); `firm` stays null for the operator. The app
+  Platform Known Gap is retired with its reason. To reverse: drop the field and the store's first branch.
+- W97 F7: `GET api/health` answers in the `ApiResponse` envelope — `{data: {status: ok, db: ok}}`, 503 `{data: {status: down, db: down}}`
+  — and runs without `StartSession`, `EnsureAccountActive` and `ResolveCurrentFirm` (each reads the database in production; the probe
+  must say "down", not 500). The controller does its `select 1` with no service/repository. To reverse: a bare JSON body.
+- W98 F7: trusted proxies come from `config/trustedproxy.php` → `env('TRUSTED_PROXIES')` (Laravel's global `TrustProxies` reads that key),
+  unset = none trusted; not `$middleware->trustProxies(at: env(...))` in `bootstrap/app.php`, since `env()` outside config is null under
+  `config:cache`. To reverse: set the list in `bootstrap/app.php`.
+- W99 F7: the runbook's web server is Nginx, one server block for `<root>` and `*.<root>`: SPA `dist/` as root with a history fallback,
+  `^~ /api/` to PHP-FPM with the API's `index.php`, `^~ /storage/` by `alias` to `storage/app/public/` (AM10); the production domain,
+  the mail domain and the host stay `<root>`/owner's choice ("Open before go-live"). To reverse: n/a (a document).
+- W100 F7: A46's sweep check finds rnc-4's routes by the locks rnc-4 introduced (`permission:platform.firms`, `permission:platform.consent`,
+  `permission:firm.settings`, `platform.firm`) and fails when one is missing from `Phase4AccessTest`'s list; every listed route must be
+  registered and classified. `GET health` is listed (its proof is `HealthTest`). To reverse: a hand-kept list only.

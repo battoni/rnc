@@ -66,11 +66,14 @@ const useUserStore = defineStore('user', {
       return this.permissions.includes(key);
     },
     /**
-     * Whether the person's firm has an opt-in module on (rnc-4 R17, `FIRM_MODULE`). A firm-less
-     * account — the platform operator, whose requests run as the platform firm — has none.
+     * Whether the person's firm has an opt-in module on (rnc-4 R17, `FIRM_MODULE`). During a view-as
+     * the viewed firm's modules answer (W93); otherwise a firm-less account — the platform operator,
+     * whose requests run as the platform firm — has none.
      */
     hasModule(key: string): boolean {
-      return this.firm?.modules.includes(key) ?? false;
+      const modules = this.platform?.view_as?.modules ?? this.firm?.modules ?? [];
+
+      return modules.includes(key);
     },
   },
 });

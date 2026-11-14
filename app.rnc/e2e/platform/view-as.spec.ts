@@ -121,7 +121,7 @@ async function signInAsOperator(page: Page) {
           ...OPERATOR,
           platform: {
             ...OPERATOR.platform,
-            view_as: state.viewing ? { name: 'Alvorada Contabilidade', slug: 'alvorada' } : null,
+            view_as: state.viewing ? { modules: ['briefing'], name: 'Alvorada Contabilidade', slug: 'alvorada' } : null,
           },
         },
       })

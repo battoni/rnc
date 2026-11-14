@@ -8,8 +8,11 @@
  * inherit the parent's).
  */
 
+use App\Http\Controllers\HealthController;
+use App\Http\Middleware\EnsureAccountActive;
 use App\Http\Middleware\EnsurePlatformFirm;
 use App\Http\Middleware\ResolveCurrentBrand;
+use App\Http\Middleware\ResolveCurrentFirm;
 use App\Modules\Assistant\Controllers\AssistantController;
 use App\Modules\Assistant\Controllers\NoteController;
 use App\Modules\Booking\Controllers\PublicBookingController;
@@ -47,6 +50,7 @@ use App\Modules\Portfolio\Controllers\ContractController;
 use App\Modules\Portfolio\Controllers\RepricingController;
 use App\Modules\Radar\Controllers\RadarController;
 use App\Modules\Tracking\Controllers\PublicEventController;
+use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Route;
 
 // MODULES PER FIRM (rnc-4 R16, R17): a route of an opt-in module carries `module:<key>` LAST — after
@@ -54,6 +58,10 @@ use Illuminate\Support\Facades\Route;
 // `modules.disabled` for a firm that has the module off (`EnsureModuleEnabled`, the keys in
 // `Firm/Helpers/FirmModules`). A route that crosses two modules names both: the Radar's batch
 // referral and the contracts' legal referral need `partners` too (R19). Core routes carry none.
+
+// HEALTH (rnc-4 F7, R35) — the load balancer's probe. Without the session and the firm lookup: both
+// read the database, and the probe must answer 503 when it is down, not die inside them with a 500.
+Route::get('health', HealthController::class)->withoutMiddleware([StartSession::class, EnsureAccountActive::class, ResolveCurrentFirm::class]);
 
 // PUBLIC SITE (rnc-1 F2) — no session needed. The firm is the `X-Firm` header's, or `franco`
 // (`ResolveCurrentFirm`); every answer goes through a `Public*` allow-list resource.

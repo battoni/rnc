@@ -78,7 +78,8 @@ describe('starting', function () {
 
         $this->getJson('/api/auth/me')
             ->assertOk()
-            ->assertJsonPath('data.platform.view_as', ['slug' => 'alvorada', 'name' => 'Alvorada Contabilidade'])
+            ->assertJsonPath('data.platform.view_as.slug', 'alvorada')
+            ->assertJsonPath('data.platform.view_as.name', 'Alvorada Contabilidade')
             ->assertJsonPath('data.platform.is_operator', true);
         $this->getJson('/api/public/firm')->assertOk()->assertJsonPath('data.slug', 'alvorada');
     });
@@ -136,6 +137,48 @@ describe('starting', function () {
         viewAsStart($this->alvorada)->assertCreated();
 
         $this->getJson('/api/repricing')->assertNotFound()->assertJsonPath('error', 'modules.disabled');
+    });
+
+    it("reports the viewed firm's opt-in modules in me, not the platform firm's (W93)", function () {
+        $this->alvorada->update(['modules' => ['partners', 'briefing']]);
+        $this->hub->update(['modules' => ['portfolio']]);
+        $this->actingAs($this->operator);
+
+        $this->getJson('/api/auth/me')->assertOk()->assertJsonPath('data.firm', null)->assertJsonPath('data.platform.view_as', null);
+
+        viewAsStart($this->alvorada)->assertCreated();
+
+        $this->getJson('/api/auth/me')
+            ->assertOk()
+            ->assertJsonPath('data.firm', null)
+            ->assertJsonPath('data.platform.view_as.slug', 'alvorada')
+            ->assertJsonPath('data.platform.view_as.modules', ['partners', 'briefing']);
+    });
+});
+
+describe('the audit address behind a proxy (F7, F4c Known Gap)', function () {
+    it('logs the forwarded client address when the peer is a trusted proxy', function () {
+        config(['trustedproxy.proxies' => '10.0.0.5']);
+        $this->actingAs($this->operator);
+
+        $this->withServerVariables(['REMOTE_ADDR' => '10.0.0.5'])
+            ->withHeader('X-Forwarded-For', '203.0.113.7')
+            ->postJson("/api/platform/firms/{$this->alvorada->id}/view-as")
+            ->assertCreated();
+
+        expect(ViewAsSession::query()->sole()->ip_address)->toBe('203.0.113.7');
+    });
+
+    it('ignores X-Forwarded-For from a peer that is not a trusted proxy', function () {
+        config(['trustedproxy.proxies' => '10.0.0.5']);
+        $this->actingAs($this->operator);
+
+        $this->withServerVariables(['REMOTE_ADDR' => '198.51.100.9'])
+            ->withHeader('X-Forwarded-For', '203.0.113.7')
+            ->postJson("/api/platform/firms/{$this->alvorada->id}/view-as")
+            ->assertCreated();
+
+        expect(ViewAsSession::query()->sole()->ip_address)->toBe('198.51.100.9');
     });
 });
 

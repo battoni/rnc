@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 2.3.0 — 2026-11-14
+
+### Changed
+
+- `UserResource::withPlatform`: `platform.view_as` adds `modules`, the viewed firm's opt-in modules (rnc-4 F7, W93).
+
 ## 2.2.0 — 2026-11-14
 
 ### Added

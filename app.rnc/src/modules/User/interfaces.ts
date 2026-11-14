@@ -73,8 +73,8 @@ interface UserFirm {
 interface UserPlatform {
   is_operator: boolean;
   name: string;
-  /** The firm the operator is viewing as (F4c); null outside it. */
-  view_as: { name: string; slug: string } | null;
+  /** The firm the operator is viewing as (F4c) and its opt-in modules (W93); null outside it. */
+  view_as: { modules: string[]; name: string; slug: string } | null;
 }
 
 export type { CreateUserPayload, GetUsersParams, UpdateUserPayload, User, UserFirm, UserPlatform };

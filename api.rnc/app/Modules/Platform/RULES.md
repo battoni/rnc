@@ -1,5 +1,5 @@
 ---
-version: 1.1.1
+version: 1.1.2
 origin: rnc
 ---
 # RULES — Platform Module
@@ -113,9 +113,11 @@ order — a guest 401, anybody else 403:
 ## Known Gaps
 
 - **No per-action audit inside view-as** (D20, out of scope): only the start and the end are logged.
-- **The logged IP is the direct peer** (`$request->ip()`): the app trusts no proxy yet, so behind the
-  deploy's reverse proxy every row would carry the proxy's address. F7's runbook must configure
-  trusted proxies (`$middleware->trustProxies`) for the IP to be the operator's.
+_Retired 14/11/2026 (F7):_ "The logged IP is the direct peer: the app trusts no proxy yet" — `config/trustedproxy.php`
+reads `TRUSTED_PROXIES` (Laravel's global `TrustProxies` consults it), so behind the listed proxies `$request->ip()` is
+the client from `X-Forwarded-For`; an unlisted peer's header is ignored (`ViewAsTest`, "the audit address behind a
+proxy"). The value per server is in `docs/deploy/runbook.md`. The production vhost serving `/storage` per host
+(AM10) is in the same runbook.
 _Retired 14/11/2026 (F4d):_ "`/storage` is outside `/api`; F4d decides how the SPA shows it locally" —
 the SPA asks `/storage/…` on its own host (app `toStorageAssetPath`) and Vite proxies `/storage` beside
 `/api` (local and test mode), so the logo loads on every firm host; `php artisan storage:link` is in

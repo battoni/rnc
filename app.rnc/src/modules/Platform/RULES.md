@@ -1,5 +1,5 @@
 ---
-version: 1.1.0
+version: 1.2.0
 origin: rnc
 ---
 
@@ -58,12 +58,10 @@ storage:link` in api.rnc.
 
 ## Known Gaps
 
-- **Opt-in modules are hidden from the rail during a view-as**: `auth/me` keeps `firm` null for the
-  operator and `view_as` carries only `slug`/`name`, so `hasModule` answers none — the viewed firm's
-  core screens (board, pipeline, metrics, settings) work, its opt-in ones (partners, portfolio…) are
-  not offered in the SPA though the API would scope them. Closing it needs `view_as.modules` from the
-  API (Auth's `UserResource`).
 - **A firm's sub-brands (`brands`) are not edited from the console**; the operator reaches them
-  inside a view-as only if `brands` is a module the rail offers (see above).
+  inside a view-as, when the viewed firm has `brands` on.
+- _Retired 14/11/2026 (rnc-4 F7, W93):_ "Opt-in modules are hidden from the rail during a view-as" — `auth/me`'s
+  `platform.view_as` now carries the viewed firm's `modules` and the User store's `hasModule` reads them while a
+  view-as is set, so the rail offers exactly what the viewed firm has on.
 - _Retired 14/11/2026 (rnc-4 F4d):_ "No logo upload and no view-as yet" — F4c gave the routes and F4d
   the screens.

@@ -85,7 +85,7 @@ describe('HomeView', () => {
       platform: {
         is_operator: true,
         name: 'Hub da Reforma',
-        view_as: { name: 'Alvorada Contabilidade', slug: 'alvorada' },
+        view_as: { modules: [], name: 'Alvorada Contabilidade', slug: 'alvorada' },
       },
     });
 

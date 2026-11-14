@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.22.1 — 2026-11-14
+
+### Changed
+
+- `platform/view-as.spec.ts`: the mocked `auth/me` `platform.view_as` carries `modules`, as the API now answers (rnc-4 F7, W93).
+
 ## 1.22.0 — 2026-11-14
 
 ### Added

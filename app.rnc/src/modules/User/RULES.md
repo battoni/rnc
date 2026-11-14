@@ -1,5 +1,5 @@
 ---
-version: 2.2.0
+version: 2.3.0
 origin: pendulum
 based-on: 2.1.0
 ---
@@ -84,7 +84,7 @@ The single source of truth for the authenticated session.
 
 ## Modules per firm (rnc-4)
 
-- **`hasModule(key)` is the firm's opt-in list** (rnc-4 F3c, R17, `FIRM_MODULE` in `@Enums`): `firm` and `platform` arrive with `auth/me` and the sign-in answers only, so `setUserAndPermissions` keeps them when a later payload (a profile save) has no `firm` key, and `clearUser` drops them. A firm-less account (the platform operator) has no opt-in module — its requests run as the platform firm, which has none.
+- **`hasModule(key)` is the firm's opt-in list** (rnc-4 F3c, R17, `FIRM_MODULE` in `@Enums`): `firm` and `platform` arrive with `auth/me` and the sign-in answers only, so `setUserAndPermissions` keeps them when a later payload (a profile save) has no `firm` key, and `clearUser` drops them. A firm-less account (the platform operator) has no opt-in module — its requests run as the platform firm, which has none — except during a view-as, when `platform.view_as.modules` (the viewed firm's) answers (rnc-4 F7, W93).
 
 ## Do Not
 

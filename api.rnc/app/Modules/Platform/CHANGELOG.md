@@ -3,6 +3,9 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.1.2 — 2026-11-14
+- RULES: the "logged IP is the direct peer" Known Gap retired (rnc-4 F7) — `TRUSTED_PROXIES` (`config/trustedproxy.php`) makes the audit row's address the client's behind the deploy's proxy; the runbook carries the vhost's `/storage` (AM10).
+
 ## 1.1.1 — 2026-11-14
 - RULES: the "`/storage` is outside `/api`" Known Gap retired (rnc-4 F4d) — the SPA asks `/storage` on its own host and Vite proxies it; the production vhost stays F7's (AM10).
 
