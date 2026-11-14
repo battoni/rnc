@@ -1,5 +1,5 @@
 ---
-version: 1.26.0
+version: 1.27.0
 origin: pendulum
 based-on: 1.6.0
 ---
@@ -53,6 +53,16 @@ based-on: 1.6.0
 - **`seeders/Support/` holds builders shared by seeders and tests** (`NfeXmlBuilder`, the invented
   NF-e XML; `GeneratedNfeSource`): one shape for a seeded document and a tested one. Hostile fixtures
   (entity attacks, forged ZIPs) stay in `tests/Support/`.
+
+- **A demo seeder runs once per seeded firm (rnc-4 F3b2, D18): `use Concerns\SeedsEachDemoFirm` and
+  `forEachDemoFirm($currentFirm, fn (Firm $firm, int $ordinal) => …, FirmModules::X)`.** Franco
+  (ordinal 0, rows unchanged), then Alvorada when it exists — only `DemoFirmSeeder` makes it, on a
+  `local` machine — so the Pest seed carries Franco's demo alone. The module argument skips a firm
+  with that module off; another firm varies names and random seeds by its ordinal; people come from
+  the firm's roles (`teamOf`, `managerOf`), never a hard-coded Franco username; global keys
+  (usernames, e-mails) get the firm's slug (`parceiro.<slug>.<n>`). `ChannelSeeder` and `BrandSeeder`
+  stay Franco's. A new local-only seeder refuses every environment but `local` and is tested with
+  `detectEnvironment(fn () => 'local')` and the NF-e disk faked (`tests/Feature/Seed/DemoFirmSeedTest`).
 
 - **Modules (rnc-4 F3a, R16, D18, R23):** `FirmSeeder` gives Franco every key (`channel`, `brands`
   included), `DemoFirmSeeder` Alvorada every opt-in key but `brands`, `PlatformFirmSeeder` none.

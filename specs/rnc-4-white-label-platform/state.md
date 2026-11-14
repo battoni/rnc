@@ -1,5 +1,5 @@
 # State: Reforma hub as a white-label platform for accounting firms
-Stage: build F3b1/19
+Stage: build F3b2/19
 Updated: 14/11/2026
 Branch: feature/rnc-4-white-label-platform · Worktree: .claude/worktrees/rnc-4
 ## Done
@@ -198,10 +198,42 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   `SectorPageSeeder` and `SpecialistSeeder` now go through those services (rows unchanged). Units
   bumped: Firm 1.7.0, Content 1.1.0, Booking 1.5.0, Auth DTOs 1.5.0, Auth Services 2.8.0, database
   1.26.0.
+- **F3b2 Seeders per firm + the demo firm + `gestao.hub`** (A23; R22, R23; D18; AM7, AM3's moved check) ·
+  14/11 · full Pest 2009 (+7: `Seed/DemoFirmSeedTest` — the local seed gives Alvorada ≥ 40 leads, ≥ 3
+  meetings, referrals naming Alvorada not Franco, traffic, ≥ 200 clients, contracts, NF-e, served notes,
+  every row in its own firm, Franco's counts unchanged; Alvorada's four people, two specialists with
+  hours, `parceiro.alvorada.<n>` logins; contact data not Franco's, `hub` the one platform firm with no
+  module and its `gestao.hub` manager; a module off seeds none of its data; `PlatformManagerSeeder`
+  refuses testing/production/staging ×3), all green · full Vitest 1345 (`--maxWorkers=2`; no app.rnc
+  change) · Playwright not run (no app.rnc change, no e2e file added or edited — phase gate) ·
+  check-app, check-api (Pint, PHPStan), check-portal and check-cortex (skip themselves here), mirror
+  check, sanitize green · arcus review inline (database unit 1.27.0 + its rule, Franco-only docblocks
+  generalised; nothing else to fix) · pre-commit green 14/11/2026 without the full Playwright suite.
+  `make fresh-seed` clean in 14.6 s: franco 40 leads · 14 meetings · 8 partners/12 referrals · 757
+  visitors · 500 clients · 40 contracts · 2629 NF-e · 10 notes; alvorada 40 · 14 · 8/12 · 757 · 320 ·
+  40 · 2287 · 10, 6 sector pages; hub `gestao.hub` only.
+  Red first: all 6 first tests failed before the code (no Alvorada data, no team, no
+  `PlatformManagerSeeder`). Mutations seen red: the module gate in `forEachDemoFirm` off (Alvorada got 8
+  partners with `modules` empty), `PlatformManagerSeeder`'s `local` gate off (5 red, `SeedShapeTest`'s
+  exact list included). The demo data stays out of the Pest seed by construction: only `DemoFirmSeeder`
+  (local only) makes Alvorada, and the per-firm seeders seed the firms that exist.
+  Live (AM3's moved check, W46): through Vite's proxy on `alvorada.localhost:5173` (API on 8001)
+  `public/firm` named Alvorada; a diagnostic start answered `visitante` with "Autorizo Alvorada
+  Contabilidade…"; `helena.alvorada` and `equipe.alvorada` saw 41 leads (visitante 6), `patricia` on
+  `franco.localhost` 40 (visitante 5) — the new lead in Alvorada's board only; `gestao.hub` signed in at
+  `localhost:5173`, Gestão, firm `hub`.
+  What changed: `database/seeders/Concerns/SeedsEachDemoFirm` (`forEachDemoFirm` with a module skip and
+  the firm's ordinal, `demoFirms`, `teamOf`, `managerOf`); `PipelineSeeder` (team by role, names shifted
+  13 for another firm), `PartnerSeeder` (`partners`; message "A <short name> indica…"),
+  `PartnerUserSeeder` (`partners`; `parceiro.<slug>.<n>` / `portal.<slug>.<n>@` off Franco),
+  `MetricsSeeder`, `ClientSeeder` (`portfolio`; Alvorada 320 from seeds +100), `ContractSeeder`
+  (`contracts`), `NfeSeeder` (`fiscal`; one folder and one line per firm), `AssistantNoteSeeder`
+  (`assistant`; Franco's usernames → the firm's stand-ins by role); `DemoFirmSeeder` + `equipe.alvorada`,
+  `camila.alvorada`, its six sector pages; `SpecialistSeeder` profiles for Alvorada's two; new
+  `PlatformManagerSeeder` (local only) in `seeders.local.php`. Database unit 1.27.0.
 ## Next
-1. `/battoni-start-session rnc-4` (or the running `/battoni-run rnc-4`) → **F3b2** seeders per firm +
-   `DemoFirmSeeder` full Alvorada + `gestao.hub` (A23) + AM3's moved alvorada diagnostic check. Start
-   with `make fresh-seed` (the local DB holds `acme` from F3b1's live check).
+1. `/battoni-start-session rnc-4` (or the running `/battoni-run rnc-4`) → **F3c** Modules per firm — SPA
+   (A24, A25). Start with `make fresh-seed` (F3b2's live check added a visitante lead to Alvorada).
 ## Pitfalls
 - (F1a) `UserFactory` now puts every user in the default firm (`franco` under phpunit), creating it
   when absent. A test that creates `Firm::factory(['slug' => 'franco'])` AFTER a user would collide
@@ -279,17 +311,23 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   `UserService::create`, `SpecialistService::makeBookable`) — F3b2's seeders reuse those, not copies.
 - (F3b1) The SPA sends `X-Firm` from its host; a curl through Vite's proxy on `acme.localhost:5173`
   without that header lands on the platform firm (`hub`), not acme. Send `X-Firm: <slug>` as the SPA does.
+- (F3b2) A demo seeder runs once per seeded firm through `Concerns\SeedsEachDemoFirm::forEachDemoFirm`
+  (Franco, then Alvorada when it exists); a new one names its module so a firm without it is skipped,
+  takes people from the firm's roles, and puts the firm's slug in any global key (usernames, e-mails).
+- (F3b2) `DemoFirmSeedTest` runs the whole seed as `local` with the NF-e disk faked — `NfeSeeder`
+  deletes `nfe/<firm id>/` first, and an unfaked disk would wipe a developer's seeded files. ~5 s a case.
+- (F3b2) `make fresh-seed` now takes ~15 s (two firms' NF-e, ~4,900 XMLs).
 ## QA
 (none yet — rounds in plan.md → QA)
 ## Seeded people (password `seeding.password`; `battoni` uses `seeding.superadmin_password`)
 - Platform: `battoni` — operador (firm `franco` until F4a, then no firm, root only).
-- Platform firm `hub` (F1a; manager from F3b): `gestao.hub`.
+- Platform firm `hub` (F1a): `gestao.hub` — gestao, local only (`PlatformManagerSeeder`, F3b2).
 - Franco (`franco`, unchanged from rnc-3): `reinaldo` (ceo → `gestao` in F2c), `patricia` (equipe),
   specialists `mariana.toledo`, `carlos.prado`, `juliana.reis`, `rafael.antunes`; partners
   `parceiro.1`…`parceiro.8`.
-- Demo firm Alvorada (`alvorada`, invented; F1a minimal, F3b full): `helena.alvorada` (manager),
-  `equipe.alvorada` (team), specialists `bruno.alvorada`, `camila.alvorada`; partners
-  `parceiro.alvorada.1`… (F3b).
+- Demo firm Alvorada (`alvorada`, invented, local only; full since F3b2): `helena.alvorada` (gestao),
+  `equipe.alvorada` (equipe, Lívia Fontana), specialists `bruno.alvorada`, `camila.alvorada`; partners
+  `parceiro.alvorada.1`…`parceiro.alvorada.8`.
 ## Local environment
 - API `make serve-api` → http://localhost:8000; SPA `make serve-app` → http://localhost:5173 (root =
   platform firm), http://franco.localhost:5173, http://alvorada.localhost:5173; `make fresh-seed`
@@ -318,6 +356,8 @@ F2c2 done
 F3a done
 08:38 F3b1 started, attempt 1
 F3b1 done
+08:53 F3b2 started, attempt 1
+F3b2 done
 ## Decided while you were away
 - W1 plan: proposal.html skipped in away mode (spec D27; to reverse: `/battoni-new-proposal rnc-4 final`).
 - W2 plan: the owner's phases are split into 17 builder phases with his labels kept (spec D28); his
@@ -432,3 +472,18 @@ F3b1 done
   same paths (rows unchanged). Refusal keys: new `firms.slugInvalid` / `slugReserved` / `slugTaken` /
   `nameRequired`, `users.form.usernameRequired` / `emailInvalid` / `emailTaken`, reused
   `users.form.usernameTaken`; the SPA locales get them with F4a's console. To reverse: inline writes.
+- W42 F3b2: the demo seeders loop the seeded firms through one trait (`SeedsEachDemoFirm`) and Alvorada
+  reuses Franco's invented lists — board names shifted 13, portfolio and contracts from seeds +100
+  (320 clients, its landing's "300+"), the same eight "(exemplo)" partners and ten notes — rather than
+  lists of its own. To reverse: per-firm constant lists in each seeder.
+- W43 F3b2: `gestao.hub` lives in a new local-only `PlatformManagerSeeder`, not `LocalUsersSeeder` (which
+  runs under `testing` and would grow `SeedShapeTest`'s exact list, AM7). To reverse: move it there and
+  add it to that list.
+- W44 F3b2: in Alvorada the knowledge base's people are stand-ins by role — Helena edits, the first team
+  member asks, Bruno/Camila review and answer in turn for Franco's four specialists; `equipe.alvorada`
+  is "Lívia Fontana". To reverse: name Alvorada's people in `AssistantNoteSeeder`.
+- W45 F3b2: F3b's "`make fresh-seed` prints the people" is not added — the seed prints its seeders and
+  NfeSeeder's per-firm counts; the people stay in this file's table. To reverse: a summary line at the
+  end of `seeders.local.php`.
+- W46 F3b2: AM3's moved check ran as HTTP calls through Vite's proxy with a cookie jar per host (as
+  W12), API on 8001; Chrome rounds stay verify's. To reverse: n/a.

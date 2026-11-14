@@ -27,6 +27,9 @@ class SpecialistSeeder extends Seeder
         'carlos.prado' => ['area' => 'Tributário · Indústria', 'focus' => SpecialistFocus::Industria],
         'juliana.reis' => ['area' => 'Contábil · Simples Nacional', 'focus' => SpecialistFocus::Simples],
         'rafael.antunes' => ['area' => 'Planejamento tributário', 'focus' => SpecialistFocus::Real],
+        // The demo firm Alvorada's two (rnc-4 F3b2, invented).
+        'bruno.alvorada' => ['area' => 'Tributário · Reforma', 'focus' => SpecialistFocus::Geral],
+        'camila.alvorada' => ['area' => 'Contábil · Simples Nacional', 'focus' => SpecialistFocus::Simples],
     ];
 
     public function run(CurrentFirm $currentFirm, SpecialistService $specialistService): void

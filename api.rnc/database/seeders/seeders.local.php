@@ -12,6 +12,7 @@ use Database\Seeders\NfeSeeder;
 use Database\Seeders\PartnerSeeder;
 use Database\Seeders\PartnerUserSeeder;
 use Database\Seeders\PipelineSeeder;
+use Database\Seeders\PlatformManagerSeeder;
 use Database\Seeders\SectorPageSeeder;
 use Database\Seeders\SpecialistSeeder;
 
@@ -31,8 +32,14 @@ $this->call(SectorPageSeeder::class);
 // The pilot's team (Reinaldo, the team, the four specialists) — refuses to run in production.
 $this->call(LocalUsersSeeder::class);
 
-// The demo firm Alvorada (rnc-4 F1a, D18): invented firm, manager and specialist — LOCAL ONLY
-// (refuses testing and production, AM7), before the specialists' hours it gets.
+// The platform firm's manager `gestao.hub` (rnc-4 R23) — LOCAL ONLY (refuses testing and production).
+$this->call(PlatformManagerSeeder::class);
+
+// The demo firm Alvorada (rnc-4 D18, R22): invented firm, sector pages, manager, team and two
+// specialists — LOCAL ONLY (refuses testing and production, AM7), before the specialists' hours it
+// gets. Every demo seeder below runs once per seeded firm — Franco, then Alvorada when it exists
+// (`Concerns\SeedsEachDemoFirm`, F3b2) — and skips a firm without the data's module; channel and
+// sub-brands stay Franco's.
 $this->call(DemoFirmSeeder::class);
 
 // Every `is_specialist` member's weekly hours, from the firm's business hours (rnc-1 R15). After

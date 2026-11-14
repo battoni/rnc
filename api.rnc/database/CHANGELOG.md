@@ -3,6 +3,9 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.27.0 — 2026-11-14
+- Demo seeders per firm (rnc-4 F3b2, R22, R23, A23): `Concerns\SeedsEachDemoFirm`; `PipelineSeeder`, `PartnerSeeder`, `PartnerUserSeeder`, `MetricsSeeder`, `ClientSeeder`, `ContractSeeder`, `NfeSeeder` and `AssistantNoteSeeder` seed Franco (unchanged) then Alvorada, each skipping a firm without its module. `DemoFirmSeeder` adds `equipe.alvorada`, `camila.alvorada` and the six sector pages; new local-only `PlatformManagerSeeder` (`gestao.hub`). Tested by `tests/Feature/Seed/DemoFirmSeedTest`.
+
 ## 1.26.0 — 2026-11-14
 - `SectorPageSeeder` writes `DefaultSectorPages` through `SectorPageService::startFirm`, and `SpecialistSeeder` makes people bookable through `SpecialistService::makeBookable` — the same paths as `firm:create` (rnc-4 F3b1); seeded rows unchanged.
 

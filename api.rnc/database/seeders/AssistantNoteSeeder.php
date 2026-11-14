@@ -7,14 +7,17 @@ use App\Modules\Assistant\Enums\NoteStatus;
 use App\Modules\Assistant\Enums\QuestionStatus;
 use App\Modules\Assistant\Models\AssistantNote;
 use App\Modules\Assistant\Models\AssistantQuestion;
+use App\Modules\Firm\Helpers\FirmModules;
 use App\Modules\Firm\Models\Firm;
 use App\Modules\Firm\Services\CurrentFirm;
 use Carbon\CarbonImmutable;
+use Database\Seeders\Concerns\SeedsEachDemoFirm;
 use Illuminate\Database\Seeder;
 use LogicException;
 
 /**
- * Franco's Reforma knowledge base (rnc-3 R10, R29; AM2, AM10, AM19, W12), outside production only:
+ * Each demo firm's Reforma knowledge base (rnc-3 R10, R29; AM2, AM10, AM19, W12; per firm since
+ * rnc-4 F3b2, the firm needing `assistant`), outside production only:
  * the demo's ten notes (`demos/franco-reforma-hub/src/views/fiscal.js` 408–509), word for word, each
  * citing the `specs/rnc-3-reforma-hub-phase-3/facts.md` §2 lines it restates — the source and the
  * day it was read (05/11/2026, facts.md line 3) are taken from there.
@@ -32,9 +35,20 @@ use LogicException;
  */
 class AssistantNoteSeeder extends Seeder
 {
+    use SeedsEachDemoFirm;
+
     private const AS_OF = '2026-11-05';
 
     private const EDITOR = 'reinaldo';
+
+    /** Who asks the open questions on Franco's team. */
+    private const ASKER = 'patricia';
+
+    /** Franco's specialists the notes and questions name, in the order another firm's stand in for them. */
+    private const SPECIALISTS = ['mariana.toledo', 'carlos.prado', 'juliana.reis', 'rafael.antunes'];
+
+    /** @var array<string, int> this pass's firm's people by Franco's usernames (`staffOf`) */
+    private array $staff = [];
 
     private const BARBIERI = ['Barbieri Advogados — LC 214/2025 comentada', 'https://www.barbieriadvogados.com/lc-214/'];
 
@@ -87,15 +101,10 @@ class AssistantNoteSeeder extends Seeder
             return;
         }
 
-        $firm = Firm::where('slug', FirmSeeder::FRANCO_SLUG)->first();
-
-        if (! $firm) {
-            return;
-        }
-
         $now = CarbonImmutable::now();
 
-        $currentFirm->runAs($firm, function () use ($firm, $now) {
+        $this->forEachDemoFirm($currentFirm, function (Firm $firm) use ($now) {
+            $this->staff = $this->staffOf($firm);
             $editorId = $this->staffId($firm, self::EDITOR);
 
             foreach (self::NOTES as [$slug, $question, $answer, $rule, [$sourceLabel, $sourceUrl], $reviewer, $days, $strong, $weak]) {
@@ -130,18 +139,55 @@ class AssistantNoteSeeder extends Seeder
                     'answered_at' => null,
                 ])->save();
             }
-        });
+        }, FirmModules::ASSISTANT);
     }
 
     /** A seeded staff member of the firm, or the seed stops: no note names anybody else (AM10). */
     private function staffId(Firm $firm, string $username): int
     {
-        $id = User::where('firm_id', $firm->id)->where('username', $username)->value('id');
+        $id = $this->staff[$username] ?? null;
 
         if ($id === null) {
-            throw new LogicException("AssistantNoteSeeder names [{$username}], who is not on Franco's seeded staff.");
+            throw new LogicException("AssistantNoteSeeder names [{$username}], who is not on {$firm->slug}'s seeded staff.");
         }
 
-        return (int) $id;
+        return $id;
+    }
+
+    /**
+     * The firm's people the notes and questions name, by Franco's usernames: Franco's own, or in
+     * another demo firm (rnc-4 F3b2) its stand-ins — the manager edits, the first team member asks,
+     * its specialists review and answer in turn.
+     *
+     * @return array<string, int>
+     */
+    private function staffOf(Firm $firm): array
+    {
+        $own = User::where('firm_id', $firm->id)->pluck('id', 'username')->map(fn ($id) => (int) $id)->all();
+
+        if ($firm->slug === FirmSeeder::FRANCO_SLUG) {
+            return $own;
+        }
+
+        $staff = [];
+        $manager = $this->managerOf($firm);
+        $asker = $this->teamOf($firm, 1)->first();
+        $specialists = User::where('firm_id', $firm->id)->where('is_specialist', true)->orderBy('id')->pluck('id')->values();
+
+        if ($manager !== null) {
+            $staff[self::EDITOR] = $manager->id;
+        }
+
+        if ($asker !== null) {
+            $staff[self::ASKER] = $asker->id;
+        }
+
+        foreach (self::SPECIALISTS as $index => $username) {
+            if ($specialists->isNotEmpty()) {
+                $staff[$username] = (int) $specialists[$index % $specialists->count()];
+            }
+        }
+
+        return $staff;
     }
 }

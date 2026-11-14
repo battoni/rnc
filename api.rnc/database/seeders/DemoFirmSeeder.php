@@ -4,25 +4,30 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use App\Modules\Auth\Models\Role;
+use App\Modules\Content\Services\SectorPageService;
 use App\Modules\Firm\Helpers\FirmModules;
 use App\Modules\Firm\Models\Firm;
+use App\Modules\Firm\Services\CurrentFirm;
 use App\Modules\Lead\Services\ConsentTextService;
 use Illuminate\Database\Seeder;
 
 /**
- * Alvorada Contabilidade, the invented demo firm (rnc-4 D18) — minimal for now (F1a): the firm,
- * its manager and one specialist, enough to prove a second tenant on `alvorada.localhost`. F3b2
- * gives it the full demo. Every name, address and number is invented.
+ * Alvorada Contabilidade, the invented demo firm (rnc-4 D18, R22) that a prospect is shown: the firm,
+ * its six sector pages and consent v1, its manager, one team member and two specialists. Its data —
+ * leads, meetings, partners and their logins, traffic, portfolio, contracts, NF-e, assistant notes —
+ * comes from the same seeders as Franco's, which run once per seeded firm (`SeedsEachDemoFirm`,
+ * F3b2). Every name, address and number is invented.
  *
- * Local only (plan AM7): demo data never enters the Pest suite's seeds nor production. Runs before
- * `SpecialistSeeder`, which gives the specialist the firm's business hours.
+ * Local only (plan AM7): demo data never enters the Pest suite's seeds nor production — and with no
+ * Alvorada row, the per-firm seeders seed Franco alone. Runs before `SpecialistSeeder`, which gives
+ * the specialists the firm's business hours.
  */
 class DemoFirmSeeder extends Seeder
 {
     public const DEMO_SLUG = 'alvorada';
 
     /** The manager is the `gestao` role (rnc-4 F2c1, R14). */
-    private const MANAGER_ROLE_SLUG = 'gestao';
+    public const MANAGER_ROLE_SLUG = 'gestao';
 
     private const TEAM_ROLE_SLUG = 'equipe';
 
@@ -39,10 +44,12 @@ class DemoFirmSeeder extends Seeder
     /** @var list<array{username: string, name: string, last_name: string, role: string, is_specialist: bool}> */
     private const PEOPLE = [
         ['username' => 'helena.alvorada', 'name' => 'Helena', 'last_name' => 'Martins', 'role' => self::MANAGER_ROLE_SLUG, 'is_specialist' => false],
+        ['username' => 'equipe.alvorada', 'name' => 'Lívia', 'last_name' => 'Fontana', 'role' => self::TEAM_ROLE_SLUG, 'is_specialist' => false],
         ['username' => 'bruno.alvorada', 'name' => 'Bruno', 'last_name' => 'Siqueira', 'role' => self::TEAM_ROLE_SLUG, 'is_specialist' => true],
+        ['username' => 'camila.alvorada', 'name' => 'Camila', 'last_name' => 'Rocha', 'role' => self::TEAM_ROLE_SLUG, 'is_specialist' => true],
     ];
 
-    public function run(ConsentTextService $consentTextService): void
+    public function run(CurrentFirm $currentFirm, ConsentTextService $consentTextService, SectorPageService $sectorPageService): void
     {
         if (! app()->environment('local')) {
             return;
@@ -71,6 +78,9 @@ class DemoFirmSeeder extends Seeder
 
         // Version 1 of its consent is the platform default (R13), its name filled when read.
         $consentTextService->startFirm($firm->id);
+
+        // The public site's six sector pages, as `firm:create` gives a new firm (F3b1).
+        $currentFirm->runAs($firm, fn () => $sectorPageService->startFirm($firm));
 
         $roleIds = Role::pluck('id', 'slug');
 

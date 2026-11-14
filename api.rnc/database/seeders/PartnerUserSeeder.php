@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use App\Modules\Auth\Models\Role;
+use App\Modules\Firm\Helpers\FirmModules;
 use App\Modules\Firm\Models\Firm;
 use App\Modules\Firm\Services\CurrentFirm;
 use App\Modules\Partner\Enums\PartnerAccessEventType;
@@ -11,6 +12,7 @@ use App\Modules\Partner\Models\Partner;
 use App\Modules\Partner\Models\PartnerAccessEvent;
 use App\Modules\Partner\Services\PartnerAccessService;
 use Carbon\CarbonImmutable;
+use Database\Seeders\Concerns\SeedsEachDemoFirm;
 use Illuminate\Database\Seeder;
 
 /**
@@ -25,9 +27,13 @@ use Illuminate\Database\Seeder;
  */
 class PartnerUserSeeder extends Seeder
 {
+    use SeedsEachDemoFirm;
+
     private const USERNAME_PREFIX = 'parceiro.';
 
     private const EMAIL_DOMAIN = 'parceiro.exemplo';
+
+    private const MAILBOX_PREFIX = 'portal';
 
     public function run(CurrentFirm $currentFirm): void
     {
@@ -35,29 +41,31 @@ class PartnerUserSeeder extends Seeder
             return;
         }
 
-        $firm = Firm::where('slug', FirmSeeder::FRANCO_SLUG)->first();
         $roleId = Role::where('slug', PartnerAccessService::PARTNER_ROLE_SLUG)->value('id');
 
-        if (! $firm || ! $roleId) {
+        if (! $roleId) {
             return;
         }
 
-        $currentFirm->runAs($firm, fn () => $this->seedFirm($firm, (int) $roleId));
+        $this->forEachDemoFirm($currentFirm, fn (Firm $firm) => $this->seedFirm($firm, (int) $roleId), FirmModules::PARTNERS);
     }
 
     private function seedFirm(Firm $firm, int $roleId): void
     {
         $now = CarbonImmutable::now();
+        // Usernames are global: Franco keeps `parceiro.<n>`, another firm's are `parceiro.<slug>.<n>` (rnc-4 F3b2).
+        $prefix = $firm->slug === FirmSeeder::FRANCO_SLUG ? self::USERNAME_PREFIX : self::USERNAME_PREFIX.$firm->slug.'.';
+        $mailbox = $firm->slug === FirmSeeder::FRANCO_SLUG ? self::MAILBOX_PREFIX : self::MAILBOX_PREFIX.$firm->slug.'.';
 
         foreach (Partner::query()->orderBy('id')->get()->values() as $index => $partner) {
             $number = $index + 1;
 
             $login = User::updateOrCreate(
-                ['username' => self::USERNAME_PREFIX.$number],
+                ['username' => $prefix.$number],
                 [
                     'name' => $partner->name,
                     'last_name' => '',
-                    'email' => 'portal'.$number.'@'.self::EMAIL_DOMAIN,
+                    'email' => $mailbox.$number.'@'.self::EMAIL_DOMAIN,
                     'role_id' => $roleId,
                     'firm_id' => $firm->id,
                     'partner_id' => $partner->id,
