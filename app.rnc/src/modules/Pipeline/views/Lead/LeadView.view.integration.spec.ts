@@ -169,6 +169,71 @@ describe('LeadView', () => {
     expect(consent.textContent).toContain('version 1');
   });
 
+  describe('a beta signup (rnc-4 R29, Chrome QA 1.10)', () => {
+    function serveBetaLead() {
+      server.use(
+        http.get('http://localhost/leads/7', () =>
+          HttpResponse.json({
+            data: {
+              ...structuredClone(LEAD_DETAIL_FIXTURE),
+              channel: LEAD_CHANNEL.BETA,
+              cnpj: null,
+              consent: {
+                given: true,
+                given_at: '2026-11-18T09:12:00-03:00',
+                text: 'Autorizo a plataforma a me contatar sobre o programa beta.',
+                version: 2,
+                via: 'formulario',
+              },
+              path: 'beta',
+              profile: {
+                b2b: null,
+                band: null,
+                city: 'Curitiba',
+                clients_band: 'de_101_a_300',
+                exporta: false,
+                incentivos: false,
+                message: 'Queremos começar em janeiro.',
+                regime: null,
+                role: 'Sócia',
+                sector: null,
+                uf: 'PR',
+              },
+            },
+          })
+        )
+      );
+    }
+
+    it('shows the fields the beta form collected, not the empty diagnostic', async () => {
+      serveBetaLead();
+      renderLead();
+
+      await screen.findByTestId('lead-consent');
+      const profile = screen.getByTestId('lead-profile');
+
+      expect(profile.textContent).toContain('Sócia');
+      expect(profile.textContent).toContain('Curitiba/PR');
+      expect(profile.textContent).toContain('101 to 300');
+      expect(profile.textContent).toContain('Queremos começar em janeiro.');
+      expect(profile.textContent).toContain('by beta signup');
+      expect(profile.textContent).not.toContain('pipeline.lead');
+      expect(profile.textContent).not.toContain('ICMS incentives');
+    });
+
+    it('sums the consent up as contact about the beta, keeping its text and version', async () => {
+      serveBetaLead();
+      renderLead();
+
+      const consent = await screen.findByTestId('lead-consent');
+
+      expect(consent.textContent).toContain('Agreed to be contacted about the beta');
+      expect(consent.textContent).not.toContain('partners');
+      expect(consent.textContent).toContain('contatar sobre o programa beta');
+      expect(consent.textContent).toContain('version 2');
+    });
+  });
+
   it('offers the contact as real tel, WhatsApp and mailto links', async () => {
     renderLead();
 

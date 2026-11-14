@@ -916,12 +916,17 @@
         "exporta": "Exporta",
         "path": "Caminho",
         "source": "Origem",
+        "role": "Cargo",
+        "location": "Cidade/UF",
+        "clientsBand": "Clientes atendidos",
+        "message": "Mensagem",
         "yes": "sim",
         "no": "não",
         "empty": "—",
         "paths": {
           "cnpj": "pelo CNPJ",
-          "quiz": "pelo questionário"
+          "quiz": "pelo questionário",
+          "beta": "pela inscrição no beta"
         }
       },
       "diagnosis": {
@@ -938,6 +943,10 @@
         "title": "Consentimento",
         "given": "Autorizou ser apresentado a parceiros",
         "refused": "Não autorizou ser apresentado a parceiros",
+        "beta": {
+          "given": "Autorizou ser contatado sobre o beta",
+          "refused": "Não autorizou ser contatado sobre o beta"
+        },
         "none": "Ainda sem resposta: o visitante não chegou ao contato.",
         "when": "Em {date} · versão {version} · {via}",
         "vias": {

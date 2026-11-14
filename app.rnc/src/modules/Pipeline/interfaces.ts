@@ -91,14 +91,22 @@ interface LeadDiagnosis {
   risks: number;
 }
 
-/** The profile the diagnostic answered (R10). */
+/**
+ * The profile the diagnostic answered (R10). A beta signup (rnc-4 R29, D29) keeps its form's own
+ * fields over the empty diagnostic: role, city/UF, clients band and the optional message.
+ */
 interface LeadProfile {
   b2b: number | null;
   band: string | null;
+  city?: string;
+  clients_band?: string;
   exporta: boolean;
   incentivos: boolean;
+  message?: string | null;
   regime: string | null;
+  role?: string;
   sector: string | null;
+  uf?: string;
 }
 
 /** `LeadDetailResource`: the lead detail (R19). */

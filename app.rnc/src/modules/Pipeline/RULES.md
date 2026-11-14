@@ -1,5 +1,5 @@
 ---
-version: 1.7.0
+version: 1.8.0
 origin: rnc
 ---
 
@@ -43,6 +43,10 @@ The team's screens (R18–R20): the board (`/equipe/pipeline`, route `pipeline`)
   Paulo's (AM9, `MEETING_TIME_ZONE` from Diagnostic).
 - **Contact actions are real links** (`contactLinks`): `tel:+55…`, `https://wa.me/55…`, `mailto:`.
 - **Sector, regime and band labels are Diagnostic's** (`diagnostic.sectors.*` …): one wording.
+- **A beta signup shows its own form** (rnc-4 R29, Chrome QA 1.10): for a `beta` lead the profile is the
+  beta form's role, city/UF, clients band (`site.product.form.bands.*`, the Site's wording) and message,
+  not the empty diagnostic rows; its consent summary reads "contacted about the beta"
+  (`pipeline.lead.consent.beta.*`), never "introduced to partners" — the stored text and version stay as given.
 
 - **The "Marca" filter's options come with the board** (`GET leads` → `brands`), not from
   `GET brands`, which is `brands.manage` — the team holds `leads.read` only. `main` is the main

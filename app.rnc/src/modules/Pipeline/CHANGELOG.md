@@ -2,6 +2,13 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.8.0 — 2026-11-14
+
+- A beta lead's detail (Chrome QA 1.10): `LeadView` shows the beta form's fields (role, city/UF, clients band,
+  message) and a channel-aware consent summary; `LeadProfile` gains the optional beta fields; locale keys
+  `pipeline.lead.profile.paths.beta`, `role`, `location`, `clientsBand`, `message`, `pipeline.lead.consent.beta.*`
+  (pt-BR, en). Tested by `LeadView.view.integration.spec`.
+
 ## 1.7.0 — 2026-11-14
 
 - The lead's own data (rnc-4 F9b, R39): `ExportLeadService`, `AnonymiseLeadService`, `LeadDetail.anonymised_at`,

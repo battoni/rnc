@@ -916,12 +916,17 @@
         "exporta": "Exports",
         "path": "Path",
         "source": "Source",
+        "role": "Role",
+        "location": "City/State",
+        "clientsBand": "Clients served",
+        "message": "Message",
         "yes": "yes",
         "no": "no",
         "empty": "—",
         "paths": {
           "cnpj": "by CNPJ",
-          "quiz": "by questionnaire"
+          "quiz": "by questionnaire",
+          "beta": "by beta signup"
         }
       },
       "diagnosis": {
@@ -938,6 +943,10 @@
         "title": "Consent",
         "given": "Agreed to be introduced to partners",
         "refused": "Did not agree to be introduced to partners",
+        "beta": {
+          "given": "Agreed to be contacted about the beta",
+          "refused": "Did not agree to be contacted about the beta"
+        },
         "none": "No answer yet: the visitor did not reach the contact step.",
         "when": "On {date} · version {version} · {via}",
         "vias": {
