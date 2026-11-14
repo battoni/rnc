@@ -7,6 +7,7 @@ import { PLATFORM_PERMISSIONS, PLATFORM_ROUTE_NAMES } from './constants';
  */
 const firmsView = () => import('./views/Firms/FirmsView.view.vue');
 const consentView = () => import('./views/ConsentDefault/ConsentDefaultView.view.vue');
+const viewAsLogView = () => import('./views/ViewAsLog/ViewAsLogView.view.vue');
 
 const PlatformModuleRoutes: RouteRecordRaw[] = [
   {
@@ -32,6 +33,20 @@ const PlatformModuleRoutes: RouteRecordRaw[] = [
     name: `${PLATFORM_ROUTE_NAMES.consent}-pt-BR`,
     meta: { permission: PLATFORM_PERMISSIONS.consent },
     component: consentView,
+  },
+  // The view-as log (rnc-4 R26): the console's, on the same key as the firms (W84).
+  {
+    path: '/platform/view-as-log',
+    name: `${PLATFORM_ROUTE_NAMES.viewAsLog}-en`,
+    meta: { permission: PLATFORM_PERMISSIONS.firms },
+    component: viewAsLogView,
+  },
+
+  {
+    path: '/plataforma/acessos',
+    name: `${PLATFORM_ROUTE_NAMES.viewAsLog}-pt-BR`,
+    meta: { permission: PLATFORM_PERMISSIONS.firms },
+    component: viewAsLogView,
   },
 ];
 

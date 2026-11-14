@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.17.0 — 2026-11-14
+
+### Added
+
+- `storageAsset.helper.ts` (rnc-4 F4d): `toStorageAssetPath` — the API's `APP_URL/storage/...` as a path on the page's own origin.
+
 ## 1.16.0 — 2026-11-14
 
 - `firmSiteUrl(slug, location, rootDomain)` (rnc-4 F6b, D24): a firm's site on the page's scheme and port — the product landing's demo link; an empty slug is none.

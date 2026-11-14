@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.18.0 — 2026-11-14
+
+### Added
+
+- rnc-4 F4d: `platform.logo.*`, `platform.viewAs.*` (banner, "Sair"/"Leave", the log and its reasons), `platform.errors.logo*` / `viewAs*`, `navigation.platformViewAsLog`.
+
 ## 1.17.0 — 2026-11-14
 
 ### Added

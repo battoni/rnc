@@ -9,6 +9,7 @@ const HUB_FIXTURE: PlatformFirm = {
   is_platform: true,
   lead_count: 0,
   logo_text: 'Hub da Reforma',
+  logo_url: null,
   modules: [],
   name: 'Hub da Reforma',
   proof: null,
@@ -26,6 +27,7 @@ const ALVORADA_FIXTURE: PlatformFirm = {
   is_platform: false,
   lead_count: 40,
   logo_text: 'Alvorada Contabilidade',
+  logo_url: null,
   modules: ['portfolio', 'fiscal', 'radar', 'partners', 'contracts', 'briefing'],
   name: 'Alvorada Contabilidade',
   proof: [
@@ -48,6 +50,7 @@ const IPE_FIXTURE: PlatformFirm = {
   is_platform: false,
   lead_count: 0,
   logo_text: 'Ipê Contábil',
+  logo_url: null,
   modules: ['briefing'],
   name: 'Ipê Contábil',
   proof: null,

@@ -60,7 +60,8 @@
     "firmConsent": "Consentimento",
     "firmContact": "Contato do escritório",
     "firmSpecialists": "Especialistas",
-    "firmTeam": "Acessos da equipe"
+    "firmTeam": "Acessos da equipe",
+    "platformViewAsLog": "Acessos de suporte"
   },
   "rolesAndPermissions": {
     "groups": {
@@ -2113,7 +2114,13 @@
       "slugInvalid": "Use letras minúsculas, números e hífens, começando e terminando com letra ou número.",
       "slugReserved": "Este endereço é reservado pela plataforma. Escolha outro.",
       "slugTaken": "Já existe um escritório com este endereço.",
-      "usernameTaken": "Este usuário pertence a outra conta. Escolha outro."
+      "usernameTaken": "Este usuário pertence a outra conta. Escolha outro.",
+      "logoRequired": "Escolha uma imagem primeiro.",
+      "logoTooLarge": "A imagem passa de 512 KB. Escolha uma menor.",
+      "logoTooWide": "A imagem passa de 1024 px de lado. Escolha uma menor.",
+      "logoType": "Use uma imagem PNG, JPEG ou WebP — SVG e outros arquivos não são aceitos.",
+      "viewAsActive": "Você já está acessando um escritório. Saia dele primeiro.",
+      "viewAsPlatformFirm": "O escritório da plataforma não é acessado como suporte."
     },
     "firms": {
       "coreOnly": "Só o núcleo",
@@ -2209,6 +2216,38 @@
       "copy": "Copiar",
       "once": "Copie agora: ela não será mostrada de novo. Uma nova pode ser gerada no login do gestor.",
       "title": "Senha"
+    },
+    "logo": {
+      "choose": "Escolher imagem",
+      "current": "Logo atual",
+      "empty": "Ainda sem logo: o site e o painel escrevem o texto do logo.",
+      "hint": "PNG, JPEG ou WebP, até 512 KB e 1024 px de lado.",
+      "label": "Logo",
+      "preview": "Prévia da imagem escolhida",
+      "remove": "Remover logo",
+      "upload": "Enviar logo"
+    },
+    "viewAs": {
+      "action": "Acessar como suporte",
+      "banner": "Você está acessando {firm} como operador da plataforma",
+      "leave": "Sair",
+      "log": {
+        "address": "De {ip}",
+        "empty": "Ninguém acessou um escritório como suporte ainda.",
+        "ended": "Terminou {date}",
+        "lede": "Cada vez que o operador da plataforma entrou num escritório como suporte: quem, qual escritório, de onde, quando e como terminou.",
+        "loadFailed": "Não foi possível carregar o registro de acessos.",
+        "reasons": {
+          "expirou": "Expirou",
+          "logout": "Saiu da conta",
+          "open": "Em aberto",
+          "sair": "Saiu"
+        },
+        "retry": "Tentar de novo",
+        "started": "Começou {date}",
+        "title": "Acessos de suporte"
+      },
+      "leaveFailed": "Não foi possível sair do escritório. Tente de novo."
     }
   },
   "users": {

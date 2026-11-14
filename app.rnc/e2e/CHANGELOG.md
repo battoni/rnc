@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.22.0 — 2026-11-14
+
+### Added
+
+- `platform/view-as.spec.ts` (rnc-4 F4d, A43): the console refuses an SVG before sending and previews and sends a PNG; the firm's logo shows on its own site at `/storage/...` on its own host; "Acessar como suporte" enters Alvorada — the banner on the console, the log and after a reload, in view at 390 and 1440 with no horizontal scroll (document and `.main-scroll`), the rail painted as Alvorada — and "Sair" returns to the console with the root's brand (API mocked).
+
 ## 1.21.0 — 2026-11-14
 
 ### Added

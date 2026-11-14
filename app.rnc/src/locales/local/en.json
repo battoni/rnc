@@ -60,7 +60,8 @@
     "firmConsent": "Consent",
     "firmContact": "Firm contact",
     "firmSpecialists": "Specialists",
-    "firmTeam": "Team logins"
+    "firmTeam": "Team logins",
+    "platformViewAsLog": "Support access"
   },
   "rolesAndPermissions": {
     "groups": {
@@ -2113,7 +2114,13 @@
       "slugInvalid": "Use lower-case letters, digits and hyphens, starting and ending with a letter or digit.",
       "slugReserved": "This address is reserved by the platform. Pick another.",
       "slugTaken": "A firm already has this address.",
-      "usernameTaken": "This username belongs to another account. Pick another."
+      "usernameTaken": "This username belongs to another account. Pick another.",
+      "logoRequired": "Choose an image first.",
+      "logoTooLarge": "The image is over 512 KB. Pick a smaller one.",
+      "logoTooWide": "The image is over 1024 px on a side. Pick a smaller one.",
+      "logoType": "Use a PNG, JPEG or WebP image — SVG and other files are not accepted.",
+      "viewAsActive": "You are already accessing a firm. Leave it first.",
+      "viewAsPlatformFirm": "The platform firm is not accessed as support."
     },
     "firms": {
       "coreOnly": "Core only",
@@ -2209,6 +2216,38 @@
       "copy": "Copy",
       "once": "Copy it now: it will not be shown again. A new one can be generated from the manager login.",
       "title": "Password"
+    },
+    "logo": {
+      "choose": "Choose image",
+      "current": "Current logo",
+      "empty": "No logo yet: the site and the back office write the logo text.",
+      "hint": "PNG, JPEG or WebP, up to 512 KB and 1024 px a side.",
+      "label": "Logo",
+      "preview": "Preview of the chosen image",
+      "remove": "Remove logo",
+      "upload": "Upload logo"
+    },
+    "viewAs": {
+      "action": "Access as support",
+      "banner": "You are accessing {firm} as the platform operator",
+      "leave": "Leave",
+      "log": {
+        "address": "From {ip}",
+        "empty": "Nobody has accessed a firm as support yet.",
+        "ended": "Ended {date}",
+        "lede": "Every time the platform operator entered a firm as support: who, which firm, from where, when, and how it ended.",
+        "loadFailed": "The support access log could not be loaded.",
+        "reasons": {
+          "expirou": "Expired",
+          "logout": "Signed out",
+          "open": "Open",
+          "sair": "Left"
+        },
+        "retry": "Try again",
+        "started": "Started {date}",
+        "title": "Support access"
+      },
+      "leaveFailed": "Leaving the firm failed. Try again."
     }
   },
   "users": {

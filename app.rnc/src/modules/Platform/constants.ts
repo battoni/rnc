@@ -1,7 +1,11 @@
 import { FIRM_MODULE } from '@Enums';
 
 /** The console's screens, linked by name (celer-05): the rail and Home link here. */
-const PLATFORM_ROUTE_NAMES = { consent: 'platform-consent', firms: 'platform-firms' } as const;
+const PLATFORM_ROUTE_NAMES = {
+  consent: 'platform-consent',
+  firms: 'platform-firms',
+  viewAsLog: 'platform-view-as-log',
+} as const;
 
 /** The console's keys (rnc-4 R24, W53): the firm-less operator's alone; the API also asks the person. */
 const PLATFORM_PERMISSIONS = { consent: 'platform.consent', firms: 'platform.firms' } as const;
@@ -15,6 +19,13 @@ const PLATFORM_FIRM_LIMITS = {
   shortName: 40,
   tagline: 160,
 } as const;
+
+/**
+ * A firm's logo (rnc-4 R27, `UploadLogoRequest`): the types the API sniffs for and its size cap. The
+ * field refuses the rest before sending; the sides (≤ 1024 px) and a disguised file are the API's.
+ */
+const PLATFORM_LOGO_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
+const PLATFORM_LOGO_MAX_BYTES = 512 * 1024;
 
 /** A firm's landing has four proof points, or none (`UpdatePlatformFirmRequest`). */
 const PLATFORM_PROOF_POINTS = 4;
@@ -69,6 +80,12 @@ const PLATFORM_ERROR_KEYS: Record<string, string> = {
   'firms.slugTaken': 'platform.errors.slugTaken',
   'modules.missingDependency': 'platform.errors.missingDependency',
   'modules.unknown': 'platform.errors.moduleUnknown',
+  'platform.logoRequired': 'platform.errors.logoRequired',
+  'platform.logoTooLarge': 'platform.errors.logoTooLarge',
+  'platform.logoTooWide': 'platform.errors.logoTooWide',
+  'platform.logoType': 'platform.errors.logoType',
+  'platform.viewAsActive': 'platform.errors.viewAsActive',
+  'platform.viewAsPlatformFirm': 'platform.errors.viewAsPlatformFirm',
   'platform.consentPlaceholderMissing': 'platform.errors.placeholderMissing',
   'users.form.emailInvalid': 'platform.errors.emailInvalid',
   'users.form.emailTaken': 'platform.errors.emailTaken',
@@ -83,6 +100,8 @@ export {
   PLATFORM_CORE_MODULES,
   PLATFORM_ERROR_KEYS,
   PLATFORM_FIRM_LIMITS,
+  PLATFORM_LOGO_MAX_BYTES,
+  PLATFORM_LOGO_TYPES,
   PLATFORM_MIN_CONTRAST,
   PLATFORM_MODULE_DEPENDENCIES,
   PLATFORM_OPERATOR_ONLY_MODULES,

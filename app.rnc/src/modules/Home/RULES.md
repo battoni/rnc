@@ -1,5 +1,5 @@
 ---
-version: 3.7.0
+version: 3.8.0
 origin: pendulum
 based-on: 2.0.0
 ---
@@ -43,7 +43,9 @@ opens: Equipe (`team-home`), Reinaldo (`management-home`) and Operador (`operato
 - **The firm-less platform operator never sees Home either** (rnc-4 F4b, R24): with
   `platform.is_operator`, no `firm` and the key `platform.firms`, `HomeView` replaces itself with the
   platform console (`@PlatformModule`'s `PLATFORM_ROUTE_NAMES.firms`). The key is part of the check so
-  a console the person cannot open never bounces back here in a loop.
+  a console the person cannot open never bounces back here in a loop. Not while `platform.view_as` is
+  set (rnc-4 F4d, R26): inside a view-as the operator's back office is the viewed firm's, and
+  "Acessar como suporte" lands here.
 
 _Retired 07/11/2026:_ "Placeholder home view — do not add features until the product home screen is
 designed". The product (rnc-1) designed it: a greeting and the person's workspaces.

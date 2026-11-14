@@ -22,10 +22,12 @@ import FirmsView from './FirmsView.view.vue';
  * its password is still on screen; the look, the modules and the manager login from each row, each
  * answer put in its row without a refetch.
  */
+const { routerPush } = vi.hoisted(() => ({ routerPush: vi.fn(() => Promise.resolve()) }));
+
 vi.mock('vue-router', async (importOriginal) => ({
   ...(await importOriginal<object>()),
   useRoute: () => ({ hash: '', params: {}, query: {} }),
-  useRouter: () => ({ push: vi.fn() }),
+  useRouter: () => ({ push: routerPush }),
 }));
 
 const STUBS = {
@@ -210,5 +212,82 @@ describe('FirmsView', () => {
     renderFirms();
 
     expect((await screen.findByRole('alert')).textContent).toContain('The firms could not be loaded.');
+  });
+
+  // rnc-4 A43 (R26, D20): "Acessar como suporte" on a firm's row — never on the platform firm's.
+  describe('view-as', () => {
+    let starts: string[] = [];
+
+    beforeEach(() => {
+      starts = [];
+      routerPush.mockClear();
+      server.use(
+        http.post('http://localhost/platform/firms/:id/view-as', ({ params }) => {
+          starts.push(String(params.id));
+
+          return HttpResponse.json(
+            { data: { firm: { id: 3, name: 'Alvorada Contabilidade', slug: 'alvorada' }, id: 7 } },
+            { status: 201 }
+          );
+        }),
+        http.get('http://localhost/auth/me', () =>
+          HttpResponse.json({
+            data: {
+              firm: null,
+              id: 1,
+              name: 'Guilherme',
+              permissions: ['platform.firms'],
+              platform: {
+                is_operator: true,
+                name: 'Hub da Reforma',
+                view_as: { name: 'Alvorada Contabilidade', slug: 'alvorada' },
+              },
+              role_slug: 'operador',
+              username: 'battoni',
+            },
+          })
+        ),
+        http.get('http://localhost/public/firm', () =>
+          HttpResponse.json({
+            data: { logo_text: 'Alvorada Contabilidade', name: 'Alvorada Contabilidade', slug: 'alvorada' },
+          })
+        )
+      );
+    });
+
+    it('offers it on every firm but the platform firm', async () => {
+      renderFirms();
+
+      await waitFor(() => expect(screen.getAllByTestId('firm-row')).toHaveLength(2));
+
+      expect(within(rowOf('hub')).queryByTestId('firm-view-as')).toBeNull();
+      expect(within(rowOf('alvorada')).getByTestId('firm-view-as').textContent).toContain('Access as support');
+    });
+
+    it("starts it, reads the session again and opens the firm's back office", async () => {
+      renderFirms();
+
+      await fireEvent.click(within(await waitFor(() => rowOf('alvorada'))).getByTestId('firm-view-as'));
+
+      await waitFor(() => expect(routerPush).toHaveBeenCalledWith({ name: 'home' }));
+      expect(starts).toEqual(['3']);
+      expect(useUserStore().platform?.view_as?.slug).toBe('alvorada');
+    });
+
+    it('names a refusal by its code', async () => {
+      server.use(
+        http.post('http://localhost/platform/firms/:id/view-as', () =>
+          HttpResponse.json({ code: 'platform.viewAsActive', error: 'platform.viewAsActive' }, { status: 409 })
+        )
+      );
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      renderFirms();
+
+      await fireEvent.click(within(await waitFor(() => rowOf('alvorada'))).getByTestId('firm-view-as'));
+
+      expect((await screen.findByTestId('firm-view-as-error')).textContent).toContain('already');
+      expect(routerPush).not.toHaveBeenCalled();
+    });
   });
 });

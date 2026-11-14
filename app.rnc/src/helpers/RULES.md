@@ -1,5 +1,5 @@
 ---
-version: 1.16.0
+version: 1.17.0
 origin: pendulum
 based-on: 1.12.0
 ---
@@ -33,6 +33,7 @@ Shared pure utility functions with no Vue reactivity. Helpers are plain TypeScri
 | `slotContent.helper.ts`                | `hasSlotContent` — did a slot's rendered nodes actually draw anything (a false `v-if` leaves a Comment, a `<template>` a Fragment)                                                                                                           |
 | `withExternalLinks.helper.ts`          | `withExternalLinks` — every `<a>` in sanitised rich text gets `target="_blank" rel="noopener noreferrer"`, as a pair; idempotent                                                                                                             |
 | `firmHost.helper.ts`                   | `firmSlugFromHost` / `currentFirmSlug` — the firm a host names (`<slug>.<root>`; root and `www` → none); `rootSiteUrl` — the root on the page's scheme and port; `firmSiteUrl` — a firm's own site the same way, none without a slug (rnc-4) |
+| `storageAsset.helper.ts`               | `toStorageAssetPath` — a file on the API's public disk (`APP_URL/storage/...`) as `/storage/...` on this origin, where Vite and the vhost proxy it per host; anything else as it came (rnc-4 F4d)                                            |
 | `localDate.helper.ts`                  | `toLocalDateString` / `toLocalDateTimeString` / `fromDayMonthYear` — a day on the person's own calendar                                                                                                                                      |
 | `sentenceCase.helper.ts`               | Capitalizes the first character of a localized `Intl` label — never CSS `capitalize`                                                                                                                                                         |
 | `prefersReducedMotion.helper.ts`       | `prefersReducedMotionHelper` — the system's reduced-motion preference, read when asked, `false` without `matchMedia`                                                                                                                         |

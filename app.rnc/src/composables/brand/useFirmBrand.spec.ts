@@ -116,4 +116,43 @@ describe('useFirmBrand', () => {
 
     expect((await load())?.slug).toBe('alvorada');
   });
+
+  // rnc-4 R27: the uploaded logo, asked on the page's own origin (`/storage` proxied per host).
+  it("names the firm's logo as a path on this origin, or none", async () => {
+    server.use(
+      http.get('http://localhost/public/firm', () =>
+        HttpResponse.json({ data: { ...ALVORADA, logo_url: 'http://localhost:8000/storage/firms/3/logo.png' } })
+      )
+    );
+
+    const { load, logoUrl } = await freshFirmBrand();
+
+    expect(logoUrl.value).toBeNull();
+
+    await load();
+
+    expect(logoUrl.value).toBe('/storage/firms/3/logo.png');
+  });
+
+  // rnc-4 R26: entering or leaving a view-as changes the firm the root's session answers for.
+  it('reads the firm again on reload, and keeps the new answer for the tab', async () => {
+    const { firm, load, reload } = await freshFirmBrand();
+
+    await load();
+
+    server.use(
+      http.get('http://localhost/public/firm', () =>
+        HttpResponse.json({ data: { ...ALVORADA, logo_text: 'Hub da Reforma', slug: 'hub' } })
+      )
+    );
+
+    await load();
+
+    expect(firm.value?.slug).toBe('alvorada');
+
+    await reload();
+
+    expect(firm.value?.slug).toBe('hub');
+    expect(JSON.parse(sessionStorage.getItem(FIRM_BRAND_STORAGE_KEY) ?? 'null')?.slug).toBe('hub');
+  });
 });

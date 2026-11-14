@@ -19,7 +19,8 @@ import { CreatePlatformFirmService, UpdatePlatformFirmService } from '../../../s
  * login; the slug's rules are the API's (format, reserved, taken: `FirmProvisioner`), shown on the
  * field. The new firm is handed to the view at once and the password stays here, shown once (W57).
  * With a firm it edits its look: names, tagline, the four proof points and the two colours, with a
- * live note on how white reads on the primary — the API refuses under 4,5:1 (R11).
+ * live note on how white reads on the primary — the API refuses under 4,5:1 (R11) — and the logo
+ * (`MFirmLogoField`, R27), saved on its own: its answer goes up as `onLogoChange`, the dialog stays.
  */
 type ColourField = 'brand_accent' | 'brand_primary';
 type FieldName =
@@ -42,6 +43,7 @@ interface SaveError {
 
 const emit = defineEmits<{
   onClose: [];
+  onLogoChange: [firm: PlatformFirm];
   onSuccess: [firm: PlatformFirm];
 }>();
 
@@ -391,6 +393,12 @@ function onFailed(failure: SaveError) {
     </template>
 
     <template v-else>
+      <MFirmLogoField
+        v-if="props.firm"
+        :firm="props.firm"
+        @onChange="emit('onLogoChange', $event)"
+      />
+
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
         <div class="flex min-w-0 flex-col gap-2">
           <label

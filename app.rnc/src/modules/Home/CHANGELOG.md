@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 3.8.0 — 2026-11-14
+
+### Changed
+
+- `HomeView` keeps the firm-less operator in the back office while a view-as is on (rnc-4 F4d, R26): its back office is then the viewed firm's.
+
 ## 3.7.0 — 2026-11-14
 
 ### Changed

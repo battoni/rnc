@@ -68,4 +68,19 @@ describe('MNavbarBrand', () => {
     expect(wrapper.text()).not.toContain('Franco');
     expect(wrapper.find('[role="img"]').exists()).toBe(false);
   });
+
+  // rnc-4 R27, A43: a firm with an uploaded logo shows it in the rail, asked on the page's own origin.
+  it("shows the firm's uploaded logo in the tile", async () => {
+    server.use(
+      http.get('http://localhost/public/firm', () =>
+        HttpResponse.json({ data: { ...ALVORADA, logo_url: 'http://localhost:8000/storage/firms/3/logo.png' } })
+      )
+    );
+
+    const wrapper = await mountBrand();
+    const image = wrapper.find('img[data-testid="logo-image"]');
+
+    expect(image.attributes('src')).toBe('/storage/firms/3/logo.png');
+    expect(image.attributes('alt')).toBe('Alvorada Contabilidade');
+  });
 });

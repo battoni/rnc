@@ -1,5 +1,5 @@
 ---
-version: 1.21.0
+version: 1.22.0
 origin: pendulum
 based-on: 1.8.2
 ---

@@ -1,6 +1,7 @@
 import { computed, readonly, ref } from 'vue';
 import type { PublicFirm } from '@Interfaces';
 import type { ApiResponse } from '@Providers';
+import { toStorageAssetPath } from '@Helpers';
 import { API } from '@Providers';
 import { FIRM_BRAND_STORAGE_KEY } from './constants';
 
@@ -17,6 +18,10 @@ import { FIRM_BRAND_STORAGE_KEY } from './constants';
  * `isFirmMissing` (rnc-4 R3) is the boot read's 404 `firms.notFound`: the host names a firm the API
  * does not know, and `TheRouteGuard` swaps every path for "Escritório não encontrado". Any other
  * failure leaves it false — an outage is not a missing firm — and the next `load()` asks again.
+ *
+ * `logoUrl` is the firm's uploaded logo (rnc-4 R27) as a path on the page's own origin
+ * (`toStorageAssetPath`: `/storage` is proxied per host). `reload()` asks again within the page load —
+ * entering or leaving a view-as changes the firm the root's session answers for (R26).
  */
 interface ApiFailure {
   response?: { data?: { error?: unknown }; status?: number };
@@ -53,6 +58,7 @@ function storeFirm(current: PublicFirm) {
 /** The firm of the address, its brand and the product's name, read once per page load. */
 function useFirmBrand() {
   const logoText = computed(() => firm.value?.logo_text ?? '');
+  const logoUrl = computed(() => toStorageAssetPath(firm.value?.logo_url));
   const platformName = computed(() => firm.value?.platform?.name ?? '');
 
   // EVENTS
@@ -62,6 +68,13 @@ function useFirmBrand() {
     pendingRequest ??= API({ endpoint: 'public/firm', method: 'get' }).then(onLoaded).catch(onFailed);
 
     return pendingRequest;
+  }
+
+  function reload(): Promise<PublicFirm | null> {
+    isLoaded = false;
+    pendingRequest = null;
+
+    return load();
   }
 
   function onFailed(failure: ApiFailure): null {
@@ -90,7 +103,9 @@ function useFirmBrand() {
     isFirmMissing: readonly(isFirmMissing),
     load,
     logoText,
+    logoUrl,
     platformName,
+    reload,
   };
 }
 

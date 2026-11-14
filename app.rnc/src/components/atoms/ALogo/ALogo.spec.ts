@@ -72,4 +72,45 @@ describe('ALogo', () => {
     expect(wrapper.text()).toBe('Alfa');
     expect(wrapper.find('.font-normal').exists()).toBe(false);
   });
+
+  // rnc-4 R27, A43: a firm's uploaded logo is the mark — a raster image, named by the firm, in both
+  // variants; the text mark comes back if the image cannot load.
+  describe('with an uploaded logo', () => {
+    const LOGO = '/storage/firms/3/logo-abc.png';
+
+    it('shows the image instead of the words, named by the firm', () => {
+      const wrapper = mountWithPlugins(ALogo, { props: { name: 'Alvorada Contabilidade', src: LOGO } });
+      const image = wrapper.find('img[data-testid="logo-image"]');
+
+      expect(image.attributes('src')).toBe(LOGO);
+      expect(image.attributes('alt')).toBe('Alvorada Contabilidade');
+      expect(wrapper.text()).toBe('');
+    });
+
+    it('shows the image in the min variant too, without the initial tile', () => {
+      const wrapper = mountWithPlugins(ALogo, {
+        props: { name: 'Alvorada Contabilidade', src: LOGO, variant: 'min' },
+      });
+
+      expect(wrapper.find('img[data-testid="logo-image"]').exists()).toBe(true);
+      expect(wrapper.text()).toBe('');
+    });
+
+    it('falls back to the text mark when the image fails to load', async () => {
+      const wrapper = mountWithPlugins(ALogo, { props: { name: 'Alvorada Contabilidade', src: LOGO } });
+
+      await wrapper.find('img').trigger('error');
+
+      expect(wrapper.find('img').exists()).toBe(false);
+      expect(wrapper.text()).toBe('Alvorada Contabilidade');
+    });
+
+    it('draws nothing without a name, image or not', () => {
+      expect(
+        mountWithPlugins(ALogo, { props: { src: LOGO } })
+          .find('img')
+          .exists()
+      ).toBe(false);
+    });
+  });
 });

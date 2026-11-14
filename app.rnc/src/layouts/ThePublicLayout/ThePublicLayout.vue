@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import type { PublicFirmHours } from '@SiteModule';
 import { useFirmBrand } from '@Composables';
+import { toStorageAssetPath } from '@Helpers';
 import {
   brandOfTab,
   isBrandPreview,
@@ -39,7 +40,7 @@ import {
  * product landing's sections, the CTA takes a firm to the beta form, and the footer carries the
  * product's line and only the contact the platform firm has: never a firm's hours or credentials.
  */
-const { logoText: hostLogoText } = useFirmBrand();
+const { logoText: hostLogoText, logoUrl: hostLogoUrl } = useFirmBrand();
 const { isProductSite } = useProductSite();
 const { firm, isBrandPending, load } = usePublicFirm();
 const { push } = useRouter();
@@ -68,6 +69,8 @@ const footerTagline = computed(() =>
 const hoursLines = computed(() => (firm.value?.business_hours ?? []).map(formatHours));
 const credentials = computed(() => (isProductSite.value ? null : firm.value?.credentials || null));
 const logoName = computed(() => firm.value?.logo_text || hostLogoText.value);
+// A sub-brand answers `logo_url` null: its words, never the firm's picture (rnc-4 R27).
+const logoSource = computed(() => (firm.value ? toStorageAssetPath(firm.value.logo_url) : hostLogoUrl.value));
 const isShellPending = computed(() => isBrandPending.value || !logoName.value);
 const hasContact = computed(() => Boolean(firm.value?.address || firm.value?.phone_href || firm.value?.mailbox));
 
@@ -171,11 +174,15 @@ function onProductNavClick(anchor: string) {
             <ALogo
               variant="min"
               :name="logoName"
+              :src="logoSource"
             />
           </span>
 
           <span class="hidden sm:inline">
-            <ALogo :name="logoName" />
+            <ALogo
+              :name="logoName"
+              :src="logoSource"
+            />
           </span>
         </RouterLink>
 
@@ -292,6 +299,7 @@ function onProductNavClick(anchor: string) {
           <ALogo
             class="text-lg"
             :name="logoName"
+            :src="logoSource"
           />
 
           <p class="text-muted leading-relaxed">

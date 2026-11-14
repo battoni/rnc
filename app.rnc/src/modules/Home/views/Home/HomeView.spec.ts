@@ -78,6 +78,20 @@ describe('HomeView', () => {
     expect(queryAllByTestId('workspace-card')).toEqual([]);
   });
 
+  // rnc-4 R26: inside a view-as the operator's back office is the viewed firm's.
+  it('keeps the operator in the back office while a view-as is on', () => {
+    renderAs(['home.read', 'users.read', 'platform.firms'], {
+      firm: null,
+      platform: {
+        is_operator: true,
+        name: 'Hub da Reforma',
+        view_as: { name: 'Alvorada Contabilidade', slug: 'alvorada' },
+      },
+    });
+
+    expect(replace).not.toHaveBeenCalled();
+  });
+
   it('keeps a person with a firm in the back office, whatever the platform says', () => {
     renderAs(['home.read', 'metrics.read'], {
       firm: { modules: [], name: 'Alvorada Contabilidade', slug: 'alvorada' },

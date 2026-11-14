@@ -1,5 +1,5 @@
 ---
-version: 1.1.0
+version: 1.1.1
 origin: rnc
 ---
 # RULES — Platform Module
@@ -112,14 +112,15 @@ order — a guest 401, anybody else 403:
 
 ## Known Gaps
 
-- **`/storage` is outside `/api`** (plan AM10): `logo_url` is the `public` disk's URL
-  (`APP_URL/storage/…`, locally `http://localhost:8000/storage/…`, which needs `php artisan
-  storage:link`); the SPA's Vite proxy forwards `/api` only. The F7 runbook's vhost serves
-  `/storage` per host; F4d decides how the SPA shows it locally.
 - **No per-action audit inside view-as** (D20, out of scope): only the start and the end are logged.
 - **The logged IP is the direct peer** (`$request->ip()`): the app trusts no proxy yet, so behind the
   deploy's reverse proxy every row would carry the proxy's address. F7's runbook must configure
   trusted proxies (`$middleware->trustProxies`) for the IP to be the operator's.
+_Retired 14/11/2026 (F4d):_ "`/storage` is outside `/api`; F4d decides how the SPA shows it locally" —
+the SPA asks `/storage/…` on its own host (app `toStorageAssetPath`) and Vite proxies `/storage` beside
+`/api` (local and test mode), so the logo loads on every firm host; `php artisan storage:link` is in
+the feature's local environment. `logo_url` stays `APP_URL/storage/…`. The production vhost serving
+`/storage` per host is still F7's runbook (plan AM10).
 _Retired 14/11/2026 (F4c):_ "Until F4c the operator reaches other firms only through the console" —
 view-as now lets the operator enter one firm, audited; a firm's pipeline, partners, settings and
 sub-brands (`brands*`) are reached that way.

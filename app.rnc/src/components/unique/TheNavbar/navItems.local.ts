@@ -282,7 +282,8 @@ const PORTAL_ENTRY: LocalNavItem = {
 };
 
 /**
- * "Plataforma" (rnc-4 R24, R25): the console over the firms and the platform's default consent —
+ * "Plataforma" (rnc-4 R24, R25, R26): the console over the firms, the platform's default consent and the
+ * view-as log —
  * keys only the firm-less operator holds (W53), so no firm's person ever sees the group. A link with a
  * toggle (shape 3) to the firms; `key` because its first child resolves the same route.
  */
@@ -299,6 +300,12 @@ const PLATFORM_ENTRY: LocalNavItem = {
       label: 'navigation.platformConsent',
       permission: PLATFORM_PERMISSIONS.consent,
       routeName: PLATFORM_ROUTE_NAMES.consent,
+    },
+    {
+      icon: 'pi pi-eye',
+      label: 'navigation.platformViewAsLog',
+      permission: PLATFORM_PERMISSIONS.firms,
+      routeName: PLATFORM_ROUTE_NAMES.viewAsLog,
     },
   ],
   icon: 'pi pi-globe',

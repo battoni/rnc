@@ -72,12 +72,14 @@ describe('useLocalNavItems', () => {
     ]);
   });
 
-  it('puts the firms and the default consent under "Plataforma", each behind its own key (rnc-4 R25)', () => {
+  it('puts the firms, the default consent and the view-as log under "Plataforma", each behind its key (rnc-4 R25, R26)', () => {
     const platform = useLocalNavItems().value[4];
 
     expect(platform?.children?.map((child) => [child.label, child.routeName, child.permission])).toEqual([
       ['navigation.platformFirms', 'platform-firms', 'platform.firms'],
       ['navigation.platformConsent', 'platform-consent', 'platform.consent'],
+      // rnc-4 R26: the view-as log, on the firms' key (W84).
+      ['navigation.platformViewAsLog', 'platform-view-as-log', 'platform.firms'],
     ]);
   });
 
@@ -252,6 +254,7 @@ describe('useLocalNavItems', () => {
       'platform-firms',
       'platform-firms',
       'platform-consent',
+      'platform-view-as-log',
     ]);
   });
 });

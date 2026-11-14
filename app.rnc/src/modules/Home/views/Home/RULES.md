@@ -1,5 +1,5 @@
 ---
-version: 1.2.0
+version: 1.3.0
 origin: pendulum
 based-on: 1.0.0
 ---
@@ -23,6 +23,9 @@ open (rnc-1). A partner's login never stays here.
 _Retired 07/11/2026 (rnc-2 F1):_ "Placeholder home view — intentionally minimal, do not add
 features until the product home screen is designed". rnc-1 designed it (the greeting and the
 workspace cards) and this file had not been told.
+
+- **The firm-less operator is sent on to the console** (rnc-4 R24) — except while
+  `platform.view_as` is set (R26): then this is the viewed firm's landing.
 
 ## Do Not
 

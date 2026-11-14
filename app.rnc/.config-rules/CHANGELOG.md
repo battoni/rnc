@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.7.0 — 2026-11-14
+
+### Added
+
+- rnc-4 F4d: `/storage` proxied beside `/api` to the same target (`VITE_API_PROXY_TARGET`) in the local, test-mode and preview servers — a firm's logo is asked on the firm's own host (`src/test/viteProxy.spec.ts`).
+
 ## 1.6.0 — 2026-11-14
 
 ### Added

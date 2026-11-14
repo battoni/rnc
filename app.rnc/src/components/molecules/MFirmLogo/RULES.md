@@ -1,5 +1,5 @@
 ---
-version: 1.0.0
+version: 1.1.0
 origin: rnc
 ---
 
@@ -21,6 +21,8 @@ firm not found and the repricing letter.
   `useBrandTheme`'s, so this is not the "business logic in a molecule" `components/RULES.md` refuses.
 - **`ALogo` keeps the contract of `celer-09`**: the mark never asks the app anything. This molecule is
   the one that asks, and it passes the answer down as `name`.
+- **The uploaded logo when the firm has one** (rnc-4 R27): `logoUrl` (on this origin) goes to `ALogo`
+  as `src`; the logo text stays its `alt` and its fallback.
 - **Draws nothing until a firm is known**, and nothing on "firm not found" (there is no firm), so no
   name the build carries ever shows.
 - **`variant`, `tone` and classes fall through** to `ALogo` (single root, `inheritAttrs` default).

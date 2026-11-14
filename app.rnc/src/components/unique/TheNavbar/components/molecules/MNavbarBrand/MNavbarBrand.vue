@@ -7,7 +7,7 @@ import { useFirmBrand } from '@Composables';
  * the firm's answer (`useFirmBrand`: the tab's last one until the API replies); until a firm is known
  * the block stays empty rather than writing a name the build carries.
  */
-const { logoText, platformName } = useFirmBrand();
+const { logoText, logoUrl, platformName } = useFirmBrand();
 </script>
 
 <template>
@@ -19,6 +19,7 @@ const { logoText, platformName } = useFirmBrand();
       <ALogo
         variant="min"
         :name="logoText"
+        :src="logoUrl"
       />
     </span>
 

@@ -37,11 +37,12 @@ export default defineConfig(({ mode }) => {
    * `changeOrigin: false` keeps the browser's Host header, which the API's QA login-as reads (C2).
    * `allowedHosts` lets Vite answer every `*.localhost` host. Local, test mode and preview alike:
    * the e2e server runs in test mode, and an `/api` that only the dev server proxied would not exist
-   * there (plan AM4).
+   * there (plan AM4). `/storage` is the API's public disk (a firm's logo, rnc-4 F4c): the SPA asks for
+   * it on its own host (`toStorageAssetPath`), so it goes to the same target — the deploy's vhost does
+   * the same per host (plan AM10). Needs `php artisan storage:link` in api.rnc.
    */
-  const apiProxy = {
-    '/api': { target: process.env.VITE_API_PROXY_TARGET || 'http://localhost:8000', changeOrigin: false },
-  };
+  const apiTarget = { target: process.env.VITE_API_PROXY_TARGET || 'http://localhost:8000', changeOrigin: false };
+  const apiProxy = { '/api': apiTarget, '/storage': apiTarget };
   const allowedHosts = ['.localhost'];
 
   return defineConfig({

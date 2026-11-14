@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.12.0 — 2026-11-14
+
+### Added
+
+- rnc-4 F4d (R26): "Acessos de suporte" — the view-as log — as the last child of "Plataforma", on `platform.firms` (LOCAL `navItems.local.ts`).
+
 ## 1.11.0 — 2026-11-14
 
 - The firm's own settings (rnc-4 F5b, R30–R33): `navItems.local.ts` ends "Gestão" with contact, team logins, specialists and consent, all four behind `firm.settings` (the manager's key; the operator holds every key). `TheNavbar.vue` is untouched.

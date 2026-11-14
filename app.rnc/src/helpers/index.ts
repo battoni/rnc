@@ -7,6 +7,7 @@ export * from './money.helper';
 export * from './routeAccess.helper';
 export * from './routeId.helper';
 export * from './slotContent.helper';
+export * from './storageAsset.helper';
 export * from './withExternalLinks.helper';
 export { default as attachAuthGuardHelper } from './attachAuthGuard.helper';
 export { default as prefersReducedMotionHelper } from './prefersReducedMotion.helper';

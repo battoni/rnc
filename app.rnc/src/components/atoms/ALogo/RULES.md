@@ -1,12 +1,12 @@
 ---
-version: 3.0.0
+version: 3.1.0
 origin: pendulum
 based-on: 1.2.0
 ---
 
 # RULES — ALogo
 
-> For AI agents. Last updated: 2026-11-14 (rnc-4 F2c2).
+> For AI agents. Last updated: 2026-11-14 (rnc-4 F4d).
 
 ## Purpose
 
@@ -19,8 +19,13 @@ file is `LOCAL` — the sync never touches it — and records only how this proj
 
 ## Intentional Decisions
 
-- **Text, not a raster or an SVG.** The firm has no vector mark handed over yet, and the owner chose
-  a text logo for the pilot. Text cannot fail to load, scales with the type and takes the brand token.
+- **Text by default, the firm's raster when it has one** (rnc-4 R27). `src` is the uploaded logo
+  (PNG/JPEG/WebP): the picture replaces the words in `full` and in `min`, named by `name` as its
+  `alt`, sized by the parent's font like the words (`1.75em` high, a square in `min`). It is a raster
+  mark, so it takes `variant` only (celer-09) — no motion on an `<img>`. A picture that fails to load
+  (a missing file, `storage:link` not run) falls back to the text mark, which cannot fail.
+  _Retired 14/11/2026 (rnc-4 F4d):_ "Text, not a raster or an SVG" — every firm on the platform can
+  now upload its own logo (R27); text stays the fallback.
 - **`variant`, `tone` and `name`.** `name` is the firm's logo text, or the public site's sub-brand
   (rnc-3 R3), written in the same mark. With no name the mark draws nothing.
   _Retired 14/11/2026 (rnc-4 F2c2):_ "the back office never passes it" (default "Franco
@@ -41,6 +46,8 @@ file is `LOCAL` — the sync never touches it — and records only how this proj
 - `variant`: `'full'` (default) | `'min'`.
 - `tone`: `'brand'` (default) | `'inherit'`.
 - `name`: the firm's (or a sub-brand's) logo text; no default — none draws nothing.
+- `src`: the firm's uploaded logo on this origin (`toStorageAssetPath`), or null. Without a `name` nothing
+  draws, picture or not.
 
 ## Do Not
 

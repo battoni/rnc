@@ -1,17 +1,29 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
 import type { PlatformFirm } from '../../interfaces';
-import { GetPlatformFirmsService } from '../../services';
+import { useFirmBrand } from '@Composables';
+import { translateError } from '@Helpers';
+import { useUserStore } from '@UserModule';
+import { PLATFORM_ERROR_KEYS } from '../../constants';
+import { GetPlatformFirmsService, StartViewAsService } from '../../services';
 
 /*
  * The platform console over the firms (rnc-4 R25), the operator's — generalised from rnc-3's brands
  * console: one row per firm with its name, its subdomain link (a new tab), its opt-in modules, when it
  * was made and its leads, the platform firm first and marked. "Novo escritório" opens the firm form;
  * the new firm joins the list at once while its password is still on screen in the dialog. Each row
- * opens the look, the modules or the manager's login; every answer replaces its row — no refetch.
+ * opens the look (with the logo, R27), the modules or the manager's login; every answer replaces its
+ * row — no refetch. "Acessar como suporte" (R26, D20) enters a firm — never the platform firm: the
+ * session is read again (`me.platform.view_as`), the brand repainted as the firm's, and the back office
+ * opens on its landing, under the banner. A refusal is named by its code beside the row.
  */
 type DialogMode = 'look' | 'manager' | 'modules' | 'new';
+
+interface ViewAsFailure {
+  response?: { data?: { error?: string } };
+}
 
 const DIALOG_TITLES: Record<DialogMode, string> = {
   look: 'platform.form.editHeading',
@@ -22,7 +34,11 @@ const DIALOG_TITLES: Record<DialogMode, string> = {
 
 const CREATED_FORMAT: Intl.DateTimeFormatOptions = { day: '2-digit', month: '2-digit', year: 'numeric' };
 
+const userStore = useUserStore();
+
+const { reload } = useFirmBrand();
 const { locale, t } = useI18n();
+const router = useRouter();
 
 const dialogMode = ref<DialogMode | null>(null);
 const dialogVisible = ref(false);
@@ -30,6 +46,8 @@ const firms = ref<PlatformFirm[]>([]);
 const hasFailed = ref(false);
 const isLoading = ref(true);
 const selectedFirm = ref<PlatformFirm | null>(null);
+const viewAsError = ref<{ firmId: number; message: string } | null>(null);
+const viewAsFirmId = ref<number | null>(null);
 
 const createdFormat = computed(() => new Intl.DateTimeFormat(locale.value, CREATED_FORMAT));
 const dialogTitle = computed(() => DIALOG_TITLES[dialogMode.value ?? 'new']);
@@ -69,6 +87,10 @@ function openDialog(mode: DialogMode, firm: PlatformFirm | null) {
   dialogVisible.value = true;
 }
 
+function replaceRow(firm: PlatformFirm) {
+  firms.value = firms.value.map((current) => (current.id === firm.id ? firm : current));
+}
+
 // EVENTS
 function onClose() {
   dialogVisible.value = false;
@@ -83,8 +105,33 @@ function onSaved(firm: PlatformFirm) {
     return;
   }
 
-  firms.value = firms.value.map((current) => (current.id === firm.id ? firm : current));
+  replaceRow(firm);
   dialogVisible.value = false;
+}
+
+// The logo is saved apart from the look: the row and the open form take the answer, the dialog stays.
+function onLogoChange(firm: PlatformFirm) {
+  replaceRow(firm);
+  selectedFirm.value = firm;
+}
+
+function onViewAs(firm: PlatformFirm) {
+  viewAsFirmId.value = firm.id;
+  viewAsError.value = null;
+
+  StartViewAsService(firm.id)
+    .then(() => userStore.fetchMe())
+    .then(() => reload())
+    .then(() => router.push({ name: 'home' }))
+    .catch((failure: ViewAsFailure) => onViewAsFailed(firm, failure))
+    .finally(() => (viewAsFirmId.value = null));
+}
+
+function onViewAsFailed(firm: PlatformFirm, failure: ViewAsFailure) {
+  const code = failure?.response?.data?.error ?? 'errors.unexpected';
+  const key = PLATFORM_ERROR_KEYS[code];
+
+  viewAsError.value = { firmId: firm.id, message: key ? t(key) : translateError(code) };
 }
 </script>
 
@@ -249,6 +296,24 @@ function onSaved(firm: PlatformFirm) {
             :label="$t('platform.firms.managerAction')"
             @click="openDialog('manager', firm)"
           />
+
+          <Button
+            v-if="!firm.is_platform"
+            data-testid="firm-view-as"
+            icon="pi pi-eye"
+            severity="secondary"
+            size="small"
+            :label="$t('platform.viewAs.action')"
+            :loading="viewAsFirmId === firm.id"
+            @click="onViewAs(firm)"
+          />
+
+          <AFormError
+            v-if="viewAsError?.firmId === firm.id"
+            class="basis-full"
+            data-testid="firm-view-as-error"
+            :error="viewAsError.message"
+          />
         </div>
       </li>
     </ul>
@@ -264,6 +329,7 @@ function onSaved(firm: PlatformFirm) {
           :key="`${dialogMode}-${selectedFirm?.id ?? 'new'}`"
           :firm="selectedFirm"
           @onClose="onClose"
+          @onLogoChange="onLogoChange"
           @onSuccess="onSaved"
         />
 

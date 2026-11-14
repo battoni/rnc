@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.9.0 — 2026-11-14
+
+### Added
+
+- `useFirmBrand` (rnc-4 F4d): `logoUrl` (the uploaded logo on this origin) and `reload()` (asks again within the page load — a view-as starting or ending changes the firm the root's session answers for).
+
 ## 1.8.0 — 2026-11-14
 
 ### Changed

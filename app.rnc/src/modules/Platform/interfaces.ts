@@ -13,6 +13,8 @@ interface PlatformFirm {
   is_platform: boolean;
   lead_count: number;
   logo_text: string | null;
+  /** The uploaded logo (F4c) as the API answers it — `APP_URL/storage/...`; null without one. */
+  logo_url: string | null;
   /** The firm's opt-in modules (`FIRM_MODULE`), in the catalogue's order; core is never listed. */
   modules: string[];
   name: string;
@@ -85,6 +87,18 @@ interface ConsentDefaultPayload {
   text: string;
 }
 
+/** `ViewAsSessionResource`: one view-as (rnc-4 R26, C18) — `end_reason` null while it is open. */
+interface ViewAsSession {
+  /** How it ended (api `ViewAsEndReason`). */
+  end_reason: 'expirou' | 'logout' | 'sair' | null;
+  ended_at: string | null;
+  firm: { id: number; name: string; slug: string } | null;
+  id: number;
+  ip_address: string | null;
+  operator: { id: number; name: string } | null;
+  started_at: string;
+}
+
 export type {
   ConsentDefault,
   ConsentDefaultPayload,
@@ -97,4 +111,5 @@ export type {
   PlatformFirmProofPoint,
   ProvisionedFirm,
   UpdateFirmLookPayload,
+  ViewAsSession,
 };

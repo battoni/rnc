@@ -1,5 +1,5 @@
 # State: Reforma hub as a white-label platform for accounting firms
-Stage: build F4c/19
+Stage: build F4d/19
 Updated: 14/11/2026
 Branch: feature/rnc-4-white-label-platform · Worktree: .claude/worktrees/rnc-4
 ## Done
@@ -471,9 +471,44 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   `create_platform_view_as_sessions` + `ViewAsSessionFactory` (worktree SQLite migrated). `AppServiceProvider` registers the listener.
   Routes: `POST/DELETE platform/firms/{id}/logo`, `POST platform/firms/{id}/view-as`, `DELETE platform/view-as`,
   `GET platform/view-as-log`. Spec: C18 (W86).
+- **F4d Logo and view-as — SPA** (A43; R26, R27; AM10 local half) · 14/11 · Vitest full 1512 (`--maxWorkers=2`; +35: `MFirmLogoField` 6,
+  `OViewAsBanner` 3, `ViewAsLogView` 3, `storageAsset.helper` 7, `viteProxy` 3, `ThePublicLayout.logo` 1, `FirmsView` +3, `ALogo` +4,
+  `useFirmBrand` +2, `MFirmLogo` +1, `MNavbarBrand` +1, `HomeView` +1; `navItems.local.spec` 2 cases extended), all green · Playwright
+  `e2e/platform/view-as.spec.ts` 3 (new) + `e2e/platform`, `navigation`, `brand`, `site/brands`, `tenancy` = 61, all green, view-as stable over
+  3 runs with `--retries=0` · Pest not run (no PHP touched; only the api Platform RULES/CHANGELOG) · `make check-app` (aliases 35,
+  vue-tsc), `make check-api` (Pint, PHPStan), `sync-mirror-check`, `sanitize` (lint, format, sort-locales) green; vue and design reviews
+  inline (fixed: the log's "Endereço: <ip>" built from two strings → one key with `{ip}`; a failed "Sair" now says so with a toast instead
+  of re-reading the session silently). Phase gate 14/11/2026 — NOT the full `/battoni-pre-commit`: skipped the full Playwright suite
+  (D30; only this phase's e2e file plus the five related folders), the full Pest suite (no PHP change), `check-portal` (no portal) and
+  `check-cortex` (skipped by design here); arcus review not run (no PHP touched).
+  Red first: `e2e/platform/view-as.spec.ts` was written before the components and failed 3/3 (no logo image, no `firm-view-as`); the Vitest
+  files failed 13 cases + 4 files on import before the code. Mutations seen red: the field's type check off (the SVG was previewed),
+  the banner's brand reload dropped ("Sair" left Alvorada's brand). First green run of the e2e file inside the related folders was red 3/3
+  once (the run's web server refused connections at start — `ECONNREFUSED`), green on the rerun and 3×3 alone: a server start race, not the spec.
+  Live (worktree API on 8001 behind `VITE_API_PROXY_TARGET`, Vite on 5173, headless Chromium, `php artisan storage:link` run, W94): `battoni`
+  via QA login-as at the root lands on `/plataforma/escritorios`; an SVG refused before sending ("Use uma imagem PNG, JPEG ou WebP…"); a
+  240×80 PNG for Alvorada → 200, `logo_url` `http://localhost:8000/storage/firms/3/logo-<40>.png`, the console shows it from
+  `/storage/...` (loaded); `alvorada.localhost:5173` header shows it (loaded 240×80; `GET /storage/...` on that host 200 image/png).
+  "Acessar como suporte" → 201, lands on `/painel` with the banner "Você está acessando Alvorada Contabilidade como operador da plataforma ·
+  Sair", the rail "Alvorada Contabilidade"; `GET leads` = Alvorada's board (7 columns, 40 leads); `auth/me` `view_as` alvorada; root
+  `public/firm` alvorada; banner kept after a reload on `/plataforma/acessos`, in view at 390 with no horizontal scroll. "Sair" → 200
+  `sair`, back on the console, banner gone, rail "Hub da Reforma"; log row alvorada/sair/127.0.0.1 and 3 rows on the screen; a second
+  view-as then `auth/logout` → 200, audit row `logout` (earlier rows `expirou` from the script's re-sign-ins, W87). Servers stopped,
+  uploaded file deleted, `make fresh-seed` after.
+  What changed: app.rnc Platform (1.1.0) — `MFirmLogoField` (in `MAddEditFirmForm`'s look mode, `onLogoChange`), `OViewAsBanner`,
+  `ViewAsLogView` (`/plataforma/acessos` + `/platform/view-as-log`, `platform.firms`), five services (`UploadFirmLogo`, `RemoveFirmLogo`,
+  `StartViewAs`, `StopViewAs`, `GetViewAsLog`), `PlatformFirm.logo_url`, `ViewAsSession`, `PLATFORM_LOGO_TYPES`/`_MAX_BYTES`, error keys
+  `platform.logo*`/`viewAs*`, "Acessar como suporte" on every row but the platform firm's (`FirmsView`); Known Gap "no logo/view-as" retired,
+  "opt-in modules hidden from the rail during view-as" added (W93). ALogo (3.1.0) `src` with text fallback; MFirmLogo (1.1.0),
+  MNavbarBrand (1.1.0), `ThePublicLayout` pass the logo; `useFirmBrand` (composables 1.9.0) `logoUrl` + `reload()`; helpers (1.17.0)
+  `toStorageAssetPath`; `TheLocalOverlays.local.vue` mounts the banner; Home (3.8.0, view 1.3.0) keeps the operator in view-as; TheNavbar
+  (1.12.0) "Acessos de suporte" under "Plataforma"; locales (1.18.0); e2e (1.22.0); config (1.7.0) `vite.config.ts` proxies `/storage`
+  beside `/api` (local, test mode, preview). api Platform (1.1.1) RULES: Known Gap "`/storage` is outside `/api`" retired with its reason
+  (F7's runbook keeps the production vhost, AM10). Spec: no C# (W89–W94 stay inside R26, R27).
 ## Next
-1. `/battoni-start-session rnc-4` (or the running `/battoni-run rnc-4`) → **F4d** Logo and view-as — SPA (A43; R26, R27). Read plan.md → F4d
-   and the F4c Done line above (routes, error keys `platform.logo*` / `platform.viewAs*`, `me.platform.view_as`, `logo_url`).
+1. `/battoni-start-session rnc-4` (or the running `/battoni-run rnc-4`) → **F7** Deploy readiness — no deploy (A44–A46; R34–R37). Read
+   plan.md → F7 and AM10 (the runbook's vhost serves `/storage` per host — the SPA already asks `/storage/...` on its own host, F4d), plus
+   the Platform Known Gap on trusted proxies (the audit IP).
 ## Pitfalls
 - (F1a) `UserFactory` now puts every user in the default firm (`franco` under phpunit), creating it
   when absent. A test that creates `Firm::factory(['slug' => 'franco'])` AFTER a user would collide
@@ -622,6 +657,14 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   start/stop — `POST` answers the session, not the user. Any sign-in of the operator (another browser too) closes it as `expirou`.
 - (F4c) A test that logs in as an operator now fires `CloseViewAsOnSignIn`; a test building a view-as row by hand before a login
   will see it closed.
+- (F4d) The SPA shows a logo from `/storage/...` on its OWN host (`toStorageAssetPath`); Vite proxies `/storage` to
+  `VITE_API_PROXY_TARGET`. Without `php artisan storage:link` in api.rnc the image 404s and `ALogo` falls back to the text mark — no error.
+- (F4d) A live script that opens the back office must set `localStorage['app.rnc:session-hint'] = '1'` (or sign in through the form):
+  without the hint the SPA never asks `auth/me` and the QA login-as lands on `/entrar`.
+- (F4d) jsdom's `File` does not survive undici's `request.formData()` in an MSW handler (assertion error, the request fails): read the
+  multipart body with `request.text()` — the file arrives named `blob`, so assert the field name and the type.
+- (F4d) `useFirmBrand` and `usePublicFirm` keep their answer per page load (module state): a Vitest case after another firm reads the kept
+  one — a layout spec that needs a different firm goes in its own file (`ThePublicLayout.logo.spec.ts`), or the composable is `reload()`ed.
 ## QA
 (none yet — rounds in plan.md → QA)
 ## Seeded people (password `seeding.password`; `battoni` uses `seeding.superadmin_password`)
@@ -642,6 +685,8 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   F1a wrote them to `.env.example` AND to this worktree's `api.rnc/.env` (gitignored; AM4). The
   worktree's SQLite was rebuilt (`migrate:fresh --seed`): firms franco, hub (platform), alvorada.
 - Mail goes to `api.rnc/storage/logs/laravel.log` (`MAIL_MAILER=log`).
+- A firm's logo needs `php artisan storage:link` in `api.rnc` (done in this worktree, F4d; `public/storage` is gitignored): the SPA asks
+  `/storage/...` on the firm's host and Vite proxies it beside `/api` to the same target.
 ## Away run
 Stop at: draft PR after verify · Reviewer: fable-reviewer (#fable session) · Chrome QA: on
 Started: 2026-11-13 23:58
@@ -679,6 +724,8 @@ F5a done
 F5b done
 12:32 F4c started, attempt 1
 F4c done
+12:51 F4d started, attempt 1
+F4d done
 ## Decided while you were away
 - W1 plan: proposal.html skipped in away mode (spec D27; to reverse: `/battoni-new-proposal rnc-4 final`).
 - W2 plan: the owner's phases are split into 17 builder phases with his labels kept (spec D28); his
@@ -938,3 +985,22 @@ F4c done
 - W88 F4c: the session holds the audit row's id, not the firm's, and `ViewAsFirm` (Firm) delegates to Platform's `ViewAsService::current`
   (memoised per request) — closing the row ends the view-as wherever the session lives, and a leaked key points at a row that is not
   the holder's. The logo writer is Firm's `FirmLogoService` (Platform writes no firm). To reverse: store the firm id in the session.
+- W89 F4d: the F4c gap "proxy `/storage` or show the 8000 URL" took the proxy: Vite proxies `/storage` beside `/api` to the same target
+  (local, test mode, preview) and the SPA rewrites `logo_url` to a path on its own host (`toStorageAssetPath`), so the logo loads on every
+  firm host and in production through the vhost (AM10). The API keeps answering `APP_URL/storage/...`. To reverse: drop the rewrite and
+  show the API's URL as it comes.
+- W90 F4d: the logo is saved on its own button ("Enviar logo") inside the look dialog, not with the look's "Salvar" — the upload is a
+  multipart call to its own route and its answer replaces the row without closing the dialog or losing unsaved look fields. A "Remover
+  logo" uses F4c's `DELETE`. The SPA refuses non-PNG/JPEG/WebP and > 512 KB before sending; the 1024 px sides stay the API's. To reverse:
+  send the file with "Salvar".
+- W91 F4d: the banner is mounted by `TheLocalOverlays.local.vue` (TheLayout's LOCAL slot) and placed in flow at the top of the content
+  column (`order-first`), not `position: fixed` — it never covers a row and needs no sync edit of `TheLayout`. "Acessar como suporte" lands
+  on Home (which no longer bounces the operator to the console while `view_as` is set); "Sair" returns to the console; both read `auth/me`
+  and reload the host brand, so the back office wears the viewed firm's palette and logo. To reverse: a fixed bar and stay on the console.
+- W92 F4d: the view-as log screen is `/plataforma/acessos` (+ `/platform/view-as-log`) on `platform.firms` (the API's key, W84), with a rail
+  entry "Acessos de suporte" under "Plataforma", 25 a page. To reverse: a tab on the firms screen.
+- W93 F4d: during a view-as the rail offers only the viewed firm's core screens — `auth/me` keeps `firm` null for the operator and `view_as`
+  carries slug and name only, so `hasModule` answers none. Left as a Known Gap in app Platform `RULES.md` (the fix is an API field,
+  `view_as.modules`, outside an SPA phase). To reverse: add `modules` to `view_as` in Auth's `UserResource` and read it in `hasModule`.
+- W94 F4d: the live check ran in headless Chromium (Playwright, a scratch script) against the worktree API on 8001 behind Vite on 5173,
+  signing in by QA login-as with the session hint set; the Chrome rounds (QA round 5) stay verify's (as W56). To reverse: n/a.

@@ -61,4 +61,17 @@ describe('MFirmLogo', () => {
 
     expect((await mountLogo()).text()).toBe('');
   });
+
+  // rnc-4 R27, A43: the host firm's uploaded logo, asked on the page's own origin (`/storage` proxied).
+  it("shows the host firm's uploaded logo", async () => {
+    server.use(
+      http.get('http://localhost/public/firm', () =>
+        HttpResponse.json({ data: { ...ALVORADA, logo_url: 'http://localhost:8000/storage/firms/3/logo.png' } })
+      )
+    );
+
+    const image = (await mountLogo()).find('img[data-testid="logo-image"]');
+
+    expect(image.attributes('src')).toBe('/storage/firms/3/logo.png');
+  });
 });
