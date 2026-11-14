@@ -216,10 +216,12 @@ const WORKSPACE_CHILDREN: Record<string, LocalNavItem[] | undefined> = {
       routeName: FIRM_SETTINGS_ROUTE_NAMES.consent,
     },
   ],
+  // The group itself asks the operator's role (`WORKSPACES`, Chrome QA 5.2), and holds the users and roles screens
+  // alone: TheNavbar's footer no longer repeats them.
   operator: [
     { icon: 'pi pi-users', label: 'navigation.users', permission: 'users.read', routeName: 'users' },
-    // The operator's role as well as the key (rnc-4 verify): this group opens on `users.read`, which the firm
-    // manager holds, and role writes are the operator's alone on the API (403 `platform.operatorOnly`).
+    // The operator's role as well as the key (rnc-4 verify): role writes are the operator's alone on the API
+    // (403 `platform.operatorOnly`).
     {
       icon: 'pi pi-key',
       label: 'navigation.roles',
@@ -335,6 +337,7 @@ function useLocalNavItems(): ComputedRef<NavItem[]> {
           icon: workspace.icon,
           label: `navigation.${workspace.key}`,
           permission: workspace.permission,
+          role: workspace.role,
           routeName: workspace.routeName,
         })),
         PORTAL_ENTRY,

@@ -63,7 +63,8 @@ describe('useLocalNavItems', () => {
     expect(items.map((item) => [item.label, item.routeName, item.permission, item.role])).toEqual([
       ['navigation.team', 'team-home', 'leads.read', undefined],
       ['navigation.management', 'management-home', 'metrics.read', undefined],
-      ['navigation.operator', 'operator-home', 'users.read', undefined],
+      // Chrome QA 5.2: the operator's group on its role too — the firm manager holds `users.read` (F5a).
+      ['navigation.operator', 'operator-home', 'users.read', 'operador'],
       // rnc-2 A4: the portal for a partner's login only — the key AND the role, so the operator,
       // who holds every key, never sees it, and a partner holds none of the three groups' keys.
       ['navigation.portal', 'portal', 'portal.access', 'parceiro'],
@@ -118,6 +119,27 @@ describe('useLocalNavItems', () => {
     expect(ROUTES.filter((route) => route.name).map((route) => route.meta)).toEqual([
       { permission: 'permissions.read', role: 'operador' },
       { permission: 'permissions.read', role: 'operador' },
+    ]);
+  });
+
+  /*
+   * Chrome QA 5.2: a manager (`gestao`) saw the operator's group, and the operator saw its users and roles twice —
+   * in the group and in the rail's footer. The group is the one place, on the operator's role, and its landing and
+   * the users screen are closed to anyone else by the same role (`attachAuthGuard`, `meta.role`); the manager runs
+   * its team at /gestao/equipe (F5b).
+   */
+  it("closes the operator's landing and the users screen to the operator's role, as the rail does", async () => {
+    const { default: USERS } = await import('@/modules/User/views/Users/routes');
+    const { default: WORKSPACE_ROUTES } = await import('@/modules/Home/views/Workspace/routes');
+    const operatorHome = WORKSPACE_ROUTES.filter((route) => String(route.name).startsWith('operator-home'));
+
+    expect(USERS.filter((route) => route.name).map((route) => route.meta)).toEqual([
+      { permission: 'users.read', role: 'operador' },
+      { permission: 'users.read', role: 'operador' },
+    ]);
+    expect(operatorHome.map((route) => route.meta)).toEqual([
+      { permission: 'users.read', role: 'operador', workspace: 'operator' },
+      { permission: 'users.read', role: 'operador', workspace: 'operator' },
     ]);
   });
 

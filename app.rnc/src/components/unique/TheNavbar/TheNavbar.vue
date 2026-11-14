@@ -43,16 +43,13 @@ const MOBILE_ROUTE_NAMES = ['home', 'users', 'team-home', 'management-home', 'op
 /** The core entries; the local layer's own are appended and may be store-backed. */
 const CORE_NAV_ITEMS: NavItem[] = [{ icon: 'pi pi-home', label: 'navigation.home', routeName: 'home' }];
 
-const settings = ref<NavItem[]>([
-  // Both carried no gate at all, so every account saw the admin surface — the filter below
-  // only ever hid what declared a cost, and these two declared none. The API has enforced
-  // `users.read` on those routes the whole time, so the navigation was offering a link it knew
-  // would be refused. Two children found this independently: lifeshifter fixed it here, chapaja
-  // in a QA pass after a non-staff profile shipped.
-  { icon: 'pi pi-users', label: 'navigation.users', permission: 'users.read', routeName: 'users' },
-  { icon: 'pi pi-key', label: 'navigation.roles', permission: 'permissions.read', routeName: 'roles-and-permissions' },
-  ...localNavSettings,
-]);
+/*
+ * The footer is the local layer's (`localNavSettings`) — personalization is its own link below.
+ * Retired (rnc-4, Chrome QA 5.2): the core "Usuários" and "Permissões" entries. The hub's rail declares
+ * them in the operator's group (`navItems.local`, on the operator's role), so the operator saw both twice,
+ * and a firm manager — who holds `users.read` for its team's logins — saw "Usuários" here.
+ */
+const settings = ref<NavItem[]>([...localNavSettings]);
 
 const drawerClass = computed(() => (isMobileView.value ? 'nav-drawer-mobile' : 'w-54'));
 const drawerPosition = computed(() => (isMobileView.value ? 'full' : 'left'));

@@ -1,5 +1,5 @@
 ---
-version: 1.14.0
+version: 1.15.0
 origin: pendulum
 based-on: 1.6.3
 ---
@@ -50,8 +50,14 @@ No props or emits — this is a unique layout component.
 - **`LogoutService`** from `@AuthModule`: called on logout. Success and HTTP 401 both run `completeLogout` (clear user, `resetAllStores`, login path, success toast) — a 401 means the server already has no session. Other failures show an error toast.
 - **`::deep(.nav-drawer-mobile)`** in this component's `<style scoped>` forces `height: 100vh` on the mobile drawer — this CSS targets `ONavbarDrawer`'s Drawer root through the scoped boundary.
 
-- **The roles link in the operator's group names the role `operador`** (rnc-4 verify): that group opens on
-  `users.read`, which the firm manager holds (F5a), and role writes are the operator's alone on the API.
+- **The roles link in the operator's group names the role `operador`** (rnc-4 verify): role writes are the
+  operator's alone on the API.
+- **The Operador group is the operator's alone and the one place for the users and roles screens** (Chrome QA
+  5.2): the group asks `role: 'operador'` besides `users.read` (`WORKSPACES`), because the firm manager holds
+  `users.read` for its team (F5a) and runs it at /gestao/equipe. Personalization stays everyone's (this browser's
+  own preferences). Franco's manager reaches "Canal RNC" under Gestão.
+- _Retired 14/11/2026 (Chrome QA 5.2):_ the footer's core "Usuários" and "Permissões" entries — they repeated the
+  Operador group for the operator and showed "Usuários" to a firm manager. The footer is `localNavSettings`.
 
 ## Do Not
 

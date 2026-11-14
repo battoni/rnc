@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 3.9.0 — 2026-11-14
+
+### Changed
+
+- Chrome QA 5.2: the operator's workspace asks `role: 'operador'` besides `users.read` (`Workspace.role`, `visibleWorkspaces(hasPermission, roleSlug)`), and so does its landing route (`meta.role`) — the firm manager holds `users.read` since rnc-4 F5a and saw the Operador group and card.
+
 ## 3.8.0 — 2026-11-14
 
 ### Changed

@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.15.0 — 2026-11-14
+
+### Changed
+
+- Chrome QA 5.2: the footer no longer carries the core "Usuários" and "Permissões" — the operator saw them twice (footer and the Operador group) and a firm manager, who holds `users.read`, saw "Usuários"; the footer is `localNavSettings` plus personalization. The Operador group asks the operator's role (`WORKSPACES`).
+
 ## 1.14.0 — 2026-11-14
 
 ### Fixed

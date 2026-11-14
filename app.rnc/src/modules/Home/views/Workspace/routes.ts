@@ -30,13 +30,13 @@ const WorkspaceRoutes: RouteRecordRaw[] = [
   {
     path: '/operator',
     name: 'operator-home-en',
-    meta: { permission: 'users.read', workspace: 'operator' },
+    meta: { permission: 'users.read', role: 'operador', workspace: 'operator' },
     component: WORKSPACE_VIEW,
   },
   {
     path: '/operador',
     name: 'operator-home-pt-BR',
-    meta: { permission: 'users.read', workspace: 'operator' },
+    meta: { permission: 'users.read', role: 'operador', workspace: 'operator' },
     component: WORKSPACE_VIEW,
   },
 ];

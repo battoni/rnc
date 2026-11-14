@@ -1,5 +1,5 @@
 ---
-version: 3.8.0
+version: 3.9.0
 origin: pendulum
 based-on: 2.0.0
 ---
@@ -23,7 +23,9 @@ opens: Equipe (`team-home`), Reinaldo (`management-home`) and Operador (`operato
 - **`/gestao` falls back to the metrics without `briefing`** (rnc-4 F3c): the redirect routes carry `meta.moduleFallback`, which `attachAuthGuard` reads from `redirectedFrom` when the briefing's module is off — by path, Home still imports nothing from Metrics or Briefing.
 - **`WORKSPACES` is the role table read through permissions** (plan AM8): `leads.read` opens Equipe,
   `metrics.read` Reinaldo, `users.read` Operador. The rail (`TheNavbar/navItems.local.ts`), the cards
-  on `HomeView` and the routes' `meta.permission` all read the same keys. Never gate on a role slug.
+  on `HomeView` and the routes' `meta.permission` all read the same keys. Gate on a role slug only where
+  a key is shared beyond its audience: the operator's workspace also asks `role: 'operador'` (route
+  `meta.role`), because the firm manager holds `users.read` for its team since rnc-4 F5a (Chrome QA 5.2).
 - **`home` left `/` to the public site** (AM15) and keeps its literal name — the guards and the login
   screens push `{ name: 'home' }`. It carries no `meta.permission` on purpose: a refused navigation
   is redirected to `home`, so a key on it would loop.

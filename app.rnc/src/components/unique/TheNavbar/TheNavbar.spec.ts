@@ -314,16 +314,18 @@ describe('TheNavbar — permissions and roles', () => {
     expect(wrapper.findComponent(desktopStub).props('settingsWithRoutes')).toEqual([]);
   });
 
-  it('gates the admin settings behind their permission', async () => {
+  /*
+   * Chrome QA 5.2: the users and roles screens are the operator's group's (`navItems.local`, on the operator's role);
+   * the footer kept its own copy, so the operator saw both twice and a firm manager — who holds `users.read` for
+   * its team (rnc-4 F5a) — saw "Usuários" there. The footer is the local layer's and personalization's alone.
+   */
+  it('keeps the admin screens out of the footer, even for an account holding their keys', async () => {
     const { userStore, wrapper } = mountNavbar();
 
-    userStore.setUserAndPermissions(PLAIN_USER as never, ['users.read']);
+    userStore.setUserAndPermissions(SUPERADMIN as never, ['users.read', 'permissions.read']);
     await wrapper.vm.$nextTick();
 
-    const labels = labelsOf(wrapper.findComponent(desktopStub).props('settingsWithRoutes'));
-
-    expect(labels).toContain('navigation.users');
-    expect(labels).not.toContain('navigation.roles');
+    expect(wrapper.findComponent(desktopStub).props('settingsWithRoutes')).toEqual([]);
   });
 
   it('resolves the localized path for every item but home', async () => {
