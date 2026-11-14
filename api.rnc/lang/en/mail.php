@@ -79,6 +79,7 @@ return [
     'briefing' => [
         'subject' => 'Daily briefing · :day',
         'preheader' => ':leads new leads in 7 days · :meetings meetings in the next 5 business days · :referrals referrals awaiting contact.',
+        'preheader_no_referrals' => ':leads new leads in 7 days · :meetings meetings in the next 5 business days.',
         'heading' => 'Daily briefing',
         'greeting' => 'Good morning, :name',
         'lede' => 'Briefing for :day: what came in, what is booked and what needs you.',

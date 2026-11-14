@@ -1,5 +1,5 @@
 # State: Reforma hub as a white-label platform for accounting firms
-Stage: build F2c2/19
+Stage: build F3a/19
 Updated: 14/11/2026
 Branch: feature/rnc-4-white-label-platform · Worktree: .claude/worktrees/rnc-4
 ## Done
@@ -135,9 +135,45 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   MFirmLogo 1.0.0, composables, locales, Site, Repricing, Auth layouts/Terms/ForgotPassword, NotFound,
   FirmNotFound, e2e, database.
   Known gap recorded (Site RULES): the footer's credentials line is Franco's certifications.
+- **F3a Modules per firm — API with degrade** (A17–A21; R16–R20) · 14/11 · full Pest 1985 (+47:
+  `Unit/Modules/Firm/FirmModulesServiceTest` 13, `Firm/ModuleGateTest` 16, `Firm/ModuleCommandsTest` 4,
+  `Briefing/BriefingDegradeTest` 4, `Portfolio/ContractDegradeTest` 3, `Radar/RadarDegradeTest` 4,
+  `Auth/MeFirmTest` 3), all green · full Vitest 1345 (`--maxWorkers=2`; no app.rnc change) · Playwright
+  not run (no app.rnc change, no e2e file added or edited — phase gate) · Pint, PHPStan, aliases,
+  vue-tsc, ESLint, Prettier, sort-locales, mirror check, `wt-test` green; check-portal and check-cortex
+  skip themselves here · arcus review inline (unit versions bumped, `based-on` with them on the
+  rnc-origin units; nothing else to fix) · pre-commit green 14/11/2026 without the full Playwright
+  suite. `make fresh-seed` clean: franco every key, alvorada every opt-in but `brands`, hub none.
+  Red first: 41 of the 47 failed before the code (the six "while it is on" sanity cases passed).
+  Mutations seen red (14, one per rule): `GET partners` ungated, `briefing:send` and
+  `assistant:notify-expiring` walking every firm, the briefing's referrals and Radar action read
+  regardless, the dependency check and the operator check on `channel` removed, the contract alert's
+  referral fields kept, the Radar reading XMLs without `fiscal` and partners without `partners`, the
+  chat start allowed, `X-Brand` read with `brands` off, `auth/me` without `firm`, the e-mail's
+  referral block unguarded.
+  What changed: Firm — `Helpers/FirmModules` (`CORE`, `OPT_IN`, `OPERATOR_ONLY`, `ALL`, `DEPENDENCIES`,
+  `DISABLED`), `Services/FirmModulesService` (only writer; unknown 422, dependency 422, `channel` 403 for
+  a non-operator), `CurrentFirm::hasModule()` / `forEachFirmWithModule()`,
+  `FirmRepository::updateFirmModules()`, `Resources/FirmSummaryResource`; `app/Http/Middleware/
+  EnsureModuleEnabled` (alias `module`, 404 `modules.disabled`, last on the route) on 60 routes of
+  `api.local.php` (partners, portal, ledger, referrals, lead partner-matches/referrals → `partners`;
+  repricing, client import, client timeline → `portfolio`; `fiscal`, `radar`, `contracts`, `assistant`,
+  `briefing`, `brands`, `channel`; the Radar batch and the contracts' legal referral need `partners`
+  too); `ResolveCurrentBrand` knows no sub-brand with `brands` off (C12); the diagnostic's chat start
+  422 `modules.disabled` without `chat`. Degrade: `BriefingService` (`referrals` null, no fee range,
+  no SLA/Radar action — C11), the briefing e-mail (no referral block, `preheader_no_referrals`),
+  `RadarService` (no XML evidence nor key without `fiscal`, empty partner pickers without `partners`),
+  `ContractService`/`ContractAlertResource` (no referral field without `partners`); `briefing:send`,
+  `assistant:notify-expiring` skip firms without the module. `auth/me` + `firm` (null firm-less) and
+  `platform: {name, is_operator, view_as}`. Seeds: `FirmSeeder` every key, `DemoFirmSeeder` D18's set,
+  `PlatformFirmSeeder` none; `FirmFactory` every key (W32). Units bumped: Firm 1.6.0, Auth 2.12.0,
+  Briefing 1.5.0, Radar 1.3.0, Portfolio 1.6.0, Diagnostic 1.3.0, Assistant 1.2.0, database 1.25.0,
+  mail views 1.3.0. Known gap (Firm RULES): the SPA enforces nothing until F3c — the root's chat is
+  refused on `hub`, which has no `chat`.
 ## Next
-1. `/battoni-start-session rnc-4` (or the running `/battoni-run rnc-4`) → **F3a** Modules per firm — API
-   with degrade (A17–A21).
+1. `/battoni-start-session rnc-4` (or the running `/battoni-run rnc-4`) → **F3b1** `FirmProvisioner` +
+   `firm:create` (A22) — writes the new firm's modules through `FirmModulesService::set` (core +
+   `briefing`, D17).
 ## Pitfalls
 - (F1a) `UserFactory` now puts every user in the default firm (`franco` under phpunit), creating it
   when absent. A test that creates `Firm::factory(['slug' => 'franco'])` AFTER a user would collide
@@ -198,6 +234,17 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
 - (F2c2) `src/test/noTenantNames.spec.ts` and `tests/Arch/NoTenantNamesTest.php` fail on any
   Franco/Reinaldo/Willy/APW outside comments, specs and `test/` folders, and on "RNC" outside the
   Channel module (locales: outside a `channel` key).
+- (F3a) `FirmFactory` gives a firm EVERY module (`channel`, `brands` included); the model's default is
+  none. A test about a module being off sets `modules` itself (`forceFill(['modules' => …])->save()`),
+  and a firm built with `new Firm` or `Firm::create` has none.
+- (F3a) The platform firm `hub` is seeded with no module: a firm-less operator (from F4a) or any root
+  visitor gets 404 `modules.disabled` on every opt-in route, and the root's chat start 422 — expected,
+  not a bug, until F3c hides them.
+- (F3a) `module:<key>` is the LAST middleware on a route: a guest still gets 401 and a wrong role 403
+  before the module's 404. A new opt-in route appends `->middleware('module:<key>')`, and
+  `routes/api.local.php`'s header says which key.
+- (F3a) Writing `firms.modules` goes through `FirmModulesService::set($firm, $all, $actor)` — the WHOLE
+  opt-in list, not a delta; core keys are dropped, `channel` changes need the operator.
 ## QA
 (none yet — rounds in plan.md → QA)
 ## Seeded people (password `seeding.password`; `battoni` uses `seeding.superadmin_password`)
@@ -233,6 +280,8 @@ F2b done
 F2c1 done
 04:32 F2c2 started, attempt 1
 F2c2 done
+08:15 F3a started, attempt 1
+F3a done
 ## Decided while you were away
 - W1 plan: proposal.html skipped in away mode (spec D27; to reverse: `/battoni-new-proposal rnc-4 final`).
 - W2 plan: the owner's phases are split into 17 builder phases with his labels kept (spec D28); his
@@ -315,3 +364,22 @@ F2c2 done
   `updateOrCreate` on name/description.
 - W31 F2c2: the footer's credentials line (Franco's certifications) stays static copy — it names no
   tenant; recorded as a Site Known Gap for the console phases. To reverse: a firm field now.
+- W32 F3a: `FirmFactory` defaults `modules` to every key (the model's default stays none) — with an
+  empty default every existing test of a gated route would have needed its firm's modules set.
+  To reverse: drop the factory default and give each test its modules.
+- W33 F3a: the plan's `FirmModules::FRANCO_ONLY` is `OPERATOR_ONLY` — the names guard (F2c2) refuses a
+  tenant's name in `app/`, and R18 frames `channel` as the operator's to set. To reverse: rename.
+- W34 F3a: `auth/me`'s `firm.modules` lists the opt-in keys only (core is always on, never listed); the
+  brand summary is flat (`short_name`, `logo_text`, `logo_url`, `brand_primary`, `brand_accent`,
+  `is_platform`, like `public/firm`); `view_as` is `{slug, name}` or null. A19 is proven on
+  `FirmModulesService` (unit) — no route writes modules before F4a's console. To reverse: list core too.
+- W35 F3a: without `portfolio` the briefing keeps its pipeline counts and nulls only the fee ranges;
+  `contracts` has no briefing action to drop (spec C11). To reverse: `pipeline: null`.
+- W36 F3a: a gated route answers 404 `modules.disabled` (not a bare 404) and the module check runs
+  after `auth` and the key. To reverse: put `module:` first, or answer `notFound` with no key.
+- W37 F3a: with `brands` off every `X-Brand` is unknown (404 `brands.notFound`; the beacon falls back)
+  (spec C12). To reverse: ignore the header.
+- W38 F3a: the client timeline (`clients/{id}/events`, under `fiscal.read`) and the lead detail's
+  partner matches and referral are gated by their owner — `portfolio` and `partners` — not by the screen
+  that calls them; F3c must stop the lead detail asking for matches without `partners`. To reverse:
+  `module:fiscal` on the timeline, leave the lead routes ungated.

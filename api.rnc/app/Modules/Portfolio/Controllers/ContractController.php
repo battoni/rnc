@@ -38,7 +38,10 @@ class ContractController extends Controller
 
         return ApiResponse::success(data: [
             'summary' => $alert['summary'],
-            'contracts' => $alert['contracts']->map(fn ($contract) => new ContractAlertResource($contract, $alert['referred_to'][$contract->id] ?? [])),
+            'contracts' => $alert['contracts']->map(fn ($contract) => new ContractAlertResource(
+                $contract,
+                $alert['referred_to'] === null ? null : $alert['referred_to'][$contract->id] ?? [],
+            )),
         ]);
     }
 

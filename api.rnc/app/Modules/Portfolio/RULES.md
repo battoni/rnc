@@ -1,7 +1,7 @@
 ---
-version: 1.5.1
+version: 1.6.0
 origin: rnc
-based-on: 1.5.0
+based-on: 1.6.0
 ---
 # RULES — Portfolio Module
 
@@ -33,6 +33,12 @@ that cross the 2027–2033 transition without a Reforma price clause, by exposur
 | `POST contracts/import` | `contracts.manage` | multipart `file` (≤ 2 MB, `.csv`/`.txt`, ≤ 5000 lines; 10 a minute, `contracts-import`) → 200 `{created, updated, total, errors: [{line, field, code}], total_errors}`; 422 with `code` for a file refused whole |
 | `GET contracts/template` | `contracts.manage` | `modelo-contratos.csv`: a BOM and the header row |
 | `POST contracts/{id}/clause` | `contracts.manage` | "Cláusula incluída" → `{id, has_reforma_clause, clause_marked_at, clause_marked_by}`; 404 `portfolio.contractNotFound` for another firm's or an unknown contract |
+
+- **Modules (rnc-4 F3a, R17, R19):** repricing, the client import and the client timeline are
+  `module:portfolio`; the contract alert is `module:contracts`, and its legal picker and referral
+  `module:contracts,partners`. Without `partners` the alert answers no referral field — no client
+  consent, no `referred_to`, no `summary.referred` — and the referrals' query is not run. Tested by
+  `ContractDegradeTest`.
 
 ## Intentional Decisions
 

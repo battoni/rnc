@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Modules\Firm\Helpers\FirmModules;
 use App\Modules\Firm\Models\Firm;
 use App\Modules\Lead\Services\ConsentTextService;
 use Illuminate\Database\Seeder;
@@ -38,6 +39,8 @@ class FirmSeeder extends Seeder
                 'logo_text' => 'Franco Contabilidade',
                 'short_name' => 'Franco',
                 'proof' => self::PROOF,
+                // Every module, `channel` and `brands` included: the network's channel and Express/Prime are its (rnc-4 R16).
+                'modules' => FirmModules::ALL,
                 'brand_primary' => '#00375a',
                 'brand_accent' => '#14c3ff',
                 'address' => 'Av. Corifeu de Azevedo Marques, 2333, 1º e 2º andares, Butantã, São Paulo-SP',

@@ -1,5 +1,5 @@
 ---
-version: 1.24.0
+version: 1.25.0
 origin: pendulum
 based-on: 1.6.0
 ---
@@ -54,6 +54,9 @@ based-on: 1.6.0
   NF-e XML; `GeneratedNfeSource`): one shape for a seeded document and a tested one. Hostile fixtures
   (entity attacks, forged ZIPs) stay in `tests/Support/`.
 
+- **Modules (rnc-4 F3a, R16, D18, R23):** `FirmSeeder` gives Franco every key (`channel`, `brands`
+  included), `DemoFirmSeeder` Alvorada every opt-in key but `brands`, `PlatformFirmSeeder` none.
+
 ## Factories
 
 - `UserFactory` makes an **ACTIVE** user with no role (`role_id => null`); a test grants what
@@ -68,6 +71,9 @@ based-on: 1.6.0
 - The factory password is the plaintext `SEEDER_PWD` (`password` in `phpunit.xml`), so a test
   knows the password it can log in with.
 - Use `fake()->unique()` for `username`/`email` to satisfy the unique constraints.
+
+- **`FirmFactory` defaults `modules` to every key** (rnc-4 F3a): the suite's implicit firm keeps every
+  route it had before modules existed; a test about a module that is off sets `modules` itself.
 
 ## Migrations
 

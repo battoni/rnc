@@ -425,3 +425,11 @@ the deploy; a per-action audit trail inside view-as; firm self-signup without th
 - C10 (F2c2, W28) The landing's proof strip is the firm's (or the sub-brand's) `proof` only; a firm with
   no `proof` shows no strip — the build's four were Franco's, "RNC" among them. Franco's seeded `proof`
   (F2a) keeps its landing as it was. Reverse: a generic four in i18n as the fallback.
+- C11 (F3a, W35) R19's "fee bands ← portfolio" → without `portfolio` the briefing keeps its pipeline
+  section (the counts are the core pipeline's) and answers its `range_cents`, overall and per stage,
+  null — the shape an empty portfolio already had ("sem base na carteira"); `referrals` is the one
+  section that becomes null (partners). A25's "portfolio section null" reads as that range. Reverse:
+  `pipeline: null` without `portfolio`.
+- C12 (F3a, W37) R17's "public routes included" reaches the sub-brand header: with `brands` off no
+  `X-Brand` names a sub-brand — 404 `brands.notFound` like a typo, the events beacon falls back to the
+  main brand (rnc-3 AM21). Reverse: ignore the header silently.

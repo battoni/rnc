@@ -1,7 +1,10 @@
 @extends('mail.layout')
 
 @section('title', __('mail.briefing.subject', ['day' => $briefing->day()]))
-@section('preheader', __('mail.briefing.preheader', ['leads' => $day['leads']['last_7_days'], 'meetings' => $day['meetings']['count'], 'referrals' => $day['referrals']['count']]))
+{{-- A firm without the network has no referrals (rnc-4 R19): the figure, the line and the list go. --}}
+@section('preheader', $day['referrals'] === null
+    ? __('mail.briefing.preheader_no_referrals', ['leads' => $day['leads']['last_7_days'], 'meetings' => $day['meetings']['count']])
+    : __('mail.briefing.preheader', ['leads' => $day['leads']['last_7_days'], 'meetings' => $day['meetings']['count'], 'referrals' => $day['referrals']['count']]))
 @section('footer_reason', __('mail.briefing.footer_reason', ['firm' => $briefing->firmName]))
 
 @section('body')
@@ -15,12 +18,12 @@
         {{ __('mail.briefing.lede', ['day' => $briefing->day()]) }}
     </p>
 
-    {{-- The four figures, two by two: a table survives every client a grid would not. --}}
+    {{-- The figures (four, three without the network), two by two: a table survives every client a grid would not. --}}
     @php
         $kpis = [
             [__('mail.briefing.kpi.leads'), number_format($day['leads']['last_7_days'], 0, ',', '.'), __('mail.briefing.kpi.leads_sub', ['count' => $day['leads']['last_24_hours']])],
             [__('mail.briefing.kpi.meetings'), number_format($day['meetings']['count'], 0, ',', '.'), __('mail.briefing.kpi.meetings_sub', ['count' => $day['meetings']['today']])],
-            [__('mail.briefing.kpi.referrals'), number_format($day['referrals']['count'], 0, ',', '.'), __('mail.briefing.kpi.referrals_sub', ['breached' => $day['referrals']['by_state']['estourado'], 'warning' => $day['referrals']['by_state']['atencao']])],
+            ...($day['referrals'] === null ? [] : [[__('mail.briefing.kpi.referrals'), number_format($day['referrals']['count'], 0, ',', '.'), __('mail.briefing.kpi.referrals_sub', ['breached' => $day['referrals']['by_state']['estourado'], 'warning' => $day['referrals']['by_state']['atencao']])]]),
             [__('mail.briefing.kpi.pipeline'), $briefing->pipelineRange(), __('mail.briefing.kpi.pipeline_sub', ['count' => $day['pipeline']['count']])],
         ];
     @endphp
@@ -70,6 +73,7 @@
         @endforelse
     </p>
 
+    @if ($day['referrals'] !== null)
     <h2 style="margin:0 0 8px 0;font-size:17px;line-height:24px;font-weight:700;color:{{ $ink }};">{{ __('mail.briefing.referrals_heading', ['goal' => $day['referrals']['goal_hours']]) }}</h2>
     <p style="margin:0 0 24px 0;font-size:15px;line-height:22px;color:#3f3f46;">
         @forelse ($day['referrals']['top'] as $referral)
@@ -81,6 +85,7 @@
             <span style="color:#71717a;">{{ __('mail.briefing.more', ['count' => $day['referrals']['more']]) }}</span>
         @endif
     </p>
+    @endif
 
     @include('mail.partials._button', ['href' => $briefing->link(), 'label' => __('mail.briefing.cta')])
 

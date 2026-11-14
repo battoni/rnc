@@ -2,6 +2,7 @@
 
 namespace App\Modules\Firm\Services;
 
+use App\Modules\Firm\Helpers\FirmModules;
 use App\Modules\Firm\Models\Firm;
 use Closure;
 
@@ -30,6 +31,12 @@ class CurrentFirm
     public function set(?Firm $firm): void
     {
         $this->firm = $firm;
+    }
+
+    /** Whether the current firm has the module on (rnc-4 R16); no firm has none. */
+    public function hasModule(string $module): bool
+    {
+        return $this->firm !== null && FirmModules::isEnabled($this->firm, $module);
     }
 
     /**
@@ -61,5 +68,20 @@ class CurrentFirm
     public function forEachFirm(Closure $callback): void
     {
         Firm::query()->orderBy('id')->each(fn (Firm $firm) => $this->runAs($firm, fn () => $callback($firm)));
+    }
+
+    /**
+     * `forEachFirm()` over the firms with the module on (rnc-4 R17): scheduled work of a module
+     * skips a firm that has it off.
+     *
+     * @param  Closure(Firm): void  $callback
+     */
+    public function forEachFirmWithModule(string $module, Closure $callback): void
+    {
+        $this->forEachFirm(function (Firm $firm) use ($module, $callback) {
+            if (FirmModules::isEnabled($firm, $module)) {
+                $callback($firm);
+            }
+        });
     }
 }

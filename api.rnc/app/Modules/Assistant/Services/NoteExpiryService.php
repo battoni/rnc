@@ -4,6 +4,7 @@ namespace App\Modules\Assistant\Services;
 
 use App\Modules\Assistant\Repositories\AssistantNoteRepository;
 use App\Modules\Auth\Enums\UserStatus;
+use App\Modules\Firm\Helpers\FirmModules;
 use App\Modules\Firm\Services\CurrentFirm;
 use App\Modules\Notification\Notifications\AssistantNoteExpiringNotification;
 use App\Modules\Notification\Services\TeamNotifier;
@@ -11,7 +12,7 @@ use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\DB;
 
 /**
- * The reviewer hears that a review runs out (rnc-3 R11, AM19): every firm in turn, each served note
+ * The reviewer hears that a review runs out (rnc-3 R11, AM19): every firm with the `assistant` module (rnc-4 R17) in turn, each served note
  * in its last seven days (day 83 to 90) rings its reviewer once per review — the claim on
  * `expiry_notified_at` keeps a second run quiet, and a newer review makes the old claim stale. A
  * missed day 83 rings on the next run; a reviewer who left (inactive) or none at all rings nobody,
@@ -31,7 +32,7 @@ class NoteExpiryService
         $rung = 0;
         $now = CarbonImmutable::now();
 
-        $this->currentFirm->forEachFirm(function () use ($now, &$rung) {
+        $this->currentFirm->forEachFirmWithModule(FirmModules::ASSISTANT, function () use ($now, &$rung) {
             foreach ($this->noteRepository->findNotesToWarn($now) as $note) {
                 $reviewer = $note->reviewer;
 

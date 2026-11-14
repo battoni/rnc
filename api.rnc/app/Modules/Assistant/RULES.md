@@ -1,5 +1,5 @@
 ---
-version: 1.1.1
+version: 1.2.0
 origin: rnc
 ---
 # RULES — Assistant Module
@@ -112,6 +112,9 @@ never generates text (W9): there is no model, no embedding, no outward client in
   `expiry_notified_at` is a conditional update, and a newer `reviewed_at` makes an old claim stale,
   so a re-review rings again at its own day 83. A missed day 83 rings on the next run (W63). An
   inactive reviewer, or none, rings nobody — the counter still shows the note.
+
+- **Modules (rnc-4 F3a, R17):** every route is `module:assistant`, and `assistant:notify-expiring`
+  walks only the firms with it on (`CurrentFirm::forEachFirmWithModule`; `ModuleCommandsTest`).
 
 ## Gaps (R15)
 

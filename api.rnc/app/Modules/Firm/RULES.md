@@ -1,5 +1,5 @@
 ---
-version: 1.5.0
+version: 1.6.0
 origin: rnc
 ---
 # RULES — Firm Module
@@ -105,6 +105,30 @@ firms records of the Channel module, with no tenant.
   path yet: they change in the seeder or the database (Known Gaps).
 - `PublicFirmResource` is an allow-list, so none of this reaches the public site.
 
+## Modules per firm (rnc-4 F3a, R16–R20, D15, D16)
+
+- **`Helpers/FirmModules`** is the catalogue, pure: `CORE` (code, always on, never stored), `OPT_IN`
+  (`portfolio`, `fiscal`, `radar`, `partners`, `contracts`, `chat`, `assistant`, `briefing`, `brands`),
+  `OPERATOR_ONLY` (`channel`), `ALL` (the stored order) and `DEPENDENCIES` (`radar`, `contracts`,
+  `fiscal` → `portfolio`). `firms.modules` holds the opt-in keys; a key the catalogue no longer knows
+  reads as off (`enabled()`).
+- **`FirmModulesService::set($firm, $modules, $actor)` is the only writer**: core keys dropped, an
+  unknown key 422 `modules.unknown`, a missing dependency 422 `modules.missingDependency`, `channel`
+  turned on or off by anyone but the operator 403 (leaving it as it was is anyone's). No route calls
+  it yet: the console (F4a) and `firm:create` (F3b1) will.
+- **`CurrentFirm::hasModule()`** is what a service asks before reading another module (Briefing,
+  Radar, Contracts degrade, R19); **`forEachFirmWithModule()`** is what a scheduled command walks
+  (`briefing:send`, `assistant:notify-expiring`, R17).
+- **`EnsureModuleEnabled`** (route alias `module`, `module:<key>[,<key>…]`, every key needed) answers
+  404 `modules.disabled` when the request's firm has a module off — LAST on the route, after `auth`
+  and its key. `ResolveCurrentBrand` knows no sub-brand with `brands` off.
+- **`GET auth/me`** carries `firm` (`Resources/FirmSummaryResource`: slug, name, short name, logo text
+  and URL, colours, `is_platform`, `modules` — the opt-in keys only) or null for a firm-less account,
+  and `platform: {name, is_operator, view_as}` (Auth's `UserResource::withPlatform`).
+- **Seeds:** Franco every key (`channel`, `brands` included), Alvorada every opt-in key but `brands`
+  (D18), the platform firm none (R23). `FirmFactory` defaults to every key so the suite's implicit
+  firm keeps its routes; the model's own default is none.
+
 ## Intentional Decisions
 
 - **`users` is not firm-scoped.** Sign-in looks the username up before any firm is known; the user's
@@ -123,6 +147,9 @@ firms records of the Channel module, with no tenant.
 - **Until F4c the operator reaches another firm only through the console** (rnc-4 AM1): a
   firm-less session always works in the platform firm; `ViewAsFirm` returns null.
 
+- **Modules are enforced by the API only until F3c** (rnc-4): the SPA still shows every rail entry
+  and the root site's chat; on a firm with the module off they answer 404 / 422 `modules.disabled`.
+  The platform firm (`hub`) has no `chat`, so the root diagnostic's chat is refused until F3c hides it.
 - **Host mapping (rnc-3 D2).** A brand is chosen by `?marca=` + `X-Brand` because locally there is
   one host. `express.franco…` hosts need a `host` column read by `ResolveCurrentBrand`.
 - **No brand is created or renamed through the API.** Express and Prime are `BrandSeeder` rows; a

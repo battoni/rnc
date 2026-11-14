@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use App\Modules\Auth\Models\Role;
+use App\Modules\Firm\Helpers\FirmModules;
 use App\Modules\Firm\Models\Firm;
 use App\Modules\Lead\Services\ConsentTextService;
 use Illuminate\Database\Seeder;
@@ -55,6 +56,8 @@ class DemoFirmSeeder extends Seeder
                 'short_name' => 'Alvorada',
                 'tagline' => 'Contabilidade de perto para a empresa que está crescendo',
                 'proof' => self::PROOF,
+                // Every opt-in module but sub-brands; `channel` is no tenant's but Franco's (D18).
+                'modules' => array_values(array_diff(FirmModules::OPT_IN, [FirmModules::BRANDS])),
                 'brand_primary' => '#0f5c4d',
                 'brand_accent' => '#f4b63f',
                 'address' => 'Rua das Acácias, 120, Centro, Cidade Exemplo-SP',

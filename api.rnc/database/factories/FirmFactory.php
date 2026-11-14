@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Modules\Firm\Helpers\FirmModules;
 use App\Modules\Firm\Models\Firm;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
@@ -34,6 +35,9 @@ class FirmFactory extends Factory
             'phone' => '11 3000-0000',
             'mailbox' => fake()->unique()->safeEmail(),
             'business_hours' => [['weekdays' => [1, 2, 3, 4, 5], 'from' => '08:00', 'to' => '18:00']],
+            // Every module, so the suite's implicit firm keeps every route it had before rnc-4; a test
+            // about a module that is off sets `modules` itself (R16). The model's own default is none.
+            'modules' => FirmModules::ALL,
         ];
     }
 }

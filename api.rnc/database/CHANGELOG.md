@@ -3,6 +3,9 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.25.0 — 2026-11-14
+- `modules` seeded (rnc-4 F3a): Franco every key, Alvorada every opt-in key but `brands`, the platform firm none; `FirmFactory` defaults to every key. Tested by `tests/Feature/Firm/ModuleGateTest` and the suite.
+
 ## 1.24.0 — 2026-11-14
 
 ### Changed

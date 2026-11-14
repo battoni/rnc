@@ -46,6 +46,8 @@ class PlatformFirmSeeder extends Seeder
                 'brand_accent' => self::ACCENT,
                 'business_hours' => self::BUSINESS_HOURS,
                 'is_platform' => true,
+                // Core modules only (R23): the platform's own firm runs the site and the pipeline.
+                'modules' => [],
             ]
         );
 

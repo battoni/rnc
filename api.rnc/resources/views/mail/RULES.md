@@ -1,5 +1,5 @@
 ---
-version: 1.2.0
+version: 1.3.0
 origin: pendulum
 based-on: 1.0.0
 ---
@@ -49,6 +49,10 @@ fills `@section('body')`.
 - **The footer says why the message arrived** — `@section('footer_reason')` when the reason is not
   an account (the booking e-mails: "porque agendou uma reunião"). An e-mail that does not explain itself reads
   as spam even when the person asked for it.
+
+- **The daily briefing without the network** (rnc-4 F3a, R19): on a null `referrals` the preheader
+  takes `mail.briefing.preheader_no_referrals`, and the referral figure, heading and list are not
+  drawn, in both the HTML and the text view. Tested by `tests/Feature/Briefing/BriefingDegradeTest`.
 
 ## Preview
 

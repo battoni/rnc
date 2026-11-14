@@ -6,6 +6,8 @@ use App\Models\User;
 use App\Modules\Diagnostic\Enums\DiagnosticKind;
 use App\Modules\Diagnostic\Enums\DiagnosticRule;
 use App\Modules\Diagnostic\Services\RulesEngine;
+use App\Modules\Firm\Helpers\FirmModules;
+use App\Modules\Firm\Services\CurrentFirm;
 use App\Modules\Fiscal\DTOs\SalesTotals;
 use App\Modules\Partner\Services\ReferralService;
 use App\Modules\Portfolio\Models\Client;
@@ -44,6 +46,7 @@ class RadarService
         private EvidenceBuilder $evidenceBuilder,
         private RulesEngine $rulesEngine,
         private ReferralService $referralService,
+        private CurrentFirm $currentFirm,
     ) {}
 
     /**
@@ -52,10 +55,10 @@ class RadarService
     public function summary(): array
     {
         $clients = $this->clientRepository->findAllClients();
-        $items = $this->items($clients->all(), $this->evidenceBuilder->salesByClient());
+        $items = $this->items($clients->all(), $this->salesByClient());
 
         $groups = array_map(self::ranked(...), self::groupByRule($items));
-        $options = $this->referralService->portfolioBatchOptions(array_map(self::clientsOf(...), $groups));
+        $options = $this->partnerOptions(array_map(self::clientsOf(...), $groups));
         $types = [];
 
         foreach ($groups as $value => $ruleItems) {
@@ -96,7 +99,7 @@ class RadarService
      */
     public function firstOpportunity(): ?array
     {
-        $items = $this->items($this->clientRepository->findAllClients()->all(), $this->evidenceBuilder->salesByClient());
+        $items = $this->items($this->clientRepository->findAllClients()->all(), $this->salesByClient());
         $types = [];
 
         foreach (self::groupByRule($items) as $value => $ruleItems) {
@@ -120,8 +123,8 @@ class RadarService
      */
     public function type(DiagnosticRule $rule): array
     {
-        $items = $this->itemsOf($rule, $this->evidenceBuilder->salesByClient());
-        $options = $this->referralService->portfolioBatchOptions([$rule->value => self::clientsOf($items)]);
+        $items = $this->itemsOf($rule, $this->salesByClient());
+        $options = $this->partnerOptions([$rule->value => self::clientsOf($items)]);
 
         $rows = [];
         $fromNotes = [];
@@ -135,7 +138,7 @@ class RadarService
             }
         }
 
-        $keys = $this->evidenceBuilder->keysByClient($rule, $fromNotes);
+        $keys = $this->currentFirm->hasModule(FirmModules::FISCAL) ? $this->evidenceBuilder->keysByClient($rule, $fromNotes) : [];
 
         return [
             'type' => [...self::typeRow($rule, $items, $options[$rule->value]), 'detail' => $rule->detail()],
@@ -153,10 +156,35 @@ class RadarService
     {
         $ranked = array_map(
             fn (array $item) => ['client' => $item['client'], 'profile' => EvidenceBuilder::profile($item['client'], $item['totals'])],
-            $this->itemsOf($rule, $this->evidenceBuilder->salesByClient()),
+            $this->itemsOf($rule, $this->salesByClient()),
         );
 
         return $this->referralService->referBatch($rule, $partnerId, $ranked, $by);
+    }
+
+    /**
+     * The clients' issued invoices of the window — none without `fiscal` (rnc-4 R19, D16): every
+     * client is then read from the cadastro, with no XML evidence.
+     *
+     * @return array<int, SalesTotals>
+     */
+    private function salesByClient(): array
+    {
+        return $this->currentFirm->hasModule(FirmModules::FISCAL) ? $this->evidenceBuilder->salesByClient() : [];
+    }
+
+    /**
+     * Each rule's partner picker — empty on every row without `partners` (rnc-4 R19), whose batch
+     * referral route is then a 404.
+     *
+     * @param  array<string, list<Client>>  $clientsByRule
+     * @return array<string, list<PartnerOption>>
+     */
+    private function partnerOptions(array $clientsByRule): array
+    {
+        return $this->currentFirm->hasModule(FirmModules::PARTNERS)
+            ? $this->referralService->portfolioBatchOptions($clientsByRule)
+            : array_fill_keys(array_keys($clientsByRule), []);
     }
 
     /**

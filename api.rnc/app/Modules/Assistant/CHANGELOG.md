@@ -2,6 +2,9 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.2.0 — 2026-11-14
+- Routes `module:assistant`; `assistant:notify-expiring` skips a firm without the module (rnc-4 F3a, R17). Tested by `tests/Feature/Firm/ModuleCommandsTest` and `ModuleGateTest`.
+
 ## 1.1.1 — 2026-11-07
 
 ### Fixed

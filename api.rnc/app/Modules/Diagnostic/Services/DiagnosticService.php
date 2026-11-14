@@ -8,10 +8,13 @@ use App\Modules\Diagnostic\DTOs\DiagnosticProfileDTO;
 use App\Modules\Diagnostic\DTOs\StartDiagnosticDTO;
 use App\Modules\Diagnostic\DTOs\UpdateDiagnosticDTO;
 use App\Modules\Diagnostic\Exceptions\DiagnosticException;
+use App\Modules\Firm\Helpers\FirmModules;
 use App\Modules\Firm\Services\CurrentBrand;
+use App\Modules\Firm\Services\CurrentFirm;
 use App\Modules\Lead\Enums\LeadChannel;
 use App\Modules\Lead\Models\Lead;
 use App\Modules\Lead\Services\LeadService;
+use Illuminate\Validation\ValidationException;
 
 /**
  * The public diagnostic (rnc-1 R9–R14): the steps a visitor takes, by lead token. Every write to the
@@ -26,10 +29,21 @@ class DiagnosticService
         private CnpjLookup $cnpjLookup,
         private RulesEngine $rulesEngine,
         private CurrentBrand $currentBrand,
+        private CurrentFirm $currentFirm,
     ) {}
 
+    /**
+     * A chat start needs the firm's `chat` module (rnc-4 R17): off, it is 422 `modules.disabled` on
+     * `channel` — the form still starts the same diagnostic.
+     */
     public function start(StartDiagnosticDTO $dto): ?Lead
     {
+        $channel = LeadChannel::from($dto->channel);
+
+        if ($channel === LeadChannel::Chat && ! $this->currentFirm->hasModule(FirmModules::CHAT)) {
+            throw ValidationException::withMessages(['channel' => [FirmModules::DISABLED]]);
+        }
+
         return $this->leadService->startLead([
             'path' => $dto->path,
             'visitor_uuid' => $dto->visitor,
@@ -38,7 +52,7 @@ class DiagnosticService
             'sector' => $dto->sector,
             // The sub-brand of this visit (rnc-3 R4), stored once at the start.
             'brand_id' => $this->currentBrand->id(),
-            'channel' => LeadChannel::from($dto->channel),
+            'channel' => $channel,
         ]);
     }
 

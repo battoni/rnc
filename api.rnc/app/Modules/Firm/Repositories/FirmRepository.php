@@ -32,4 +32,12 @@ class FirmRepository
 
         return $firm;
     }
+
+    /** @param  list<string>  $modules  the opt-in keys, already checked by `FirmModulesService` */
+    public function updateFirmModules(Firm $firm, array $modules): Firm
+    {
+        $firm->forceFill(['modules' => $modules])->save();
+
+        return $firm;
+    }
 }

@@ -2,6 +2,9 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.5.0 — 2026-11-14
+- Degrades with the firm's modules (rnc-4 F3a, R19): `referrals` null without `partners`, no fee range without `portfolio`, no Radar action without `radar`; `briefing:send` skips a firm without `briefing` (R17). Tested by `tests/Feature/Briefing/BriefingDegradeTest` and `tests/Feature/Firm/ModuleCommandsTest`.
+
 ## 1.4.0 — 2026-11-14
 
 ### Changed

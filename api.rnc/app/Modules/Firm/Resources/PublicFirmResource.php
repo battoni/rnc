@@ -32,7 +32,7 @@ class PublicFirmResource extends JsonResource
 {
     private const BRAZIL_DIALING_PREFIX = 'tel:+55';
 
-    private const LOGO_DISK = 'public';
+    public const LOGO_DISK = 'public';
 
     private ?FirmBrand $brand = null;
 

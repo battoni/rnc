@@ -1,5 +1,5 @@
 ---
-version: 2.11.0
+version: 2.12.0
 origin: pendulum
 based-on: 2.9.0
 ---
@@ -49,6 +49,11 @@ there is no "everything minus a list" left to subtract from. The protected all-k
 - **Self-registration is closed** (R7, D21): `registration.enabled` (`REGISTRATION_ENABLED`,
   default false) and `EnsureRegistrationOpen` answer 404 on the three routes; they stay registered
   so the route matrix keeps them and a test can open the door with a config change.
+
+- **`GET auth/me` boots the shell** (rnc-4 F3a, R20): `UserResource::withPlatform($viewAs)` adds
+  `firm` (Firm's `FirmSummaryResource`, null for a firm-less account) and `platform: {name,
+  is_operator, view_as}` — `is_operator` is the `operador` role, `view_as` Firm's `ViewAsFirm` (null
+  until F4c). A user in a list or the login answer does not carry them.
 
 ## Domain
 

@@ -1,7 +1,7 @@
 ---
-version: 1.4.0
+version: 1.5.0
 origin: rnc
-based-on: 1.3.0
+based-on: 1.5.0
 ---
 # RULES — Briefing Module
 
@@ -37,6 +37,15 @@ Partner and Portfolio, each through the models' own `BelongsToFirm` scope.
   of a contract or Radar referral too).
 - **A fixed number of queries** whatever the rows (plan P13, `BriefingTest`): two lead counts, the
   stages' leads, the fees, the meetings with lead and specialist, the referrals with lead and partner.
+
+- **It degrades with the firm's modules, never a 500** (rnc-4 F3a, R19): without `partners`
+  `referrals` is null and no SLA action is picked; without `portfolio` the pipeline has no fee range
+  (`range_cents: null`, as an empty portfolio answers); without `radar` no Radar action. The query of a
+  module that is off is not run. The e-mail drops the referral figure, line and list on a null
+  `referrals`. `contracts` has no briefing action yet, so nothing of it to drop. Tested by
+  `BriefingDegradeTest`.
+- **`briefing:send` skips a firm without `briefing`** (R17, `CurrentFirm::forEachFirmWithModule`;
+  `ModuleCommandsTest`). `GET briefing` is `module:briefing`.
 
 ## Money (R24, D12, plan P5)
 

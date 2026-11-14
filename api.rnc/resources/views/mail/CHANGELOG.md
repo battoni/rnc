@@ -3,6 +3,9 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.3.0 — 2026-11-14
+- `daily-briefing` and its text view draw no referral figure, line or list when the firm has no `partners` module (rnc-4 F3a, R19); `mail.briefing.preheader_no_referrals`. Tested by `tests/Feature/Briefing/BriefingDegradeTest`.
+
 ## 1.2.0 — 2026-11-14
 
 ### Changed

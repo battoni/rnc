@@ -10,6 +10,7 @@ use App\Modules\Auth\Requests\LoginRequest;
 use App\Modules\Auth\Resources\UserResource;
 use App\Modules\Auth\Services\AuthService;
 use App\Modules\Auth\Services\PermissionService;
+use App\Modules\Firm\Services\ViewAsFirm;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,6 +20,7 @@ class AuthController extends Controller
     public function __construct(
         private AuthService $authService,
         private PermissionService $permissionService,
+        private ViewAsFirm $viewAsFirm,
     ) {}
 
     public function login(LoginRequest $request): JsonResponse
@@ -43,7 +45,7 @@ class AuthController extends Controller
         $user = $request->user();
         $user->setAttribute('permissions', $this->permissionService->forUser($user));
 
-        return ApiResponse::success(data: (new UserResource($user))->withPlatform());
+        return ApiResponse::success(data: (new UserResource($user))->withPlatform($this->viewAsFirm->resolve($request)));
     }
 
     public function permissionGroups(): JsonResponse

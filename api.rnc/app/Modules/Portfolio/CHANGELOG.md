@@ -2,6 +2,9 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.6.0 — 2026-11-14
+- Modules per firm (rnc-4 F3a, R17, R19): routes gated by `module:portfolio` / `module:contracts` (`,partners` on the legal referral); without `partners` the contract alert answers no referral field. Tested by `tests/Feature/Portfolio/ContractDegradeTest` and `tests/Feature/Firm/ModuleGateTest`.
+
 ## 1.5.1 — 2026-11-07
 
 ### Changed

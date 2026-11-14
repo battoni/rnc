@@ -2,6 +2,9 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.6.0 — 2026-11-14
+- Modules per firm (rnc-4 F3a, R16–R20): `Helpers/FirmModules` (catalogue), `Services/FirmModulesService` (the only writer: unknown, dependency, operator-only `channel`), `CurrentFirm::hasModule()` / `forEachFirmWithModule()`, `FirmRepository::updateFirmModules()`, `Resources/FirmSummaryResource` (`auth/me`'s `firm`); `PublicFirmResource::LOGO_DISK` is public. Tested by `tests/Unit/Modules/Firm/FirmModulesServiceTest`, `tests/Feature/Firm/ModuleGateTest`, `ModuleCommandsTest`, `tests/Feature/Auth/MeFirmTest`.
+
 ## 1.5.0 — 2026-11-14
 
 ### Added

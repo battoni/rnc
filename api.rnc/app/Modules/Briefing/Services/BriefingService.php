@@ -9,6 +9,8 @@ use App\Modules\Booking\Services\BookingCalendar;
 use App\Modules\Briefing\Helpers\ActionPicker;
 use App\Modules\Briefing\Helpers\FeeQuartiles;
 use App\Modules\Briefing\Repositories\BriefingRepository;
+use App\Modules\Firm\Helpers\FirmModules;
+use App\Modules\Firm\Services\CurrentFirm;
 use App\Modules\Lead\Enums\LeadChannel;
 use App\Modules\Lead\Enums\LeadStage;
 use App\Modules\Lead\Models\Lead;
@@ -31,7 +33,12 @@ use Carbon\CarbonImmutable;
  * - **actions** — the day's first three (`ActionPicker`, R25).
  *
  * Portfolio (`carteira`) leads count in no lead, meeting or pipeline figure; the referral tile
- * counts every open referral, whatever its lead. A fixed number of queries (plan P13): two lead
+ * counts every open referral, whatever its lead.
+ *
+ * It degrades with the firm's modules (rnc-4 R19), never a 500: without `partners` `referrals` is
+ * null and no SLA action is picked; without `portfolio` the pipeline has no fee range (as an empty
+ * portfolio answers); without `radar` no Radar action. The query of a module that is off is not
+ * run. A fixed number of queries (plan P13): two lead
  * counts, the stages' leads, the fees, the meetings with their lead and specialist, the referrals
  * with their lead and partner.
  *
@@ -64,6 +71,7 @@ class BriefingService
         private AppointmentRepository $appointmentRepository,
         private ReferralSla $referralSla,
         private RadarService $radarService,
+        private CurrentFirm $currentFirm,
     ) {}
 
     /** @return Briefing */
@@ -71,9 +79,10 @@ class BriefingService
     {
         $now = CarbonImmutable::now();
         $meetings = $this->meetings($now);
-        $referrals = $this->referrals();
+        $referrals = $this->currentFirm->hasModule(FirmModules::PARTNERS) ? $this->referrals() : null;
         $leads = $this->briefingRepository->findLeadsInStages([LeadStage::LeadParcial, ...self::OPEN_STAGES]);
-        $pipeline = $this->pipeline($leads, new FeeQuartiles($this->briefingRepository->findMonthlyFeesByBand()));
+        $fees = $this->currentFirm->hasModule(FirmModules::PORTFOLIO) ? $this->briefingRepository->findMonthlyFeesByBand() : [];
+        $pipeline = $this->pipeline($leads, new FeeQuartiles($fees));
         $first = $referrals['top'][0] ?? null;
 
         return [
@@ -92,7 +101,7 @@ class BriefingService
                 'meetings_today' => $meetings['today'],
                 'proposals' => ['count' => $pipeline['stages'][2]['count'], 'range_cents' => $pipeline['stages'][2]['range_cents']],
                 'partial_leads' => $leads->where('stage', LeadStage::LeadParcial->value)->count(),
-                'radar' => $this->radarOpportunity(),
+                'radar' => $this->currentFirm->hasModule(FirmModules::RADAR) ? $this->radarOpportunity() : null,
             ]),
         ];
     }

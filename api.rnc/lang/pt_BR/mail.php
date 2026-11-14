@@ -77,6 +77,7 @@ return [
     'briefing' => [
         'subject' => 'Briefing do dia · :day',
         'preheader' => ':leads novos leads em 7 dias · :meetings reuniões nos próximos 5 dias úteis · :referrals indicações aguardando contato.',
+        'preheader_no_referrals' => ':leads novos leads em 7 dias · :meetings reuniões nos próximos 5 dias úteis.',
         'heading' => 'Briefing do dia',
         'greeting' => 'Bom dia, :name',
         'lede' => 'Briefing de :day: o que entrou, o que está marcado e o que precisa de você.',
