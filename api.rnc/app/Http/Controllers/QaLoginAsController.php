@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Modules\Auth\Enums\UserStatus;
 use App\Modules\Firm\Models\Firm;
 use App\Modules\Firm\Services\FirmResolver;
+use App\Modules\Firm\Services\MailBrand;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -39,14 +40,15 @@ class QaLoginAsController extends Controller
 
         $user = User::query()->where('username', $username)->first();
         abort_if($user === null || $user->status === UserStatus::INACTIVE, 404);
-        abort_unless($this->firmResolver->belongsTo($user, $this->requestedFirm($request)), 404);
+        $firm = $this->requestedFirm($request);
+        abort_unless($this->firmResolver->belongsTo($user, $firm), 404);
 
         Auth::guard('web')->logout();
         $request->session()->invalidate();
         Auth::guard('web')->login($user);
         $request->session()->regenerate();
 
-        return redirect()->away(config('rnc.frontend_url').$this->path($request->query('to')));
+        return redirect()->away($this->siteOf($request, $firm).$this->path($request->query('to')));
     }
 
     /** The firm the address names: the `X-Firm` header when sent, else the browser's host. */
@@ -57,6 +59,21 @@ class QaLoginAsController extends Controller
         return $slug !== null
             ? $this->firmResolver->findTenantBySlug($slug)
             : $this->firmResolver->findFirmByHost($request->getHost());
+    }
+
+    /**
+     * Where the browser lands: the root when the address was the root, else the firm's own site
+     * (`MailBrand::siteUrlOf`, the builder the mail links use). Always sending the root took
+     * alvorada's member off the host the session was opened for (QA 1.11). Built from config,
+     * never echoed from the Host header.
+     */
+    private function siteOf(Request $request, ?Firm $firm): string
+    {
+        $root = (string) config('rnc.frontend_url');
+        $namesFirm = $request->hasHeader(ResolveCurrentFirm::HEADER)
+            || str_ends_with($request->getHost(), '.'.config('platform.root_domain'));
+
+        return $firm !== null && $namesFirm ? MailBrand::siteUrlOf($firm) : $root;
     }
 
     /** Only a path inside the app: `//host`, `/\host` and a full URL all fall back to `/`. */

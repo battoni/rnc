@@ -3,6 +3,10 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 2.20.1 — 2026-11-14
+- `QaLoginAsController` redirects to the firm's own site (`MailBrand::siteUrlOf`) when opened on a firm host,
+  not to `rnc.frontend_url` (Chrome QA 1.11). Tested by `LoginFirmTest`.
+
 ## 2.20.0 — 2026-11-14
 - `UserService::anonymiseFirmUsers` for `firm:offboard` (rnc-4 verify P1-A2).
 

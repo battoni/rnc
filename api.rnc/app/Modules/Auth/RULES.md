@@ -1,5 +1,5 @@
 ---
-version: 2.20.0
+version: 2.20.1
 origin: pendulum
 based-on: 2.9.0
 ---
@@ -40,7 +40,9 @@ there is no "everything minus a list" left to subtract from. The protected all-k
   one of another firm is never told it is deactivated. The phone code looks the phone up inside the
   firm (`findSoleUserByPhone($phone, $firm)`): no code is sent for another firm's phone and spending
   one answers `invalid_code`. The firm-less `operador` belongs only to the platform firm (the root);
-  any other firm-less account belongs nowhere. `QaLoginAsController` applies the same rule (AM8).
+  any other firm-less account belongs nowhere. `QaLoginAsController` applies the same rule (AM8), and
+  hands the browser back to the host it was opened on: the firm's own site (`MailBrand::siteUrlOf`)
+  on a firm host or with `X-Firm`, the root otherwise — never the Host header echoed (Chrome QA 1.11).
 - **Every user read a screen or a public door makes is scoped by the current firm** (AM2):
   `findAllUsers`, `findAllActiveUsers` (support names), `findSoleUserByPhone` and `findFirmUserById`
   (every `auth/users/{id}` route; another firm's id is a 404). `findUserById` stays global for the

@@ -187,6 +187,13 @@ describe('the QA login-as (AM8)', function () {
         $this->assertAuthenticatedAs(User::where('username', 'patricia')->firstOrFail());
     });
 
+    it("hands the browser back to the firm's own host, not the root (QA 1.11)", function () {
+        config(['rnc.frontend_url' => 'http://localhost:5173']);
+
+        get('http://franco.localhost/api/qa/login-as/patricia?to=/gestao/briefing')
+            ->assertRedirect('http://franco.localhost:5173/gestao/briefing');
+    });
+
     it("refuses a member on another firm's host, by host or by header", function () {
         get('http://alvorada.localhost/api/qa/login-as/patricia')->assertNotFound();
         $this->assertGuest();
@@ -203,7 +210,7 @@ describe('the QA login-as (AM8)', function () {
         get('http://franco.localhost/api/qa/login-as/operador.plataforma')->assertNotFound();
         $this->assertGuest();
 
-        get('http://localhost/api/qa/login-as/operador.plataforma')->assertRedirect();
+        get('http://localhost/api/qa/login-as/operador.plataforma')->assertRedirect(config('rnc.frontend_url').'/');
         $this->assertAuthenticatedAs($operator);
     });
 
