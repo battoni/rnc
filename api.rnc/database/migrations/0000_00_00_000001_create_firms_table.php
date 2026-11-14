@@ -16,6 +16,11 @@ use Illuminate\Support\Facades\Schema;
  *
  * rnc-4 F1a (D3): `is_platform` marks the one firm the root host and `www` serve — the platform's
  * own product site, where the operator (no firm) works. Never reachable by `X-Firm` (plan AM9).
+ *
+ * rnc-4 F2a (R8, D7, D15): the firm's own look beside `logo_text` — `short_name` (40), `tagline`
+ * (160), `proof` (four `{value, label}`, json), `logo_path` (a file on the `public` disk, F4c) — and
+ * `modules`, the list of opt-in module keys (core is code, never stored). `modules` has no database
+ * default: MySQL refuses a literal default on a json column, so the model's `$attributes` gives `[]`.
  */
 return new class extends Migration
 {
@@ -26,6 +31,10 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug', 60)->unique();
             $table->string('logo_text');
+            $table->string('short_name', 40);
+            $table->string('tagline', 160)->nullable();
+            $table->json('proof')->nullable();
+            $table->string('logo_path')->nullable();
             $table->string('brand_primary', 7);
             $table->string('brand_accent', 7);
             $table->string('address')->nullable();
@@ -36,6 +45,7 @@ return new class extends Migration
             $table->unsignedSmallInteger('partner_commission_rate_bp')->default(1000);
             $table->unsignedInteger('partner_monthly_fee_cents')->default(49000);
             $table->boolean('is_platform')->default(false);
+            $table->json('modules');
             $table->timestamps();
         });
     }

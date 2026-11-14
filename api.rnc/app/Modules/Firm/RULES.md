@@ -1,5 +1,5 @@
 ---
-version: 1.4.0
+version: 1.5.0
 origin: rnc
 ---
 # RULES — Firm Module
@@ -51,6 +51,24 @@ firms records of the Channel module, with no tenant.
   chosen by `ResolveCurrentFirm` — through `PublicFirmResource`, an allow-list: name, slug, brand,
   address, phone, `phone_href` (`tel:+55…`, so the site never parses a phone), mailbox, hours. No id,
   no timestamps. No firm (an empty database) is a 404.
+
+## The firm's own brand (rnc-4 F2a, R8, R9, R12)
+
+- **`firms`** carries the look beside `logo_text`: `short_name` (40), `tagline` (160, null keeps the
+  site's own line), `proof` (four `{value, label}`, null keeps the site's own), `logo_path` (a file on
+  the `public` disk — uploaded in F4c) and `modules` (opt-in keys, D15; json with no database default,
+  the model's `$attributes` gives `[]`).
+- **`GET public/firm`** answers them for the main brand, plus `logo_url` (the `public` disk's URL,
+  null without a file and under a sub-brand), `is_platform` and `platform: {name}` —
+  `config('platform.name')` (`PLATFORM_NAME`), the one place the product is named (R9). `GET auth/me`
+  carries the same `platform.name` (`UserResource::withPlatform`).
+- **`MailBrand`** (Services) is the brand an e-mail wears: name, ink (primary), accent, logo, the
+  firm's mailbox and its own site (`<slug>.<host>` of `rnc.frontend_url`, the root for the platform
+  firm). Built from a firm (and a sub-brand) where the mail is queued, carried in the DTO (AM6);
+  `sender()` is `mail.from.address` under the firm's name, `replyTo()` the firm's mailbox (D11).
+- **`PlatformSettings`** (Services) is the only writer of `platform_settings` (key/value, no firm):
+  `consent_default`, the sentence a new firm's consent version 1 copies (Lead's `ConsentTextService`,
+  R13). `PlatformFirmSeeder` writes it in every environment; an unset key reads the built-in default.
 
 ## Sub-brands (rnc-3 F1, R1–R5)
 

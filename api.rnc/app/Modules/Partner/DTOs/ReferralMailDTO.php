@@ -2,6 +2,8 @@
 
 namespace App\Modules\Partner\DTOs;
 
+use App\Modules\Firm\Services\MailBrand;
+
 /**
  * What the partner's e-mail prints (plan AM6): plain values gathered inside the request, so the
  * queued Mailable never queries — a worker has no current firm. It carries the company and Franco's
@@ -22,5 +24,6 @@ final class ReferralMailDTO
         public readonly ?string $firmPhone,
         public readonly ?string $firmMailbox,
         public readonly ?string $firmAddress,
+        public readonly MailBrand $brand,
     ) {}
 }

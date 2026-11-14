@@ -399,3 +399,12 @@ the deploy; a per-action audit trail inside view-as; firm self-signup without th
   instead of `navigator.sendBeacon`, which cannot carry a header (the API counted those on the
   platform firm). The root keeps the beacon. Reverse: beacon everywhere and a `firm` field in the
   event body read by the API.
+- C5 (F2a, W14) D12's "Franco v1 = today's sentence" → Franco's v1 is its rnc-1 sentence with
+  `{escritorio}` where its name was, filled like every firm's with the firm's — or the sub-brand's —
+  full name: the main brand now reads "Autorizo a Franco Contabilidade a me apresentar…", the
+  Express/Prime words are byte-identical to rnc-3's. A literal sentence would have dropped the
+  sub-brand's name from its leads' consent. Reverse: fill the main brand with `short_name`.
+- C6 (F2a, W16) R12's brand includes where an e-mail links: the report link, the briefing's links and
+  the footer go to the firm's own host (`<slug>.<host>` of `rnc.frontend_url`; the root for the
+  platform firm). A root link opened the platform's firm, where the firm's lead is absent.
+  Reverse: `config('rnc.frontend_url')` again.

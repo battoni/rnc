@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.22.0 — 2026-11-14
+
+### Changed
+
+- rnc-4 F2a (R8, R13, D12): `create_firms_table` gains `short_name`, `tagline`, `proof`, `logo_path`, `modules` (json, no database default — the model gives `[]`); new `create_platform_settings_table` and `create_firm_consent_versions_table` (`300100`-series). `FirmFactory` fills `short_name`. `FirmSeeder` gives Franco its short name, the landing's proof and consent v1 (its rnc-1 sentence, its name as `{escritorio}`); `PlatformFirmSeeder` writes `platform_settings.consent_default` and starts `hub` at v1; `DemoFirmSeeder` gives Alvorada an invented short name, tagline and proof and v1 from the default. `PipelineSeeder` stores each lead's consent through `ConsentTextService::forLead`.
+
 ## 1.21.0 — 2026-11-13
 
 ### Changed

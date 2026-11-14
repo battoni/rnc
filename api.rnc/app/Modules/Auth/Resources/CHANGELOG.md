@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 2.2.0 — 2026-11-14
+
+### Added
+
+- `UserResource::withPlatform()` adds `platform: {name}` (`config('platform.name')`, rnc-4 R9); closed by default, so a user in a list does not carry it.
+
 ## 2.1.0 — 2026-11-07
 
 ### Added

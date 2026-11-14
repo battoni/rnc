@@ -2,6 +2,16 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.8.0 — 2026-11-14
+
+### Added
+
+- Per-firm, versioned consent (rnc-4 F2a, R13, D12): `firm_consent_versions` table, `FirmConsentVersion` (`BelongsToFirm`), `FirmConsentVersionRepository`, `ConsentTextService` (current version, version 1 from the platform default, version n+1, `forLead` with `{escritorio}` filled by the sub-brand's or the firm's name, the generic contract consent). `recordContact`, `copyContractConsent` and `PublicLeadResource` read it. Tested by `tests/Feature/Lead/ConsentVersionTest`.
+
+### Removed
+
+- `ConsentTerms::VERSION`, `TEXT`, `textFor()` — Franco's sentence as code; it is Franco's seeded version 1 now. `CONTRACT_TEXT` is generic with `{escritorio}`; `PLACEHOLDER`, `CONTRACT_VERSION` and `fill()` added.
+
 ## 1.7.1 — 2026-11-07
 
 ### Fixed

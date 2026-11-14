@@ -18,11 +18,18 @@ describe('GET /api/public/firm', function () {
                 'slug' => 'franco',
                 'brand' => null,
                 'logo_text' => 'Franco Contabilidade',
-                'short_name' => null,
+                'short_name' => 'Franco',
                 'tagline' => null,
                 'brand_primary' => '#00375a',
                 'brand_accent' => '#14c3ff',
-                'proof' => null,
+                'proof' => [
+                    ['value' => '35 anos', 'label' => 'em São Paulo'],
+                    ['value' => '500+', 'label' => 'clientes atendidos'],
+                    ['value' => 'ISO 9001', 'label' => 'qualidade certificada'],
+                    ['value' => 'RNC', 'label' => 'Rede Nacional de Contabilidade'],
+                ],
+                'logo_url' => null,
+                'is_platform' => false,
                 'address' => 'Av. Corifeu de Azevedo Marques, 2333, 1º e 2º andares, Butantã, São Paulo-SP',
                 'phone' => '11 3732-5500',
                 'phone_href' => 'tel:+551137325500',
@@ -31,6 +38,7 @@ describe('GET /api/public/firm', function () {
                     ['weekdays' => [1, 2, 3, 4], 'from' => '08:00', 'to' => '18:00'],
                     ['weekdays' => [5], 'from' => '08:00', 'to' => '17:00'],
                 ],
+                'platform' => ['name' => 'Hub da Reforma'],
             ]]);
     });
 

@@ -3,19 +3,17 @@
 namespace App\Modules\Lead\Helpers;
 
 /**
- * The words of the partner-introduction checkbox (rnc-1 R11, plan AM12) — the demo's
- * `consentText(tenant)` for Franco. A change of wording is a new VERSION: every stored answer keeps
- * the text the person actually read.
+ * The fixed parts of a consent answer (rnc-1 R11, plan AM12): the channels an answer arrives by, the
+ * placeholder a firm's text names itself with, and the one generic contract sentence.
  *
- * Under a sub-brand (rnc-3 R3) the sentence names the brand the visitor is on — "Autorizo a Franco
- * Prime Contabilidade a me apresentar…" — while the network stays Franco's: the brands share it (D1).
- * The main brand's words are `TEXT`, unchanged, so the version does not move.
+ * *Retired 14/11/2026 (rnc-4 F2a, R13):* `VERSION`, `TEXT` and `textFor()` — Franco's own sentence
+ * as code. The partner-introduction words are now per firm and versioned in `firm_consent_versions`
+ * (`ConsentTextService`), and Franco's version 1 is a seed like any firm's.
  */
 final class ConsentTerms
 {
-    public const VERSION = 1;
-
-    public const TEXT = 'Autorizo a Franco a me apresentar a especialistas da Rede de Especialistas Franco quando o diagnóstico indicar.';
+    /** Where a firm's text names the firm — or the sub-brand — the visitor met (D12). */
+    public const PLACEHOLDER = '{escritorio}';
 
     /** The channel of an answer given in the diagnostic's form. */
     public const VIA_FORM = 'formulario';
@@ -29,13 +27,14 @@ final class ConsentTerms
      */
     public const VIA_CONTRACT = 'contrato';
 
-    public const CONTRACT_TEXT = 'O contrato de serviços autoriza a Franco a apresentar o cliente a especialistas da Rede de Especialistas Franco quando o Radar da Reforma indicar.';
+    /** One generic sentence for every firm, not versioned per firm (rnc-4 D12). */
+    public const CONTRACT_TEXT = 'O contrato de serviços autoriza {escritorio} a apresentar o cliente a especialistas parceiros quando o Radar da Reforma indicar.';
 
-    private const BRAND_TEXT = 'Autorizo a %s a me apresentar a especialistas da Rede de Especialistas Franco quando o diagnóstico indicar.';
+    public const CONTRACT_VERSION = 1;
 
-    /** @param  string|null  $brandName  the sub-brand's full name; null is the main brand */
-    public static function textFor(?string $brandName): string
+    /** A text with `{escritorio}` replaced by the name the visitor met. */
+    public static function fill(string $text, string $name): string
     {
-        return $brandName === null ? self::TEXT : sprintf(self::BRAND_TEXT, $brandName);
+        return str_replace(self::PLACEHOLDER, $name, $text);
     }
 }

@@ -1,5 +1,11 @@
 # Changelog — Booking Module
 
+## 1.4.0 — 2026-11-14
+
+### Changed
+
+- The meeting e-mails wear the lead's firm (rnc-4 F2a, R12, D11): `MeetingMailDTO` carries a `MailBrand` (replaces `firmMailbox` and `sender()`); from the platform's address under the brand's name, replies to the firm's mailbox; the report link on the firm's own host. Tested by `tests/Feature/Mail/FirmMailBrandTest`.
+
 ## 1.3.0 — 2026-11-07
 
 ### Changed

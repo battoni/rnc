@@ -2,6 +2,12 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.3.0 — 2026-11-14
+
+### Changed
+
+- The 07:00 e-mail wears the firm (rnc-4 F2a, R12): `BriefingMailDTO` carries a `MailBrand`, its links on the firm's own host; from the platform's address under the firm's name, replying to its mailbox. Tested by `tests/Feature/Mail/FirmMailBrandTest`.
+
 ## 1.2.1 — 2026-11-07
 
 ### Changed

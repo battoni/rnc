@@ -43,7 +43,7 @@ class AuthController extends Controller
         $user = $request->user();
         $user->setAttribute('permissions', $this->permissionService->forUser($user));
 
-        return ApiResponse::success(data: new UserResource($user));
+        return ApiResponse::success(data: (new UserResource($user))->withPlatform());
     }
 
     public function permissionGroups(): JsonResponse

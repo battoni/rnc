@@ -51,7 +51,8 @@ describe('GET /api/public/firm under a brand (A1)', function () {
             ->assertJsonPath('data.name', 'Franco Contabilidade')
             ->assertJsonPath('data.brand', null)
             ->assertJsonPath('data.brand_primary', '#00375a')
-            ->assertJsonPath('data.proof', null);
+            ->assertJsonPath('data.short_name', 'Franco')
+            ->assertJsonPath('data.proof.0', ['value' => '35 anos', 'label' => 'em São Paulo']);
     });
 
     it('answers 404 brands.notFound for an unknown slug', function () {

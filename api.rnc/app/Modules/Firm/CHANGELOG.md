@@ -2,6 +2,18 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.5.0 — 2026-11-14
+
+### Added
+
+- `firms.short_name`, `tagline`, `proof`, `logo_path`, `modules` (folded into `create_firms_table`); `PublicFirmResource` answers them with `logo_url`, `is_platform` and `platform.name` (rnc-4 F2a, R8, R9). Tested by `tests/Feature/Firm/PublicFirmBrandTest`.
+- `MailBrand` — the firm an e-mail wears, from-name, reply-to and the firm's own site (R12, D11). Tested by `tests/Feature/Mail/FirmMailBrandTest`.
+- `platform_settings` table, `PlatformSetting`, `PlatformSettingRepository`, `PlatformSettings` (`consent_default`, D12).
+
+### Changed
+
+- Seeders: Franco gets its short name and the landing's proof; the platform firm its short name and the consent default; Alvorada its invented short name, tagline and proof.
+
 ## 1.4.0 — 2026-11-13
 
 ### Added

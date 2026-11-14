@@ -9,6 +9,7 @@ use App\Modules\Briefing\Mail\DailyBriefingMail;
 use App\Modules\Briefing\Repositories\BriefingRepository;
 use App\Modules\Firm\Models\Firm;
 use App\Modules\Firm\Services\CurrentFirm;
+use App\Modules\Firm\Services\MailBrand;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Mail;
 
@@ -47,13 +48,15 @@ class DailyBriefingSender
             }
 
             $briefing = $this->briefingService->build();
+            $brand = MailBrand::fromFirm($firm);
 
             foreach ($ceos as $ceo) {
                 $mail = new DailyBriefingMail(new BriefingMailDTO(
                     firstName: $ceo->name,
                     firmName: $firm->name,
-                    frontendUrl: (string) config('rnc.frontend_url'),
+                    frontendUrl: $brand->siteUrl,
                     briefing: $briefing,
+                    brand: $brand,
                 ));
 
                 Mail::to($ceo->email)->queue($mail->locale(self::MAIL_LOCALE));

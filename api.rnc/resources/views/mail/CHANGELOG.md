@@ -3,6 +3,16 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.2.0 — 2026-11-14
+
+### Changed
+
+- The brand is the firm's the message concerns (rnc-4 F2a, R12, D11): the layout reads `$brandLogoUrl` (the firm's logo on the `public` disk) instead of `config('rnc.brand.logo')`, and the composer fills every value from the Mailable's `mailBrand` (`MailBrand`), else the request's firm, else the platform. `$frontendUrl` is the firm's own host. Tested by `tests/Feature/Mail/FirmMailBrandTest`.
+
+### Removed
+
+- `config('rnc.brand')` (`BRAND_NAME`, `BRAND_INK`, `BRAND_ACCENT`, `BRAND_LOGO`).
+
 ## 1.1.0 — 2026-11-07
 
 ### Added

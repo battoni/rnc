@@ -13,6 +13,9 @@ class FirmFactory extends Factory
 {
     protected $model = Firm::class;
 
+    /** `firms.short_name` is 40 characters (rnc-4 R8). */
+    private const SHORT_NAME_LENGTH = 40;
+
     /**
      * @return array<string, mixed>
      */
@@ -24,6 +27,7 @@ class FirmFactory extends Factory
             'name' => $name,
             'slug' => Str::slug($name),
             'logo_text' => $name,
+            'short_name' => mb_substr($name, 0, self::SHORT_NAME_LENGTH),
             'brand_primary' => '#00375a',
             'brand_accent' => '#14c3ff',
             'address' => fake()->streetAddress(),

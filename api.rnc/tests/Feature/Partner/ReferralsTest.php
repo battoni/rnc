@@ -28,6 +28,9 @@ use Illuminate\Support\Facades\Mail;
  * covers nothing gets 12–28, fixed per partner and lead. The lead stays Franco's: its stage does not
  * move, the partner's e-mail carries the company and Franco's contact, never the lead's.
  */
+/** The words the lead read — a stored answer's own copy, whatever the firm's text is now. */
+const ROUTING_CONSENT = 'Autorizo a Franco Contabilidade a me apresentar a especialistas da Rede de Especialistas Franco quando o diagnóstico indicar.';
+
 const ROUTING_PROFILE = ['sector' => 'servicos', 'regime' => 'simples', 'band' => 'b2', 'b2b' => 80, 'incentivos' => false, 'exporta' => false];
 
 /** The demo's eight placeholders, one per specialty (facts.md §3). */
@@ -85,7 +88,7 @@ function routingLead(?bool $consent, array $overrides = []): Lead
     ], $overrides));
 
     if ($consent !== null) {
-        LeadConsent::query()->create(['lead_id' => $lead->id, 'text' => ConsentTerms::TEXT, 'version' => ConsentTerms::VERSION, 'given' => $consent, 'via' => ConsentTerms::VIA_FORM, 'given_at' => CarbonImmutable::parse('2026-11-18 09:30', 'America/Sao_Paulo')]);
+        LeadConsent::query()->create(['lead_id' => $lead->id, 'text' => ROUTING_CONSENT, 'version' => 1, 'given' => $consent, 'via' => ConsentTerms::VIA_FORM, 'given_at' => CarbonImmutable::parse('2026-11-18 09:30', 'America/Sao_Paulo')]);
     }
 
     return $lead;
@@ -196,8 +199,8 @@ describe('a referral (R22, A12)', function () {
             'referred_by' => $member->id,
             'status' => 'enviado',
             'score' => 92,
-            'consent_text' => ConsentTerms::TEXT,
-            'consent_version' => ConsentTerms::VERSION,
+            'consent_text' => ROUTING_CONSENT,
+            'consent_version' => 1,
             'message' => 'A Franco indica a Consultoria Prisma. Podem fazer o primeiro contato em até 24 horas úteis?',
         ])
             ->and($referral->consent_given_at->toIso8601String())->toBe('2026-11-18T09:30:00-03:00')
@@ -337,7 +340,7 @@ describe('the trail (R23, A2)', function () {
             ->and($items[0])->toMatchArray(['status' => 'enviado', 'at' => '2026-11-19T11:00:00-03:00', 'message' => 'Segunda.'])
             ->and($items[0]['partner'])->toMatchArray(['name' => 'Andrade Tributário (exemplo)', 'specialty' => 'advocacia_tributaria'])
             ->and($items[0]['referred_by']['name'])->toBe('Equipe Franco')
-            ->and($items[0]['consent'])->toMatchArray(['given' => true, 'text' => ConsentTerms::TEXT, 'version' => ConsentTerms::VERSION, 'at' => '2026-11-18T09:30:00-03:00'])
+            ->and($items[0]['consent'])->toMatchArray(['given' => true, 'text' => ROUTING_CONSENT, 'version' => 1, 'at' => '2026-11-18T09:30:00-03:00'])
             ->and($items[0])->not->toHaveKey('phone');
     });
 

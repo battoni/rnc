@@ -105,9 +105,9 @@ describe('briefing:send (A24)', function () {
             $mail->assertSeeInHtml('Bom dia, Reinaldo')
                 ->assertSeeInHtml('Briefing do dia')
                 ->assertSeeInHtml('Novos leads · 7 dias')
-                ->assertSeeInHtml(config('rnc.frontend_url').'/reinaldo')
+                ->assertSeeInHtml('http://franco.localhost:5173/reinaldo')
                 ->assertSeeInText('Bom dia, Reinaldo')
-                ->assertSeeInText(config('rnc.frontend_url').'/reinaldo');
+                ->assertSeeInText('http://franco.localhost:5173/reinaldo');
 
             return $mail instanceof ShouldQueue && $mail->hasTo($this->reinaldo->email);
         });

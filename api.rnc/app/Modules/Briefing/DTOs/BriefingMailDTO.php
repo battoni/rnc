@@ -4,6 +4,7 @@ namespace App\Modules\Briefing\DTOs;
 
 use App\Modules\Briefing\Helpers\ActionPicker;
 use App\Modules\Briefing\Services\BriefingService;
+use App\Modules\Firm\Services\MailBrand;
 use Carbon\CarbonImmutable;
 
 /**
@@ -32,6 +33,7 @@ final class BriefingMailDTO
         public readonly string $firmName,
         public readonly string $frontendUrl,
         public readonly array $briefing,
+        public readonly MailBrand $brand,
     ) {}
 
     /** "sexta-feira, 13 de novembro" — the day the briefing is of, in São Paulo. */

@@ -8,6 +8,19 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class UserResource extends JsonResource
 {
+    private bool $withPlatform = false;
+
+    /**
+     * Adds `platform.name`, the product's name (rnc-4 R9) — for `GET auth/me`, the one answer the
+     * signed-in shell boots from; a user in a list does not carry it.
+     */
+    public function withPlatform(): static
+    {
+        $this->withPlatform = true;
+
+        return $this;
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -35,6 +48,7 @@ class UserResource extends JsonResource
             'partner_id' => $user->partner_id === null ? null : (int) $user->partner_id,
             'status' => $user->status->value ?? UserStatus::ACTIVE->value,
             'permissions' => $user->getAttribute('permissions') ?? [],
+            ...($this->withPlatform ? ['platform' => ['name' => (string) config('platform.name')]] : []),
         ];
     }
 }

@@ -33,7 +33,7 @@ describe('PlatformFirmSeeder', function () {
     it('runs in production too', function () {
         app()->detectEnvironment(fn () => 'production');
 
-        app(PlatformFirmSeeder::class)->run();
+        app()->call([app(PlatformFirmSeeder::class), 'run']);
 
         expect(Firm::where('slug', 'hub')->exists())->toBeTrue();
     });
@@ -72,7 +72,7 @@ describe('DemoFirmSeeder', function () {
     it('seeds nothing outside a local machine', function (string $environment) {
         app()->detectEnvironment(fn () => $environment);
 
-        app(DemoFirmSeeder::class)->run();
+        app()->call([app(DemoFirmSeeder::class), 'run']);
 
         expect(Firm::where('slug', 'alvorada')->exists())->toBeFalse()
             ->and(User::where('username', 'helena.alvorada')->exists())->toBeFalse();

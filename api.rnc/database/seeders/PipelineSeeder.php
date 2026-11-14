@@ -16,10 +16,10 @@ use App\Modules\Lead\Enums\LeadChannel;
 use App\Modules\Lead\Enums\LeadEventType;
 use App\Modules\Lead\Enums\LeadStage;
 use App\Modules\Lead\Enums\LeadStep;
-use App\Modules\Lead\Helpers\ConsentTerms;
 use App\Modules\Lead\Models\Lead;
 use App\Modules\Lead\Models\LeadConsent;
 use App\Modules\Lead\Models\LeadEvent;
+use App\Modules\Lead\Services\ConsentTextService;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
@@ -222,7 +222,7 @@ class PipelineSeeder extends Seeder
 
         $consent = $index % 3 !== 2;
         $last = $at->addMinutes(2);
-        LeadConsent::query()->create(['lead_id' => $lead->id, 'text' => ConsentTerms::textFor($lead->brand?->name), 'version' => ConsentTerms::VERSION, 'given' => $consent, 'via' => LeadChannel::from($lead->channel)->consentVia(), 'given_at' => $last]);
+        LeadConsent::query()->create(['lead_id' => $lead->id, ...app(ConsentTextService::class)->forLead($lead), 'given' => $consent, 'via' => LeadChannel::from($lead->channel)->consentVia(), 'given_at' => $last]);
         $this->event($lead, LeadEventType::ContactCaptured, ['consent' => $consent], $last);
         $last = $last->addMinutes(3);
         $this->event($lead, LeadEventType::StepReached, ['step' => LeadStep::Perfil->value], $last);

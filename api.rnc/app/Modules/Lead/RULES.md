@@ -1,7 +1,7 @@
 ---
-version: 1.7.1
+version: 1.8.0
 origin: rnc
-based-on: 1.7.1
+based-on: 1.8.0
 ---
 # RULES — Lead Module
 
@@ -44,16 +44,22 @@ them and writes the team's notes — through this module's service.
   [, deal_value_cents]}` with the partner's login as `user_id` and touches the lead, so its card
   rises. The partner never moves the lead's stage; Franco's team reads the line and decides.
 - **Every contact submission writes a consent row (AM12)**, given true or false — the box starts
-  unticked — with `ConsentTerms::TEXT`, `VERSION` 1, `via = formulario` and `given_at`. No IP, no
-  user agent. A new wording is a new version; the stored text is the text read.
+  unticked — with the firm's current version and its filled words (`ConsentTextService::forLead`),
+  `via` and `given_at`. No IP, no user agent. A new wording is a new version; the stored text is
+  the text read, and an older answer keeps its own words.
+- **The consent is per firm and versioned (rnc-4 R13, D12)**: `firm_consent_versions`, written only
+  by `ConsentTextService` — version n+1 for a new text, an older row never touched; a firm with none
+  starts at 1 from the platform default (`PlatformSettings::consentDefault`, Firm module) the first
+  time it is needed. `{escritorio}` is filled when read, with the sub-brand's name, else the firm's.
+  Franco's version 1 is its rnc-1 sentence with its name as the placeholder (`FirmSeeder`, spec C5).
+  *Retired 14/11/2026 (rnc-4 F2a):* "`ConsentTerms::TEXT`, `VERSION` 1" — one firm's words as code.
 - **A lead's brand is fixed at creation (rnc-3 R4)**: `brand_id` is the `CurrentBrand` of the
   diagnostic's start (null = the main brand), written once by `startLead` — never by a later step,
   and kept when the same visitor starts again under another brand — like `channel`. No foreign key:
   `firm_brands` is the Firm module's. The board's filter passes `Lead::MAIN_BRAND` (0) for "only the
   main brand"; ids start at 1.
-- **The consent names the visitor's brand (rnc-3 R3)**: `ConsentTerms::textFor($lead->brand?->name)`
-  — the main brand's words are `TEXT`, unchanged, so the version stays 1; the network is Franco's
-  under every brand.
+- **The consent names the visitor's brand (rnc-3 R3)**: `{escritorio}` takes the lead's sub-brand's
+  name, at the firm's current version — a sub-brand has no text of its own.
 - **The channel is set once (rnc-2 R14)**: `LeadChannel`, stamped when the lead is created and never
   written again — a later PATCH carries no channel, and a start from the other surface on the same
   visitor reopens the `visitante` with its channel kept. `carteira` is Franco's own portfolio
@@ -66,7 +72,8 @@ them and writes the team's notes — through this module's service.
   partner's way in is the firm's, R6) and a token born expired, so no public route ever opens it.
   It copies the client's name (`company`), CNPJ and the profile the Radar read (sector, regime, band,
   the measured B2B share when D9 applies) — refreshed on every later batch — and, once, the client's
-  consent as a `lead_consents` row `via contrato`, `ConsentTerms::CONTRACT_TEXT`, `given_at` the
+  consent as a `lead_consents` row `via contrato`, `ConsentTerms::CONTRACT_TEXT` with the firm's name
+  filled (`ConsentTextService::contractConsent`, one generic sentence, D12), `given_at` the
   client's `partner_consent_at`. The caller checks the client's consent first; this method trusts it.
   The create is `createOrFirst` (a savepoint): a racing batch that committed the lead after this
   one's read is reused — refreshed, its consent copied if it has none — instead of failing the batch.

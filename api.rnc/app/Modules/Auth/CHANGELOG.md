@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 2.11.0 — 2026-11-14
+
+### Added
+
+- `GET auth/me` carries `platform.name`, the product's name (rnc-4 F2a, R9), through `UserResource::withPlatform()`; a user in a list does not. Tested by `tests/Feature/Firm/PublicFirmBrandTest`.
+
 ## 2.10.0 — 2026-11-13
 
 ### Changed

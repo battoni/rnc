@@ -1,6 +1,7 @@
 <?php
 
 use App\Modules\Briefing\DTOs\BriefingMailDTO;
+use App\Modules\Firm\Services\MailBrand;
 
 /*
  * rnc-3 R25 (W81): the e-mail's sentence for the Radar's action, the demo's copy
@@ -8,7 +9,7 @@ use App\Modules\Briefing\DTOs\BriefingMailDTO;
  */
 it('writes the Radar action in the demo words, with the clients, the title and the range', function () {
     app()->setLocale('pt_BR');
-    $mail = new BriefingMailDTO('Reinaldo', 'Franco Contabilidade', 'http://localhost:5173', []);
+    $mail = new BriefingMailDTO('Reinaldo', 'Franco Contabilidade', 'http://localhost:5173', [], MailBrand::platform());
 
     expect($mail->actionLine([
         'kind' => 'radar',
@@ -19,7 +20,7 @@ it('writes the Radar action in the demo words, with the clients, the title and t
 
 it('writes a monthly Radar range per month', function () {
     app()->setLocale('pt_BR');
-    $mail = new BriefingMailDTO('Reinaldo', 'Franco Contabilidade', 'http://localhost:5173', []);
+    $mail = new BriefingMailDTO('Reinaldo', 'Franco Contabilidade', 'http://localhost:5173', [], MailBrand::platform());
 
     expect($mail->actionLine([
         'kind' => 'radar',

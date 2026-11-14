@@ -1,7 +1,7 @@
 ---
-version: 1.2.1
+version: 1.3.0
 origin: rnc
-based-on: 1.2.1
+based-on: 1.3.0
 ---
 # RULES — Briefing Module
 

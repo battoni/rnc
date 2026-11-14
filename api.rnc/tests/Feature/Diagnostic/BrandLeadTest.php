@@ -4,7 +4,6 @@ use App\Modules\Booking\Mail\BookingConfirmed;
 use App\Modules\Booking\Models\Specialist;
 use App\Modules\Firm\Models\Firm;
 use App\Modules\Firm\Models\FirmBrand;
-use App\Modules\Lead\Helpers\ConsentTerms;
 use App\Modules\Lead\Models\Lead;
 use App\Modules\Lead\Models\LeadConsent;
 use Carbon\CarbonImmutable;
@@ -24,6 +23,9 @@ use Illuminate\Support\Facades\Mail;
  * The clock is Thursday 19/11/2026 10:00 in São Paulo, so Monday 23/11 09:00 is a bookable slot.
  */
 const BRAND_LEAD_VISITOR = '0b7d4c9e-2f1a-4e3b-8c5d-6a7b8c9d0e1f';
+
+/** Franco's v1 for the main brand (rnc-4 F2a, C5): its name in the placeholder. */
+const FRANCO_MAIN_CONSENT = 'Autorizo a Franco Contabilidade a me apresentar a especialistas da Rede de Especialistas Franco quando o diagnóstico indicar.';
 
 const PRIME_CONSENT = 'Autorizo a Franco Prime Contabilidade a me apresentar a especialistas da Rede de Especialistas Franco quando o diagnóstico indicar.';
 
@@ -115,14 +117,14 @@ describe('a lead started under a brand (A3)', function () {
     it("keeps Franco's own consent words for the main brand", function () {
         $token = startBrandDiagnostic(null);
 
-        $this->patchJson("/api/public/diagnostics/{$token}", brandContact())->assertOk()->assertJsonPath('data.consent.text', ConsentTerms::TEXT);
+        $this->patchJson("/api/public/diagnostics/{$token}", brandContact())->assertOk()->assertJsonPath('data.consent.text', FRANCO_MAIN_CONSENT);
     });
 });
 
 describe("the confirmation e-mail of a brand's lead (A3)", function () {
     beforeEach(fn () => $this->seed([LocalUsersSeeder::class, SpecialistSeeder::class]));
 
-    it("is from Franco Prime Contabilidade at Franco's mailbox, and signed by it", function () {
+    it("is from Franco Prime Contabilidade, replies to Franco's mailbox, and is signed by it", function () {
         bookBrandLead($this->prime->id);
 
         Mail::assertQueued(BookingConfirmed::class, function (BookingConfirmed $mail) {
@@ -130,7 +132,9 @@ describe("the confirmation e-mail of a brand's lead (A3)", function () {
 
             $mail->assertSeeInHtml('Franco Prime Contabilidade')->assertSeeInText('Franco Prime Contabilidade');
 
-            return $from?->address === $this->franco->mailbox && $from->name === 'Franco Prime Contabilidade';
+            // From the platform's verified address under the brand's name; replies go to the firm (rnc-4 D11).
+            return $from?->address === config('mail.from.address') && $from->name === 'Franco Prime Contabilidade'
+                && $mail->envelope()->replyTo[0]->address === $this->franco->mailbox;
         });
     });
 
@@ -138,6 +142,7 @@ describe("the confirmation e-mail of a brand's lead (A3)", function () {
         bookBrandLead(null);
 
         Mail::assertQueued(BookingConfirmed::class, fn (BookingConfirmed $mail) => $mail->envelope()->from?->name === 'Franco Contabilidade'
-            && $mail->envelope()->from->address === $this->franco->mailbox);
+            && $mail->envelope()->from->address === config('mail.from.address')
+            && $mail->envelope()->replyTo[0]->address === $this->franco->mailbox);
     });
 });

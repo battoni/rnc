@@ -1,5 +1,5 @@
 ---
-version: 1.1.0
+version: 1.2.0
 origin: pendulum
 based-on: 1.0.0
 ---
@@ -24,21 +24,28 @@ fills `@section('body')`.
   only version a screen reader never has to fight.
 - **A preheader per message.** It is the line the inbox shows beside the subject; without one
   the client picks the first words it finds, which is usually the greeting.
-- **The brand arrives from `config('rnc.brand')`**, injected into every `mail.*` view by
-  a composer in `AppServiceProvider`. An e-mail has no CSS variables, so the colours have to
-  be literals — and no Mailable should have to remember to pass them.
+- **The brand is the firm's the message concerns (rnc-4 R12)**: the Mailable hands its view a
+  `mailBrand` (`App\Modules\Firm\Services\MailBrand`, carried in its queued DTO) and the composer
+  in `AppServiceProvider` turns it into `$brandName`, `$ink` (the firm's primary), `$accent`,
+  `$brandLogo` / `$brandLogoUrl` and `$frontendUrl` (the firm's own host). A view with no
+  `mailBrand` wears the request's firm, else the platform's own look. An e-mail has no CSS
+  variables, so the colours are literals — and no view reads a config for them.
+  *Retired 14/11/2026 (rnc-4 F2a):* "the brand arrives from `config('rnc.brand')`" — one brand,
+  Franco's, on every firm's e-mail.
+- **From the platform's address, under the firm's name; replies to the firm (D11).** Every
+  Mailable's envelope takes `MailBrand::sender()` (`mail.from.address`, the firm's — or the
+  sub-brand's — name) and `replyTo()` (the firm's mailbox). One verified sending domain for every
+  firm; a per-firm domain is out of scope.
 - **The logo is EMBEDDED, and the name stays as text beside it.** `$message->embed()`
   attaches the file and returns a `cid:` reference, so the mark travels with the message
   instead of depending on a public URL that has to still answer in five years. The name is
   text because most clients block images by default — a header that is only an image is a
   blank band until the reader clicks "show images".
-- **The band takes the LOGO FILE's colour, not the theme's.** They differ by one hex unit
-  (`#141313` against `#141413`), and the logo is a square tile with its background baked in,
-  so a band painted from the theme leaves a faint seam around it.
-- **The asset is cropped to the glyph.** In the app's tile the mark occupies 27% of the
-  width; at a header's 40px that is a 10px speck beside 19px text.
-- **No logo file → the initial in a tile** (`config('rnc.brand.logo')` empty, rnc-1 F4): Franco's
-  mark is text (W6), so the band draws its first letter on the accent, as text.
+- **The band takes the firm's primary.** *Retired 14/11/2026 (rnc-4 F2a):* "the band takes the
+  LOGO FILE's colour, not the theme's" and "the asset is cropped to the glyph" — they described
+  one product's bundled logo; a firm's logo is its upload (F4c) and the band is its primary.
+- **No logo file → the initial in a tile** (`firms.logo_path` empty, or a sub-brand's message):
+  the band draws the name's first letter on the accent, as text.
 - **The footer says why the message arrived** — `@section('footer_reason')` when the reason is not
   an account (the booking e-mails: "porque agendou uma reunião"). An e-mail that does not explain itself reads
   as spam even when the person asked for it.

@@ -1,5 +1,5 @@
 ---
-version: 1.3.0
+version: 1.4.0
 origin: rnc
 ---
 # RULES — Booking Module
@@ -61,9 +61,12 @@ horário acabou de ser reservado"), `slot_unavailable` 422 (not a slot the agend
   `findAppointmentsBetween` (the agenda week) serve the Pipeline module, which owns no table.
 
 - **A brand's lead hears from its brand (rnc-3 R3)**: `MeetingMailBuilder` signs the confirmation
-  and the reminder with the lead's sub-brand name (the firm's when none), and both are sent from
-  that name at the **firm's own mailbox** (`MeetingMailDTO::sender()`; `mail.from` when the firm has
-  none). Address and phone stay the firm's.
+  and the reminder with the lead's sub-brand name (the firm's when none) and its colours
+  (`MailBrand`, rnc-4 R12). Both are sent from the platform's `mail.from.address` under that name,
+  replying to the firm's mailbox (D11); the report link opens on the firm's own host. Address and
+  phone stay the firm's.
+  *Retired 14/11/2026 (rnc-4 F2a):* "sent from that name at the firm's own mailbox" — every firm's
+  mailbox domain would need verifying at the mail provider.
 
 ## Tables read from other modules
 
@@ -71,10 +74,9 @@ horário acabou de ser reservado"), `slot_unavailable` 422 (not a slot the agend
 
 ## Known Gaps
 
-- **The sender is the firm's mailbox (rnc-3 R3, A3), on a domain nobody verified.** Locally mail is
-  `log`; before `MAIL_MAILER=resend`, the firm's mailbox domain (`franco-rnc.com.br`) must be verified
-  at Resend or listed in `MAIL_VERIFIED_DOMAINS` — `MailSenderTest` checks only `MAIL_FROM_ADDRESS` —
-  or the sender goes back to `mail.from` with the firm's mailbox as reply-to.
+- *Retired 14/11/2026 (rnc-4 F2a, D11):* "the sender is the firm's mailbox, on a domain nobody
+  verified" — the sender is now `mail.from.address`, the one domain `MailSenderTest` checks, and the
+  firm's mailbox is the reply-to.
 
 - **No screen edits a specialist's hours or flags a new specialist** — the seeder is the source; a
   member flagged `is_specialist` later has no hours until it runs again.

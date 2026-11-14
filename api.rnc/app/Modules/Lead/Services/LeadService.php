@@ -41,6 +41,7 @@ class LeadService
     private const EMPTY_PROFILE = ['sector' => null, 'regime' => null, 'band' => null, 'b2b' => null, 'incentivos' => false, 'exporta' => false];
 
     public function __construct(
+        private ConsentTextService $consentTextService,
         private CurrentFirm $currentFirm,
         private LeadRepository $leadRepository,
         private TeamNotifier $teamNotifier,
@@ -134,7 +135,8 @@ class LeadService
 
     /**
      * The contact right after step 1 (R11): the lead becomes a `lead_parcial` and the consent
-     * answer is stored with the words read, the time and the lead's channel — given or not (AM12). The
+     * answer is stored with the words read — the firm's current version, its name or the sub-brand's
+     * filled (rnc-4 R13) — the time and the lead's channel, given or not (AM12). The
      * first time a lead becomes a lead parcial the team's bell rings (R17, `NewLead`).
      */
     public function recordContact(Lead $lead, LeadContactDTO $contact): Lead
@@ -155,8 +157,7 @@ class LeadService
             ]);
 
             $this->leadRepository->createLeadConsent($lead, [
-                'text' => ConsentTerms::textFor($lead->brand?->name),
-                'version' => ConsentTerms::VERSION,
+                ...$this->consentTextService->forLead($lead),
                 'given' => $contact->consent,
                 'via' => LeadChannel::from($lead->channel)->consentVia(),
                 'given_at' => $now,
@@ -367,8 +368,7 @@ class LeadService
     private function copyContractConsent(Lead $lead, Client $client, Carbon $now): Lead
     {
         $this->leadRepository->createLeadConsent($lead, [
-            'text' => ConsentTerms::CONTRACT_TEXT,
-            'version' => ConsentTerms::VERSION,
+            ...$this->consentTextService->contractConsent($lead->firm()->firstOrFail()),
             'given' => true,
             'via' => ConsentTerms::VIA_CONTRACT,
             // `given_at` is a plain `datetime` cast: it stores the wall clock it is handed, so the

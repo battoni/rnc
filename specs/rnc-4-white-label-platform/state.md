@@ -1,6 +1,6 @@
 # State: Reforma hub as a white-label platform for accounting firms
-Stage: build F1b/19
-Updated: 13/11/2026
+Stage: build F2a/19
+Updated: 14/11/2026
 Branch: feature/rnc-4-white-label-platform · Worktree: .claude/worktrees/rnc-4
 ## Done
 Intent approved 13/11 (delegated) · spec closed 13/11 (40 R · 49 A · 31 D, owner decisions O1–O12) ·
@@ -45,9 +45,36 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   Alvorada; `patricia` 422 on alvorada, 200 on franco (`auth/me` 200 on the session); patricia's
   pipeline 40 leads, `helena.alvorada`'s 0; franco session + `X-Firm: alvorada` 403 `firms.mismatch`;
   `xyz.localhost` 404 `firms.notFound`; root → `hub`; the session cookie is host-only (no Domain).
+- **F2a Firm brand, product name, mail brand, consent versions — API** (A8–A10; R8, R9, R12, R13) ·
+  14/11 · full Pest 1932 (+15: `Firm/PublicFirmBrandTest` 6, `Mail/FirmMailBrandTest` 3,
+  `Lead/ConsentVersionTest` 6), all green; Vitest and Playwright not run (no app.rnc change) · Pint,
+  PHPStan, mirror check green · pre-commit green 14/11/2026 (arcus review inline: the seeded consent
+  default made write-once, unused update methods dropped, `based-on` bumped). `make fresh-seed` clean.
+  Red first: all 15 new tests failed before the code. Mutations seen red: `platform` dropped from
+  `PublicFirmResource`, the firm logo shown under a sub-brand, `auth/me` without `withPlatform`, the
+  sender back on the firm's mailbox, the band not the firm's primary, links at the root, a new
+  consent text rewriting v1, the sub-brand's name not filled, v1 not copied from the platform default.
+  What changed: `firms` + `short_name`, `tagline`, `proof`, `logo_path`, `modules` (json, model
+  default `[]`); `PublicFirmResource` + `logo_url`, `is_platform`, `platform.name`; `auth/me` +
+  `platform.name` (`UserResource::withPlatform`); `Firm/Services/MailBrand` (name, ink = primary,
+  accent, logo, mailbox, the firm's own site) carried in `MeetingMailDTO`, `ReferralMailDTO`,
+  `BriefingMailDTO` and read by the `mail.*` composer; every mail is from `mail.from.address` under
+  the firm's name, reply-to its mailbox (D11); `config('rnc.brand')` removed; `MailPreviewController`
+  takes `?firma=<slug>`. Consent: `platform_settings` + `PlatformSettings` (`consent_default`,
+  write-once seed), `firm_consent_versions` + `FirmConsentVersion` + `ConsentTextService` (current,
+  `startFirm`, `createVersion`, `forLead`, `contractConsent`); `ConsentTerms` keeps `VIA_*`, the
+  generic `CONTRACT_TEXT`, `PLACEHOLDER`, `fill()`. Seeds: Franco short name + the landing's proof +
+  v1 (C5); hub short name + default + v1; alvorada short name, tagline, proof + v1.
+  Existing tests changed: `PublicFirmTest` (exact JSON), `PublicBrandTest` (main brand's own proof),
+  `PublicDiagnosticsTest` and `BrandLeadTest` (Franco's v1 words, C5; sender `mail.from.address`,
+  reply-to the mailbox), `ReferralsTest` (a literal stored text), `ContractReferralTest` and
+  `RadarBatchReferralTest` (generic contract text filled), `PublicBookingTest` and
+  `DailyBriefingCommandTest` (links on `franco.localhost`, C6), `PlatformSeedersTest` (seeders called
+  through the container), `BriefingMailActionTest` (DTO's brand). `MailSenderTest` unchanged: it
+  reads `.env`, and D11 keeps `MAIL_FROM_ADDRESS` as the sender.
 ## Next
-1. `/battoni-start-session rnc-4` (or the running `/battoni-run rnc-4`) → **F2a** Firm brand, product
-   name, mail brand, consent versions — API (plan.md F2a).
+1. `/battoni-start-session rnc-4` (or the running `/battoni-run rnc-4`) → **F2b** Runtime brand in
+   both layouts — SPA (plan.md F2b).
 ## Pitfalls
 - (F1a) `UserFactory` now puts every user in the default firm (`franco` under phpunit), creating it
   when absent. A test that creates `Firm::factory(['slug' => 'franco'])` AFTER a user would collide
@@ -71,6 +98,16 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
 - (F1b) The main checkout's `php artisan serve` held port 8000 during F1b and stopping it was refused
   by the permission layer: the live check served this worktree's API on 8001 with
   `VITE_API_PROXY_TARGET=http://localhost:8001 npm run dev`. Stop the main stack before `make serve-*`.
+- (F2a) `public/firm` now answers Franco's `short_name` and `proof` (no longer null): the landing's
+  proof strip reads the firm's four points; Franco's `tagline` stays null because `tagline` drives
+  both the landing kicker and the footer line (W17). F2b/F2c decide the SPA side.
+- (F2a) A firm with no consent version gets v1 from the platform default the first time it is read
+  (`ConsentTextService::currentVersion`): a `GET`-shaped answer (`PublicLeadResource`) can write that
+  row. A test about "no version yet" checks the table before any diagnostic call.
+- (F2a) A mail DTO needs a `MailBrand` (`MailBrand::fromFirm($firm, $brand)` or `::platform()`);
+  links in e-mails are on `<slug>.localhost:5173` (C6), so a test asserting a URL names the firm host.
+- (F2a) A seeder with dependencies in `run()` is called `app()->call([app(X::class), 'run'])` or
+  `$this->seed(X::class)`, never `->run()` bare.
 - (plan) `battoni` belongs to Franco until F4a moves it to no firm; from F4a it signs in only at the root.
 - (plan) The role is `ceo` until F2c renames it `gestao`; seeds written before F2c use `ceo`.
 ## QA
@@ -100,6 +137,8 @@ Started: 2026-11-13 23:58
 F1a done
 23:39 F1b started, attempt 1
 F1b done
+00:02 F2a started, attempt 1
+F2a done
 ## Decided while you were away
 - W1 plan: proposal.html skipped in away mode (spec D27; to reverse: `/battoni-new-proposal rnc-4 final`).
 - W2 plan: the owner's phases are split into 17 builder phases with his labels kept (spec D28); his
@@ -131,3 +170,22 @@ F1b done
   Chrome (Chrome rounds are verify's, plan.md → QA); API on 8001 (Pitfalls). To reverse: n/a.
 - W13 F1b: `seedAuthSession` answers `public/firm` with Franco by default — 8 back-office e2e tests
   that count console errors went red on the refused boot read. To reverse: mock it in each spec.
+- W14 F2a: Franco's consent v1 is its rnc-1 sentence with `{escritorio}` where "Franco" was, filled
+  with the full name — the main brand now reads "Autorizo a Franco Contabilidade…", Express/Prime
+  unchanged (spec C5). A literal sentence would drop the sub-brand's name. To reverse: fill the main
+  brand with `short_name`, or seed the literal sentence.
+- W15 F2a: queued mails carry a `MailBrand` value object in their DTO, not a firm id resolved at
+  render with `withoutGlobalScope` (plan text) — the values-not-models pattern AM6 already set; the
+  worker resolves nothing. To reverse: carry `firmId` and resolve it in the composer.
+- W16 F2a: e-mail links (report, briefing, footer) go to the firm's own host `<slug>.<root>` (spec
+  C6) — a root link opened the platform firm, where the lead is absent. To reverse:
+  `config('rnc.frontend_url')` in `MailBrand::siteUrlOf`.
+- W17 F2a: Franco's `tagline` seeded null (the site keeps its own kicker and footer line, which one
+  `tagline` would replace both of); its `proof` is the landing's four points, identical on screen. To
+  reverse: a `tagline` in `FirmSeeder`.
+- W18 F2a: under a sub-brand `logo_url` is null and the e-mail shows the initial tile, not the firm's
+  logo — the brand has no logo and the firm's would contradict its name. To reverse: drop the
+  `! $brand` guard in `PublicFirmResource` and `MailBrand::fromFirm`.
+- W19 F2a: a firm with no consent version gets v1 from the platform default lazily on first need, as
+  a safety net beside the seeders and `firm:create` (F3b1). To reverse: answer without consent words
+  (or 409) until a version exists.

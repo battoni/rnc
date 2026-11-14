@@ -1,7 +1,7 @@
 ---
-version: 1.6.0
+version: 1.7.0
 origin: rnc
-based-on: 1.6.0
+based-on: 1.7.0
 ---
 # RULES — Partner Module
 
