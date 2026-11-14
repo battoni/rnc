@@ -1,5 +1,5 @@
 ---
-version: 1.4.1
+version: 1.5.0
 origin: rnc
 ---
 
@@ -29,7 +29,9 @@ No login. The CTA's destination `/diagnostico` is the Diagnostic module's (F3); 
 - **Tracking goes by beacon, not through `API`** (`recordEvent.service.ts`): the router aborts every
   request in flight on navigation, and a CTA click is a navigation. `navigator.sendBeacon` with a
   `text/plain` JSON body outlives the page and asks no CORS preflight; `fetch` with `keepalive` is
-  the fallback. It never throws, and it stays off the app-busy counter.
+  the fallback. It never throws, and it stays off the app-busy counter. **On a firm host it goes by
+  the keepalive `fetch` straight away** (rnc-4 W10): a beacon cannot carry `X-Firm`, and without it
+  the API counts the event on the platform firm. Same-origin since D4, so no preflight.
 - **The source is decided once per page load** (`useTracking`): `utm_medium` paid/partner, an ad
   click id → paid, any other tag or an external referrer → organic, otherwise the session's stored
   source or `direto`. It is kept in `sessionStorage` so later pages of the visit carry it.
@@ -71,6 +73,9 @@ No login. The CTA's destination `/diagnostico` is the Diagnostic module's (F3); 
 - **Every public call goes through `publicApi`** — never `API` straight — so `X-Brand` is on all of
   them (C1) and a refused brand is retried once as the main brand: a stale tab lands on Franco, not on
   an error. The events beacon cannot carry a header; the API counts it on the main brand (AM21).
+- **`usePublicFirm().isFirmMissing`** (rnc-4 R3) is true only after the read answered 404
+  `firms.notFound` — the host names a firm the API does not know. `TheRouteGuard` reads it; any
+  other failure leaves it false.
 - **The brand's colours go on `<html>`, inline** (`useBrandTheme`), not on the layout's element:
   PrimeVue's `--p-primary-*`, the dark scheme's `--color-primary-text` and every teleported overlay
   are declared on the root and resolve there. The ramp is `brandPalette`'s — Franco's shape (500 the

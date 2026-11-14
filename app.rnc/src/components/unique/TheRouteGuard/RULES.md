@@ -1,5 +1,5 @@
 ---
-version: 1.2.1
+version: 1.3.0
 origin: pendulum
 based-on: 1.2.1
 ---
@@ -19,6 +19,13 @@ Component-based navigation guard wrapping the app's `<RouterView>`. Owns all rou
 - **`canRender` ref gates the slot**: children do NOT mount until session is verified. This prevents private views from firing their own `onMounted` API calls before auth is known.
 
 ## Intentional Decisions
+
+- **On a firm host the firm is asked once, here** (rnc-4 R3, `onFirmHostCheck`): `usePublicFirm().load()`
+  at the hard navigation, only when `currentFirmSlug()` names one. Its 404 `firms.notFound` sets
+  `isFirmMissing`, and the guard renders `FirmNotFoundView` in place of the slot on every path — site,
+  login, back office. Here and not in `App.vue` (which takes no more composables) and not as a route
+  (the address stays what was typed). The route renders while the answer is on its way; a missing firm
+  then replaces it. Any other failure leaves the route alone: an outage is not a missing firm.
 
 - **`canRender` stays `false` on blocked routes**: if `routeMiddleware()` returns `false`, the slot never renders, avoiding a flash of private content before the redirect completes.
 - **`GetMeService` fails into `onSessionProbeFailed`, never into an empty catch.** An HTTP failure was already handled by the API provider (logged; a 401 clears the session), so the guard adds nothing and `onSessionResolved()` sends the person to login via `.finally()`. Anything that is not an HTTP failure — an error thrown while storing the user — never reached the provider and goes to Sentry (`captureException`). The `.catch(() => {})` it replaced swallowed both; retired because the rule is "no empty catch" and the second kind was a bug nobody would ever see.

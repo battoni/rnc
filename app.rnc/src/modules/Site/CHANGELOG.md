@@ -1,5 +1,16 @@
 # Changelog — Site Module
 
+## 1.5.0 — 2026-11-13
+
+### Added
+
+- `usePublicFirm().isFirmMissing` (rnc-4 F1b, R3): set by a 404 `firms.notFound` on the firm read.
+
+### Changed
+
+- `recordEvent`: on a firm host the event goes by keepalive `fetch` with `X-Firm` instead of the
+  beacon, which cannot carry a header (rnc-4 W10).
+
 ## 1.4.1 — 2026-11-07
 
 ### Fixed

@@ -140,3 +140,47 @@ describe('usePublicFirm under a sub-brand', () => {
     expect(firm.value?.name).toBe('Franco Prime Contabilidade');
   });
 });
+
+/*
+ * rnc-4 R3, A6: an unknown or reserved subdomain is a 404 `firms.notFound` on the boot read, and the
+ * shell swaps every path for "Escritório não encontrado". Any other failure is not that answer.
+ */
+describe('usePublicFirm on a host that names no firm', () => {
+  function answerFirmWith(status: number, error: string) {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    server.use(
+      http.get('http://localhost/public/firm', () =>
+        HttpResponse.json({ data: null, error, status_code: status }, { status })
+      )
+    );
+  }
+
+  it('says the firm is missing on 404 firms.notFound', async () => {
+    answerFirmWith(404, 'firms.notFound');
+
+    const { firm, isFirmMissing, load } = await freshFirm();
+
+    await load();
+
+    expect(isFirmMissing.value).toBe(true);
+    expect(firm.value).toBeNull();
+  });
+
+  it('does not say so on any other failure', async () => {
+    answerFirmWith(500, 'errors.unexpected');
+
+    const { isFirmMissing, load } = await freshFirm();
+
+    await load();
+
+    expect(isFirmMissing.value).toBe(false);
+  });
+
+  it('does not say so when the firm answers', async () => {
+    const { isFirmMissing, load } = await freshFirm();
+
+    await load();
+
+    expect(isFirmMissing.value).toBe(false);
+  });
+});

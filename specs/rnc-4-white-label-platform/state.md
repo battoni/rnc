@@ -1,5 +1,5 @@
 # State: Reforma hub as a white-label platform for accounting firms
-Stage: build F1a/19
+Stage: build F1b/19
 Updated: 13/11/2026
 Branch: feature/rnc-4-white-label-platform · Worktree: .claude/worktrees/rnc-4
 ## Done
@@ -22,10 +22,32 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   Existing tests changed for D5 (header now 403, not ignored): `FirmScopeTest`, `PortalMeTest`,
   `PortalReferralsTest`, `LedgerTest`; `SeedShapeTest` (hub follows franco); registration tests run
   under `registration.enabled`; Auth unit tests get `CurrentFirm`/`FirmResolver`.
+- **F1b Firm by host — SPA and local hosts** (A6, A7; AM3, AM4 SPA half, AM5) · 13/11 · full Vitest
+  1311 (+22: `firmHost.helper.spec`, `FirmNotFoundView.view.spec`, and new cases in `provider.spec`,
+  `errorHandler.helper.spec`, `TheRouteGuard.spec`, `usePublicFirm.spec`, `useTracking.spec`) · full
+  Playwright 183 (+3: `e2e/tenancy/firm-host.spec.ts`) · full Pest 1917 (no API change) · all green ·
+  vue-tsc, aliases, ESLint, Prettier, Pint, PHPStan, mirror check green · pre-commit green 13/11/2026
+  (vue + design reviews inline, nothing to fix).
+  Red first: all 11 new Vitest cases and the 2 new spec files failed before the code. Mutations seen
+  red (all 3 e2e): `X-Firm` dropped from the provider, the mismatch branch removed from
+  `errorHandler`, the not-found swap disabled in `TheRouteGuard`.
+  What changed: `firmHost.helper` (`firmSlugFromHost`, `currentFirmSlug`, `rootSiteUrl`); the provider
+  sets `X-Firm` after a service's own headers; `API_URL` defaults to `/api`, `ROOT_DOMAIN` new;
+  `errorHandler` treats 403 `firms.mismatch` like a 401; `usePublicFirm().isFirmMissing`;
+  `TheRouteGuard` asks the firm once on a firm host and renders `FirmNotFoundView` (pt-BR "Escritório
+  não encontrado", link to the root) in place of any path; Vite `server`/test/`preview` proxy `/api`
+  (keeps Host, `VITE_API_PROXY_TARGET` overrides the target) and `allowedHosts: ['.localhost']`;
+  Playwright `baseURL` `http://franco.localhost:<port>` (D31); `.env.example`, `.env.test` (retired
+  comment, AM4) and this worktree's `app.rnc/.env` carry `VITE_API_URL=/api`, `VITE_ROOT_DOMAIN`.
+  Existing e2e touched: `fixtures/auth.ts` answers `public/firm` by default (W13). Every e2e intercept
+  already matched `**/…` on any host.
+  Live (AM3, through Vite's proxy, fresh seed): `public/firm` on `alvorada.localhost:5173` names
+  Alvorada; `patricia` 422 on alvorada, 200 on franco (`auth/me` 200 on the session); patricia's
+  pipeline 40 leads, `helena.alvorada`'s 0; franco session + `X-Firm: alvorada` 403 `firms.mismatch`;
+  `xyz.localhost` 404 `firms.notFound`; root → `hub`; the session cookie is host-only (no Domain).
 ## Next
-1. `/battoni-start-session rnc-4` (or the running `/battoni-run rnc-4`) → **F1b** Firm by host — SPA
-   and local hosts (plan.md F1b + AM3, AM4 SPA half, AM5: full Vitest and full Playwright). Update
-   the worktree's `app.rnc/.env` with `.env.example`'s new keys (AM4).
+1. `/battoni-start-session rnc-4` (or the running `/battoni-run rnc-4`) → **F2a** Firm brand, product
+   name, mail brand, consent versions — API (plan.md F2a).
 ## Pitfalls
 - (F1a) `UserFactory` now puts every user in the default firm (`franco` under phpunit), creating it
   when absent. A test that creates `Firm::factory(['slug' => 'franco'])` AFTER a user would collide
@@ -42,6 +64,13 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   `franco.localhost:5173`. Never use `127.0.0.1` — cookies and Sanctum's stateful list are per host.
 - (plan) The SPA reaches the API only through Vite's `/api` proxy (D4); a direct `localhost:8000`
   call from a firm host carries no session.
+- (F1b) The e2e suite runs on `franco.localhost` and `TheRouteGuard` asks `GET public/firm` on every
+  hard navigation there: `seedAuthSession` answers it; a spec that starts without that fixture and
+  counts console errors must mock `**/api/public/firm**` itself.
+- (F1b) A spec about another host swaps only the hostname of `baseURL` (`tenancy/firm-host.spec.ts`).
+- (F1b) The main checkout's `php artisan serve` held port 8000 during F1b and stopping it was refused
+  by the permission layer: the live check served this worktree's API on 8001 with
+  `VITE_API_PROXY_TARGET=http://localhost:8001 npm run dev`. Stop the main stack before `make serve-*`.
 - (plan) `battoni` belongs to Franco until F4a moves it to no firm; from F4a it signs in only at the root.
 - (plan) The role is `ceo` until F2c renames it `gestao`; seeds written before F2c use `ceo`.
 ## QA
@@ -69,6 +98,8 @@ Stop at: draft PR after verify · Reviewer: fable-reviewer (#fable session) · C
 Started: 2026-11-13 23:58
 00:00 F1a started, attempt 1
 F1a done
+23:39 F1b started, attempt 1
+F1b done
 ## Decided while you were away
 - W1 plan: proposal.html skipped in away mode (spec D27; to reverse: `/battoni-new-proposal rnc-4 final`).
 - W2 plan: the owner's phases are split into 17 builder phases with his labels kept (spec D28); his
@@ -91,3 +122,12 @@ F1a done
 - W8 F1a: `POST auth/users` stamps the current firm (spec C3), pulled forward from F5a. To reverse: n/a.
 - W9 F1a: a firm-less signed-in person sending ANY `X-Firm` gets 403 `firms.mismatch` (R5's "never
   falls through to the header", read with AM1). To reverse: ignore the header for a firm-less session.
+- W10 F1b: funnel events on a firm host go by keepalive `fetch` with `X-Firm`, not the beacon (no
+  headers on a beacon; spec C4). To reverse: beacon everywhere plus a firm field in the body.
+- W11 F1b: the firm-not-found page is swapped in by `TheRouteGuard` (no route, the address stays), and
+  the route renders while the firm answer is pending — a missing firm then replaces it. To reverse:
+  hold the slot until `public/firm` answers (one round-trip on every hard navigation).
+- W12 F1b: AM3's live check ran as HTTP calls through Vite's proxy with a cookie jar per host, not in
+  Chrome (Chrome rounds are verify's, plan.md → QA); API on 8001 (Pitfalls). To reverse: n/a.
+- W13 F1b: `seedAuthSession` answers `public/firm` with Franco by default — 8 back-office e2e tests
+  that count console errors went red on the refused boot read. To reverse: mock it in each spec.

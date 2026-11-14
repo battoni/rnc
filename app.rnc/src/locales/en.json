@@ -281,6 +281,11 @@
       }
     }
   },
+  "firmNotFound": {
+    "description": "Check the address or go back to the home page.",
+    "goToRoot": "Go to the home page",
+    "title": "Firm not found"
+  },
   "notFound": {
     "backHome": "Back to start",
     "description": "The address you opened matches nothing here. It may have been a typo, or a link that has aged out.",

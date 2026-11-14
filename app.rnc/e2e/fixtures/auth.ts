@@ -9,12 +9,31 @@ export async function seedAuthSession(page: Page): Promise<void> {
 
   /*
    * Registered first, so every mock a spec adds afterwards takes precedence: an API call nobody
-   * mocked is refused, exactly as it is in CI, where `.env.test` sets no `VITE_API_URL`. On a
-   * developer's machine `.env` names a running API, and it answered such calls with a 401 — which
-   * the app treats as "signed out", so the spec failed somewhere unrelated (lifeshifter, T0 sync).
+   * mocked is refused. Without it a call went to a running API — the test server proxies `/api` to
+   * http://localhost:8000 (rnc-4 D4) — and a 401 from there reads as "signed out", so the spec
+   * failed somewhere unrelated (lifeshifter, T0 sync).
    */
   await page.route('**/api/**', (route) => route.abort('connectionrefused'));
+
+  /*
+   * The firm of the host (rnc-4 F1b). On `franco.localhost` the route guard asks `GET public/firm`
+   * at every hard navigation, to show "Firm not found" on a subdomain the API does not know; refused,
+   * that read was one console error on every back-office screen whose spec counts them. A spec about
+   * the public firm registers its own answer afterwards, which takes precedence.
+   */
+  await page.route('**/api/public/firm**', (route) =>
+    route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: FRANCO_FIRM }) })
+  );
 }
+
+/** The minimal public firm the route guard needs to know the host's firm exists. */
+const FRANCO_FIRM = {
+  brand_accent: '#14c3ff',
+  brand_primary: '#00375a',
+  logo_text: 'Franco Contabilidade',
+  name: 'Franco Contabilidade',
+  slug: 'franco',
+};
 
 /**
  * Run this spec in the language people use. The suite runs in English (`.env.test`), and a

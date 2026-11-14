@@ -3,6 +3,14 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.14.0 — 2026-11-13
+
+### Added
+
+- `firmHost.helper.ts` (rnc-4 F1b, R2): `firmSlugFromHost(host, rootDomain)`, `currentFirmSlug()`
+  (the page's own host against `ROOT_DOMAIN`) and `rootSiteUrl(location, rootDomain)`. The API
+  provider and the events beacon name the firm with it; `FirmNotFoundView` links to the root.
+
 ## 1.13.0 — 2026-11-07
 
 ### Added

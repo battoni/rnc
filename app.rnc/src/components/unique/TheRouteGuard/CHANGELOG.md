@@ -3,6 +3,14 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.3.0 — 2026-11-13
+
+### Added
+
+- A host that names a firm the API does not know shows `FirmNotFoundView` instead of the slot (rnc-4
+  F1b, R3): `onFirmHostCheck` asks `usePublicFirm().load()` once on a firm host and reads its
+  `isFirmMissing`. The root never asks.
+
 ## 1.2.1 — 2026-09-17
 
 ### Changed

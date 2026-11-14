@@ -394,3 +394,8 @@ the deploy; a per-action audit trail inside view-as; firm self-signup without th
 - C3 (F1a, W8) `POST auth/users` stamps the current firm on the new account (from F5a's create
   rules): with AM2's scoped reads, a firm-less new account vanished from the list that made it.
   F5a keeps the refusals (no `operador`, `firm_id` or `partner_id` from a manager). Reverse: n/a.
+- C4 (F1b, W10) R2's "every API call carries `X-Firm`" includes the funnel events, which do not go
+  through the API provider: on a firm host `recordEvent` sends a keepalive `fetch` with `X-Firm`
+  instead of `navigator.sendBeacon`, which cannot carry a header (the API counted those on the
+  platform firm). The root keeps the beacon. Reverse: beacon everywhere and a `firm` field in the
+  event body read by the API.

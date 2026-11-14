@@ -31,9 +31,25 @@ export default defineConfig(({ mode }) => {
   const sslCert = process.env.VITE_LOCAL_SSL_CERT;
   const hasLocalSsl = !!sslKey && !!sslCert;
 
+  /*
+   * rnc-4 D4: the SPA calls the API same-origin at `/api`, so each firm host
+   * (`franco.localhost:5173`, `alvorada.localhost:5173`) keeps its own host-only session cookie.
+   * `changeOrigin: false` keeps the browser's Host header, which the API's QA login-as reads (C2).
+   * `allowedHosts` lets Vite answer every `*.localhost` host. Local, test mode and preview alike:
+   * the e2e server runs in test mode, and an `/api` that only the dev server proxied would not exist
+   * there (plan AM4).
+   */
+  const apiProxy = {
+    '/api': { target: process.env.VITE_API_PROXY_TARGET || 'http://localhost:8000', changeOrigin: false },
+  };
+  const allowedHosts = ['.localhost'];
+
   return defineConfig({
+    preview: { allowedHosts, proxy: apiProxy },
     server: isLocal
       ? {
+          allowedHosts,
+          proxy: apiProxy,
           host: hostname,
           https: hasLocalSsl
             ? {
@@ -53,7 +69,7 @@ export default defineConfig(({ mode }) => {
             usePolling: false,
           },
         }
-      : {},
+      : { allowedHosts, proxy: apiProxy },
     plugins: [
       vue(),
       vueDevTools(),

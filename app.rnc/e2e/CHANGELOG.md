@@ -3,6 +3,13 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.17.0 — 2026-11-13
+
+### Changed
+- `baseURL` is `http://franco.localhost:<port>` (rnc-4 D31): every call carries `X-Firm: franco`. `.env.test` pins `VITE_API_URL=/api` (same-origin, D4), and the test server proxies `/api` too, so the `**/api/**` intercepts match on every host.
+### Added
+- `tenancy/firm-host.spec.ts` (rnc-4 A6, A7): calls go same-origin to `/api` naming the host's firm; a 403 `firms.mismatch` clears the session onto the login screen; an unknown subdomain shows "Firm not found".
+
 ## 1.16.0 — 2026-11-13
 
 ### Fixed

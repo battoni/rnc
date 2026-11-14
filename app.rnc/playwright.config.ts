@@ -21,7 +21,10 @@ export default defineConfig({
   reporter: [['line'], ['html', { open: 'never' }]],
 
   use: {
-    baseURL: `http://localhost:${port}`,
+    // rnc-4 D31: Franco's host, so the suite runs as a firm tenant and every call carries
+    // `X-Firm: franco`. A product-site spec (the platform's root) navigates to
+    // `http://localhost:<port>` itself. Chromium resolves `*.localhost` to loopback.
+    baseURL: `http://franco.localhost:${port}`,
     trace: 'on-first-retry',
     // Route-intercept all API calls — tests never need a real backend.
     extraHTTPHeaders: { Accept: 'application/json' },

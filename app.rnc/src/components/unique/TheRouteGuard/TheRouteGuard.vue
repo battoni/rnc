@@ -2,7 +2,9 @@
 import { onBeforeMount, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useRoute } from 'vue-router';
-import { isReachableSignedOut } from '@Helpers';
+import { FirmNotFoundView } from '@/views';
+import { currentFirmSlug, isReachableSignedOut } from '@Helpers';
+import { usePublicFirm } from '@SiteModule';
 import { GetMeService, useUserStore } from '@UserModule';
 import useValidationCases from './useValidationCases';
 
@@ -10,6 +12,7 @@ const userStore = useUserStore();
 const { isAuthenticated } = storeToRefs(userStore);
 
 const ROUTE = useRoute();
+const { isFirmMissing, load: loadFirm } = usePublicFirm();
 const {
   NAVIGATION_MODES,
   isRedirecting,
@@ -23,6 +26,7 @@ const {
 const canRender = ref(false);
 
 onBeforeMount(onHardNavigation);
+onBeforeMount(onFirmHostCheck);
 
 // HELPERS
 function routeMiddleware(): boolean {
@@ -38,6 +42,17 @@ function onSessionResolved() {
 }
 
 // EVENTS
+/*
+ * rnc-4 R3: on a firm host the firm is asked once, at the hard navigation. A 404 `firms.notFound`
+ * swaps every path — site, login, back office — for "Escritório não encontrado". The root always
+ * has the platform firm, so it never asks here.
+ */
+function onFirmHostCheck() {
+  if (!currentFirmSlug()) return;
+
+  loadFirm();
+}
+
 function onHardNavigation() {
   if (isRedirecting.value) {
     if (isAuthenticated.value) onSessionResolved();
@@ -89,5 +104,7 @@ function onHardNavigation() {
 </script>
 
 <template>
-  <slot v-if="canRender" />
+  <FirmNotFoundView v-if="isFirmMissing" />
+
+  <slot v-else-if="canRender" />
 </template>

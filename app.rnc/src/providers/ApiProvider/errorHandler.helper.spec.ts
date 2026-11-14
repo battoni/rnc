@@ -251,3 +251,36 @@ describe('errorHandler — where a 401 leaves you', () => {
     expect(push).not.toHaveBeenCalled();
   });
 });
+
+/*
+ * rnc-4 R5, A7: 403 `firms.mismatch` is the one 403 that ends the session here. The session belongs
+ * to another firm than the host's — a cookie that should never have ridden to this host — so the
+ * screen it draws is someone else's firm, and the honest answer is the login screen of THIS one.
+ */
+describe('errorHandler — a session from another firm', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia());
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.clearAllMocks();
+    currentRoute.value = { fullPath: '/leads', meta: {} };
+  });
+
+  function mismatch() {
+    return { response: { status: 403, data: { data: null, error: 'firms.mismatch', status_code: 403 } }, message: 'x' };
+  }
+
+  it('clears the session store', async () => {
+    const userStore = useUserStore();
+    userStore.setUserAndPermissions(SIGNED_IN as never, ['leads.read']);
+
+    await handle(mismatch());
+
+    expect(userStore.user).toBeNull();
+  });
+
+  it('goes to the login screen', async () => {
+    await handle(mismatch());
+
+    expect(push).toHaveBeenCalledWith({ path: getLoginPath(), query: { redirect: '/leads' } });
+  });
+});

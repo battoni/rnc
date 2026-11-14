@@ -1,5 +1,5 @@
 ---
-version: 1.16.0
+version: 1.17.0
 origin: pendulum
 based-on: 1.8.2
 ---
@@ -47,6 +47,10 @@ A request can.
   project's `baseURL`, so pass it — `browser.newPage({ baseURL: testInfo.project.use.baseURL })` —
   and `goto` a path. A fixed `http://localhost:5173` warms (or tests) whatever else answers there
   when the suite runs on another port, and a `.catch` hides it.
+- **The suite runs on Franco's host** (`http://franco.localhost:<port>`, rnc-4 D31), so every call
+  names `X-Firm: franco`. A spec about another host (the platform root, an unknown subdomain) swaps
+  only the hostname of the project's `baseURL` (`new URL(path, baseURL)` then `url.hostname = …`),
+  never writes a port — `tenancy/firm-host.spec.ts` is the pattern.
 
 ## Directory layout
 
@@ -56,6 +60,7 @@ e2e/
   auth/              ← login (all modes), sign-up, forgot-password
   users/             ← users CRUD
   roles/             ← roles & permissions
+  tenancy/           ← the firm comes from the host: X-Firm, firms.mismatch, unknown subdomain (rnc-4)
   navigation/        ← the rail, the drawer, the bottom bar, the centred layout, the not-found screen
   theme/             ← what the theme promises, as the browser computed it: contrast, relief,
                        touch targets, scrollbars, the viewport height, the dialog mask

@@ -13,9 +13,17 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
  * global progress bar would run for the rest of the session.
  */
 
-const { axios, endRequest } = vi.hoisted(() => ({ axios: vi.fn(), endRequest: vi.fn() }));
+const { axios, endRequest, firmHost } = vi.hoisted(() => ({
+  axios: vi.fn(),
+  endRequest: vi.fn(),
+  firmHost: { slug: null as string | null },
+}));
 
 vi.mock('@Libraries', () => ({ axios }));
+vi.mock('@Helpers', async (importOriginal) => ({
+  ...((await importOriginal()) as Record<string, unknown>),
+  currentFirmSlug: () => firmHost.slug,
+}));
 vi.mock('@Libraries/i18n', () => ({ default: { global: { locale: { value: 'pt-BR' } } } }));
 vi.mock('@Composables', () => ({
   useAppBusy: () => ({ beginRequest: vi.fn(), endRequest }),
@@ -142,5 +150,60 @@ describe('API provider — headers a service adds', () => {
     await API({ endpoint: 'me', method: 'get' });
 
     expect(axios.mock.calls[0]?.[1]?.headers['Accept-Language']).toBe('pt-BR');
+  });
+});
+
+/*
+ * rnc-4 R2, A6: on `<slug>.<root>` every call names its firm in `X-Firm`, public and signed in
+ * alike, because this provider is the one way a call leaves. On the root and `www` there is no
+ * header, and the API answers the platform firm.
+ */
+describe('API provider — the firm of the host', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    axios.mockResolvedValue({ data: {} });
+    firmHost.slug = null;
+  });
+
+  it('sends X-Firm on a firm host', async () => {
+    firmHost.slug = 'alvorada';
+
+    await API({ endpoint: 'public/firm', method: 'get' });
+    await API({ endpoint: 'auth/me', method: 'get' });
+
+    expect(axios.mock.calls.map((call) => call[1]?.headers['X-Firm'])).toEqual(['alvorada', 'alvorada']);
+  });
+
+  it('sends no X-Firm on the root', async () => {
+    await API({ endpoint: 'public/firm', method: 'get' });
+
+    expect(axios.mock.calls[0]?.[1]?.headers).not.toHaveProperty('X-Firm');
+  });
+
+  // A service's own header cannot move the call to another firm: the host decides.
+  it('keeps the host firm over a header a service passes', async () => {
+    firmHost.slug = 'franco';
+
+    await API({ endpoint: 'leads', method: 'get', headers: { 'X-Firm': 'alvorada' } });
+
+    expect(axios.mock.calls[0]?.[1]?.headers['X-Firm']).toBe('franco');
+  });
+});
+
+/*
+ * rnc-4 R6, D4: the API is same-origin at `/api` — Vite's proxy locally, the vhost in production —
+ * so each firm host keeps its own host-only session cookie. An absolute default would send every
+ * firm host's calls to one origin and one cookie.
+ */
+describe('API provider — base URL', () => {
+  it('defaults to the same-origin /api', async () => {
+    vi.resetModules();
+    vi.stubEnv('VITE_API_URL', '');
+
+    const { API_URL } = await import('@/constants/env.constant');
+
+    expect(API_URL).toBe('/api');
+
+    vi.unstubAllEnvs();
   });
 });

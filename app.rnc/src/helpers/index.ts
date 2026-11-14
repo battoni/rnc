@@ -1,5 +1,6 @@
 export * from './afterLogin.helper';
 export * from './brazil';
+export * from './firmHost.helper';
 export * from './i18n';
 export * from './localDate.helper';
 export * from './money.helper';

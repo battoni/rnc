@@ -18,6 +18,16 @@ const firm = ref<PublicFirm | null>(null);
  */
 const isBrandPending = ref(false);
 
+/*
+ * True once the boot read answered 404 `firms.notFound` (rnc-4 R3): the host names a firm the API
+ * does not know, and `TheRouteGuard` shows "Escritório não encontrado" on every path. Any other
+ * failure leaves it false — an outage is not a missing firm.
+ */
+const isFirmMissing = ref(false);
+
+const FIRM_NOT_FOUND_ERROR = 'firms.notFound';
+const HTTP_NOT_FOUND = 404;
+
 let loadedFor: string | null = null;
 let pendingRequest: Promise<void> | null = null;
 let pendingFor: string | null = null;
@@ -39,9 +49,14 @@ function usePublicFirm() {
     return pendingRequest;
   }
 
-  function onFailed() {
+  function onFailed(failure: { response?: { data?: { error?: unknown }; status?: number } }) {
     pendingRequest = null;
     isBrandPending.value = false;
+
+    const isUnknownFirm =
+      failure?.response?.status === HTTP_NOT_FOUND && failure.response.data?.error === FIRM_NOT_FOUND_ERROR;
+
+    if (isUnknownFirm) isFirmMissing.value = true;
   }
 
   function onLoaded({ data }: { data: PublicFirm }) {
@@ -52,7 +67,12 @@ function usePublicFirm() {
     isBrandPending.value = false;
   }
 
-  return { firm: readonly(firm), isBrandPending: readonly(isBrandPending), load };
+  return {
+    firm: readonly(firm),
+    isBrandPending: readonly(isBrandPending),
+    isFirmMissing: readonly(isFirmMissing),
+    load,
+  };
 }
 
 export { usePublicFirm };
