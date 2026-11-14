@@ -1,5 +1,5 @@
 # State: Reforma hub as a white-label platform for accounting firms
-Stage: build F4a/19
+Stage: build F4b/19
 Updated: 14/11/2026
 Branch: feature/rnc-4-white-label-platform · Worktree: .claude/worktrees/rnc-4
 ## Done
@@ -304,10 +304,35 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   resources, RULES.md with the AM1 Known Gap, CHANGELOG 1.0.0); locales: the roles screen's `platform` group,
   `consent` label and `operatorOnlyKey`. Versions: Auth 2.14.0, Firm 1.9.0, database 1.28.0, locales 1.14.0,
   Platform 1.0.0. Spec C15.
+- **F4b Operator console — SPA** (A29, A30; R24, R25) · 14/11 · **FULL GATE**: full Pest 2118 (no API code
+  changed; only the Platform module's RULES/CHANGELOG), all green · full Vitest 1424 (`--maxWorkers=2`; +33:
+  `MAddEditFirmForm.spec` 11, `MFirmModulesForm.spec` 4, `MFirmManagerForm.spec` 4,
+  `FirmsView.view.integration.spec` 6 (A29), `ConsentDefaultView.view.integration.spec` 5, `navItems.local.spec`
+  +1 (and 2 extended), `HomeView.spec` +2), all green · full Playwright 210 (+2: `platform/console.spec.ts`, A30),
+  all green, none flaky (`test-results/.last-run.json` passed, no retry artifacts) · check-app (aliases 34 in all
+  three, vue-tsc), check-api (Pint, PHPStan), mirror check, wt-test, sanitize (ESLint, Prettier, sort-locales)
+  green; check-portal and check-cortex skip themselves here · vue-conventions, design-conventions and arcus reviews
+  inline (fixed: `FirmsView`'s one-line computeds split by a blank line, the subdomain link given `touch-target`;
+  arcus: only the API Platform RULES Known Gap retired) · pre-commit green 14/11/2026 — every step ran.
+  Red first: every new spec failed before the code (the Platform specs on missing files; the rail's 3 platform
+  cases and HomeView's operator redirect on assertions); the HomeView "keeps a person with a firm" case and the
+  rail's existing cases held, as they should. Mutations seen red: the modules form's dependency block off (1), the
+  new firm not prepended (1), the look validation skipped (1), the operator redirect off (e2e A30 red on the URL).
+  Live (worktree API on 8001, HTTP with a cookie jar, W60): `battoni` at the root → `firm` null, `is_operator`
+  true; `POST platform/firms` "Ipê Contábil"/`ipe` → `http://ipe.localhost:5173`, `gestao.ipe`, 16-char password;
+  `POST …/manager` `gestao.ipe` → reset (`created` false); `gestao.ipe` signed in with `X-Firm: ipe` (firm ipe,
+  role gestao) and got 403 on `platform/firms`. Re-seeded after (`migrate:fresh --seed`).
+  What changed (app.rnc): new module `src/modules/Platform` (constants, interfaces, 7 services, routes
+  `/plataforma/escritorios` + `/platform/firms`, `/plataforma/consentimento` + `/platform/consent`, molecules
+  `MAddEditFirmForm`, `MFirmModulesForm`, `MFirmManagerForm`, `MOneTimePassword`, views `FirmsView`,
+  `ConsentDefaultView`, RULES 1.0.0, CHANGELOG); `@PlatformModule` alias (vite, vitest, tsconfig; config-rules
+  1.5.0); `routes.local.ts`; rail "Plataforma" in `navItems.local.ts` (TheNavbar 1.10.0); `HomeView` sends the
+  firm-less operator to the console (Home 3.7.0, HomeView 1.2.0); locales `platform` group + 3 `navigation` keys,
+  `sort-locales.mjs` registers `platform` (locales 1.15.0); e2e 1.20.0. api.rnc: Platform RULES 1.0.1 (Known Gap
+  "No SPA yet" retired). Spec: no C# (W57–W59 stay inside R25's wording).
 ## Next
-1. `/battoni-start-session rnc-4` (or the running `/battoni-run rnc-4`) → **F4b** Operator console — SPA
-   (A29, A30), FULL GATE (every Pest, Vitest and Playwright test). The local DB is freshly seeded (`battoni`
-   firm-less: sign in at `http://localhost:5173`).
+1. `/battoni-start-session rnc-4` (or the running `/battoni-run rnc-4`) → **F6a** Beta signup — API (A31; R28,
+   R29). Gate: Pest dirs Lead, Notification, Access + static checks. The local DB is freshly seeded.
 ## Pitfalls
 - (F1a) `UserFactory` now puts every user in the default firm (`franco` under phpunit), creating it
   when absent. A test that creates `Firm::factory(['slug' => 'franco'])` AFTER a user would collide
@@ -413,6 +438,13 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   refused as "too complex"; write files with Write and run one plain command per call.
 - (F3c) A Bash `python3 /dev/stdin file <<EOF` edit silently did nothing here — write the script to the
   scratchpad and run it by path.
+- (F4b) In this sandbox `source ~/.nvm/nvm.sh` is refused; run Node 24 as
+  `PATH=/Users/battoni/.nvm/versions/node/v24.19.0/bin:$PATH rtk vitest …` (or `rtk make e2e`).
+- (F4b) `rtk make e2e` keeps only a truncated log of a green run; the outcome is
+  `app.rnc/test-results/.last-run.json` (`status`, `failedTests`).
+- (F4b) An e2e firm list mocked with two rows of the same `id` collapses in the `v-for` and the new-firm
+  dialog's password never shows — give every mocked firm its own id.
+- (F4b) The main checkout's `php artisan serve` still held :8000; the live check used :8001 again.
 ## QA
 (none yet — rounds in plan.md → QA)
 ## Seeded people (password `seeding.password`; `battoni` uses `seeding.superadmin_password`)
@@ -458,6 +490,8 @@ F3b2 done
 F3c done
 09:45 F4a started, attempt 1
 F4a done
+10:08 F4b started, attempt 1
+F4b done
 ## Decided while you were away
 - W1 plan: proposal.html skipped in away mode (spec D27; to reverse: `/battoni-new-proposal rnc-4 final`).
 - W2 plan: the owner's phases are split into 17 builder phases with his labels kept (spec D28); his
@@ -616,3 +650,15 @@ F4a done
   characters) — spec C15. To reverse: drop `namesTheFirm` from `UpdateConsentDefaultRequest`.
 - W56 F4a: the live check ran as HTTP calls on the worktree API (8001) with a cookie jar, not in Chrome — no
   screen in this phase; Chrome rounds stay verify's (as W12, W46, W52). To reverse: n/a.
+- W57 F4b: one `MAddEditFirmForm` with two modes — create asks only what `POST platform/firms` takes (name,
+  slug with its address preview, manager username, optional e-mail) and the look is edited from the row after;
+  the new firm joins the list at once while the dialog keeps the one-time password on screen. The plan listed
+  look fields on the same form; the API's create takes none. To reverse: a create that chains a `PATCH`.
+- W58 F4b: the manager login is a form molecule `MFirmManagerForm` in `MMainDialog` (plan: `MManagerLoginDialog`),
+  per celer-07's form contract; the password component `MOneTimePassword` is shared with the create. To reverse:
+  rename.
+- W59 F4b: the operator's landing is `HomeView` replacing itself with the console when `platform.is_operator`, no
+  `firm` AND the key `platform.firms` — the key guards against a redirect loop if the console were refused. To
+  reverse: drop the key from the check.
+- W60 F4b: the live check ran as HTTP calls on the worktree API (8001) with a cookie jar, plus the A30 Playwright
+  spec on a mocked API; Chrome rounds stay verify's (as W56). To reverse: n/a.

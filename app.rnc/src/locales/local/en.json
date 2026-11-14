@@ -53,7 +53,10 @@
     "invoices": "Invoices",
     "radar": "Portfolio radar",
     "contracts": "Contract alert",
-    "briefing": "Daily briefing"
+    "briefing": "Daily briefing",
+    "platform": "Platform",
+    "platformConsent": "Default consent",
+    "platformFirms": "Firms"
   },
   "rolesAndPermissions": {
     "groups": {
@@ -1856,5 +1859,126 @@
     },
     "loadFailed": "The briefing could not be loaded.",
     "retry": "Try again"
+  },
+  "platform": {
+    "consent": {
+      "counter": "{count} / {max}",
+      "hint": "Write {placeholder} where the firm's name goes.",
+      "label": "Default consent sentence",
+      "lede": "The sentence a new firm's first consent version copies, with the firm's name where {placeholder} stands. Changing it reaches only the next firm created: existing firms keep their own versions.",
+      "loadFailed": "The default consent could not be loaded.",
+      "saved": "Default consent saved. The next firm created will copy it.",
+      "title": "Default consent"
+    },
+    "errors": {
+      "emailInvalid": "This is not a valid e-mail address.",
+      "emailTaken": "This e-mail already belongs to another account.",
+      "firmNotFound": "This firm no longer exists. Reload the page.",
+      "invalidColour": "Use a colour as #rrggbb.",
+      "lowContrast": "White text does not read on this colour (under {min}:1). Pick a darker one.",
+      "missingDependency": "A module needs another that is off. Turn it on first.",
+      "moduleUnknown": "That module is not in the catalogue. Reload the page.",
+      "placeholderMissing": "The sentence must name the firm: write {'{escritorio}'} where its name goes.",
+      "required": "Required",
+      "slugInvalid": "Use lower-case letters, digits and hyphens, starting and ending with a letter or digit.",
+      "slugReserved": "This address is reserved by the platform. Pick another.",
+      "slugTaken": "A firm already has this address.",
+      "usernameTaken": "This username belongs to another account. Pick another."
+    },
+    "firms": {
+      "coreOnly": "Core only",
+      "created": "Created {date}",
+      "edit": "Look",
+      "leads": "{count} leads | {count} lead | {count} leads",
+      "lede": "Every firm on the platform: its address, its modules and its leads. A new firm is created with its manager's login; its look, modules and login are edited from its row.",
+      "loadFailed": "The firms could not be loaded.",
+      "managerAction": "Manager login",
+      "modules": "Modules",
+      "modulesAction": "Modules",
+      "new": "New firm",
+      "platform": "Platform",
+      "retry": "Try again",
+      "title": "Firms"
+    },
+    "form": {
+      "accent": "Accent colour",
+      "cancel": "Cancel",
+      "colours": "Colours",
+      "contrastLow": "White text on this colour reads at {ratio}:1 — under the {min}:1 the platform asks. Pick a darker one.",
+      "contrastOk": "White text on this colour reads at {ratio}:1 (at least {min}:1).",
+      "contrastUnknown": "Type a colour as #rrggbb to see how white text reads on it.",
+      "create": "Create firm",
+      "created": "{name} is created at {site}. Its manager signs in there as {manager}.",
+      "done": "Done",
+      "editHeading": "Firm look",
+      "email": "Manager's e-mail (optional)",
+      "invalidColour": "Use a colour as #rrggbb.",
+      "logoText": "Logo text",
+      "manager": "Manager's username",
+      "managerPlaceholder": "gestao.firm",
+      "name": "Firm name",
+      "newHeading": "New firm",
+      "newNote": "The firm starts with the platform's colours, the core modules and the daily briefing; edit its look and modules from its row.",
+      "pick": "Pick the {field}",
+      "previewCta": "Start the diagnostic",
+      "previewLede": "The firm's site, in its colours",
+      "primary": "Primary colour",
+      "proof": "Proof points",
+      "proofHint": "Four short facts on the landing — or leave all four empty to show none.",
+      "proofLabel": "Proof point {n}, label",
+      "proofLabelPlaceholder": "clients served",
+      "proofRequired": "Fill in all four points, value and label — or leave all four empty.",
+      "proofValue": "Proof point {n}, value",
+      "proofValuePlaceholder": "300+",
+      "save": "Save",
+      "shortName": "Short name",
+      "slug": "Address (subdomain)",
+      "slugHint": "Lower-case letters, digits and hyphens. The platform says whether it is free.",
+      "slugPreview": "The firm will answer on {site}",
+      "tagline": "Tagline (optional)"
+    },
+    "manager": {
+      "created": "{username} was created as {name}'s manager login.",
+      "email": "E-mail (optional, for a new login)",
+      "heading": "Manager login",
+      "lede": "{name}'s manager: the manager's username gets a new password and its open sessions end; a free username becomes the firm's new manager login.",
+      "reset": "{username}'s password was reset; its open sessions were ended.",
+      "submit": "Generate password",
+      "username": "Username",
+      "usernameHint": "Another account's username is refused and left as it is."
+    },
+    "modules": {
+      "core": "Always on",
+      "coreHint": "Every firm has these; they are not switched.",
+      "heading": "Modules",
+      "lede": "What {name} has on. A module turned off hides its screens and its API answers not found.",
+      "names": {
+        "assistant": "Reforma assistant",
+        "booking": "Booking",
+        "brands": "Sub-brands",
+        "briefing": "Daily briefing",
+        "channel": "Accounting network channel",
+        "chat": "Diagnostic chat",
+        "contracts": "Contract alert",
+        "diagnostic": "Diagnostic",
+        "fiscal": "Fiscal screens",
+        "metrics": "Metrics",
+        "partners": "Partner network",
+        "pipeline": "Pipeline",
+        "portfolio": "Portfolio",
+        "radar": "Radar",
+        "site": "Public site"
+      },
+      "needs": "{module} needs {needs} on.",
+      "operatorOnly": "Platform only",
+      "operatorOnlyHint": "Switched by the platform operator alone.",
+      "optIn": "Optional"
+    },
+    "password": {
+      "copied": "Copied",
+      "copy": "Copy",
+      "once": "Copy it now: it will not be shown again. A new one can be generated from the manager login.",
+      "title": "Password"
+    }
   }
 }

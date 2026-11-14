@@ -11,6 +11,7 @@ import { WorkspaceRoutes } from '@HomeModule';
 import { MetricsModuleRoutes } from '@MetricsModule';
 import { PartnerModuleRoutes } from '@PartnerModule';
 import { PipelineModuleRoutes } from '@PipelineModule';
+import { PlatformModuleRoutes } from '@PlatformModule';
 import { PortalModuleRoutes } from '@PortalModule';
 import { RadarModuleRoutes } from '@RadarModule';
 import { RepricingModuleRoutes } from '@RepricingModule';
@@ -39,7 +40,7 @@ import { SiteRoutes } from '@SiteModule';
 // whole map is in view, not in each module's route file — and `attachAuthGuard` shows not-found
 // while the firm has it off. The split is the API's `module:<key>` middleware's: the portal is the
 // partner network's, repricing the portfolio's. Core (site, diagnostic, workspaces, pipeline,
-// metrics) carries none.
+// metrics) carries none. rnc-4 F4b: the platform console (R25) — core too, closed by the operator's keys.
 const localRoutes: RouteRecordRaw[] = [
   ...SiteRoutes,
   ...DiagnosticModuleRoutes,
@@ -56,6 +57,7 @@ const localRoutes: RouteRecordRaw[] = [
   ...ofModule(FIRM_MODULE.RADAR, RadarModuleRoutes),
   ...ofModule(FIRM_MODULE.CONTRACTS, ContractsModuleRoutes),
   ...ofModule(FIRM_MODULE.BRIEFING, BriefingModuleRoutes),
+  ...PlatformModuleRoutes,
 ];
 
 function ofModule(module: FIRM_MODULE, routes: RouteRecordRaw[]): RouteRecordRaw[] {

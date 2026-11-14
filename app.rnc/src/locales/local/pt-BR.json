@@ -53,7 +53,10 @@
     "invoices": "Notas fiscais",
     "radar": "Radar da carteira",
     "contracts": "Alerta de contratos",
-    "briefing": "Briefing do dia"
+    "briefing": "Briefing do dia",
+    "platform": "Plataforma",
+    "platformConsent": "Consentimento padrão",
+    "platformFirms": "Escritórios"
   },
   "rolesAndPermissions": {
     "groups": {
@@ -1856,5 +1859,126 @@
     },
     "loadFailed": "Não foi possível carregar o briefing.",
     "retry": "Tentar de novo"
+  },
+  "platform": {
+    "consent": {
+      "counter": "{count} / {max}",
+      "hint": "Escreva {placeholder} onde vai o nome do escritório.",
+      "label": "Frase de consentimento padrão",
+      "lede": "A frase que a primeira versão do consentimento de um escritório novo copia, com o nome do escritório onde está {placeholder}. Mudar aqui só alcança o próximo escritório criado: os existentes mantêm as suas versões.",
+      "loadFailed": "Não foi possível carregar o consentimento padrão.",
+      "saved": "Consentimento padrão salvo. O próximo escritório criado vai copiá-lo.",
+      "title": "Consentimento padrão"
+    },
+    "errors": {
+      "emailInvalid": "Este não é um e-mail válido.",
+      "emailTaken": "Este e-mail já pertence a outra conta.",
+      "firmNotFound": "Este escritório não existe mais. Recarregue a página.",
+      "invalidColour": "Use uma cor no formato #rrggbb.",
+      "lowContrast": "Texto branco não se lê nesta cor (abaixo de {min}:1). Escolha uma mais escura.",
+      "missingDependency": "Um módulo precisa de outro que está desligado. Ligue-o antes.",
+      "moduleUnknown": "Esse módulo não está no catálogo. Recarregue a página.",
+      "placeholderMissing": "A frase precisa nomear o escritório: escreva {'{escritorio}'} onde vai o nome.",
+      "required": "Obrigatório",
+      "slugInvalid": "Use letras minúsculas, números e hífens, começando e terminando com letra ou número.",
+      "slugReserved": "Este endereço é reservado pela plataforma. Escolha outro.",
+      "slugTaken": "Já existe um escritório com este endereço.",
+      "usernameTaken": "Este usuário pertence a outra conta. Escolha outro."
+    },
+    "firms": {
+      "coreOnly": "Só o núcleo",
+      "created": "Criado em {date}",
+      "edit": "Visual",
+      "leads": "{count} leads | {count} lead | {count} leads",
+      "lede": "Todos os escritórios da plataforma: endereço, módulos e leads. Um escritório novo nasce com o login do gestor; visual, módulos e login se editam na linha dele.",
+      "loadFailed": "Não foi possível carregar os escritórios.",
+      "managerAction": "Login do gestor",
+      "modules": "Módulos",
+      "modulesAction": "Módulos",
+      "new": "Novo escritório",
+      "platform": "Plataforma",
+      "retry": "Tentar de novo",
+      "title": "Escritórios"
+    },
+    "form": {
+      "accent": "Cor de destaque",
+      "cancel": "Cancelar",
+      "colours": "Cores",
+      "contrastLow": "Texto branco nesta cor fica em {ratio}:1 — abaixo dos {min}:1 que a plataforma pede. Escolha uma mais escura.",
+      "contrastOk": "Texto branco nesta cor fica em {ratio}:1 (pelo menos {min}:1).",
+      "contrastUnknown": "Digite uma cor no formato #rrggbb para ver como o texto branco fica nela.",
+      "create": "Criar escritório",
+      "created": "{name} foi criado em {site}. O gestor entra lá como {manager}.",
+      "done": "Concluir",
+      "editHeading": "Visual do escritório",
+      "email": "E-mail do gestor (opcional)",
+      "invalidColour": "Use uma cor no formato #rrggbb.",
+      "logoText": "Texto do logo",
+      "manager": "Usuário do gestor",
+      "managerPlaceholder": "gestao.escritorio",
+      "name": "Nome do escritório",
+      "newHeading": "Novo escritório",
+      "newNote": "O escritório começa com as cores da plataforma, os módulos do núcleo e o briefing do dia; visual e módulos se editam na linha dele.",
+      "pick": "Escolher a {field}",
+      "previewCta": "Fazer o diagnóstico",
+      "previewLede": "O site do escritório, nas cores dele",
+      "primary": "Cor principal",
+      "proof": "Provas",
+      "proofHint": "Quatro fatos curtos na página inicial — ou deixe os quatro vazios para não mostrar nenhum.",
+      "proofLabel": "Prova {n}, legenda",
+      "proofLabelPlaceholder": "clientes atendidos",
+      "proofRequired": "Preencha as quatro provas, valor e legenda — ou deixe as quatro vazias.",
+      "proofValue": "Prova {n}, valor",
+      "proofValuePlaceholder": "300+",
+      "save": "Salvar",
+      "shortName": "Nome curto",
+      "slug": "Endereço (subdomínio)",
+      "slugHint": "Letras minúsculas, números e hífens. A plataforma diz se está livre.",
+      "slugPreview": "O escritório vai responder em {site}",
+      "tagline": "Slogan (opcional)"
+    },
+    "manager": {
+      "created": "{username} foi criado como login do gestor de {name}.",
+      "email": "E-mail (opcional, para um login novo)",
+      "heading": "Login do gestor",
+      "lede": "O gestor de {name}: o usuário do gestor recebe uma senha nova e as sessões abertas terminam; um usuário livre vira o novo login do gestor do escritório.",
+      "reset": "A senha de {username} foi redefinida; as sessões abertas foram encerradas.",
+      "submit": "Gerar senha",
+      "username": "Usuário",
+      "usernameHint": "O usuário de outra conta é recusado e fica como está."
+    },
+    "modules": {
+      "core": "Sempre ligados",
+      "coreHint": "Todo escritório tem; não se desligam.",
+      "heading": "Módulos",
+      "lede": "O que {name} tem ligado. Um módulo desligado esconde as telas e a API responde não encontrado.",
+      "names": {
+        "assistant": "Assistente da Reforma",
+        "booking": "Agendamento",
+        "brands": "Submarcas",
+        "briefing": "Briefing do dia",
+        "channel": "Canal da rede de contabilidade",
+        "chat": "Chat do diagnóstico",
+        "contracts": "Alerta de contratos",
+        "diagnostic": "Diagnóstico",
+        "fiscal": "Telas fiscais",
+        "metrics": "Métricas",
+        "partners": "Rede de parceiros",
+        "pipeline": "Pipeline",
+        "portfolio": "Carteira",
+        "radar": "Radar",
+        "site": "Site público"
+      },
+      "needs": "{module} precisa de {needs} ligado.",
+      "operatorOnly": "Só a plataforma",
+      "operatorOnlyHint": "Ligado e desligado apenas pelo operador da plataforma.",
+      "optIn": "Opcionais"
+    },
+    "password": {
+      "copied": "Copiada",
+      "copy": "Copiar",
+      "once": "Copie agora: ela não será mostrada de novo. Uma nova pode ser gerada no login do gestor.",
+      "title": "Senha"
+    }
   }
 }

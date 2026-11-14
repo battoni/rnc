@@ -67,6 +67,17 @@ describe('useLocalNavItems', () => {
       // rnc-2 A4: the portal for a partner's login only — the key AND the role, so the operator,
       // who holds every key, never sees it, and a partner holds none of the three groups' keys.
       ['navigation.portal', 'portal', 'portal.access', 'parceiro'],
+      // rnc-4 R24: the platform console, the firm-less operator's alone — no firm role holds the key (W53).
+      ['navigation.platform', 'platform-firms', 'platform.firms', undefined],
+    ]);
+  });
+
+  it('puts the firms and the default consent under "Plataforma", each behind its own key (rnc-4 R25)', () => {
+    const platform = useLocalNavItems().value[4];
+
+    expect(platform?.children?.map((child) => [child.label, child.routeName, child.permission])).toEqual([
+      ['navigation.platformFirms', 'platform-firms', 'platform.firms'],
+      ['navigation.platformConsent', 'platform-consent', 'platform.consent'],
     ]);
   });
 
@@ -229,6 +240,9 @@ describe('useLocalNavItems', () => {
       'operator-home',
       'users',
       'roles-and-permissions',
+      'platform-firms',
+      'platform-firms',
+      'platform-consent',
     ]);
   });
 });

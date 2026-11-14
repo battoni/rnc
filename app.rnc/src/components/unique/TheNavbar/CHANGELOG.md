@@ -3,6 +3,10 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.10.0 — 2026-11-14
+
+- "Plataforma" (rnc-4 F4b, R24, R25): `navItems.local.ts` closes the rail with the platform console — firms and default consent — behind `platform.firms` / `platform.consent`, keys only the firm-less operator holds. `key: 'platform'` because the group and its first child resolve the same route. `TheNavbar.vue` is untouched.
+
 ## 1.9.0 — 2026-11-14
 
 - Rail entries per firm module (rnc-4 F3c, R17, A24): `navItems.local.ts` entries carry `module` (`LocalNavItem`) and `useLocalNavItems` drops those the firm has off, children included — partners, trail, ledger and the portal without `partners`, and so on. `TheNavbar.vue` is untouched.

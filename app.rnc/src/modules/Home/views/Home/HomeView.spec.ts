@@ -15,11 +15,19 @@ beforeEach(() => replace.mockClear());
 
 const RouterLinkStub = { props: ['to'], template: '<a :data-to="JSON.stringify(to)"><slot /></a>' };
 
-function renderAs(permissions: string[]) {
+function renderAs(permissions: string[], session: object = {}) {
   const pinia = createPinia();
   setActivePinia(pinia);
   useUserStore().setUserAndPermissions(
-    { id: 1, name: 'Reinaldo', last_name: 'Franco', username: 'reinaldo', role: 'CEO', role_slug: 'gestao' },
+    {
+      id: 1,
+      name: 'Reinaldo',
+      last_name: 'Franco',
+      username: 'reinaldo',
+      role: 'CEO',
+      role_slug: 'gestao',
+      ...session,
+    } as never,
     permissions
   );
 
@@ -55,6 +63,26 @@ describe('HomeView', () => {
 
   it('keeps the operator, who holds the portal key too, in the back office', () => {
     renderAs(['home.read', 'users.read', 'portal.access']);
+
+    expect(replace).not.toHaveBeenCalled();
+  });
+
+  // rnc-4 R24: the firm-less operator's back office is the platform console.
+  it('sends the firm-less operator on to the platform console and shows nothing', () => {
+    const { queryAllByTestId } = renderAs(['home.read', 'users.read', 'platform.firms'], {
+      firm: null,
+      platform: { is_operator: true, name: 'Hub da Reforma', view_as: null },
+    });
+
+    expect(replace).toHaveBeenCalledWith({ name: 'platform-firms-en' });
+    expect(queryAllByTestId('workspace-card')).toEqual([]);
+  });
+
+  it('keeps a person with a firm in the back office, whatever the platform says', () => {
+    renderAs(['home.read', 'metrics.read'], {
+      firm: { modules: [], name: 'Alvorada Contabilidade', slug: 'alvorada' },
+      platform: { is_operator: false, name: 'Hub da Reforma', view_as: null },
+    });
 
     expect(replace).not.toHaveBeenCalled();
   });

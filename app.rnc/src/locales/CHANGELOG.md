@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.15.0 — 2026-11-14
+
+### Added
+
+- `local/*.json` (rnc-4 F4b): the `platform` group — the console's firms list, firm form, modules, manager login, one-time password and default consent, and the refusals by the API's code (`platform.errors.*`); `navigation.platform`, `platformFirms`, `platformConsent`. `scripts/sort-locales.mjs` registers `platform`.
+
 ## 1.14.0 — 2026-11-14
 
 ### Added

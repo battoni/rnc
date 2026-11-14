@@ -193,6 +193,8 @@ export default defineConfig(({ mode }) => {
         '@AssistantModule/*': getPath('./src/modules/Assistant/*'),
         '@BrandsModule': getPath('./src/modules/Brands'),
         '@BrandsModule/*': getPath('./src/modules/Brands/*'),
+        '@PlatformModule': getPath('./src/modules/Platform'),
+        '@PlatformModule/*': getPath('./src/modules/Platform/*'),
         '@ChannelModule': getPath('./src/modules/Channel'),
         '@ChannelModule/*': getPath('./src/modules/Channel/*'),
         '@PartnerModule': getPath('./src/modules/Partner'),

@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 3.7.0 — 2026-11-14
+
+### Changed
+
+- `HomeView` (rnc-4 F4b, R24): the firm-less platform operator (`platform.is_operator`, no `firm`, holding `platform.firms`) is sent on to the platform console (`@PlatformModule`, `PLATFORM_ROUTE_NAMES.firms`) and sees nothing of the back office's landing — as a partner is sent to its portal. Tests: `HomeView.spec.ts`.
+
 ## 3.6.0 — 2026-11-14
 
 - Management landing fallback (rnc-4 F3c, R17): `management-home` carries `meta.moduleFallback` (`/gestao/metricas`, `/management/metrics`), where `attachAuthGuard` sends it while the firm has `briefing` off.

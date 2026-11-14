@@ -12,6 +12,7 @@ import { WORKSPACES } from '@HomeModule';
 import { METRICS_PERMISSIONS, METRICS_ROUTE_NAMES } from '@MetricsModule';
 import { PARTNER_PERMISSIONS, PARTNER_ROUTE_NAMES } from '@PartnerModule';
 import { PIPELINE_PERMISSIONS, PIPELINE_ROUTE_NAMES } from '@PipelineModule';
+import { PLATFORM_PERMISSIONS, PLATFORM_ROUTE_NAMES } from '@PlatformModule';
 import { PORTAL_PERMISSIONS, PORTAL_ROLE_SLUG, PORTAL_ROUTE_NAMES } from '@PortalModule';
 import { RADAR_PERMISSIONS, RADAR_ROUTE_NAMES } from '@RadarModule';
 import { REPRICING_PERMISSIONS, REPRICING_ROUTE_NAMES } from '@RepricingModule';
@@ -255,9 +256,37 @@ const PORTAL_ENTRY: LocalNavItem = {
 };
 
 /**
+ * "Plataforma" (rnc-4 R24, R25): the console over the firms and the platform's default consent —
+ * keys only the firm-less operator holds (W53), so no firm's person ever sees the group. A link with a
+ * toggle (shape 3) to the firms; `key` because its first child resolves the same route.
+ */
+const PLATFORM_ENTRY: LocalNavItem = {
+  children: [
+    {
+      icon: 'pi pi-building',
+      label: 'navigation.platformFirms',
+      permission: PLATFORM_PERMISSIONS.firms,
+      routeName: PLATFORM_ROUTE_NAMES.firms,
+    },
+    {
+      icon: 'pi pi-file-check',
+      label: 'navigation.platformConsent',
+      permission: PLATFORM_PERMISSIONS.consent,
+      routeName: PLATFORM_ROUTE_NAMES.consent,
+    },
+  ],
+  icon: 'pi pi-globe',
+  key: 'platform',
+  label: 'navigation.platform',
+  permission: PLATFORM_PERMISSIONS.firms,
+  routeName: PLATFORM_ROUTE_NAMES.firms,
+};
+
+/**
  * The hub's rail (rnc-1 R3): Equipe · Reinaldo · Operador, in that order, each closed by the key
  * only its audience holds (`WORKSPACES`, plan AM8) — so the team sees one group, Reinaldo two and
- * the operator all three. Each is a link with a toggle (shape 3) once it has children.
+ * the operator all three. Each is a link with a toggle (shape 3) once it has children. The partner's
+ * portal and the platform console (rnc-4) close it.
  */
 function useLocalNavItems(): ComputedRef<NavItem[]> {
   const userStore = useUserStore();
@@ -273,6 +302,7 @@ function useLocalNavItems(): ComputedRef<NavItem[]> {
           routeName: workspace.routeName,
         })),
         PORTAL_ENTRY,
+        PLATFORM_ENTRY,
       ],
       userStore.hasModule
     )

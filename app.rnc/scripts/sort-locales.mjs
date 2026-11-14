@@ -20,6 +20,7 @@ const TOP_LEVEL_GROUPS = {
   partners: 'module', // modules/Partner (rnc-1)
   personalization: 'module',
   pipeline: 'module', // modules/Pipeline (rnc-1)
+  platform: 'module', // modules/Platform (rnc-4)
   portal: 'module', // modules/Portal (rnc-2)
   rolesAndPermissions: 'module',
   site: 'module', // modules/Site (rnc-1)

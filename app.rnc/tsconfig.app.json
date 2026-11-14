@@ -58,6 +58,8 @@
       "@AssistantModule/*": ["./src/modules/Assistant/*"],
       "@BrandsModule": ["./src/modules/Brands"],
       "@BrandsModule/*": ["./src/modules/Brands/*"],
+      "@PlatformModule": ["./src/modules/Platform"],
+      "@PlatformModule/*": ["./src/modules/Platform/*"],
       "@ChannelModule": ["./src/modules/Channel"],
       "@ChannelModule/*": ["./src/modules/Channel/*"],
       "@PartnerModule": ["./src/modules/Partner"],

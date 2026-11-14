@@ -1,5 +1,5 @@
 ---
-version: 1.0.0
+version: 1.0.1
 origin: rnc
 ---
 # RULES — Platform Module
@@ -84,5 +84,5 @@ order — a guest 401, anybody else 403:
   so the operator cannot open a firm's pipeline, partners or settings, and a firm's sub-brands
   (`brands*`) are not editable from here until view-as.
 - **No logo upload yet** (R27, F4c): the look is text and colours; `logo_path` is not a field.
-- **No SPA yet** (F4b): the refusal keys (`firms.slug*`, `firms.nameRequired`, `users.form.*`,
-  `platform.*`) have no locale text until the console's screens.
+_Retired 14/11/2026 (F4b):_ "No SPA yet: the refusal keys have no locale text" — the console's
+screens (app `Platform` module) name every refusal by its code (`PLATFORM_ERROR_KEYS` → `platform.errors.*`).

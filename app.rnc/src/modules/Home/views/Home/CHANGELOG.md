@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.2.0 — 2026-11-14
+
+### Changed
+
+- The firm-less platform operator (rnc-4 R24) is sent on to the platform console with `router.replace`, rendering nothing; the redirect also asks the console's key, so a refused console never loops back here.
+
 ## 1.1.0 — 2026-11-07
 
 ### Changed

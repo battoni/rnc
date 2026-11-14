@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.20.0 — 2026-11-14
+
+### Added
+
+- `platform/console.spec.ts` (rnc-4 F4b, A30): the firm-less operator at the root host lands on the console, creates "Ipê Contábil" and opens its subdomain link; the new firm's site and the console read at 390 and 1440, light and dark, with no horizontal scroll (API mocked).
+
 ## 1.19.0 — 2026-11-14
 
 ### Added
