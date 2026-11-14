@@ -2,6 +2,14 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.3.0 — 2026-11-14
+
+### Added
+
+- `GET leads/<built-in function id>/export` and `POST leads/<built-in function id>/anonymise` (rnc-4 F9a, R39, A48) behind `leads.update` +
+  `firm.settings`: `PipelineService::export` / `anonymise`; `LeadDetailResource` answers `anonymised_at`.
+  Tested by `tests/Feature/Pipeline/LeadPrivacyTest`, `tests/Feature/Access/Phase4AccessTest`.
+
 ## 1.2.0 — 2026-11-07
 
 ### Added

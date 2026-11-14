@@ -4,6 +4,7 @@ use App\Models\User;
 use App\Modules\Auth\Models\Role;
 use App\Modules\Auth\Models\UserPermission;
 use App\Modules\Firm\Models\Firm;
+use App\Modules\Lead\Models\Lead;
 use App\Modules\Partner\Models\Partner;
 use Database\Seeders\FirmSeeder;
 use Database\Seeders\PlatformFirmSeeder;
@@ -25,6 +26,8 @@ use Illuminate\Support\Str;
  *
  * F7 (A46, R37): the firm's settings (F5a) and the platform site (F6a) join, and a last test finds
  * every route carrying an rnc-4 lock and fails when this file does not sweep it.
+ *
+ * F9a: a lead's export and anonymisation (`leads.update` + `firm.settings`) join.
  */
 beforeEach(function () {
     config(['firms.default_slug' => PlatformFirmSeeder::PLATFORM_SLUG]);
@@ -131,6 +134,12 @@ dataset('phase 4 firm settings routes', [
     'PUT specialists/{id}/hours' => ['PUT', '/api/specialists/{id}/hours'],
 ]);
 
+/** F9a a lead's own data (`leads.update` + the manager's `firm.settings`; R39). */
+dataset('phase 4 lead privacy routes', [
+    'GET leads/{id}/export' => ['GET', '/api/leads/{id}/export'],
+    'POST leads/{id}/anonymise' => ['POST', '/api/leads/{id}/anonymise'],
+]);
+
 /** F6a the platform's own site (`platform.firm`: the platform firm only, R29). */
 dataset('phase 4 platform site routes', [
     'GET public/beta-signups/consent' => ['GET', '/api/public/beta-signups/consent'],
@@ -147,6 +156,7 @@ const PHASE4_SWEPT_ROUTES = [
     'GET specialists', 'GET specialists/{id}/hours', 'PUT specialists/{id}/hours',
     'GET public/beta-signups/consent', 'POST public/beta-signups',
     'GET health',
+    'GET leads/{id}/export', 'POST leads/{id}/anonymise',
 ];
 
 /** The locks rnc-4 introduced: a route carrying one is an rnc-4 route and must be swept here. */
@@ -192,6 +202,27 @@ describe('F6a the platform site', function () {
     it("answers 404 on a firm's host — the platform firm's alone", function (string $method, string $uri) {
         $this->withHeader('X-Firm', FirmSeeder::FRANCO_SLUG)->json($method, $uri)->assertNotFound();
     })->with('phase 4 platform site routes');
+});
+
+describe('F9a lead privacy', function () {
+    it('refuses the team and a partner with 403, a guest with 401, and answers 404 for another firm\'s lead', function (string $method, string $uri) {
+        $alvorada = Firm::factory()->create(['slug' => 'alvorada']);
+        $lead = Lead::factory()->create(['firm_id' => $this->franco->id]);
+        $partner = Partner::withoutGlobalScopes()->create([
+            'firm_id' => $this->franco->id,
+            'name' => 'Andrade Advocacia (exemplo)',
+            'specialty' => 'advocacia_tributaria',
+            'email' => 'contato@andrade.exemplo',
+            'active' => true,
+        ]);
+        $url = str_replace('{id}', (string) $lead->id, $uri);
+
+        $this->actingAs(phase4Person('equipe', $this->franco->id))->json($method, $url)->assertForbidden();
+        $this->actingAs(phase4Person('parceiro', $this->franco->id, $partner->id))->json($method, $url)->assertForbidden();
+        $this->actingAs(phase4Person('gestao', $alvorada->id))->json($method, $url)->assertNotFound();
+        $this->app['auth']->forgetGuards();
+        $this->json($method, $url)->assertUnauthorized();
+    })->with('phase 4 lead privacy routes');
 });
 
 describe('A46 every rnc-4 route is swept', function () {

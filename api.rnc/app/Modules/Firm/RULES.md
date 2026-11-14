@@ -1,5 +1,5 @@
 ---
-version: 1.11.0
+version: 1.12.0
 origin: rnc
 ---
 # RULES — Firm Module
@@ -204,7 +204,33 @@ its route names by id:
   names, the phone lookup and `auth/users/{id}` by the current firm; username and e-mail stay unique
   across all firms.
 
+## Privacy notice and a firm's exit (rnc-4 F9a, R38, R40)
+
+- `GET public/privacy` (`PublicPrivacyController`, `PublicPrivacyResource`) answers the data the
+  notice's template fills: the firm as controller, the platform (`platform.name`) as operator, what is
+  collected, the retention rule of each kind, `sharing` (`partner_network` only with `partners` on) and
+  the firm's mailbox and phone for a data request. Every list is a stable key; the SPA words them.
+- `firm:offboard <slug> --confirm` (`App\Console\Commands\OffboardFirm` → `FirmOffboarder`): exports the
+  firm, its logins (no password) and every lead (`LeadService::exportData`) to
+  `offboarding/<slug>-<time>.json` on the private `local` disk, then — one transaction — anonymises
+  every lead (`LeadService::anonymise`, via `saida_do_escritorio`) and writes `firms.offboarded_at`.
+  Without `--confirm` it writes nothing; the platform firm, an unknown slug and a firm already closed
+  are refused (`firms.offboard.platform`, `firms.notFound`, `firms.offboard.already`).
+- An offboarded firm: `FirmResolver::findTenantBySlug` answers null (host 404), `belongsTo` false for
+  everyone (logins refused with the wrong-password answer at the root), `ResolveCurrentFirm` refuses a
+  session of one of its people 403 `firms.offboarded` and invalidates it, and `CurrentFirm::forEachFirm`
+  skips it (no scheduled mail). The row stays for the records.
+- `FirmOffboarder` reads `users` (Auth's table, `UserRepository::findAllFirmUsers`) and `leads`
+  (`LeadRepository::eachLeadOfCurrentFirm`) — reads, declared here; every lead write is `LeadService`'s.
+
 ## Known Gaps
+
+- **`firm:offboard` anonymises the leads only** (rnc-4 F9a, W102): partners, portfolio clients,
+  referral messages, NF-e files, assistant notes and the team's logins (deactivated by the firm's
+  closure, not wiped) keep their rows until a purge per module is decided; the export file covers the
+  firm, its logins and its leads. The export file stays on the `local` disk until the operator deletes it.
+- **An offboarded firm still shows in the console and can be viewed as** (rnc-4 F9a): the console lists
+  every firm; a "desligada" state on the console is F9b's or later.
 
 _Retired 14/11/2026 (F4c):_ "Until F4c the operator reaches another firm only through the console;
 `ViewAsFirm` returns null" — `ViewAsFirm` now answers the firm of the operator's open view-as.

@@ -2,6 +2,15 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.11.0 — 2026-11-14
+
+### Added
+
+- A lead's own data (rnc-4 F9a, R39): `LeadService::exportData`, `LeadService::anonymise` (and its
+  `ANONYMISED_VIA_*`), `LeadEventType::Anonymised` (`dados.anonimizados`), `leads.anonymised_at` (folded
+  into `create_leads`); `LeadRepository::findLeadConsents`, `findLeadEventsOldestFirst`,
+  `updateLeadEventData`, `eachLeadOfCurrentFirm`. Tested by `tests/Feature/Pipeline/LeadPrivacyTest`.
+
 ## 1.10.0 — 2026-11-14
 
 ### Added

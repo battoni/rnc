@@ -69,6 +69,8 @@ class LeadDetailResource extends JsonResource
             'notes' => LeadEventResource::collection($timeline->where('type', LeadEventType::NoteAdded->value)->values()),
             'created_at' => $lead->created_at->toIso8601String(),
             'updated_at' => $lead->updated_at->toIso8601String(),
+            // rnc-4 F9a (R39): when the personal fields were wiped; null while they are kept.
+            'anonymised_at' => $lead->anonymised_at?->toIso8601String(),
         ];
     }
 }

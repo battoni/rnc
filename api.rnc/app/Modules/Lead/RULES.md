@@ -1,5 +1,5 @@
 ---
-version: 1.10.0
+version: 1.11.0
 origin: rnc
 based-on: 1.10.0
 ---
@@ -102,7 +102,22 @@ and `BetaSignupService` refuses again. The platform firm's team hears it by bell
   default (C15). A stored answer keeps its version and words; nothing is edited in place.
 - `FirmConsentVersion::author()` reads `users` (Auth's table) for the name — a read, declared here.
 
+## A lead's own data (rnc-4 F9a, R39, A48)
+
+- `LeadService::exportData` — the lead's fields, every consent with the words read, the timeline
+  without who wrote each line (the team's names are other people's data); never a token.
+- `LeadService::anonymise($lead, $by, $via)` wipes company, CNPJ, name, phone, e-mail, `visitor_uuid`,
+  `lost_reason` and the report link, replaces the diagnostic token by an expired random one, wipes the
+  free text of notes (`text` → null) and stage lines (`reason` dropped), writes `anonymised_at` and a
+  `dados.anonimizados` line (`{via: pedido | saida_do_escritorio}`, the actor or null). Stage, path,
+  channel, profile, consents and every line stay — the funnel still counts the lead. Irreversible and
+  idempotent: an anonymised lead is returned as is, with no second line.
+
 ## Known Gaps
+
+- **An anonymised lead's partner referrals keep their message** (rnc-4 F9a): `referrals.message` is
+  Partner's table; wiping it on anonymisation needs Partner's service. Other modules' copies (the
+  appointment's time, tracking visits by a random id) hold no name or contact.
 - **A beta signup has no dedupe**: the same firm sending twice is two `beta` leads; the throttle
 (5/min/address) bounds a script, not a person. Decide with the beta's volume.
 

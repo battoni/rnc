@@ -174,6 +174,16 @@ class UserRepository
     }
 
     /**
+     * Every login of a firm, active or not, by username (rnc-4 F9a: the firm's exit export).
+     *
+     * @return array<int, User>
+     */
+    public function findAllFirmUsers(int $firmId): array
+    {
+        return $this->model->newQuery()->with('role')->where('firm_id', $firmId)->orderBy('username')->get()->all();
+    }
+
+    /**
      * Every stored session of the user (`SESSION_DRIVER=database`, the `sessions` table): a cookie
      * already handed out finds nothing on its next request.
      */

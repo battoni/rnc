@@ -3,6 +3,9 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 2.18.0 — 2026-11-14
+- `UserRepository::findAllFirmUsers` — every login of a firm, active or not, for `firm:offboard`'s export (rnc-4 F9a, R40). Tested by `tests/Feature/Firm/OffboardFirmCommandTest`.
+
 ## 2.17.0 — 2026-11-14
 - `auth/me`'s `platform.view_as` also carries the viewed firm's opt-in `modules` (`FirmModules::enabled`), so the back office offers them during a view-as (rnc-4 F7, W93). Tested by `tests/Feature/Platform/ViewAsTest`.
 

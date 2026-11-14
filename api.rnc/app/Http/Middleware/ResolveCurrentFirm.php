@@ -20,6 +20,9 @@ use Symfony\Component\HttpFoundation\Response;
  * the SPA signs out locally. A request without the header keeps the person's own firm, which is
  * what lets the suite act as firm-B users with no header.
  *
+ * A signed-in person of an offboarded firm (rnc-4 R40, `firm:offboard`) is refused 403
+ * `firms.offboarded` and signed out: a session opened before the exit ends there.
+ *
  * A signed-in person with no firm (the platform operator) works in the firm they are viewing as
  * (F4c), else the platform firm — never in no firm, never in the header's (plan AM1). Without a
  * platform firm they are refused with 403 `firms.required`: a null firm here was a 500 further on.
@@ -38,6 +41,8 @@ class ResolveCurrentFirm
     public const REQUIRED = 'firms.required';
 
     public const NOT_FOUND = 'firms.notFound';
+
+    public const OFFBOARDED = 'firms.offboarded';
 
     public function __construct(
         private CurrentFirm $currentFirm,
@@ -68,6 +73,16 @@ class ResolveCurrentFirm
         return $next($request);
     }
 
+    private function endOffboardedSession(Request $request): Response
+    {
+        if ($request->hasSession()) {
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
+
+        return ApiResponse::forbidden(message: self::OFFBOARDED);
+    }
+
     private function resolveSignedIn(Request $request, Closure $next, ?string $requestedSlug): Response
     {
         $firmId = $request->user()?->getAttribute('firm_id');
@@ -77,6 +92,10 @@ class ResolveCurrentFirm
 
             if ($requestedSlug !== null && $requestedSlug !== $firm?->slug) {
                 return ApiResponse::forbidden(message: self::MISMATCH);
+            }
+
+            if ($firm?->isOffboarded()) {
+                return $this->endOffboardedSession($request);
             }
 
             $this->currentFirm->set($firm);

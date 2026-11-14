@@ -22,7 +22,7 @@ class FirmResolver
 
     public function __construct(private FirmRepository $firmRepository) {}
 
-    /** The firm a visitor's `X-Firm` header names, or null for a reserved, unknown or platform slug. */
+    /** The firm a visitor's `X-Firm` header names, or null for a reserved, unknown, platform or offboarded slug. */
     public function findTenantBySlug(string $slug): ?Firm
     {
         if (in_array($slug, $this->reservedSlugs(), true)) {
@@ -31,7 +31,7 @@ class FirmResolver
 
         $firm = $this->firmRepository->findFirmBySlug($slug);
 
-        return $firm !== null && ! $firm->is_platform ? $firm : null;
+        return $firm !== null && ! $firm->is_platform && ! $firm->isOffboarded() ? $firm : null;
     }
 
     /** The firm of a request that names none: the root host's (`DEFAULT_FIRM_SLUG`, D6). */
@@ -59,11 +59,12 @@ class FirmResolver
 
     /**
      * An account belongs to a firm when it is that firm's; the operator, who has no firm, belongs
-     * only to the platform firm (R4). Any other account with no firm belongs nowhere.
+     * only to the platform firm (R4). Any other account with no firm belongs nowhere, and nobody
+     * belongs to an offboarded firm any more (rnc-4 R40).
      */
     public function belongsTo(User $user, ?Firm $firm): bool
     {
-        if ($firm === null) {
+        if ($firm === null || $firm->isOffboarded()) {
             return false;
         }
 

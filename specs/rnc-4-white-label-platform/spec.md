@@ -453,3 +453,9 @@ the deploy; a per-action audit trail inside view-as; firm self-signup without th
   switched on again it keeps those hours (R32's "starts on the firm's hours" is the first flag only). Reverse: delete the row on unflag.
 - C18 (F4c, W86) R26's log keeps, beside operator, firm, started, ended and reason, the address the view-as was started from
   (`ip_address`): an audit of who entered a firm should say from where. Reverse: drop the column.
+- C19 (F9a, W103) A48's anonymise also wipes the company, the browser id, the lost reason, the report link and the team's free
+  text on the timeline (a note's text, a stage line's reason), and replaces the diagnostic token by an expired one — any of them
+  names or reaches the person. It is idempotent (a second call answers the same detail, no second line). Reverse: wipe A48's four only.
+- C20 (F9a, W102) R40's `firm:offboard` also anonymises every lead of the firm after the export (A48's rules) and takes a
+  `--confirm` flag (without it nothing is written); it refuses the platform firm and a firm already closed. "Inactive" is
+  `firms.offboarded_at`: host 404, nobody belongs to the firm, an open session refused 403 `firms.offboarded`. Reverse: close only.

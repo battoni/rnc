@@ -2,6 +2,17 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.12.0 — 2026-11-14
+
+### Added
+
+- The privacy notice's data and a firm's exit (rnc-4 F9a, R38, R40): `GET public/privacy`
+  (`PublicPrivacyController`, `PublicPrivacyResource`); `FirmOffboarder` + `firm:offboard <slug> --confirm`
+  (`OffboardedFirm` DTO); `firms.offboarded_at` (folded into `create_firms`), `Firm::isOffboarded()`.
+  An offboarded firm is no tenant (`FirmResolver`), nobody belongs to it, a session of its people is
+  refused 403 `firms.offboarded` (`ResolveCurrentFirm`), `forEachFirm` skips it. Tested by
+  `tests/Feature/Firm/PublicPrivacyTest`, `tests/Feature/Firm/OffboardFirmCommandTest`.
+
 ## 1.11.0 — 2026-11-14
 
 ### Added

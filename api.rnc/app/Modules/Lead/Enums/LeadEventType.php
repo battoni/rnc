@@ -15,4 +15,5 @@ enum LeadEventType: string
     case NoteAdded = 'nota.adicionada';
     case ReferralSent = 'encaminhamento.enviado';
     case ReferralStatusChanged = 'encaminhamento.status';
+    case Anonymised = 'dados.anonimizados';
 }

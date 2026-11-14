@@ -25,6 +25,7 @@ use App\Modules\Diagnostic\Controllers\PublicDiagnosticController;
 use App\Modules\Firm\Controllers\BrandController;
 use App\Modules\Firm\Controllers\FirmSettingsController;
 use App\Modules\Firm\Controllers\PublicFirmController;
+use App\Modules\Firm\Controllers\PublicPrivacyController;
 use App\Modules\Fiscal\Controllers\NfeImportController;
 use App\Modules\Fiscal\Controllers\ReadinessController;
 use App\Modules\Fiscal\Controllers\SupplierCreditController;
@@ -73,6 +74,8 @@ $brandFallback = ResolveCurrentBrand::ALIAS.':'.ResolveCurrentBrand::FALLBACK;
 Route::get('public/firm', [PublicFirmController::class, 'show'])->middleware($brand);
 Route::get('public/sectors', [PublicSectorPageController::class, 'index'])->middleware($brand);
 Route::get('public/sectors/{slug}', [PublicSectorPageController::class, 'show'])->middleware($brand);
+// The privacy notice's data (rnc-4 F9a, R38): the firm as controller, the platform as operator.
+Route::get('public/privacy', [PublicPrivacyController::class, 'show'])->middleware($brand);
 
 // The platform's beta (rnc-4 R29, D29): the product is firm zero, so "Quero participar do beta" on the
 // root site is a `beta` lead on the platform firm's own pipeline. `platform.firm` answers 404 on any
@@ -113,6 +116,10 @@ Route::get('leads', [PipelineLeadController::class, 'index'])->middleware(['auth
 Route::get('leads/{id}', [PipelineLeadController::class, 'show'])->middleware(['auth', 'permission:leads.read']);
 Route::patch('leads/{id}/stage', [PipelineLeadController::class, 'updateStage'])->middleware(['auth', 'permission:leads.update']);
 Route::post('leads/{id}/notes', [PipelineLeadController::class, 'storeNote'])->middleware(['auth', 'permission:leads.update']);
+// A lead's own data (rnc-4 F9a, R39): its export and its anonymisation — `leads.update` AND the
+// manager's `firm.settings`, so the team (which holds the first) is refused.
+Route::get('leads/{id}/export', [PipelineLeadController::class, 'export'])->middleware(['auth', 'permission:leads.update', 'permission:firm.settings']);
+Route::post('leads/{id}/anonymise', [PipelineLeadController::class, 'anonymise'])->middleware(['auth', 'permission:leads.update', 'permission:firm.settings']);
 Route::get('agenda', [AgendaController::class, 'index'])->middleware(['auth', 'permission:agenda.read']);
 
 // The network (rnc-1 F6, R21–R23, AM8): the registry behind `partners.manage` (gestao, operador);

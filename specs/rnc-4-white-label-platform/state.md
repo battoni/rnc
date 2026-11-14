@@ -1,5 +1,5 @@
 # State: Reforma hub as a white-label platform for accounting firms
-Stage: build F7/19
+Stage: build F9a/19 (optional F9a done; F9b not built)
 Updated: 14/11/2026
 Branch: feature/rnc-4-white-label-platform · Worktree: .claude/worktrees/rnc-4
 ## Done
@@ -536,10 +536,35 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   api Platform (1.1.2): Known Gap "logged IP is the direct peer" retired. app User (2.3.0): `hasModule` reads the viewed firm's modules
   during a view-as; app Platform (1.2.0): Known Gap "opt-in modules hidden from the rail during a view-as" retired (W93 → W96); e2e
   (1.22.1). Spec: no C# (W95–W100 stay inside R26, R34–R37).
+- **F9a LGPD — API** (A48, A49; R38–R40) · 14/11 · full Pest 2397 (+43: `Pipeline/LeadPrivacyTest` 19,
+  `Firm/PublicPrivacyTest` 5, `Firm/OffboardFirmCommandTest` 10, `Access/Phase4AccessTest` 2, `RouteMatrixTest` 7 rows for the three new routes),
+  all green (parallel, SQLite in memory); Vitest and Playwright not run (no app.rnc change) · phase gate 14/11/2026 — NOT the full
+  `/battoni-pre-commit`: ran `make check-api` (Pint + PHPStan green), `make check-app` (aliases + type-check green),
+  `make sync-mirror-check` green, the full Pest; skipped `make sanitize` and `test-all`'s Vitest/e2e (no app.rnc file touched),
+  `check-portal` (no portal), `check-cortex` (skipped by design here); vue and design reviews not applicable (no app change);
+  arcus review inline (findings fixed: `logout()` on the guard wrote `users` in the offboarded branch → session invalidate only;
+  two nullsafe calls on non-null timestamps; `role?->slug` on a Model → `instanceof Role`).
+  Red first: the three new files and the access rows failed before the code (42 failed of 600 in the touched folders; the two
+  "another firm's lead → 404" cases passed at once — the route was unregistered, so 404 for every lead). Mutations seen red:
+  `permission:firm.settings` dropped from both routes (team 403 cases, 2), the idempotence guard removed (1), `FirmResolver`
+  ignoring `offboarded_at` (2), the export reading the lead without the firm scope (2).
+  Live (worktree API on 8001, Python urllib, no SPA): `GET public/privacy` with `X-Firm: alvorada` → 200 controller Alvorada,
+  operator "Hub da Reforma", `sharing: [partner_network]`; root → controller hub, `is_platform: true`; `equipe.alvorada` export →
+  403; `helena.alvorada` export → 200 with the lead's e-mail; anonymise → 200, `contact_name` null, first line `dados.anonimizados`;
+  again → 200, same `anonymised_at`, one line. Server stopped; `make fresh-seed` re-run after.
+  What changed: `GET public/privacy` (`PublicPrivacyController`, `PublicPrivacyResource`, stable keys, W104);
+  `GET leads/{id}/export` + `POST leads/{id}/anonymise` (Pipeline, `leads.update` + `firm.settings`, W101) over
+  `LeadService::exportData` / `anonymise` (C19, W103); `firm:offboard <slug> --confirm` (`OffboardFirm` → `FirmOffboarder`,
+  C20, W102); `firms.offboarded_at` and `leads.anonymised_at` folded into their `create_*`; an offboarded firm is no tenant,
+  nobody belongs to it, a session of its people 403 `firms.offboarded`, `forEachFirm` skips it. Docs: Firm 1.12.0, Lead 1.11.0,
+  Pipeline 1.3.0, Auth 2.18.0 (`findAllFirmUsers`); Known Gaps: offboard anonymises leads only, offboarded firm still in the
+  console, referral messages kept. Spec: C19, C20.
 ## Next
-1. F7 was the last required phase. F9a/F9b are optional (plan: only if quota remains — skipped without a W# if the run goes to verify).
+1. F9a done. F9b (SPA `/privacidade` from `GET public/privacy`, A47; the lead detail's "Exportar dados" / "Anonimizar" buttons;
+   locales for `firms.offboarded`) is optional — build it only if quota remains, else list it as owed in the PR.
    Then `/battoni-verify rnc-4`: full gate (full Playwright included), `fable-reviewer` with spec + `main..HEAD` (P6 points of F1a,
-   F4a, F4c), Chrome QA rounds 1–6, draft PR. The owner, before any deploy: the MySQL 8 run in `docs/deploy/runbook.md` → "Database".
+   F4a, F4c, and F9a's `ResolveCurrentFirm` offboarded branch + `FirmResolver::belongsTo`), Chrome QA rounds 1–6, draft PR. The owner,
+   before any deploy: the MySQL 8 run in `docs/deploy/runbook.md` → "Database".
 ## Pitfalls
 - (F1a) `UserFactory` now puts every user in the default firm (`franco` under phpunit), creating it
   when absent. A test that creates `Firm::factory(['slug' => 'franco'])` AFTER a user would collide
@@ -704,6 +729,12 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
 - (F7) In this sandbox a command with `source ~/.nvm/nvm.sh` is refused (worktree isolation); use
   `PATH=/Users/battoni/.nvm/versions/node/v24.19.0/bin:$PATH`. The rtk hook rewrites `npm run lint` / `npx vitest` to `rtk lint` /
   `rtk vitest`; send the rtk form first.
+- (F9a) A lead/firm anonymised or offboarded in a live check stays so in the local SQLite: `make fresh-seed` after.
+- (F9a) In `ResolveCurrentFirm`, `Auth::guard('web')->logout()` in a test writes `users.remember_token` through the user model
+  and failed with "no such column: permissions" (the user carries the computed `permissions` attribute): end a session there by
+  invalidating it, not by `logout()`.
+- (F9a) `firm:offboard` writes its export with `Storage::disk('local')`: a test fakes `local` first, or the file lands in
+  `storage/app/private/offboarding/`.
 ## QA
 (none yet — rounds in plan.md → QA)
 ## Seeded people (password `seeding.password`; `battoni` uses `seeding.superadmin_password`)
@@ -767,6 +798,8 @@ F4c done
 F4d done
 13:28 F7 started, attempt 1
 F7 done
+13:50 F9a started, attempt 1
+F9a done
 ## Decided while you were away
 - W1 plan: proposal.html skipped in away mode (spec D27; to reverse: `/battoni-new-proposal rnc-4 final`).
 - W2 plan: the owner's phases are split into 17 builder phases with his labels kept (spec D28); his
@@ -1064,3 +1097,16 @@ F7 done
 - W100 F7: A46's sweep check finds rnc-4's routes by the locks rnc-4 introduced (`permission:platform.firms`, `permission:platform.consent`,
   `permission:firm.settings`, `platform.firm`) and fails when one is missing from `Phase4AccessTest`'s list; every listed route must be
   registered and classified. `GET health` is listed (its proof is `HealthTest`). To reverse: a hand-kept list only.
+- W101 F9a: a lead's export and anonymisation sit behind `leads.update` AND `firm.settings` (two `permission:` middlewares) — the
+  manager's existing key, no new `leads.privacy` key; the team holds the first only and gets 403. To reverse: a new key in
+  `permission-groups.local.php` granted to `gestao`.
+- W102 F9a: `firm:offboard` exports (firm, logins without password, every lead with consents and timeline) to
+  `offboarding/<slug>-<time>.json` on the private `local` disk, then anonymises every lead and writes `firms.offboarded_at` in one
+  transaction; `--confirm` required; the platform firm, an unknown slug and an already closed firm refused. Other modules' rows
+  (partners, clients, referrals, NF-e, notes) are not wiped — Firm Known Gap. Spec C20. To reverse: close only, no anonymisation.
+- W103 F9a: anonymise wipes, beyond A48's name/e-mail/phone/CNPJ, the company, `visitor_uuid`, `lost_reason`, the report link and
+  the team's free text on the timeline, and replaces the diagnostic token by an expired one; idempotent. Spec C19. To reverse: A48's four only.
+- W104 F9a: `GET public/privacy` answers stable keys (`collected`, `retention`, `sharing`) and names (controller = the firm,
+  operator = `platform.name`, requests = the firm's mailbox and phone) — the notice's prose stays in F9b's template. To reverse:
+  prose from the API.
+- W105 F9a: the live check ran on the API alone (8001, Python urllib with a cookie jar); no SPA change, so no browser. To reverse: n/a.

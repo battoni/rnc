@@ -15,6 +15,7 @@
 return [
     // PUBLIC — the site and the doors into the app
     'GET public/firm' => 'public',
+    'GET public/privacy' => 'public',
     'GET public/sectors' => 'public',
     'GET public/sectors/{slug}' => 'public',
     'POST public/events' => 'public',
@@ -165,4 +166,8 @@ return [
     'GET specialists' => 'staff',
     'GET specialists/{id}/hours' => 'staff',
     'PUT specialists/{id}/hours' => 'staff',
+
+    // STAFF — rnc-4 F9a a lead's own data, `leads.update` + `firm.settings` (the manager)
+    'GET leads/{id}/export' => 'staff',
+    'POST leads/{id}/anonymise' => 'staff',
 ];

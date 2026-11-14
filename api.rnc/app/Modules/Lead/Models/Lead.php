@@ -37,13 +37,14 @@ use Illuminate\Support\Carbon;
  * @property string $source
  * @property string|null $medium
  * @property int|null $brand_id
+ * @property Carbon|null $anonymised_at when the personal fields were wiped (rnc-4 F9a)
  * @property-read FirmBrand|null $brand
  * @property int|null $client_id the portfolio client of a `carteira` lead (rnc-2 R27)
  * @property-read LeadConsent|null $latestConsent
  * @property Carbon $created_at
  * @property Carbon $updated_at
  */
-#[Fillable(['token', 'token_expires_at', 'report_token', 'report_expires_at', 'visitor_uuid', 'stage', 'last_step', 'lost_reason', 'path', 'company', 'cnpj', 'contact_name', 'phone', 'email', 'profile', 'channel', 'source', 'medium', 'brand_id', 'client_id'])]
+#[Fillable(['token', 'token_expires_at', 'report_token', 'report_expires_at', 'visitor_uuid', 'stage', 'last_step', 'lost_reason', 'path', 'company', 'cnpj', 'contact_name', 'phone', 'email', 'profile', 'channel', 'source', 'medium', 'brand_id', 'client_id', 'anonymised_at'])]
 class Lead extends Model
 {
     use BelongsToFirm;
@@ -64,6 +65,7 @@ class Lead extends Model
             'report_expires_at' => 'datetime',
             'profile' => 'array',
             'client_id' => 'integer',
+            'anonymised_at' => 'datetime',
         ];
     }
 

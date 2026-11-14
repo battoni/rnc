@@ -50,6 +50,9 @@ return new class extends Migration
             $table->unsignedInteger('partner_monthly_fee_cents')->default(49000);
             $table->boolean('is_platform')->default(false);
             $table->json('modules');
+            // rnc-4 F9a (R40): the day `firm:offboard` closed the firm — its host 404, its people
+            // refused; the row stays for the records. Null while the firm is on the platform.
+            $table->timestamp('offboarded_at')->nullable();
             $table->timestamps();
         });
     }

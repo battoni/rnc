@@ -61,13 +61,14 @@ class CurrentFirm
     }
 
     /**
-     * What a scheduled command does: the same work once per firm, each run seeing only its rows.
+     * What a scheduled command does: the same work once per firm, each run seeing only its rows. An
+     * offboarded firm (rnc-4 F9a) is skipped: no reminder, briefing or digest goes out for it.
      *
      * @param  Closure(Firm): void  $callback
      */
     public function forEachFirm(Closure $callback): void
     {
-        Firm::query()->orderBy('id')->each(fn (Firm $firm) => $this->runAs($firm, fn () => $callback($firm)));
+        Firm::query()->whereNull('offboarded_at')->orderBy('id')->each(fn (Firm $firm) => $this->runAs($firm, fn () => $callback($firm)));
     }
 
     /**
