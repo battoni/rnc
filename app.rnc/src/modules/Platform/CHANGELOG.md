@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.4.0 — 2026-11-14
+
+### Fixed
+
+- Chrome QA 5.21: `OViewAsBanner`'s "Sair" reads the root's brand again even when the following `auth/me` fails, so the viewed firm's kept brand never outlives the view-as.
+
 ## 1.3.0 — 2026-11-14
 
 ### Fixed

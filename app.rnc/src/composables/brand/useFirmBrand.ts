@@ -21,10 +21,19 @@ import { FIRM_BRAND_STORAGE_KEY } from './constants';
  *
  * `logoUrl` is the firm's uploaded logo (rnc-4 R27) as a path on the page's own origin
  * (`toStorageAssetPath`: `/storage` is proxied per host). `reload()` asks again within the page load —
- * entering or leaving a view-as changes the firm the root's session answers for (R26).
+ * entering or leaving a view-as changes the firm the root's session answers for (R26) — and drops the
+ * kept answer first, so a failed read leaves nothing stale. `forget()` is signing out: the firm goes at
+ * once, the root's login never wears the firm a view-as showed (Chrome QA 5.21). The kept answer names
+ * its host and is read only there.
  */
 interface ApiFailure {
   response?: { data?: { error?: unknown }; status?: number };
+}
+
+/** The answer as kept: the host it is for, because the root's answer follows its session (R26). */
+interface StoredFirm {
+  firm: PublicFirm | null;
+  host: string;
 }
 
 const FIRM_NOT_FOUND_ERROR = 'firms.notFound';
@@ -39,17 +48,23 @@ let pendingRequest: Promise<PublicFirm | null> | null = null;
 // HELPERS
 function readStoredFirm(): PublicFirm | null {
   try {
-    const stored = JSON.parse(sessionStorage.getItem(FIRM_BRAND_STORAGE_KEY) ?? 'null') as PublicFirm | null;
+    const stored = JSON.parse(sessionStorage.getItem(FIRM_BRAND_STORAGE_KEY) ?? 'null') as StoredFirm | null;
+    const isThisHost = stored?.host === window.location.host && typeof stored.firm?.slug === 'string';
 
-    return stored && typeof stored.slug === 'string' ? stored : null;
+    return isThisHost ? stored.firm : null;
   } catch {
     return null;
   }
 }
 
-function storeFirm(current: PublicFirm) {
+function storeFirm(current: PublicFirm | null) {
   try {
-    sessionStorage.setItem(FIRM_BRAND_STORAGE_KEY, JSON.stringify(current));
+    if (!current) {
+      sessionStorage.removeItem(FIRM_BRAND_STORAGE_KEY);
+      return;
+    }
+
+    sessionStorage.setItem(FIRM_BRAND_STORAGE_KEY, JSON.stringify({ firm: current, host: window.location.host }));
   } catch {
     // Without storage the next page simply waits for the API.
   }
@@ -70,9 +85,19 @@ function useFirmBrand() {
     return pendingRequest;
   }
 
+  /** Signing out (Chrome QA 5.21): the session that chose the firm is gone, so nothing of its answer stays. */
+  function forget(): Promise<PublicFirm | null> {
+    firm.value = null;
+
+    return reload();
+  }
+
+  /** The session changed what the host answers for: the kept answer goes before the new one is asked. */
   function reload(): Promise<PublicFirm | null> {
     isLoaded = false;
     pendingRequest = null;
+
+    storeFirm(null);
 
     return load();
   }
@@ -100,6 +125,7 @@ function useFirmBrand() {
 
   return {
     firm: readonly(firm),
+    forget,
     isFirmMissing: readonly(isFirmMissing),
     load,
     logoText,

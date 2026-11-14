@@ -13,7 +13,7 @@ import type {
 } from './interfaces';
 import type { RouteParamsRawGeneric } from 'vue-router';
 import type { RouteLocationRaw } from 'vue-router';
-import { useViewport } from '@Composables';
+import { useFirmBrand, useViewport } from '@Composables';
 import { DOCS_URL } from '@Constants';
 import { HTTP_STATUS } from '@Enums';
 import { getI18nRouteName, getLoginPath } from '@Helpers';
@@ -28,6 +28,7 @@ const uiStore = useUiStore();
 const userStore = useUserStore();
 
 const localItems = useLocalNavItems();
+const { forget: forgetFirmBrand } = useFirmBrand();
 const { isMobile: isMobileView } = useViewport();
 const { t } = useI18n();
 
@@ -164,12 +165,16 @@ function toVisibleItems(navItems: NavItem[]): NavRouteItem[] {
  *
  * A 401 on logout is the same destination: the server already has no session, so treating
  * it as failure kept the person on a screen that looked signed in with a toast that lied.
+ *
+ * The host firm's kept brand goes too (Chrome QA 5.21): at the root it is the session's answer — a
+ * view-as's firm — and the login that follows is the platform's.
  */
 function completeLogout() {
   push(getLoginPath());
 
   userStore.clearUser();
   resetAllStores();
+  forgetFirmBrand();
 
   toast.add({
     severity: 'success',

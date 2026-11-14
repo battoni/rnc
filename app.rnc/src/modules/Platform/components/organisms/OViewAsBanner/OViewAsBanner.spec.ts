@@ -116,6 +116,17 @@ describe('OViewAsBanner', () => {
     await waitFor(() => expect(push).toHaveBeenCalledWith({ name: 'platform-firms-en' }));
   });
 
+  // Chrome QA 5.21: the viewed firm's kept brand must not outlive the view-as when the session read fails.
+  it("reads the root's brand again even when the session read fails", async () => {
+    server.use(http.get('http://localhost/auth/me', () => HttpResponse.json({ message: 'down' }, { status: 500 })));
+    renderBanner({ name: 'Alvorada Contabilidade', slug: 'alvorada' });
+
+    await fireEvent.click(screen.getByTestId('view-as-leave'));
+
+    await waitFor(() => expect(push).toHaveBeenCalledWith({ name: 'platform-firms-en' }));
+    expect(firmReads).toBe(1);
+  });
+
   it('a "Sair" the API refused keeps the banner', async () => {
     server.use(http.delete('http://localhost/platform/view-as', () => HttpResponse.json({}, { status: 500 })));
     renderBanner({ name: 'Alvorada Contabilidade', slug: 'alvorada' });

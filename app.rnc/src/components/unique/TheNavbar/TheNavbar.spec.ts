@@ -9,7 +9,18 @@ import { mountWithPlugins } from '@/test/mount';
 import { NAV_EXPANDED_GROUPS_STORAGE_KEY } from '@Constants';
 import useUiStore from '@Stores';
 
-const { logoutService, resetAllStores } = vi.hoisted(() => ({ logoutService: vi.fn(), resetAllStores: vi.fn() }));
+const { forgetFirm, logoutService, resetAllStores } = vi.hoisted(() => ({
+  forgetFirm: vi.fn(),
+  logoutService: vi.fn(),
+  resetAllStores: vi.fn(),
+}));
+
+// Chrome QA 5.21: the firm a view-as showed must not stay on the root's login after signing out.
+vi.mock('@Composables', async (importActual) => {
+  const actual = await importActual<Record<string, unknown> & { useFirmBrand: () => object }>();
+
+  return { ...actual, useFirmBrand: () => ({ ...actual.useFirmBrand(), forget: forgetFirm }) };
+});
 
 // The barrel is already aliased to a test stub; this only swaps the reset for a spy so the
 // "does the session actually end" contract can be asserted rather than assumed.
@@ -528,6 +539,24 @@ describe('TheNavbar — logout', () => {
     await flushPromises();
 
     expect(resetAllStores).toHaveBeenCalledOnce();
+  });
+
+  // Chrome QA 5.21: signed out of a view-as of Alvorada, the root's login showed Alvorada's brand.
+  it("forgets the host firm's kept brand when the session ends, and only then", async () => {
+    forgetFirm.mockClear();
+
+    const { wrapper } = mountNavbar();
+
+    logoutService.mockRejectedValueOnce(new Error('network'));
+    await wrapper.findComponent(desktopStub).vm.$emit('logout');
+    await flushPromises();
+
+    expect(forgetFirm).not.toHaveBeenCalled();
+
+    await wrapper.findComponent(desktopStub).vm.$emit('logout');
+    await flushPromises();
+
+    expect(forgetFirm).toHaveBeenCalledOnce();
   });
 
   it('keeps the stores when the logout request fails', async () => {

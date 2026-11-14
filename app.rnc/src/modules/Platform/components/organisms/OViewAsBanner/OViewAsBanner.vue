@@ -42,15 +42,17 @@ function onLeave() {
 /*
  * The view-as is closed on the API: the banner goes now, whatever happens next. A failed session or brand read
  * afterwards still lands on the console, whose route guard reads the session again — never a "could not leave"
- * over a view-as that is already over (rnc-4 verify P2-S5).
+ * over a view-as that is already over (rnc-4 verify P2-S5). The brand is read again even when the session read
+ * failed: the viewed firm's kept brand must not outlive the view-as (Chrome QA 5.21).
  */
 function onLeft() {
   userStore.endViewAs();
 
-  return userStore
-    .fetchMe()
-    .then(() => reload())
-    .then(goToConsole, goToConsole);
+  return userStore.fetchMe().then(reloadBrand, reloadBrand).then(goToConsole, goToConsole);
+}
+
+function reloadBrand() {
+  return reload();
 }
 
 function goToConsole() {

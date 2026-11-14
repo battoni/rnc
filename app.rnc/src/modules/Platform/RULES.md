@@ -1,5 +1,5 @@
 ---
-version: 1.3.0
+version: 1.4.0
 origin: rnc
 ---
 
@@ -59,6 +59,8 @@ storage:link` in api.rnc.
   on the stop's answer, before `auth/me` and the brand are read again; a failure of either afterwards still goes
   to the console (whose guard reads the session) and never shows "could not leave". Only a refused stop keeps the
   banner and its error toast.
+- **"Sair" reads the brand again whatever `auth/me` answers** (Chrome QA 5.21): the root's kept firm brand is the
+  viewed firm's until then, and must not outlive the view-as.
 - **A refused clipboard is said beside the password** (`MOneTimePassword`, rnc-4 verify P2-S6): no permission or
   no `navigator.clipboard` (an insecure origin) shows `platform.password.copyFailed` (`role="alert"`) — the
   password is shown only once, so a copy button that silently did nothing would be believed.

@@ -3,6 +3,13 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.24.0 — 2026-11-14
+
+### Added
+
+- `site/brands.spec.ts` (Chrome QA 4.11/4.12): a diagnostic started after `?marca=prime` then `?marca=principal`
+  leaves without `X-Brand` and the title is the main brand's (the first start, under Prime, proves the header is seen).
+
 ## 1.23.0 — 2026-11-14
 
 ### Added

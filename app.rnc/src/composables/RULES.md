@@ -1,5 +1,5 @@
 ---
-version: 1.9.0
+version: 1.10.0
 origin: pendulum
 based-on: 1.6.0
 ---
@@ -88,9 +88,12 @@ Every "resend in 42s" uses it; do not count ticks in a component.
   colours, logo text and `platform.name` before the API answers. `isFirmMissing` is its 404
   `firms.notFound` (R3, read by `TheRouteGuard`); any other failure is forgotten and asked again.
 - **`logoUrl` and `reload()`** (rnc-4 F4d): `logoUrl` is the firm's uploaded logo as a path on this
-  origin (`toStorageAssetPath`); `reload()` forgets the page's answer and asks again — called when a
-  view-as starts or ends, because the root's session then answers `public/firm` for another firm. The
-  new answer replaces the tab's stored one, and `useBrandTheme` repaints from the watched `firm`.
+  origin (`toStorageAssetPath`); `reload()` forgets the page's answer, DROPS the kept one and asks again —
+  called when a view-as starts or ends, because the root's session then answers `public/firm` for another
+  firm. The new answer replaces the tab's stored one, and `useBrandTheme` repaints from the watched `firm`.
+- **The kept answer is the host's and the session's** (Chrome QA 5.21): stored as `{ firm, host }` and read
+  only on that host; `forget()` — the navbar's logout — drops the firm at once and asks again, so the root's
+  login never shows the firm a view-as showed. The view-as banner's "Sair" reloads even when `auth/me` fails.
 - **`useBrandTheme()` is mounted once, by `App.vue`**, and paints the firm's ramp (`brandPalette`) on
   `<html>` for both layouts; `useSubBrandTheme(firm)` is `ThePublicLayout`'s and lays a sub-brand's
   ramp over it only while a public layout is up, handing back after the route fade. One painter, two

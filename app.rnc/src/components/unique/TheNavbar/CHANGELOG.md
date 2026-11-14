@@ -3,6 +3,12 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.14.0 — 2026-11-14
+
+### Fixed
+
+- Chrome QA 5.21: logout calls `useFirmBrand().forget()` — at the root the kept firm brand is the session's (a view-as's firm), and the login that follows is the platform's.
+
 ## 1.13.0 — 2026-11-14
 
 ### Changed

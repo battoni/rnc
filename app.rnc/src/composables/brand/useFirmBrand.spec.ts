@@ -84,7 +84,10 @@ describe('useFirmBrand', () => {
 
     await first.load();
 
-    expect(JSON.parse(sessionStorage.getItem(FIRM_BRAND_STORAGE_KEY) ?? 'null')?.slug).toBe('alvorada');
+    expect(JSON.parse(sessionStorage.getItem(FIRM_BRAND_STORAGE_KEY) ?? 'null')).toEqual({
+      firm: ALVORADA,
+      host: window.location.host,
+    });
 
     const second = await freshFirmBrand();
 
@@ -153,6 +156,55 @@ describe('useFirmBrand', () => {
     await reload();
 
     expect(firm.value?.slug).toBe('hub');
-    expect(JSON.parse(sessionStorage.getItem(FIRM_BRAND_STORAGE_KEY) ?? 'null')?.slug).toBe('hub');
+    expect(JSON.parse(sessionStorage.getItem(FIRM_BRAND_STORAGE_KEY) ?? 'null')?.firm?.slug).toBe('hub');
+  });
+
+  /*
+   * Chrome QA 5.21: the root's answer depends on the session (a view-as answers the viewed firm), so a
+   * kept answer is the host's AND the session's. Kept for another host — or in the shape before it named
+   * one — it is never painted, and a reload drops it before asking, so a failed answer leaves nothing stale.
+   */
+  it('never starts from an answer kept for another host, or without one', async () => {
+    sessionStorage.setItem(FIRM_BRAND_STORAGE_KEY, JSON.stringify({ firm: ALVORADA, host: 'alvorada.localhost:5173' }));
+
+    expect((await freshFirmBrand()).firm.value).toBeNull();
+
+    sessionStorage.setItem(FIRM_BRAND_STORAGE_KEY, JSON.stringify(ALVORADA));
+
+    expect((await freshFirmBrand()).firm.value).toBeNull();
+  });
+
+  it('drops the kept answer when it reads again, even when the read fails', async () => {
+    const { load, reload } = await freshFirmBrand();
+
+    await load();
+
+    answerFirmWith(500, 'errors.unexpected');
+
+    await reload();
+
+    expect(sessionStorage.getItem(FIRM_BRAND_STORAGE_KEY)).toBeNull();
+  });
+
+  // Chrome QA 5.21: signing out of a view-as of Alvorada at the root showed Alvorada on the root's login.
+  it("forgets the firm at once on forget(), then shows the host's own answer", async () => {
+    const { firm, forget, load } = await freshFirmBrand();
+
+    await load();
+
+    server.use(
+      http.get('http://localhost/public/firm', () =>
+        HttpResponse.json({ data: { ...ALVORADA, logo_text: 'Hub da Reforma', slug: 'hub' } })
+      )
+    );
+
+    const asked = forget();
+
+    expect(firm.value).toBeNull();
+    expect(sessionStorage.getItem(FIRM_BRAND_STORAGE_KEY)).toBeNull();
+
+    await asked;
+
+    expect(firm.value?.slug).toBe('hub');
   });
 });

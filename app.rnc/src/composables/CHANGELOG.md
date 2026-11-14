@@ -3,6 +3,13 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 1.10.0 — 2026-11-14
+
+### Fixed
+
+- `useFirmBrand` (Chrome QA 5.21): the kept answer names its host (`{ firm, host }`) and is read only there — the old shape is never painted; `reload()` drops it before asking, so a failed read leaves nothing stale; new `forget()` (signing out) drops the firm at once and asks again, so the root's login never wears the firm a view-as showed.
+- `publicBrand.spec` (Chrome QA 4.11/4.12): a diagnostic started after `?marca=prime` then `?marca=principal` — or the host firm's own slug (W27) — leaves without `X-Brand`.
+
 ## 1.9.0 — 2026-11-14
 
 ### Added

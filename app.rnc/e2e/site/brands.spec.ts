@@ -205,6 +205,49 @@ test.describe('the site under a sub-brand (A2)', () => {
     expect(await rootColour(page, '--color-primary-500')).toBe('#00375a');
   });
 
+  // Chrome QA 4.11/4.12: a lead started after `?marca=prime` then `?marca=principal` is the main brand's.
+  test('starts the diagnostic under the main brand after ?marca=prime then ?marca=principal', async ({ page }) => {
+    const startedUnder: (string | null)[] = [];
+
+    await page.route('**/public/diagnostics', (route) => {
+      startedUnder.push(route.request().headers()['x-brand'] ?? null);
+
+      return route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          data: {
+            cnpj: null,
+            company: null,
+            consent: { text: 'Autorizo a Franco Contabilidade a me apresentar', version: 1 },
+            has_contact: false,
+            has_email: false,
+            last_step: 'empresa',
+            path: 'quiz',
+            profile: {},
+            stage: 'visitante',
+            token: 'tok-main',
+          },
+        }),
+      });
+    });
+
+    await page.goto('/diagnostico?marca=prime');
+    await page.getByTestId('path-quiz').click();
+    await expect.poll(() => startedUnder.length).toBe(1);
+
+    await page.goto('/?marca=principal');
+    await expect(page.getByRole('banner')).not.toContainText('Prime');
+    await page.goto('/diagnostico');
+    await expect(page).toHaveTitle(/· Franco Contabilidade$/);
+    await page.getByTestId('path-quiz').click();
+    await expect.poll(() => startedUnder.length).toBe(2);
+
+    // The first proves the header is seen; the second is the main brand's.
+    expect(startedUnder).toEqual(['prime', null]);
+    expect(brandsSent.slice(brandsSent.lastIndexOf('prime') + 1)).not.toContain('prime');
+  });
+
   test('lands a brand the API refuses on Franco, out of the address bar too (AM21)', async ({ page }) => {
     await page.goto('/?marca=velha');
 
