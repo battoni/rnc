@@ -20,6 +20,9 @@ class RoleService
     /** The role that holds every key. Deleting it would leave nobody able to grant anything back. */
     public const ADMINISTRATOR_SLUG = 'operador';
 
+    /** A firm's manager (rnc-4 R14) — the role `firm:create` gives the account it makes. */
+    public const MANAGER_SLUG = 'gestao';
+
     public const ADMINISTRATOR_KEEPS_EVERY_KEY = 'rolesAndPermissions.administratorKeepsEveryKey';
 
     private const NAME_TAKEN_KEY = 'rolesAndPermissions.form.nameTaken';

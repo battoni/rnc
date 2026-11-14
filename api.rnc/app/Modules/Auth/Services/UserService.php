@@ -66,6 +66,8 @@ class UserService
                 'name' => $dto->name,
                 'last_name' => $dto->last_name,
                 'username' => $dto->username,
+                'email' => $dto->email,
+                'is_specialist' => $dto->is_specialist,
                 // Made inside the firm of whoever makes it: a user the firm could not list is a lost one.
                 'firm_id' => $this->currentFirm->id(),
                 'role_id' => $dto->role_id,
@@ -222,6 +224,12 @@ class UserService
     public function isUsernameAvailable(string $username, ?int $excludeId = null): bool
     {
         return $this->userRepository->findUserByUsername($username, $excludeId) === null;
+    }
+
+    /** E-mails are unique across every firm, like usernames (rnc-4 AM2). */
+    public function isEmailAvailable(string $email): bool
+    {
+        return $this->userRepository->findUserByEmail($email) === null;
     }
 
     /**

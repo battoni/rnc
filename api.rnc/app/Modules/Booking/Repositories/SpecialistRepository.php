@@ -18,4 +18,26 @@ class SpecialistRepository
     {
         return Specialist::query()->with(['user', 'hours'])->find($id);
     }
+
+    /**
+     * The person's specialist row in the firm, made or rewritten (one per person). Runs as that firm;
+     * `firm_id` is written explicitly because seeders run without model events.
+     *
+     * @param  array{area: string|null, focus: string}  $attributes
+     */
+    public function upsertSpecialist(int $firmId, int $userId, array $attributes): Specialist
+    {
+        return Specialist::query()->updateOrCreate(['user_id' => $userId], [...$attributes, 'firm_id' => $firmId]);
+    }
+
+    /**
+     * Replaces the specialist's weekly hours with these (`weekday`, `opens_at`, `closes_at`).
+     *
+     * @param  list<array{weekday: int, opens_at: string, closes_at: string}>  $hours
+     */
+    public function replaceSpecialistHours(Specialist $specialist, array $hours): void
+    {
+        $specialist->hours()->delete();
+        $specialist->hours()->createMany($hours);
+    }
 }

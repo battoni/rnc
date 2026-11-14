@@ -1,5 +1,8 @@
 # Changelog — Booking Module
 
+## 1.5.0 — 2026-11-14
+- `Services/SpecialistService::makeBookable()` (specialist row + the firm's business hours) with `SpecialistRepository::upsertSpecialist()` / `replaceSpecialistHours()` — `SpecialistSeeder` and `firm:create --specialist` (rnc-4 F3b1) both go through it. Tested by `tests/Feature/Firm/CreateFirmCommandTest`.
+
 ## 1.4.0 — 2026-11-14
 
 ### Changed

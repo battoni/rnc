@@ -26,6 +26,12 @@ class FirmRepository
     }
 
     /** @param  array<string, mixed>  $attributes */
+    public function createFirm(array $attributes): Firm
+    {
+        return Firm::query()->create($attributes);
+    }
+
+    /** @param  array<string, mixed>  $attributes */
     public function updateFirm(Firm $firm, array $attributes): Firm
     {
         $firm->update($attributes);

@@ -2,6 +2,9 @@
 
 All notable changes to this unit are documented here. Versioned with SemVer.
 
+## 1.7.0 — 2026-11-14
+- `firm:create` (rnc-4 F3b1, R21, D17): `Services/FirmProvisioner` makes a firm ready to sign in to in one transaction — default palette and weekday hours, core + `briefing` through `FirmModulesService`, the six default sector pages (`SectorPageService::startFirm`), consent v1 from the platform default, a `gestao` manager with a 16-character password returned once (`--specialist` makes them bookable); refuses a malformed, reserved or taken slug, a missing name or manager, a taken username and a malformed or taken e-mail (`firms.slug*`, `users.form.*`). `DTOs/CreateFirmDTO`, `DTOs/ProvisionedFirm`, `FirmRepository::createFirm()`; the command is `app/Console/Commands/CreateFirm.php`. Tested by `tests/Feature/Firm/CreateFirmCommandTest`.
+
 ## 1.6.0 — 2026-11-14
 - Modules per firm (rnc-4 F3a, R16–R20): `Helpers/FirmModules` (catalogue), `Services/FirmModulesService` (the only writer: unknown, dependency, operator-only `channel`), `CurrentFirm::hasModule()` / `forEachFirmWithModule()`, `FirmRepository::updateFirmModules()`, `Resources/FirmSummaryResource` (`auth/me`'s `firm`); `PublicFirmResource::LOGO_DISK` is public. Tested by `tests/Unit/Modules/Firm/FirmModulesServiceTest`, `tests/Feature/Firm/ModuleGateTest`, `ModuleCommandsTest`, `tests/Feature/Auth/MeFirmTest`.
 

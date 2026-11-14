@@ -15,5 +15,9 @@ class UserStoreDTO extends Data
         public string $password,
         /** @var array<string, bool> */
         public array $permissions = [],
+        /** Set by `firm:create` (rnc-4 F3b1); `StoreUserRequest` has no rule for it, so the form never sends one. */
+        public ?string $email = null,
+        /** Set by `firm:create --specialist` (rnc-4 F3b1); never from the form, like `email`. */
+        public bool $is_specialist = false,
     ) {}
 }

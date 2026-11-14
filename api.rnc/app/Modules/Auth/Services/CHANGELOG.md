@@ -3,6 +3,9 @@
 All notable changes to this unit are documented here. Versioned with SemVer.
 This file is the canonical source for the unit's version (RULES.md frontmatter mirrors it).
 
+## 2.8.0 — 2026-11-14
+- `UserService::create` writes the DTO's `email` and `is_specialist`; `UserService::isEmailAvailable()`; `RoleService::MANAGER_SLUG` (`gestao`) — for `firm:create` (rnc-4 F3b1). Tested by `tests/Feature/Firm/CreateFirmCommandTest`.
+
 ## 2.7.0 — 2026-11-13
 
 ### Changed

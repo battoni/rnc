@@ -1,5 +1,5 @@
 # State: Reforma hub as a white-label platform for accounting firms
-Stage: build F3a/19
+Stage: build F3b1/19
 Updated: 14/11/2026
 Branch: feature/rnc-4-white-label-platform · Worktree: .claude/worktrees/rnc-4
 ## Done
@@ -170,10 +170,38 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   Briefing 1.5.0, Radar 1.3.0, Portfolio 1.6.0, Diagnostic 1.3.0, Assistant 1.2.0, database 1.25.0,
   mail views 1.3.0. Known gap (Firm RULES): the SPA enforces nothing until F3c — the root's chat is
   refused on `hub`, which has no `chat`.
+- **F3b1 `FirmProvisioner` + `firm:create`** (A22; R21, R13; D17; AM7) · 14/11 · full Pest 2002 (+17:
+  `Firm/CreateFirmCommandTest` — firm + palette + core/`briefing`, six sector pages in order, consent
+  v1 = platform default, `gestao` manager not a specialist, printed 16-char password refused on
+  `franco` and signing in on `acme`, `--specialist` hours = business hours, refusals `www`/`hub`/
+  `Acme!`/`-acme`/`franco`, taken username, taken/malformed e-mail, no name/manager, rollback), all
+  green · full Vitest 1345 (`--maxWorkers=2`; no app.rnc change) · Playwright not run (no app.rnc
+  change, no e2e file added or edited — phase gate) · check-app (aliases, vue-tsc), check-api (Pint,
+  PHPStan), check-portal and check-cortex (skip themselves here), mirror check, sanitize (ESLint,
+  Prettier, sort-locales) green · arcus review inline (units bumped; nothing else to fix) ·
+  pre-commit green 14/11/2026 without the full Playwright suite. `make fresh-seed` clean (6 sector
+  pages, 5 specialists, 25 hours — as before). Live: `php artisan firm:create acme --name="Acme
+  Contábil" --manager=helena.acme --email=…` printed the password; through Vite's proxy on
+  `acme.localhost:5173` (API on 8001, Pitfalls) `public/firm` named Acme, the login answered 200 and
+  `auth/me` gave `helena.acme`, Gestão, firm `acme`, modules `['briefing']`; `firm:create www` exit 1
+  `firms.slugReserved`.
+  Red first: all 17 failed before the code (no command). Mutations seen red: the transaction dropped
+  (rollback case), the reserved check off, the sector pages skipped, the modules write skipped,
+  `--specialist` ignored, consent v1 skipped.
+  What changed: Firm — `Services/FirmProvisioner`, `DTOs/CreateFirmDTO`, `DTOs/ProvisionedFirm`,
+  `FirmRepository::createFirm()`; `app/Console/Commands/CreateFirm.php`. Content —
+  `Helpers/DefaultSectorPages` (the six pages moved out of `SectorPageSeeder`),
+  `SectorPageService::startFirm()`, `SectorPageRepository::upsertSectorPage()`. Booking —
+  `Services/SpecialistService::makeBookable()`, `SpecialistRepository::upsertSpecialist()` /
+  `replaceSpecialistHours()`. Auth — `UserStoreDTO` + `email`, `is_specialist` (no form rule, so the
+  form never sends them), `UserService::isEmailAvailable()`, `RoleService::MANAGER_SLUG`. Seeders
+  `SectorPageSeeder` and `SpecialistSeeder` now go through those services (rows unchanged). Units
+  bumped: Firm 1.7.0, Content 1.1.0, Booking 1.5.0, Auth DTOs 1.5.0, Auth Services 2.8.0, database
+  1.26.0.
 ## Next
-1. `/battoni-start-session rnc-4` (or the running `/battoni-run rnc-4`) → **F3b1** `FirmProvisioner` +
-   `firm:create` (A22) — writes the new firm's modules through `FirmModulesService::set` (core +
-   `briefing`, D17).
+1. `/battoni-start-session rnc-4` (or the running `/battoni-run rnc-4`) → **F3b2** seeders per firm +
+   `DemoFirmSeeder` full Alvorada + `gestao.hub` (A23) + AM3's moved alvorada diagnostic check. Start
+   with `make fresh-seed` (the local DB holds `acme` from F3b1's live check).
 ## Pitfalls
 - (F1a) `UserFactory` now puts every user in the default firm (`franco` under phpunit), creating it
   when absent. A test that creates `Firm::factory(['slug' => 'franco'])` AFTER a user would collide
@@ -245,6 +273,12 @@ plan approved 13/11 (delegated): F1a F1b F2a F2b F2c F3a F3b F3c F4a F4b F6a F6b
   `routes/api.local.php`'s header says which key.
 - (F3a) Writing `firms.modules` goes through `FirmModulesService::set($firm, $all, $actor)` — the WHOLE
   opt-in list, not a delta; core keys are dropped, `channel` changes need the operator.
+- (F3b1) A firm is made only by `FirmProvisioner` (`firm:create`, F4a's console): it validates first,
+  then writes in one transaction. Sector pages, consent, users and specialist hours go through
+  their own module's service (`SectorPageService::startFirm`, `ConsentTextService::startFirm`,
+  `UserService::create`, `SpecialistService::makeBookable`) — F3b2's seeders reuse those, not copies.
+- (F3b1) The SPA sends `X-Firm` from its host; a curl through Vite's proxy on `acme.localhost:5173`
+  without that header lands on the platform firm (`hub`), not acme. Send `X-Firm: <slug>` as the SPA does.
 ## QA
 (none yet — rounds in plan.md → QA)
 ## Seeded people (password `seeding.password`; `battoni` uses `seeding.superadmin_password`)
@@ -282,6 +316,8 @@ F2c1 done
 F2c2 done
 08:15 F3a started, attempt 1
 F3a done
+08:38 F3b1 started, attempt 1
+F3b1 done
 ## Decided while you were away
 - W1 plan: proposal.html skipped in away mode (spec D27; to reverse: `/battoni-new-proposal rnc-4 final`).
 - W2 plan: the owner's phases are split into 17 builder phases with his labels kept (spec D28); his
@@ -383,3 +419,16 @@ F3a done
   partner matches and referral are gated by their owner — `portfolio` and `partners` — not by the screen
   that calls them; F3c must stop the lead detail asking for matches without `partners`. To reverse:
   `module:fiscal` on the timeline, leave the lead routes ungated.
+- W39 F3b1: a command line has no operator, so `firm:create` writes the modules with the NEW MANAGER as
+  `FirmModulesService::set`'s actor (`briefing` is not operator-only); the console (F4a) passes its
+  operator. To reverse: a system actor, or an operator-only check that skips the CLI.
+- W40 F3b1: `--email` is optional and becomes the firm's mailbox too; the manager's first/last name
+  come from the username (`helena.acme` → Helena / Acme); a new firm's hours are weekdays 09–18 (the
+  platform firm's); the password is 16 letters and digits (`Str::password` without symbols, so it
+  copies from a terminal). To reverse: require `--email`, add `--manager-name`, symbols on.
+- W41 F3b1: the six default sector pages moved to Content's `Helpers/DefaultSectorPages`, and the
+  specialist hours to Booking's `SpecialistService` — the provisioner writes other modules' tables
+  only through their services (arcus rule), and `SectorPageSeeder` / `SpecialistSeeder` now use the
+  same paths (rows unchanged). Refusal keys: new `firms.slugInvalid` / `slugReserved` / `slugTaken` /
+  `nameRequired`, `users.form.usernameRequired` / `emailInvalid` / `emailTaken`, reused
+  `users.form.usernameTaken`; the SPA locales get them with F4a's console. To reverse: inline writes.

@@ -1,5 +1,5 @@
 ---
-version: 1.6.0
+version: 1.7.0
 origin: rnc
 ---
 # RULES — Firm Module
@@ -129,6 +129,25 @@ firms records of the Channel module, with no tenant.
   (D18), the platform firm none (R23). `FirmFactory` defaults to every key so the suite's implicit
   firm keeps its routes; the model's own default is none.
 
+## A new firm (rnc-4 F3b1, R21, D17)
+
+- **`FirmProvisioner`** is the one way a firm is made — `php artisan firm:create <slug> --name=
+  --manager= [--email=] [--specialist]` today, the platform console (F4a) next. One transaction: the
+  firm (default `#1f4e79` / `#f2a900`, weekdays 09–18, name as logo text and short name, the e-mail as
+  mailbox), core + `briefing` through `FirmModulesService::set` (the actor is the console's operator,
+  else the new manager), then as the firm (`runAs`): the six default sector pages
+  (`SectorPageService::startFirm`), consent v1 (`ConsentTextService::startFirm`), the `gestao` manager
+  (`UserService::create`) and, with `--specialist`, their hours (`SpecialistService::makeBookable`).
+- **The password is 16 letters and digits, returned once** (`ProvisionedFirm`) and printed by the
+  command; nothing keeps it but the hash.
+- **Refusals come all at once** as a `ValidationException` (the console's 422): `firms.slugInvalid`
+  (not a DNS label within 60), `firms.slugReserved` (`config/platform.php`), `firms.slugTaken`,
+  `firms.nameRequired`, `users.form.usernameRequired` / `usernameTaken`, `users.form.emailInvalid` /
+  `emailTaken` — checked before anything is written.
+- **Reads from other modules:** `roles` (Auth's `RoleRepository::findRoleBySlug`), `users` (through
+  `UserService::isUsernameAvailable` / `isEmailAvailable`). Every write goes through the owning
+  module's service.
+
 ## Intentional Decisions
 
 - **`users` is not firm-scoped.** Sign-in looks the username up before any firm is known; the user's
@@ -146,6 +165,10 @@ firms records of the Channel module, with no tenant.
 
 - **Until F4c the operator reaches another firm only through the console** (rnc-4 AM1): a
   firm-less session always works in the platform firm; `ViewAsFirm` returns null.
+- **`FirmProvisioner`'s refusal keys have no SPA text yet** (rnc-4 F3b1): `firm:create` prints the
+  keys themselves; the console (F4a) adds `firms.slug*`, `firms.nameRequired` and the new
+  `users.form.*` keys to the locales. Two runs racing for one slug: the loser's unique index is an
+  uncaught 500 — the CLI is one operator at a time; F4a's console should catch it as `slugTaken`.
 
 - **Modules are enforced by the API only until F3c** (rnc-4): the SPA still shows every rail entry
   and the root site's chat; on a firm with the module off they answer 404 / 422 `modules.disabled`.

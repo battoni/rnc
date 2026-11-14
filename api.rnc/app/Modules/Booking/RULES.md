@@ -1,5 +1,5 @@
 ---
-version: 1.4.0
+version: 1.5.0
 origin: rnc
 ---
 # RULES — Booking Module
@@ -11,6 +11,11 @@ origin: rnc
 The visitor's meeting with a specialist (R15–R17): who is bookable (`specialists`, their weekly
 `specialist_hours`), the meetings (`appointments`), the "Relatório de Impacto" the confirmation links,
 the confirmation and reminder e-mails, and the `appointments:remind` command.
+
+**Making someone bookable** is `SpecialistService::makeBookable($person, $firm, $area, $focus)`: the
+specialist row (one per person) and, as weekly hours, the firm's business hours, rewritten on every
+call. `SpecialistSeeder` and `firm:create --specialist` (rnc-4 F3b1) both come through it, run as
+that firm.
 
 ## The routes (`routes/api.local.php`)
 
